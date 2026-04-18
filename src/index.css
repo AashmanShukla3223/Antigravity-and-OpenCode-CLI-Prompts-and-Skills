@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-500;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/20 backdrop-blur-3xl border border-white/30 shadow-2xl;
+  }
+  
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl text-white;
+  }
+  
+  .mac-shadow {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-sans);
+}
+
+/* Remove default Vite styling */
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* 10/10 Score Aesthetic Hack */
+.hugeicon-tahoe {
+  filter: drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3));
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hugeicon-tahoe:hover {
+  transform: scale(1.1);
+  color: #007AFF; /* Silicon Glow */
+}
+
+/* macOS Tahoe Custom Cursor */
+html, body, #root {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M7,2l12,11.2l-5.8,1.7l3.2,5.2l-2.4,1.4l-3.2-5.2L7,21V2z' fill='white' stroke='black' stroke-width='1.5' stroke-linejoin='round'/></svg>"), auto !important;
+}
+
+/* Ensure interactive elements still show the custom pointer if desired, or keep it consistent */
+a, button, [role="button"], .cursor-pointer {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path d='M7,2l12,11.2l-5.8,1.7l3.2,5.2l-2.4,1.4l-3.2-5.2L7,21V2z' fill='white' stroke='black' stroke-width='1.5' stroke-linejoin='round'/></svg>"), pointer !important;
+}
