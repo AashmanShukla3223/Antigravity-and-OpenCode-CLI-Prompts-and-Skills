@@ -48,7 +48,7 @@ const AppMap: Record<string, React.FC> = {
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp } = useSystem();
+  const { systemState, activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp } = useSystem();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
@@ -117,8 +117,8 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       style={{ zIndex, position: 'absolute' }}
       className={`rounded-2xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'}`}
     >
-      {/* Liquid Glass Background */}
-      <div className="absolute inset-0 bg-white/5 dark:bg-black/20 backdrop-blur-[40px] saturate-[150%] border border-white/20 pointer-events-none" />
+      {/* Liquid Glass Background - Low Power Mode check */}
+      <div className={`absolute inset-0 bg-white/5 dark:bg-black/20 saturate-[150%] border border-white/20 pointer-events-none ${systemState.lowPowerMode ? '' : 'backdrop-blur-[40px]'}`} />
 
       {/* Title Bar */}
       <div 

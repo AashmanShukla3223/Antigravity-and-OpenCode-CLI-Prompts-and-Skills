@@ -37,9 +37,7 @@ const ViscousSlider = ({ icon: Icon, defaultValue = 50 }: { icon: any, defaultVa
 };
 
 export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { battery } = useSystem();
-  const [wifi, setWifi] = useState(true);
-  const [bluetooth, setBluetooth] = useState(true);
+  const { battery, wifi, setWifi, bluetooth, setBluetooth, systemState } = useSystem();
 
   return (
     <AnimatePresence>
@@ -50,7 +48,7 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
-            className="fixed top-10 right-4 w-80 glass-dark rounded-3xl p-4 shadow-2xl z-[9995] flex flex-col gap-4 border border-white/20 text-white"
+            className={`fixed top-10 right-4 w-80 rounded-3xl p-4 shadow-2xl z-[9995] flex flex-col gap-4 border border-white/20 text-white ${systemState.lowPowerMode ? 'bg-zinc-900' : 'glass-dark'}`}
           >
             {/* Top row toggles */}
             <div className="flex gap-4">

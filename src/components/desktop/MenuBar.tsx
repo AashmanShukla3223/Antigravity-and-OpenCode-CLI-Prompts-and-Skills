@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
 import { 
   BatteryFullIcon, 
@@ -81,30 +81,148 @@ const ForceQuit: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
   );
 };
 
+const MenuDropdown: React.FC<{ 
+  isOpen: boolean; 
+  onClose: () => void; 
+  items: { label?: string; action?: () => void; disabled?: boolean; shortcut?: string; separator?: boolean }[];
+  style?: React.CSSProperties;
+}> = ({ isOpen, onClose, items, style }) => {
+  const { systemState } = useSystem();
+  if (!isOpen) return null;
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -5 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -5 }}
+        transition={{ duration: 0.1 }}
+        style={style}
+        className={`absolute top-8 w-64 bg-black/60 saturate-[190%] border border-white/20 rounded-[20px] shadow-2xl py-2 z-50 overflow-hidden ${systemState.lowPowerMode ? '' : 'backdrop-blur-[50px]'}`}
+      >
+        {items.map((item, i) => (
+          item.separator ? (
+            <div key={i} className="border-b border-white/10 my-1 mx-2" />
+          ) : (
+            <div 
+              key={i} 
+              className={`px-4 py-1.5 text-[13px] flex justify-between items-center transition-colors ${item.disabled ? 'text-white/30 cursor-default' : 'text-white hover:bg-blue-500 cursor-pointer'}`}
+              onClick={() => { if (!item.disabled && item.action) { item.action(); onClose(); } }}
+            >
+              <span>{item.label}</span>
+              {item.shortcut && <span className="text-[10px] opacity-40 font-medium tracking-widest">{item.shortcut}</span>}
+            </div>
+          )
+        ))}
+      </motion.div>
+    </>
+  );
+};
+
+const BatteryDropdown: React.FC<{ 
+  isOpen: boolean; 
+  onClose: () => void; 
+  battery: { level: number; isCharging: boolean };
+}> = ({ isOpen, battery, onClose }) => {
+  const { powerMode, setPowerMode, launchApp } = useSystem();
+  const [chargeLimit, setChargeLimit] = useState(false);
+  
+  if (!isOpen) return null;
+  
+  const modes: ('Low Power' | 'Normal' | 'High Performance')[] = ['Low Power', 'Normal', 'High Performance'];
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -5 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -5 }}
+        transition={{ duration: 0.1 }}
+        className="absolute top-8 right-0 w-72 bg-black/60 backdrop-blur-[50px] saturate-[190%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 overflow-hidden text-white"
+      >
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-sm font-bold text-white/50 uppercase tracking-widest">Battery</span>
+          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-bold">Healthy</span>
+        </div>
+        
+        <div className="flex flex-col items-center mb-6">
+          <div className="text-4xl font-black mb-1">{Math.round(battery.level * 100)}%</div>
+          <div className="text-[10px] text-white/40 font-medium uppercase tracking-[0.2em]">
+            {battery.isCharging ? 'Power Adapter' : 'On Battery'}
+          </div>
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <div className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1 px-1">Power Mode</div>
+          {modes.map(mode => (
+            <div 
+              key={mode}
+              onClick={() => setPowerMode(mode)}
+              className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-colors ${powerMode === mode ? 'bg-blue-500/20 border border-blue-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+            >
+              <span className={`text-xs font-medium ${powerMode === mode ? 'text-blue-400' : 'text-white/70'}`}>{mode}</span>
+              {powerMode === mode && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between items-center p-3 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold">Maximum Capacity</span>
+              <span className="text-[10px] text-white/40">Peak Performance Capability</span>
+            </div>
+            <span className="text-sm font-black">100%</span>
+          </div>
+
+          <div className="flex justify-between items-center p-3 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold">Charge Limit: 80%</span>
+              <span className="text-[10px] text-white/40">Optimized Battery Health</span>
+            </div>
+            <button 
+              onClick={() => setChargeLimit(!chargeLimit)}
+              className={`w-10 h-5 rounded-full transition-colors relative ${chargeLimit ? 'bg-blue-500' : 'bg-white/10'}`}
+            >
+              <motion.div 
+                animate={{ x: chargeLimit ? 22 : 2 }}
+                className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
+              />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-3 border-t border-white/10">
+          <div 
+            className="px-2 py-1.5 text-[11px] text-white/60 hover:text-white hover:bg-blue-500 rounded-lg cursor-pointer transition-colors font-medium"
+            onClick={() => { onClose(); launchApp('settings'); }}
+          >
+            Battery Settings...
+          </div>
+        </div>
+      </motion.div>
+    </>
+  );
+};
+
 export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const { activeApp, setShowAboutWindow, launchApp, setBootState, battery, setShowSpotlight, showSpotlight } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
+  const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
-  const appleMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (appleMenuRef.current && !appleMenuRef.current.contains(event.target as Node)) {
-        setAppleMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const getActiveAppName = () => {
     if (!activeApp) return 'Finder';
+    if (activeApp === 'settings') return 'System Settings';
+    if (activeApp === 'appstore') return 'App Store';
     return activeApp.charAt(0).toUpperCase() + activeApp.slice(1);
   };
 
@@ -117,12 +235,85 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     }
   };
 
+  const getAppSpecificMenus = () => {
+    const app = activeApp || 'finder';
+    
+    const baseMenus = {
+      finder: {
+        file: [
+          { label: 'New Finder Window', shortcut: '⌘N' },
+          { label: 'New Folder', shortcut: '⇧⌘N' },
+          { separator: true },
+          { label: 'Get Info', shortcut: '⌘I' },
+          { label: 'Empty Trash...', action: () => console.log('Empty Trash') },
+        ],
+        edit: [
+          { label: 'Undo', shortcut: '⌘Z' },
+          { label: 'Redo', shortcut: '⇧⌘Z' },
+          { separator: true },
+          { label: 'Select All', shortcut: '⌘A' },
+        ],
+        go: [
+          { label: 'Back', shortcut: '⌘[' },
+          { label: 'Forward', shortcut: '⌘]' },
+          { separator: true },
+          { label: 'Applications', shortcut: '⇧⌘A' },
+          { label: 'Documents', shortcut: '⇧⌘O' },
+          { label: 'Desktop', shortcut: '⇧⌘D' },
+        ]
+      },
+      safari: {
+        file: [
+          { label: 'New Tab', shortcut: '⌘T' },
+          { label: 'New Window', shortcut: '⌘N' },
+          { label: 'New Private Window', shortcut: '⇧⌘N' },
+          { separator: true },
+          { label: 'Open Location...', shortcut: '⌘L' },
+          { label: 'Close Tab', shortcut: '⌘W' },
+        ],
+        edit: [
+          { label: 'Undo', shortcut: '⌘Z' },
+          { label: 'Redo', shortcut: '⇧⌘Z' },
+          { separator: true },
+          { label: 'Cut', shortcut: '⌘X' },
+          { label: 'Copy', shortcut: '⌘C' },
+          { label: 'Paste', shortcut: '⌘V' },
+          { label: 'Writing Tools', shortcut: '⇧⌘W', action: () => console.log('Writing Tools') },
+        ],
+        view: [
+          { label: 'Reload Page', shortcut: '⌘R' },
+          { label: 'Show Sidebar', shortcut: '⇧⌘L' },
+          { separator: true },
+          { label: 'Enter Full Screen', shortcut: '⌃⌘F' },
+        ]
+      },
+      terminal: {
+        file: [
+          { label: 'New Shell', shortcut: '⌘N' },
+          { label: 'New Tab', shortcut: '⌘T' },
+          { separator: true },
+          { label: 'Close Window', shortcut: '⌘W' },
+        ],
+        edit: [
+          { label: 'Copy', shortcut: '⌘C' },
+          { label: 'Paste', shortcut: '⌘V' },
+          { separator: true },
+          { label: 'Clear Scrollback', shortcut: '⌘K' },
+        ]
+      }
+    };
+
+    return (baseMenus as any)[app] || baseMenus.finder;
+  };
+
+  const appMenus = getAppSpecificMenus();
+  const menuKeys = Object.keys(appMenus).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+
   return (
     <div className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
       
-      {/* LEFT SIDE: App Menu */}
       <div className="flex items-center gap-1 pointer-events-auto h-full pr-10">
-        <div className="relative h-full" ref={appleMenuRef}>
+        <div className="relative h-full">
           <div 
             className={`cursor-pointer px-3 h-full flex items-center rounded transition ${appleMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
             onClick={() => setAppleMenuOpen(!appleMenuOpen)}
@@ -132,62 +323,69 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
             </svg>
           </div>
           
-          <AnimatePresence>
-            {appleMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                transition={{ duration: 0.1 }}
-                className="absolute top-8 left-0 w-64 bg-black/60 backdrop-blur-[50px] saturate-[190%] border border-white/20 rounded-xl shadow-2xl py-2 z-50"
-              >
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => { setAppleMenuOpen(false); setShowAboutWindow(true); }}>About This Mac</div>
-                <div className="border-b border-white/10 my-1 mx-2" />
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => { setAppleMenuOpen(false); launchApp('settings'); }}>System Settings...</div>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => { setAppleMenuOpen(false); launchApp('appstore'); }}>App Store...</div>
-                <div className="border-b border-white/10 my-1 mx-2" />
-                <div className="px-4 py-1.5 text-sm text-white/50 cursor-default flex justify-between">Recent Items <span className="text-[10px]">▶</span></div>
-                <div className="border-b border-white/10 my-1 mx-2" />
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => { setAppleMenuOpen(false); setShowForceQuit(true); }}>Force Quit...</div>
-                <div className="border-b border-white/10 my-1 mx-2" />
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => handlePowerAction('sleep')}>Sleep</div>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => handlePowerAction('restart')}>Restart...</div>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => handlePowerAction('shutdown')}>Shut Down...</div>
-                <div className="border-b border-white/10 my-1 mx-2" />
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => handlePowerAction('lock')}>Lock Screen</div>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer" onClick={() => handlePowerAction('logout')}>Log Out...</div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <MenuDropdown 
+            isOpen={appleMenuOpen} 
+            onClose={() => setAppleMenuOpen(false)} 
+            items={[
+              { label: 'About This Mac', action: () => setShowAboutWindow(true) },
+              { separator: true },
+              { label: 'System Settings...', action: () => launchApp('settings') },
+              { label: 'App Store...', action: () => launchApp('appstore') },
+              { separator: true },
+              { label: 'Force Quit...', action: () => setShowForceQuit(true) },
+              { separator: true },
+              { label: 'Sleep', action: () => handlePowerAction('sleep') },
+              { label: 'Restart...', action: () => handlePowerAction('restart') },
+              { label: 'Shut Down...', action: () => handlePowerAction('shutdown') },
+              { separator: true },
+              { label: 'Lock Screen', action: () => handlePowerAction('lock') },
+              { label: 'Log Out...', action: () => handlePowerAction('logout') },
+            ]}
+          />
         </div>
 
-        {/* Force Quit Modal Component will be used here */}
         <ForceQuit isOpen={showForceQuit} onClose={() => setShowForceQuit(false)} />
 
         <div className="font-semibold cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition">
           {getActiveAppName()}
         </div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden md:flex">File</div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden md:flex">Edit</div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden md:flex">View</div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden lg:flex">Go</div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden lg:flex">Window</div>
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition hidden lg:flex">Help</div>
+
+        {menuKeys.map((menu) => (
+          <div key={menu} className="relative h-full hidden md:flex">
+            <div 
+              className={`cursor-pointer px-3 h-full flex items-center rounded transition ${activeMenu === menu ? 'bg-white/20' : 'hover:bg-white/10'}`}
+              onClick={() => setActiveMenu(activeMenu === menu ? null : menu)}
+            >
+              {menu}
+            </div>
+            <MenuDropdown 
+              isOpen={activeMenu === menu} 
+              onClose={() => setActiveMenu(null)} 
+              items={appMenus[menu.toLowerCase()]}
+              style={{ left: 0 }}
+            />
+          </div>
+        ))}
       </div>
 
-      {/* RIGHT SIDE: Status Menu */}
       <div className="flex items-center gap-1 pointer-events-auto h-full pl-10">
-        <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition gap-1">
-          {battery.isCharging ? (
-            <BatteryCharging01Icon size={14} className="rotate-90 hugeicon-tahoe text-green-400" />
-          ) : battery.level > 0.8 ? (
-            <BatteryFullIcon size={14} className="rotate-90 hugeicon-tahoe" />
-          ) : battery.level > 0.3 ? (
-            <BatteryMedium01Icon size={14} className="rotate-90 hugeicon-tahoe" />
-          ) : (
-            <BatteryLowIcon size={14} className="rotate-90 hugeicon-tahoe text-red-400" />
-          )}
-          <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
+        <div className="relative h-full">
+          <div 
+            className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-1 ${batteryMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+            onClick={() => setBatteryMenuOpen(!batteryMenuOpen)}
+          >
+            {battery.isCharging ? (
+              <BatteryCharging01Icon size={14} className="rotate-90 hugeicon-tahoe text-green-400" />
+            ) : battery.level > 0.8 ? (
+              <BatteryFullIcon size={14} className="rotate-90 hugeicon-tahoe" />
+            ) : battery.level > 0.3 ? (
+              <BatteryMedium01Icon size={14} className="rotate-90 hugeicon-tahoe" />
+            ) : (
+              <BatteryLowIcon size={14} className="rotate-90 hugeicon-tahoe text-red-400" />
+            )}
+            <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
+          </div>
+          <BatteryDropdown isOpen={batteryMenuOpen} battery={battery} onClose={() => setBatteryMenuOpen(false)} />
         </div>
         <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
           <Wifi01Icon size={14} className="hugeicon-tahoe" />

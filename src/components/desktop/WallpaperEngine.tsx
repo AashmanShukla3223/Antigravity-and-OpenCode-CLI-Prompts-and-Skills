@@ -13,29 +13,27 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
   useEffect(() => {
     if (type === 'video' && videoRef.current) {
       videoRef.current.load();
-      videoRef.current.play().catch(err => {
-        console.warn("Autoplay prevented or video failed to load", err);
-      });
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.warn("Autoplay prevented or video failed to load", err);
+        });
+      }
     }
   }, [url, type]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-black pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden bg-black pointer-events-none z-[-1]">
       <AnimatePresence mode="wait">
-        {type === 'video' ? (
-          <motion.div
-            key={`video-${url}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0 w-full h-full"
-          >
-            {/* Instant Background Fallback */}
-            <div 
-              className={`absolute inset-0 bg-cover bg-center ${blur ? 'blur-2xl scale-110' : ''}`}
-              style={{ backgroundImage: `url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2564&auto=format&fm=webp)` }}
-            />
+        <motion.div
+          key={url}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 2, ease: "easeInOut" }}
+          className="absolute inset-0 w-full h-full"
+        >
+          {type === 'video' ? (
             <video 
               ref={videoRef}
               src={url}
@@ -43,20 +41,15 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
               muted 
               loop 
               playsInline
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${blur ? 'blur-2xl scale-110 opacity-60' : 'opacity-100'}`}
+              className={`absolute inset-0 w-full h-full object-cover ${blur ? 'blur-2xl scale-110 opacity-60' : 'opacity-100'}`}
             />
-          </motion.div>
-        ) : (
-          <motion.div 
-            key={`image-${url}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className={`absolute inset-[-5%] bg-cover bg-center ${blur ? 'blur-2xl scale-110 opacity-40' : ''}`}
-            style={{ backgroundImage: `url(${url})` }}
-          />
-        )}
+          ) : (
+            <div 
+              className={`absolute inset-[-5%] bg-cover bg-center ${blur ? 'blur-2xl scale-110 opacity-40' : ''}`}
+              style={{ backgroundImage: `url(${url})` }}
+            />
+          )}
+        </motion.div>
       </AnimatePresence>
       
       {/* Universal Overlay for Silicon Surge feel */}

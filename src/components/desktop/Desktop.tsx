@@ -11,16 +11,15 @@ import { RestartDialog } from './RestartDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
 import { Folder01Icon, File01Icon } from 'hugeicons-react';
+import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 
 export const Desktop: React.FC = () => {
   const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
-
-  // Strike 1 Logic
-  if (!systemState.setup_complete) {
-    return null;
-  }
+  
+  // Initialize Dynamic Wallpaper Hook
+  useDynamicWallpaper();
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,6 +38,19 @@ export const Desktop: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showSpotlight, setShowSpotlight]);
 
+  useEffect(() => {
+    const handleGlobalContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        e.preventDefault();
+        e.stopPropagation();
+        setContextMenu({ x: e.pageX, y: e.pageY, type: 'writing' });
+      }
+    };
+    window.addEventListener('contextmenu', handleGlobalContextMenu);
+    return () => window.removeEventListener('contextmenu', handleGlobalContextMenu);
+  }, [setContextMenu]);
+
   const closeMenus = () => {
     setContextMenu(null);
     if (controlCenterOpen) setControlCenterOpen(false);
@@ -48,7 +60,7 @@ export const Desktop: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 w-full h-full overflow-hidden select-none"
+      className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
       onClick={closeMenus}
       onContextMenu={handleContextMenu}
     >
@@ -157,6 +169,18 @@ export const Desktop: React.FC = () => {
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => updateSystemState({ wallpaperUrl: 'https://images.unsplash.com/photo-1635837958542-a381046eb53e?q=80&w=2670&auto=format&fm=webp', wallpaperType: 'image' })}>
                   Change Wallpaper
                 </div>
+              </>
+            ) : contextMenu.type === 'writing' ? (
+              <>
+                <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-blue-400 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  Writing Tools
+                </div>
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Proofread</div>
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Rewrite...</div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white/50 cursor-default mx-1.5 flex justify-between">Set Tone <span className="text-[10px]">▶</span></div>
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Summarize</div>
               </>
             ) : (
               <>

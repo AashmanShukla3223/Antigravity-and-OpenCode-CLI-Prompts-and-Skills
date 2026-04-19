@@ -34,16 +34,23 @@ const tagColors: TagColor[] = ['red', 'orange', 'yellow', 'green', 'blue', 'purp
 
 export const Finder: React.FC = () => {
   const { nodes, getDirectoryContents, createNode, deleteNode, getPath, addTag, removeTag, emptyTrash } = useFileSystem();
-  const { setContextMenu } = useSystem();
+  const { setContextMenu, systemState } = useSystem();
   
   const [currentFolderId, setCurrentFolderId] = useState<string | null>('user-home');
   const [history, setHistory] = useState<string[]>(['user-home']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [showAirDrop, setShowAirDrop] = useState(false);
+  const [airDropCode, setAirDropCode] = useState('0000');
 
   const contents = getDirectoryContents(currentFolderId);
   const currentFolder = nodes.find(n => n.id === currentFolderId);
   const path = getPath(currentFolderId);
+
+  const handleAirDrop = () => {
+    setAirDropCode(Math.floor(1000 + Math.random() * 9000).toString());
+    setShowAirDrop(true);
+  };
 
   const navigateTo = (folderId: string) => {
     const newHistory = history.slice(0, historyIndex + 1);
@@ -121,9 +128,24 @@ export const Finder: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-full w-full text-gray-800 rounded-b-xl overflow-hidden bg-white">
+    <div className="flex h-full w-full text-gray-800 rounded-b-xl overflow-hidden bg-white/90">
+      {/* AirDrop Modal */}
+      {showAirDrop && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="w-64 bg-white rounded-2xl shadow-2xl p-6 flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 mb-4">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <h3 className="font-bold text-lg mb-1">AirDrop Security Layer</h3>
+            <p className="text-xs text-center text-gray-500 mb-6">Confirm this code with the sender to receive the file securely.</p>
+            <div className="text-3xl font-black tracking-[0.2em] mb-6 text-blue-600">{airDropCode}</div>
+            <button onClick={() => setShowAirDrop(false)} className="w-full py-2 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors">Cancel</button>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
-      <div className="w-48 bg-gray-50/50 border-r border-gray-200 p-2 flex flex-col gap-1 backdrop-blur-xl">
+      <div className={`w-48 border-r border-gray-200/50 p-2 flex flex-col gap-1 z-10 transition-colors ${systemState.sidebarMaterial === 'clear' ? 'bg-white/10 backdrop-blur-[60px] saturate-[180%]' : 'bg-gray-50/70 backdrop-blur-xl'}`}>
         <div className="text-[10px] font-bold text-gray-400 px-2 py-1 mb-1 mt-2 tracking-widest uppercase">Favorites</div>
         {favorites.map((fav) => (
           <div
@@ -201,6 +223,9 @@ export const Finder: React.FC = () => {
                 Empty
               </button>
             )}
+            <button onClick={handleAirDrop} title="AirDrop Secure Share" className="p-2 hover:bg-blue-50 hover:text-blue-500 rounded-lg transition-colors text-gray-500 flex items-center justify-center">
+               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </button>
             <button onClick={handleCreateFolder} title="New Folder" className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-blue-500">
               <PlusSignIcon size={18} />
             </button>

@@ -11,22 +11,30 @@ export interface TahoeV3State {
     avatar?: string;
   };
   appearance: 'light' | 'dark' | 'auto';
+  sidebarMaterial: 'clear' | 'tinted';
+  betaUpdates: boolean;
   wallpaperUrl: string;
   wallpaperType: 'image' | 'video';
+  dynamicWallpaperEnabled: boolean;
   isCameraOn: boolean;
   notchVisible: boolean;
   glassBlurIntensity: number;
+  lowPowerMode: boolean;
 }
 
 const defaultState: TahoeV3State = {
   setup_complete: false,
   user: { fullName: '', accountName: '', password: '', avatar: '👤' },
   appearance: 'auto',
+  sidebarMaterial: 'tinted',
+  betaUpdates: false,
   wallpaperUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fm=webp',
   wallpaperType: 'image',
+  dynamicWallpaperEnabled: true,
   isCameraOn: false,
   notchVisible: true,
   glassBlurIntensity: 50,
+  lowPowerMode: false,
 };
 
 interface SystemContextProps {
@@ -51,10 +59,16 @@ interface SystemContextProps {
   setShowSpotlight: (show: boolean) => void;
   showRestartDialog: boolean;
   setShowRestartDialog: (show: boolean) => void;
-  contextMenu: { x: number; y: number; type: 'desktop' | 'item'; targetId?: string } | null;
-  setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item'; targetId?: string } | null) => void;
+  contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null;
+  setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null) => void;
   // Hardware Info
   battery: { level: number; isCharging: boolean };
+  wifi: boolean;
+  setWifi: (val: boolean) => void;
+  bluetooth: boolean;
+  setBluetooth: (val: boolean) => void;
+  powerMode: 'Low Power' | 'Normal' | 'High Performance';
+  setPowerMode: (mode: 'Low Power' | 'Normal' | 'High Performance') => void;
   hardware: { cores: number; memory?: number };
   uptime: number;
 }
@@ -71,10 +85,13 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item'; targetId?: string } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null>(null);
 
   // Hardware State
   const [battery, setBattery] = useState({ level: 1, isCharging: true });
+  const [wifi, setWifi] = useState(true);
+  const [bluetooth, setBluetooth] = useState(true);
+  const [powerMode, setPowerMode] = useState<'Low Power' | 'Normal' | 'High Performance'>('Normal');
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(Date.now());
 
@@ -84,12 +101,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Migration check for old wallpaper field
-        if (parsed.wallpaper && !parsed.wallpaperUrl) {
-          parsed.wallpaperUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fm=webp';
-          parsed.wallpaperType = 'image';
-          delete parsed.wallpaper;
-        }
         setSystemState({ ...defaultState, ...parsed });
       } catch (e) {
         console.error('Failed to parse tahoe_v3_state', e);
@@ -126,6 +137,18 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
   }, []);
 
+  // Power Mode Logic based on Battery & lowPowerMode state
+  useEffect(() => {
+    if (systemState.lowPowerMode) {
+      setPowerMode('Low Power');
+    } else {
+      const level = battery.level * 100;
+      if (level >= 50) setPowerMode('High Performance');
+      else if (level >= 30) setPowerMode('Normal');
+      else if (level <= 20) setPowerMode('Low Power');
+    }
+  }, [battery.level, systemState.lowPowerMode]);
+
   // Handle System-wide Appearance
   useEffect(() => {
     const root = window.document.documentElement;
@@ -134,7 +157,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } else if (systemState.appearance === 'light') {
       root.classList.remove('dark');
     } else {
-      // Auto
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         root.classList.add('dark');
       } else {
@@ -169,7 +191,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
       return prev;
     });
-    // If it was minimized, unminimize it
     setMinimizedApps(prev => prev.filter(id => id !== appId));
     setActiveApp(appId);
   }, []);
@@ -228,6 +249,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       contextMenu,
       setContextMenu,
       battery,
+      wifi,
+      setWifi,
+      bluetooth,
+      setBluetooth,
+      powerMode,
+      setPowerMode,
       hardware: { 
         cores: navigator.hardwareConcurrency || 8,
         memory: (performance as any).memory?.jsHeapSizeLimit ? Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 / 1024) : 16

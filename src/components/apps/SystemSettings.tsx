@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ComputerActivityIcon, 
-  UserIcon, 
   Search01Icon, 
   Wifi01Icon, 
   BluetoothIcon, 
@@ -15,368 +14,356 @@ import {
   LockIcon, 
   Alert01Icon, 
   ArrowRight01Icon,
-  Wallet01Icon
+  Wallet01Icon,
+  Sun01Icon,
+  BatteryCharging01Icon,
+  FlashIcon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const SystemSettings: React.FC = () => {
-  const { systemState, updateSystemState, resetSystem } = useSystem();
-  const [currentTab, setCurrentTab] = useState('Appearance');
+  const { 
+    systemState, 
+    updateSystemState, 
+    resetSystem, 
+    hardware, 
+    setShowAboutWindow,
+    battery
+  } = useSystem();
   
-  const wallpapers = [
-    { 
-      name: 'Tahoe Aerial', 
-      url: 'https://v.pexels.com/video-files/4434242/4434242-uhd_3840_2160_24fps.mp4', 
-      type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fm=webp'
-    },
-    { 
-      name: 'Sonoma Hills', 
-      url: 'https://assets.mixkit.co/videos/preview/mixkit-scenic-view-of-a-mountain-landscape-at-sunset-34567-large.mp4',
-      type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400&auto=format&fm=webp'
-    },
-    { 
-      name: 'Sequoia Coast', 
-      url: 'https://v.pexels.com/video-files/3125396/3125396-uhd_3840_2160_25fps.mp4',
-      type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=400&auto=format&fm=webp'
-    },
-    { 
-      name: 'Ventura Forest', 
-      url: 'https://v.pexels.com/video-files/853889/853889-uhd_3840_2160_25fps.mp4',
-      type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=400&auto=format&fm=webp'
-    },
-    { 
-      name: 'Silicon Surge (Static)', 
-      url: 'https://images.unsplash.com/photo-1635837958542-a381046eb53e?q=80&w=2670&auto=format&fm=webp', 
-      type: 'image',
-      thumbnail: 'https://images.unsplash.com/photo-1635837958542-a381046eb53e?q=80&w=400&auto=format&fm=webp'
-    }
-  ];
-  const [resetStep, setResetStep] = useState(0); // 0: Main, 1: Transfer & Reset, 2: Reset Content, 3: Password, 4: Final Summary
+  const [currentTab, setCurrentTab] = useState('Appearance');
+  const [resetStep, setResetStep] = useState(0); 
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   
+  const [brightness, setBrightness] = useState(80);
+  const [storageInfo, setStorageInfo] = useState({ used: 0, total: 512, percent: 0 });
+
   const username = systemState.user.accountName || systemState.user.fullName || 'Architect';
 
-  const handleReset = () => {
-    resetSystem('activation');
-  };
-
-  const handlePasswordUnlock = () => {
-    if (password === systemState.user.password || !systemState.user.password) {
-      setResetStep(4);
-    } else {
-      setError(true);
-      setTimeout(() => setError(false), 500);
-      setPassword('');
+  useEffect(() => {
+    if (navigator.storage && navigator.storage.estimate) {
+      navigator.storage.estimate().then(estimate => {
+        const used = Math.round((estimate.usage || 0) / 1024 / 1024);
+        const total = 512; // Simulated Chromebook limit
+        setStorageInfo({ used, total, percent: (used / total) * 100 });
+      });
     }
+  }, []);
+
+  const handleReset = () => resetSystem('activation');
+  const handlePasswordUnlock = () => {
+    if (password === systemState.user.password || !systemState.user.password) setResetStep(4);
+    else { setError(true); setTimeout(() => setError(false), 500); setPassword(''); }
+  };
+  const checkUpdates = () => { setIsCheckingUpdate(true); setTimeout(() => setIsCheckingUpdate(false), 2500); };
+
+  const BatteryGraph = () => {
+    const points = "0,80 20,70 40,85 60,60 80,75 100,40 120,55 140,30 160,45 180,20 200,35";
+    return (
+      <svg viewBox="0 0 200 100" className="w-full h-24 mt-4 overflow-visible">
+        <defs>
+          <linearGradient id="graphGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <polyline
+          fill="none"
+          stroke="#3b82f6"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points={points}
+          className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+        />
+        <path
+          d={`M ${points} V 100 H 0 Z`}
+          fill="url(#graphGradient)"
+        />
+        <line x1="0" y1="20" x2="200" y2="20" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+        <line x1="0" y1="50" x2="200" y2="50" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+        <line x1="0" y1="80" x2="200" y2="80" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+      </svg>
+    );
   };
 
-  const renderResetFlow = () => {
+  const [latestCommit, setLatestCommit] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (systemState.betaUpdates) {
+      fetch('https://api.github.com/repos/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/commits/main')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.sha) setLatestCommit(data.sha.substring(0, 7));
+        })
+        .catch(err => console.error(err));
+    }
+  }, [systemState.betaUpdates]);
+
+  const renderGeneralContent = () => {
     switch (resetStep) {
-      case 1: // Transfer & Reset
-        return (
-          <div className="flex flex-col h-full">
-            <div className="flex items-center gap-4 mb-8">
-               <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition">
-                 <ArrowLeft01Icon size={20} className="hugeicon-tahoe" />
-               </button>
-               <h2 className="text-2xl font-semibold">Transfer or Reset</h2>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-               <div className="flex items-start gap-4 mb-8">
-                 <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-                    <Database01Icon size={24} className="hugeicon-tahoe" />
-                 </div>
-                 <div>
-                    <h3 className="text-lg font-medium mb-1">Prepare for New Mac</h3>
-                    <p className="text-sm text-white/50">Make sure you have everything you need to move your data to a new Mac.</p>
-                 </div>
-               </div>
-               <button className="w-full h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition mb-4">Get Started</button>
-               <div className="border-t border-white/5 my-6" />
-               <button 
-                 onClick={() => setResetStep(2)}
-                 className="w-full h-12 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-medium transition text-left px-4 flex items-center justify-between"
-               >
-                 <span>Erase All Content and Settings...</span>
-               </button>
-            </div>
+      case 5: return (
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
+            <h2 className="text-2xl font-semibold">About</h2>
           </div>
-        );
-      case 2: // Erase All Summary
-        return (
-          <div className="flex flex-col items-center max-w-lg mx-auto py-8">
-            <div className="w-20 h-20 rounded-3xl bg-red-500/20 flex items-center justify-center text-red-500 mb-6">
-              <Delete02Icon size={40} className="hugeicon-tahoe" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4 text-center">Erase All Content and Settings</h2>
-            <p className="text-center text-white/60 mb-8">All settings, data, and media will be erased. This cannot be undone.</p>
-            
-            <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 mb-8">
-               <div className="flex items-center gap-4">
-                 <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><UserIcon size={16} className="hugeicon-tahoe" /></div>
-                 <div className="text-sm font-medium">{username}</div>
-               </div>
-               <div className="flex items-center gap-4">
-                 <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><Database01Icon size={16} className="hugeicon-tahoe" /></div>
-                 <div className="text-sm font-medium">128 GB of Data & Settings</div>
-               </div>
-            </div>
-
-            <div className="flex gap-4 w-full">
-               <button onClick={() => setResetStep(1)} className="flex-1 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Cancel</button>
-               <button onClick={() => setResetStep(3)} className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition shadow-lg shadow-blue-500/20">Continue</button>
-            </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center">
+             <div className="w-24 h-24 mb-6 text-[#00FF41] font-mono font-bold text-center leading-tight">.:'<br/>__ :'__<br/>.'' ` ' ``.</div>
+             <h3 className="text-2xl font-bold mb-1">macOS Tahoe</h3>
+             <p className="text-sm text-white/40 mb-8 font-mono uppercase tracking-[0.2em]">Version 26.4</p>
+             <div className="w-full space-y-4 max-w-md text-sm">
+               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Model</span><span className="font-medium text-white/90">Chromebook Tahoe-Virt</span></div>
+               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Chip</span><span className="font-medium text-white/90">Apple M5 Max (Simulated)</span></div>
+               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Memory</span><span className="font-medium text-white/90">{hardware.memory}GB Unified Silicon</span></div>
+               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Serial Number</span><span className="font-mono text-white/90">TAHOE-V4-UNIT7</span></div>
+             </div>
+             <button onClick={() => setShowAboutWindow(true)} className="mt-8 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-xl text-sm font-bold transition shadow-lg shadow-blue-500/20">System Report...</button>
           </div>
-        );
-      case 3: // Password Confirmation
-        return (
-          <div className="flex flex-col items-center max-w-sm mx-auto py-12">
-            <motion.div 
-              animate={{ x: error ? [0, -10, 10, -10, 10, 0] : 0 }}
-              transition={{ duration: 0.4 }}
-              className="flex flex-col items-center w-full"
+        </div>
+      );
+      case 6: return (
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
+            <h2 className="text-2xl font-semibold">Software Update</h2>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6 flex flex-col items-center justify-center text-center">
+            {isCheckingUpdate ? (
+              <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"/><h3 className="text-xl font-medium">Checking for updates...</h3></>
+            ) : (
+              <><div className="w-20 h-20 rounded-3xl bg-blue-500/20 flex items-center justify-center text-blue-500 mb-6"><Settings01Icon size={40} /></div><h3 className="text-2xl font-bold mb-2">macOS Tahoe {systemState.betaUpdates && latestCommit ? `(Build ${latestCommit})` : '26.4'}</h3><p className="text-white/50 mb-8">Your Mac is up to date.</p><button onClick={checkUpdates} className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Check for Updates</button></>
+            )}
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <h4 className="font-bold text-sm">Beta Updates</h4>
+              <p className="text-xs text-white/50">Receive pre-release builds from GitHub.</p>
+            </div>
+            <button 
+              onClick={() => updateSystemState({ betaUpdates: !systemState.betaUpdates })} 
+              className={`w-12 h-6 rounded-full relative transition-colors ${systemState.betaUpdates ? 'bg-blue-500' : 'bg-white/10'}`}
             >
-              <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                <LockIcon size={24} className={`hugeicon-tahoe ${error ? 'text-red-500' : 'text-white/60'}`} />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Password Required</h2>
-              <p className="text-center text-white/50 text-sm mb-8">Enter the password for "{username}" to allow this.</p>
-              
-              <input 
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(false); }}
-                className={`w-full h-12 bg-white/5 border ${error ? 'border-red-500/50' : 'border-white/20'} rounded-xl px-4 text-center focus:outline-none focus:ring-2 ${error ? 'focus:ring-red-500/50' : 'focus:ring-blue-500'} transition-all mb-4`}
-                autoFocus
-              />
-
-              <AnimatePresence>
-                {error && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-xs font-bold mb-4">Wrong Password</motion.p>
-                )}
-              </AnimatePresence>
-
-              <div className="flex gap-4 w-full">
-                 <button onClick={() => setResetStep(2)} className="flex-1 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Back</button>
-                 <button 
-                   onClick={handlePasswordUnlock} 
-                   disabled={!password}
-                   className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 rounded-xl font-medium transition"
-                 >
-                   Unlock
-                 </button>
-              </div>
-            </motion.div>
+              <motion.div animate={{ x: systemState.betaUpdates ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
+            </button>
           </div>
-        );
-      case 4: // Final Confirmation
-        return (
-          <div className="flex flex-col items-center max-w-lg mx-auto py-8 text-center">
-            <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center text-white mb-6 shadow-[0_0_40px_rgba(220,38,38,0.4)]">
-              <Alert01Icon size={40} className="hugeicon-tahoe" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Are you sure?</h2>
-            <p className="text-white/70 mb-8 leading-relaxed">
-              You are about to erase all content and settings from this Mac. 
-              <span className="block font-bold text-red-400 mt-2">All data will be permanently lost.</span>
-            </p>
-
-            <div className="flex flex-col gap-3 w-full">
-               <button 
-                 onClick={handleReset} 
-                 className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold text-lg transition-all shadow-xl shadow-red-900/20 animate-pulse hover:animate-none"
-               >
-                 Erase All Content & Settings
-               </button>
-               <button onClick={() => setResetStep(0)} className="w-full h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">
-                 Cancel
-               </button>
-            </div>
+        </div>
+      );
+      case 7: return (
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
+            <h2 className="text-2xl font-semibold">Storage</h2>
           </div>
-        );
-      default:
-        return (
-          <div className="flex flex-col h-full">
-            <h2 className="text-2xl font-semibold mb-6">General</h2>
-            <div className="space-y-1">
-              {[
-                { name: 'About', icon: InformationCircleIcon },
-                { name: 'Software Update', icon: Settings01Icon },
-                { name: 'Storage', icon: Database01Icon },
-                { name: 'Transfer or Reset', icon: ArrowLeft01Icon, action: () => setResetStep(1) },
-              ].map(item => (
-                <div 
-                  key={item.name}
-                  onClick={item.action}
-                  className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl cursor-pointer transition-colors group"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-gray-500/20 flex items-center justify-center group-hover:bg-gray-500/30 transition-colors">
-                      <item.icon size={20} className="text-white/70 hugeicon-tahoe" />
-                    </div>
-                    <span className="font-medium">{item.name}</span>
-                  </div>
-                  <ArrowRight01Icon size={16} className="text-white/20 group-hover:text-white/50 hugeicon-tahoe" />
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+             <div className="flex justify-between items-end mb-4">
+               <div className="flex flex-col">
+                  <span className="text-lg font-bold">Macintosh HD</span>
+                  <span className="text-xs text-white/40">{storageInfo.used} MB of {storageInfo.total} MB used</span>
+               </div>
+               <span className="text-sm font-black text-blue-400">{Math.round(100 - storageInfo.percent)}% Free</span>
+             </div>
+             <div className="w-full h-10 bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex shadow-inner">
+                <div className="h-full bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]" style={{ width: `${Math.max(2, storageInfo.percent)}%` }} title="Apps" />
+                <div className="h-full bg-purple-500" style={{ width: '8%' }} title="System" />
+                <div className="h-full bg-orange-500" style={{ width: '4%' }} title="Cache" />
+             </div>
+             <div className="flex gap-8 mt-8">
+               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-xs font-bold text-white/60">Apps</span></div>
+               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-purple-500" /><span className="text-xs font-bold text-white/60">System</span></div>
+               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-orange-500" /><span className="text-xs font-bold text-white/60">Cache</span></div>
+             </div>
+             <div className="mt-12 p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Database01Icon size={28} className="text-blue-400" />
+                  <div><h4 className="font-bold text-sm">Optimize Storage</h4><p className="text-xs text-white/50">Automatically remove old files to free up space.</p></div>
                 </div>
-              ))}
-            </div>
+                <button className="px-5 py-2 bg-blue-500 hover:bg-blue-600 rounded-xl text-xs font-black transition">Turn On...</button>
+             </div>
           </div>
-        );
+        </div>
+      );
+      case 1: return (
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
+            <h2 className="text-2xl font-semibold">Transfer or Reset</h2>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="flex items-start gap-4 mb-8"><div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400"><Database01Icon size={24} /></div><div><h3 className="text-lg font-medium mb-1">Prepare for New Mac</h3><p className="text-sm text-white/50">Move your data to a new Mac seamlessly.</p></div></div>
+            <button className="w-full h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition mb-4">Get Started</button>
+            <div className="border-t border-white/5 my-6" />
+            <button onClick={() => setResetStep(2)} className="w-full h-12 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-medium transition px-4 text-left">Erase All Content and Settings...</button>
+          </div>
+        </div>
+      );
+      case 2: return (
+        <div className="flex flex-col items-center max-w-lg mx-auto py-8">
+          <div className="w-20 h-20 rounded-3xl bg-red-500/20 flex items-center justify-center text-red-500 mb-6"><Delete02Icon size={40} /></div>
+          <h2 className="text-3xl font-bold mb-4 text-center">Erase All Content and Settings</h2>
+          <p className="text-center text-white/60 mb-8">All settings, data, and media will be erased. This cannot be undone.</p>
+          <div className="flex gap-4 w-full">
+            <button onClick={() => setResetStep(1)} className="flex-1 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Cancel</button>
+            <button onClick={() => setResetStep(3)} className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition shadow-lg shadow-blue-500/20">Continue</button>
+          </div>
+        </div>
+      );
+      case 3: return (
+        <div className="flex flex-col items-center max-w-sm mx-auto py-12">
+          <motion.div animate={{ x: error ? [0, -10, 10, -10, 10, 0] : 0 }} transition={{ duration: 0.4 }} className="flex flex-col items-center w-full">
+            <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6"><LockIcon size={24} className={error ? 'text-red-500' : 'text-white/60'} /></div>
+            <h2 className="text-2xl font-bold mb-2">Password Required</h2>
+            <p className="text-center text-white/50 text-sm mb-8">Enter password for "{username}".</p>
+            <input type="password" placeholder="Password" value={password} onChange={(e) => { setPassword(e.target.value); setError(false); }} className={`w-full h-12 bg-white/5 border ${error ? 'border-red-500/50' : 'border-white/20'} rounded-xl px-4 text-center focus:outline-none transition-all mb-4`} autoFocus />
+            <div className="flex gap-4 w-full">
+               <button onClick={() => setResetStep(2)} className="flex-1 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Back</button>
+               <button onClick={handlePasswordUnlock} className="flex-1 h-12 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition">Unlock</button>
+            </div>
+          </motion.div>
+        </div>
+      );
+      case 4: return (
+        <div className="flex flex-col items-center max-w-lg mx-auto py-8 text-center">
+          <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center text-white mb-6 shadow-2xl"><Alert01Icon size={40} /></div>
+          <h2 className="text-3xl font-bold mb-4">Are you sure?</h2>
+          <div className="flex flex-col gap-3 w-full">
+             <button onClick={handleReset} className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold text-lg transition-all">Erase All Content & Settings</button>
+             <button onClick={() => setResetStep(0)} className="w-full h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Cancel</button>
+          </div>
+        </div>
+      );
+      default: return (
+        <div className="flex flex-col h-full">
+          <h2 className="text-2xl font-semibold mb-6">General</h2>
+          <div className="space-y-1">
+            {[
+              { name: 'About', icon: InformationCircleIcon, action: () => setResetStep(5) },
+              { name: 'Software Update', icon: Settings01Icon, action: () => setResetStep(6) },
+              { name: 'Storage', icon: Database01Icon, action: () => setResetStep(7) },
+              { name: 'Transfer or Reset', icon: ArrowLeft01Icon, action: () => setResetStep(1) },
+            ].map(item => (
+              <div key={item.name} onClick={item.action} className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl cursor-pointer transition-colors group">
+                <div className="flex items-center gap-4"><div className="w-10 h-10 rounded-xl bg-gray-500/20 flex items-center justify-center group-hover:bg-gray-500/30 transition-colors"><item.icon size={20} className="text-white/70" /></div><span className="font-medium">{item.name}</span></div>
+                <ArrowRight01Icon size={16} className="text-white/20 group-hover:text-white/50" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     }
   };
 
   return (
     <div className="flex h-full w-full text-white bg-black/40 backdrop-blur-3xl overflow-hidden">
-      {/* Sidebar */}
       <div className="w-56 bg-black/20 border-r border-white/10 flex flex-col">
         <div className="p-3">
           <div className="relative">
-            <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 hugeicon-tahoe" />
-            <input 
-              type="text" 
-              placeholder="Search" 
-              className="w-full bg-white/10 border border-white/10 rounded-md py-1 pl-8 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" />
+            <input type="text" placeholder="Search" className="w-full bg-white/10 border border-white/10 rounded-md py-1 pl-8 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-hide">
-          <div className="flex items-center gap-3 p-2 hover:bg-white/10 rounded-xl cursor-pointer mb-4 bg-white/5 border border-white/10 shadow-lg">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl shadow-xl">
-              {systemState.user.avatar || '👤'}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight truncate w-24">{systemState.user.fullName || username}</span>
-              <span className="text-[9px] uppercase font-black text-white/30 tracking-[0.2em]">Apple Account</span>
-            </div>
+          <div className="flex items-center gap-3 p-2 hover:bg-white/10 rounded-xl cursor-pointer mb-4 bg-white/5 border border-white/10">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl">{systemState.user.avatar || '👤'}</div>
+            <div className="flex flex-col"><span className="text-sm font-bold truncate w-24">{systemState.user.fullName || username}</span><span className="text-[9px] uppercase font-black text-white/30 tracking-[0.2em]">Apple Account</span></div>
           </div>
-          
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-2 tracking-widest uppercase">Connectivity</div>
           <SidebarItem name="Wi-Fi" icon={Wifi01Icon} color="bg-blue-500" active={currentTab === 'Wi-Fi'} onClick={() => setCurrentTab('Wi-Fi')} />
           <SidebarItem name="Bluetooth" icon={BluetoothIcon} color="bg-blue-600" active={currentTab === 'Bluetooth'} onClick={() => setCurrentTab('Bluetooth')} />
-
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Personalization</div>
           <SidebarItem name="Appearance" icon={ComputerActivityIcon} color="bg-gradient-to-br from-indigo-500 to-blue-600" active={currentTab === 'Appearance'} onClick={() => { setCurrentTab('Appearance'); setResetStep(0); }} />
           <SidebarItem name="Wallpaper" icon={ColorPickerIcon} color="bg-gradient-to-br from-pink-500 to-red-600" active={currentTab === 'Wallpaper'} onClick={() => setCurrentTab('Wallpaper')} />
           <SidebarItem name="General" icon={Settings01Icon} color="bg-gray-500" active={currentTab === 'General'} onClick={() => { setCurrentTab('General'); setResetStep(0); }} />
-
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Hardware</div>
+          <SidebarItem name="Display" icon={Sun01Icon} color="bg-blue-400" active={currentTab === 'Display'} onClick={() => setCurrentTab('Display')} />
           <SidebarItem name="Sound" icon={VolumeHighIcon} color="bg-pink-500" active={currentTab === 'Sound'} onClick={() => setCurrentTab('Sound')} />
-          <SidebarItem name="Storage" icon={Database01Icon} color="bg-blue-500" active={currentTab === 'Storage'} onClick={() => setCurrentTab('Storage')} />
+          <SidebarItem name="Battery" icon={BatteryCharging01Icon} color="bg-green-500" active={currentTab === 'Battery'} onClick={() => setCurrentTab('Battery')} />
           <SidebarItem name="Wallet & Apple Pay" icon={Wallet01Icon} color="bg-zinc-900" active={currentTab === 'Wallet'} onClick={() => setCurrentTab('Wallet')} />
         </div>
       </div>
-      
-      {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto scrollbar-hide">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={currentTab + resetStep}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.2 }}
-            className="h-full"
-          >
+          <motion.div key={currentTab + resetStep} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} className="h-full">
             {currentTab === 'Appearance' && (
               <>
                 <h2 className="text-2xl font-semibold mb-6">Appearance</h2>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <h3 className="font-medium text-lg text-white">Theme</h3>
-                      <p className="text-sm text-white/50">Choose how macOS Tahoe looks.</p>
-                    </div>
+                  <div><h3 className="font-medium text-lg text-white">Theme</h3><p className="text-sm text-white/50">Choose how macOS Tahoe looks.</p></div>
+                  <div className="flex gap-4 mt-4">
+                    <AppearanceCard mode="Light" active={systemState.appearance === 'light'} onClick={() => updateSystemState({ appearance: 'light' })} />
+                    <AppearanceCard mode="Dark" active={systemState.appearance === 'dark'} onClick={() => updateSystemState({ appearance: 'dark' })} />
+                    <AppearanceCard mode="Auto" active={systemState.appearance === 'auto'} onClick={() => updateSystemState({ appearance: 'auto' })} />
                   </div>
-                  <div className="flex gap-4">
-                    <AppearanceCard 
-                      mode="Light" 
-                      active={systemState.appearance === 'light'} 
-                      onClick={() => updateSystemState({ appearance: 'light' })}
-                    />
-                    <AppearanceCard 
-                      mode="Dark" 
-                      active={systemState.appearance === 'dark'} 
-                      onClick={() => updateSystemState({ appearance: 'dark' })}
-                    />
-                    <AppearanceCard 
-                      mode="Auto" 
-                      active={systemState.appearance === 'auto'} 
-                      onClick={() => updateSystemState({ appearance: 'auto' })}
-                    />
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm">Sidebar Material</h4>
+                    <p className="text-xs text-white/50">Use a Tinted or Clear refractive background for sidebars.</p>
+                  </div>
+                  <div className="flex bg-black/40 rounded-lg p-1">
+                    <button 
+                      onClick={() => updateSystemState({ sidebarMaterial: 'tinted' })} 
+                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${systemState.sidebarMaterial === 'tinted' ? 'bg-white/20 text-white shadow-md' : 'text-white/50 hover:text-white/80'}`}
+                    >
+                      Tinted
+                    </button>
+                    <button 
+                      onClick={() => updateSystemState({ sidebarMaterial: 'clear' })} 
+                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${systemState.sidebarMaterial === 'clear' ? 'bg-white/20 text-white shadow-md' : 'text-white/50 hover:text-white/80'}`}
+                    >
+                      Clear
+                    </button>
                   </div>
                 </div>
               </>
             )}
-
-            {currentTab === 'General' && renderResetFlow()}
-
-            {currentTab === 'Wallpaper' && (
+            {currentTab === 'General' && renderGeneralContent()}
+            {currentTab === 'Battery' && (
               <div className="flex flex-col h-full">
-                <h2 className="text-2xl font-semibold mb-6">Wallpaper</h2>
-                <div className="grid grid-cols-2 gap-4 pb-12">
-                  {wallpapers.map((wp) => (
-                    <div 
-                      key={wp.name}
-                      onClick={() => updateSystemState({ wallpaperUrl: wp.url, wallpaperType: wp.type as any })}
-                      className={`relative aspect-video rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${systemState.wallpaperUrl === wp.url ? 'border-blue-500 scale-105 shadow-lg shadow-blue-500/20' : 'border-white/10 hover:border-white/30'}`}
-                      style={{ backgroundImage: `url(${wp.thumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                    >
-                      {wp.type === 'video' && (
-                        <video 
-                          src={wp.url} 
-                          muted 
-                          loop 
-                          playsInline
-                          className="w-full h-full object-cover opacity-0 hover:opacity-100 transition-opacity duration-500" 
-                          onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
-                          onMouseOut={(e) => (e.target as HTMLVideoElement).pause()}
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-                      <div className="absolute bottom-2 left-3 z-10">
-                         <span className="text-[10px] font-bold uppercase tracking-widest drop-shadow-md">{wp.name}</span>
-                         {wp.type === 'video' && <span className="ml-2 text-[8px] bg-blue-500 px-1 rounded shadow-lg">Motion</span>}
+                <h2 className="text-2xl font-semibold mb-6">Battery</h2>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6">
+                  <div className="flex justify-between items-center mb-8">
+                     <div className="flex flex-col"><span className="text-4xl font-black">{Math.round(battery.level * 100)}%</span><span className="text-sm text-white/40 font-bold uppercase tracking-widest">{battery.isCharging ? 'Power Adapter' : 'On Battery'}</span></div>
+                     <div className={`w-16 h-16 rounded-3xl bg-green-500/20 flex items-center justify-center text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)]`}><BatteryCharging01Icon size={32} /></div>
+                  </div>
+                  <div className="w-full space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <div className="flex items-center gap-4">
+                        <FlashIcon size={24} className="text-yellow-400" />
+                        <div><h4 className="font-bold text-sm">Low Power Mode</h4><p className="text-xs text-white/40">Disables Gaussian blurs to preserve RAM.</p></div>
                       </div>
+                      <button 
+                        onClick={() => updateSystemState({ lowPowerMode: !systemState.lowPowerMode })} 
+                        className={`w-12 h-6 rounded-full relative transition-colors ${systemState.lowPowerMode ? 'bg-green-500' : 'bg-white/10'}`}
+                      >
+                        <motion.div animate={{ x: systemState.lowPowerMode ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
+                      </button>
                     </div>
-                  ))}
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Battery Health</h4>
+                      <div className="flex justify-between items-center mb-2"><span className="text-sm font-medium">Maximum Capacity</span><span className="text-sm font-black">100%</span></div>
+                      <p className="text-xs text-white/40">Healthy: Normal. Your battery is currently supporting normal peak performance.</p>
+                    </div>
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-white/5">
+                     <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Power Usage (Last 24h)</h4>
+                     <BatteryGraph />
+                  </div>
                 </div>
               </div>
             )}
-
-            {currentTab === 'Wallet' && (
+            {currentTab === 'Display' && (
               <div className="flex flex-col h-full">
-                <h2 className="text-2xl font-semibold mb-6">Wallet & Apple Pay</h2>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center text-center">
-                   <div className="w-20 h-20 rounded-3xl bg-zinc-900 flex items-center justify-center mb-6 shadow-2xl border border-white/10">
-                      <Wallet01Icon size={40} className="text-blue-500 hugeicon-tahoe" />
-                   </div>
-                   <h3 className="text-xl font-bold mb-2">Secure Transactions</h3>
-                   <p className="text-white/50 max-w-sm mb-8">Manage your cards and secure numerical security identifiers for the Sovereign Ecosystem.</p>
-                   <button 
-                     onClick={() => {
-                        const launchEvent = new CustomEvent('launch-app', { detail: 'wallet' });
-                        window.dispatchEvent(launchEvent);
-                     }}
-                     className="px-8 h-12 bg-white text-black rounded-xl font-bold hover:bg-white/90 transition shadow-lg"
-                   >
-                     Open Wallet App
-                   </button>
+                <h2 className="text-2xl font-semibold mb-6">Display</h2>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center">
+                  <div className="w-full space-y-6">
+                    <div><div className="flex justify-between text-sm mb-2"><span className="font-medium">Brightness</span><span className="text-white/50">{brightness}%</span></div><input type="range" value={brightness} onChange={(e) => setBrightness(parseInt(e.target.value))} className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" /></div>
+                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5"><div><h4 className="font-bold text-sm">True Tone</h4><p className="text-xs text-white/40">Automatically adapt display to ambient lighting.</p></div><button className="w-10 h-5 rounded-full bg-blue-500 relative"><div className="absolute top-1 right-1 w-3 h-3 bg-white rounded-full" /></button></div>
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {currentTab !== 'Appearance' && currentTab !== 'General' && currentTab !== 'Wallet' && (
-              <div className="flex flex-col items-center justify-center h-full text-white/30">
-                <Settings01Icon size={48} className="mb-4 opacity-10 hugeicon-tahoe" />
-                <h2 className="text-xl font-medium">{currentTab} Settings</h2>
-                <p>Coming soon in Tahoe Build 26.1</p>
               </div>
             )}
           </motion.div>
@@ -387,13 +374,8 @@ export const SystemSettings: React.FC = () => {
 };
 
 const SidebarItem = ({ name, icon: Icon, color, active, onClick }: any) => (
-  <div 
-    onClick={onClick}
-    className={`px-2 py-1.5 rounded-lg flex items-center gap-3 cursor-pointer transition-all ${active ? 'bg-blue-500 text-white shadow-lg' : 'text-white/80 hover:bg-white/10'}`}
-  >
-    <div className={`w-6 h-6 rounded-md ${color} flex items-center justify-center shadow-sm`}>
-      <Icon size={14} className="hugeicon-tahoe" />
-    </div>
+  <div onClick={onClick} className={`px-2 py-1.5 rounded-lg flex items-center gap-3 cursor-pointer transition-all ${active ? 'bg-blue-500 text-white shadow-lg' : 'text-white/80 hover:bg-white/10'}`}>
+    <div className={`w-6 h-6 rounded-md ${color} flex items-center justify-center shadow-sm`}><Icon size={14} /></div>
     <span className="text-sm font-medium">{name}</span>
   </div>
 );

@@ -138,7 +138,7 @@ export const FaceTime: React.FC = () => {
           ) : null}
         </AnimatePresence>
 
-        <div className="flex-1 flex items-center justify-center overflow-hidden">
+        <div className="flex-1 flex items-center justify-center overflow-hidden relative">
            {_error ? (
               <div className="flex flex-col items-center gap-4 text-zinc-500">
                  <VideoOffIcon size={48} />
@@ -156,6 +156,14 @@ export const FaceTime: React.FC = () => {
                playsInline
                className="w-full h-full object-cover scale-x-[-1]"
              />
+           )}
+
+           {/* Live Translation Captions */}
+           {!_error && !isVideoOff && (
+             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 max-w-[80%] bg-black/50 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/10 flex items-center gap-4 z-30 shadow-2xl">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                <p className="text-sm font-medium text-white/90">"Hey, are you seeing the new liquid glass materials in Tahoe? It looks incredible."</p>
+             </div>
            )}
         </div>
 

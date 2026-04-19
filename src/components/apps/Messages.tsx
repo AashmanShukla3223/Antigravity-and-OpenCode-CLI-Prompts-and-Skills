@@ -36,6 +36,11 @@ export const Messages: React.FC = () => {
     '4': [{ id: 1, text: 'Let’s FaceTime later!', isSender: false }],
   });
 
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [genmojiPrompt, setGenmojiPrompt] = useState('');
+  const [genmojiResult, setGenmojiResult] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
     const newMessage = { id: Date.now(), text: inputText, isSender: true };
@@ -46,8 +51,29 @@ export const Messages: React.FC = () => {
     setInputText('');
   };
 
+  const handleGenerateGenmoji = () => {
+    if (!genmojiPrompt) return;
+    setIsGenerating(true);
+    setTimeout(() => {
+      setGenmojiResult(`https://api.dicebear.com/7.x/bottts/svg?seed=${genmojiPrompt}&backgroundColor=b6e3f4`);
+      setIsGenerating(false);
+    }, 1500);
+  };
+
+  const handleSendGenmoji = () => {
+    if (!genmojiResult) return;
+    const newMessage = { id: Date.now(), text: `[Genmoji: ${genmojiPrompt}]`, image: genmojiResult, isSender: true };
+    setChatHistory(prev => ({
+      ...prev,
+      [selectedContact.id]: [...(prev[selectedContact.id] || []), newMessage]
+    }));
+    setShowEmojiPicker(false);
+    setGenmojiPrompt('');
+    setGenmojiResult(null);
+  };
+
   return (
-    <div className="flex h-full w-full bg-white dark:bg-zinc-900 text-black dark:text-white overflow-hidden">
+    <div className="flex h-full w-full bg-white dark:bg-zinc-950 text-black dark:text-white overflow-hidden relative">
       {/* Sidebar */}
       <div className="w-80 bg-zinc-50 dark:bg-black/20 border-r border-zinc-200 dark:border-white/10 flex flex-col">
         <div className="p-6 pb-2 flex items-center justify-between">
@@ -113,12 +139,61 @@ export const Messages: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
            {chatHistory[selectedContact.id]?.map(msg => (
              <div key={msg.id} className={`flex ${msg.isSender ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm ${msg.isSender ? 'bg-blue-500 text-white rounded-br-none' : 'bg-zinc-200 dark:bg-white/10 text-black dark:text-white rounded-bl-none shadow-sm border border-white/5'}`}>
+                <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm flex flex-col gap-2 ${msg.isSender ? 'bg-blue-500 text-white rounded-br-none' : 'bg-zinc-200 dark:bg-white/10 text-black dark:text-white rounded-bl-none shadow-sm border border-white/5'}`}>
+                   {msg.image && (
+                     <div className="bg-white/20 rounded-xl p-2 w-24 h-24 flex items-center justify-center backdrop-blur-md shadow-inner">
+                        <img src={msg.image} alt="Genmoji" className="w-full h-full drop-shadow-md" />
+                     </div>
+                   )}
                    {msg.text}
                 </div>
              </div>
            ))}
         </div>
+
+        {/* Genmoji Picker Overlay */}
+        {showEmojiPicker && (
+          <div className="absolute bottom-20 right-6 w-72 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-zinc-200 dark:border-white/10 rounded-3xl shadow-2xl p-4 flex flex-col gap-4 z-50">
+            <div className="flex justify-between items-center px-1">
+              <span className="font-bold text-sm">Apple Intelligence</span>
+              <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest bg-blue-500/10 px-2 py-1 rounded-full">Genmoji</span>
+            </div>
+            <div className="flex bg-zinc-100 dark:bg-black/20 rounded-xl p-1">
+               <button className="flex-1 py-1.5 text-xs font-bold bg-white dark:bg-white/10 rounded-lg shadow-sm">Generate</button>
+               <button className="flex-1 py-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-700 dark:hover:text-white transition-colors" onClick={() => setShowEmojiPicker(false)}>Cancel</button>
+            </div>
+            <div className="flex flex-col gap-2">
+               <input 
+                 type="text" 
+                 value={genmojiPrompt} 
+                 onChange={e => setGenmojiPrompt(e.target.value)} 
+                 placeholder="Describe an emoji..." 
+                 className="w-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                 autoFocus
+                 onKeyDown={e => e.key === 'Enter' && handleGenerateGenmoji()}
+               />
+               {isGenerating ? (
+                 <div className="h-24 flex flex-col items-center justify-center gap-2 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                   <SparklesIcon size={24} className="text-blue-500 animate-pulse" />
+                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Synthesizing...</span>
+                 </div>
+               ) : genmojiResult ? (
+                 <div className="flex flex-col gap-2">
+                   <div className="h-24 flex items-center justify-center bg-white/50 dark:bg-white/5 rounded-xl border border-zinc-200 dark:border-white/10">
+                     <img src={genmojiResult} alt="Generated Genmoji" className="w-16 h-16 drop-shadow-xl" />
+                   </div>
+                   <button onClick={handleSendGenmoji} className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 transition-all">
+                      Send Genmoji
+                   </button>
+                 </div>
+               ) : (
+                 <button onClick={handleGenerateGenmoji} disabled={!genmojiPrompt} className="w-full py-2 bg-zinc-800 dark:bg-white text-white dark:text-black rounded-xl font-bold text-sm disabled:opacity-50 transition-all hover:scale-[1.02]">
+                    Create
+                 </button>
+               )}
+            </div>
+          </div>
+        )}
 
         {/* Input */}
         <div className="p-6">
@@ -132,7 +207,7 @@ export const Messages: React.FC = () => {
                    placeholder="iMessage"
                    className="w-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-full py-2.5 px-5 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 transition-all pr-12"
                  />
-                 <button className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-purple-500 transition-colors">
+                 <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${showEmojiPicker ? 'text-blue-500' : 'text-zinc-400 hover:text-purple-500'}`}>
                     <SparklesIcon size={18} />
                  </button>
               </div>
