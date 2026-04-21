@@ -13,6 +13,7 @@ export type FileSystemNode = {
   modifiedAt: number;
   isLocked?: boolean;
   tags?: TagColor[];
+  customIcon?: string;
 };
 
 interface FileSystemContextProps {
@@ -25,6 +26,7 @@ interface FileSystemContextProps {
   getPath: (nodeId: string | null) => FileSystemNode[];
   addTag: (id: string, tag: TagColor) => void;
   removeTag: (id: string, tag: TagColor) => void;
+  restoreSystemNodes: () => void;
 }
 const initialNodes: FileSystemNode[] = [
   { id: 'root', name: 'Macintosh HD', type: 'folder', parentId: null, modifiedAt: Date.now() },
@@ -65,18 +67,33 @@ const initialNodes: FileSystemNode[] = [
 
   // Sample Data
   { id: 'readme', name: 'README.md', type: 'file', parentId: 'user-home', content: '# Welcome to Tahoe OS V4\n\nThe Unit 7 operating system.', modifiedAt: Date.now(), tags: ['blue'] },
+  { id: 'macintosh-hd', name: 'Macintosh HD', type: 'folder', parentId: 'desktop', customIcon: '/icons/disk.png', modifiedAt: Date.now() },
 ];
 const FileSystemContext = createContext<FileSystemContextProps | undefined>(undefined);
 
 export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [nodes, setNodes] = useState<FileSystemNode[]>(() => {
     const saved = localStorage.getItem('tahoe_v3_fs');
-    return saved ? JSON.parse(saved) : initialNodes;
+    if (saved) {
+      const parsed = JSON.parse(saved) as FileSystemNode[];
+      // Migration: Ensure macintosh-hd exists if missing from saved state
+      if (!parsed.find(n => n.id === 'macintosh-hd')) {
+        const macHD = initialNodes.find(n => n.id === 'macintosh-hd');
+        if (macHD) parsed.push(macHD);
+      }
+      return parsed;
+    }
+    return initialNodes;
   });
 
   useEffect(() => {
     localStorage.setItem('tahoe_v3_fs', JSON.stringify(nodes));
   }, [nodes]);
+
+  // Initial self-heal for critical nodes
+  useEffect(() => {
+    restoreSystemNodes();
+  }, []);
 
   const createNode = (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => {
     setNodes(prev => [...prev, { 
@@ -139,6 +156,28 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     }));
   };
 
+  const restoreSystemNodes = () => {
+    setNodes(prev => {
+      const criticalIds = ['root', 'trash', 'apps', 'library', 'system', 'users', 'user-home', 'desktop'];
+      const missingNodes = initialNodes.filter(node => 
+        criticalIds.includes(node.id) && !prev.some(p => p.id === node.id)
+      );
+
+      if (missingNodes.length === 0) return prev;
+
+      // Also ensure existing critical nodes are in the correct hierarchy (not in trash)
+      const restored = prev.map(node => {
+        if (criticalIds.includes(node.id) && node.parentId === 'trash') {
+          const original = initialNodes.find(i => i.id === node.id);
+          return original ? { ...node, parentId: original.parentId } : node;
+        }
+        return node;
+      });
+
+      return [...restored, ...missingNodes];
+    });
+  };
+
   return (
     <FileSystemContext.Provider value={{ 
       nodes, 
@@ -149,7 +188,8 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
       getDirectoryContents,
       getPath,
       addTag,
-      removeTag
+      removeTag,
+      restoreSystemNodes
     }}>
       {children}
     </FileSystemContext.Provider>

@@ -69,7 +69,7 @@ export const Launchpad: React.FC = () => {
               onClick={() => handleLaunch(app.id)}
               className="flex flex-col items-center gap-3 cursor-pointer group"
             >
-              <div className="w-20 h-20 shadow-2xl relative transition-transform duration-300">
+              <div className="w-20 h-20 relative transition-transform duration-300">
                 <AppIcon id={app.id} size={80} />
               </div>
               <span className="text-[13px] font-bold text-white text-center drop-shadow-lg tracking-tight">

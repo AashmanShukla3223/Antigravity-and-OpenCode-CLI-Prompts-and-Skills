@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../contexts/SystemContext';
+import { useFileSystem } from '../contexts/FileSystemContext';
 import { GlobalIcon, ViewIcon, FlashIcon, InformationCircleIcon } from 'hugeicons-react';
 
 const languages = ["hello", "hola", "bonjour", "namaste", "ciao"];
 
 export const SetupAssistant: React.FC = () => {
   const { systemState, updateSystemState, setBootState } = useSystem();
+  const { restoreSystemNodes } = useFileSystem();
   const [step, setStep] = useState(1);
   const [helloIndex, setHelloIndex] = useState(0);
   const [termsScrolled, setTermsScrolled] = useState(false);
@@ -32,6 +34,7 @@ export const SetupAssistant: React.FC = () => {
     if (step === 12) {
       // Automatic finalization after 3s (progress bar fills)
       const timer = setTimeout(() => {
+        restoreSystemNodes();
         updateSystemState({
           setup_complete: true,
           user: { fullName, accountName, password, avatar: selectedEmoji }
@@ -40,7 +43,7 @@ export const SetupAssistant: React.FC = () => {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [step, fullName, accountName, password, selectedEmoji, updateSystemState, setBootState]);
+  }, [step, fullName, accountName, password, selectedEmoji, updateSystemState, setBootState, restoreSystemNodes]);
 
   const handleNext = () => {
     setStep(prev => Math.min(prev + 1, 12));
@@ -194,14 +197,21 @@ export const SetupAssistant: React.FC = () => {
                   }
                 }}
               >
-                <p className="mb-4">Welcome to macOS Tahoe (Unit 7). By using this software, you agree to the principles of the Silicon Surge.</p>
+                <p className="mb-4">Welcome to macOS Tahoe. By using this software, you agree to the principles of the Silicon Surge. Welcome to Apple Inc.</p>
                 <p className="mb-4">1. You shall respect the Liquid Glass physics.</p>
                 <p className="mb-4">2. You shall not disable 120fps animations.</p>
                 <p className="mb-4">3. The Architect (@Aashmanshukla3223) reserves the right to update the UI at any time.</p>
                 <p className="mb-4">4. Legacy Restaurants (Windows XP, Apple II) must be honored and maintained.</p>
-                <p className="mb-4">5. (Keep scrolling down to agree...)</p>
-                <div className="h-64"></div>
+                <p className="mb-4">5. The GitHub Profile must be maintained.</p>
+                <p className="mb-4">6. You Shall say Apple Just Works.</p>
+                <p className="mb-4">7. You Must Pay to access Apple Books, App Store and Music.</p>
+                <p className="mb-4">8. You Must respect this project.</p>
+                <p className="mb-4">9. You must set the password.</p>
+                <p className="mb-4">10. You must agree that all assets are connected to Google Drive.</p>
+
+                <div className="h-0"></div>
                 <p>End of terms.</p>
+                <p>Apple Inc.</p>
               </div>
               {!termsScrolled && <p className="text-xs text-red-400 mt-2">Scroll to bottom to agree</p>}
             </motion.div>
@@ -356,6 +366,7 @@ export const SetupAssistant: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.5 }}
                 onClick={() => {
+                  restoreSystemNodes();
                   updateSystemState({
                     setup_complete: true,
                     user: { fullName, accountName, password, avatar: selectedEmoji }

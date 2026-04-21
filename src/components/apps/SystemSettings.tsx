@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ComputerActivityIcon, 
+  DashboardSquare01Icon, 
   Search01Icon, 
   Wifi01Icon, 
   BluetoothIcon, 
-  ColorPickerIcon, 
+  Settings01Icon, 
   VolumeHighIcon, 
   InformationCircleIcon, 
   Database01Icon, 
-  Settings01Icon, 
   Delete02Icon, 
   ArrowLeft01Icon, 
   LockIcon, 
@@ -274,8 +273,8 @@ export const SystemSettings: React.FC = () => {
           <SidebarItem name="Wi-Fi" icon={Wifi01Icon} color="bg-blue-500" active={currentTab === 'Wi-Fi'} onClick={() => setCurrentTab('Wi-Fi')} />
           <SidebarItem name="Bluetooth" icon={BluetoothIcon} color="bg-blue-600" active={currentTab === 'Bluetooth'} onClick={() => setCurrentTab('Bluetooth')} />
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Personalization</div>
-          <SidebarItem name="Appearance" icon={ComputerActivityIcon} color="bg-gradient-to-br from-indigo-500 to-blue-600" active={currentTab === 'Appearance'} onClick={() => { setCurrentTab('Appearance'); setResetStep(0); }} />
-          <SidebarItem name="Wallpaper" icon={ColorPickerIcon} color="bg-gradient-to-br from-pink-500 to-red-600" active={currentTab === 'Wallpaper'} onClick={() => setCurrentTab('Wallpaper')} />
+          <SidebarItem name="Appearance" icon={DashboardSquare01Icon} color="bg-gradient-to-br from-indigo-500 to-blue-600" active={currentTab === 'Appearance'} onClick={() => { setCurrentTab('Appearance'); setResetStep(0); }} />
+          <SidebarItem name="Wallpaper" icon={Settings01Icon} color="bg-gradient-to-br from-pink-500 to-red-600" active={currentTab === 'Wallpaper'} onClick={() => setCurrentTab('Wallpaper')} />
           <SidebarItem name="General" icon={Settings01Icon} color="bg-gray-500" active={currentTab === 'General'} onClick={() => { setCurrentTab('General'); setResetStep(0); }} />
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Hardware</div>
           <SidebarItem name="Display" icon={Sun01Icon} color="bg-blue-400" active={currentTab === 'Display'} onClick={() => setCurrentTab('Display')} />
@@ -351,6 +350,42 @@ export const SystemSettings: React.FC = () => {
                   <div className="mt-8 pt-6 border-t border-white/5">
                      <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Power Usage (Last 24h)</h4>
                      <BatteryGraph />
+                  </div>
+                </div>
+              </div>
+            )}
+            {currentTab === 'Wallpaper' && (
+              <div className="flex flex-col h-full">
+                <h2 className="text-2xl font-semibold mb-6">Wallpaper</h2>
+                <div className="grid grid-cols-2 gap-6 pb-8">
+                  <div 
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/tahoe-light.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
+                    onClick={() => updateSystemState({ wallpaperUrl: '/wallpapers/tahoe-light.png', wallpaperType: 'image' })}
+                  >
+                    <img src="/wallpapers/tahoe-light.png" alt="Tahoe Light" className="w-full aspect-video object-cover" />
+                    <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Tahoe Light</div>
+                  </div>
+                  <div 
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/tahoe-dark.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
+                    onClick={() => updateSystemState({ wallpaperUrl: '/wallpapers/tahoe-dark.png', wallpaperType: 'image' })}
+                  >
+                    <img src="/wallpapers/tahoe-dark.png" alt="Tahoe Dark" className="w-full aspect-video object-cover" />
+                    <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Tahoe Dark</div>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm">Dynamic Wallpaper</h4>
+                      <p className="text-xs text-white/50">Automatically change wallpaper based on time of day.</p>
+                    </div>
+                    <button 
+                      onClick={() => updateSystemState({ dynamicWallpaperEnabled: !systemState.dynamicWallpaperEnabled })} 
+                      className={`w-12 h-6 rounded-full relative transition-colors ${systemState.dynamicWallpaperEnabled ? 'bg-blue-500' : 'bg-white/10'}`}
+                    >
+                      <motion.div animate={{ x: systemState.dynamicWallpaperEnabled ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
+                    </button>
                   </div>
                 </div>
               </div>

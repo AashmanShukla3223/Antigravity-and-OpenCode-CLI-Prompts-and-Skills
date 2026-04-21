@@ -22,6 +22,10 @@ import { Launchpad } from '../apps/Launchpad';
 import { FaceTime } from '../apps/FaceTime';
 import { Contacts } from '../apps/Contacts';
 
+import { AppleMusic } from '../apps/AppleMusic';
+import { iTunesStore } from '../apps/iTunesStore';
+import { SoundTest } from '../apps/SoundTest';
+
 interface WindowProps {
   appId: string;
 }
@@ -45,6 +49,9 @@ const AppMap: Record<string, React.FC> = {
   launchpad: Launchpad,
   facetime: FaceTime,
   contacts: Contacts,
+  music: AppleMusic,
+  itunes: iTunesStore,
+  soundtest: SoundTest,
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {

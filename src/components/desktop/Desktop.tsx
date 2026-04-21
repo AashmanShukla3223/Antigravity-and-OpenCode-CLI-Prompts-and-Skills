@@ -82,7 +82,9 @@ export const Desktop: React.FC = () => {
              className="w-20 flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/10 border border-transparent hover:border-white/10 pointer-events-auto cursor-default group"
            >
               <div className="relative">
-                {item.type === 'folder' ? (
+                {item.customIcon ? (
+                  <img src={item.customIcon} alt={item.name} className="w-12 h-12 object-contain drop-shadow-lg" />
+                ) : item.type === 'folder' ? (
                   <Folder01Icon size={48} className="text-blue-400 fill-blue-500/20 drop-shadow-lg hugeicon-tahoe" />
                 ) : (
                   <File01Icon size={48} className="text-white/80 drop-shadow-lg hugeicon-tahoe" />

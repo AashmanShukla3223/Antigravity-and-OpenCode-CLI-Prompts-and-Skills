@@ -11,15 +11,18 @@ const apps = [
   { id: 'terminal', name: 'Terminal' },
   { id: 'mail', name: 'Mail' },
   { id: 'messages', name: 'Messages' },
+  { id: 'music', name: 'Music' },
   { id: 'photos', name: 'Photos' },
   { id: 'maps', name: 'Maps' },
   { id: 'phone', name: 'Phone' },
   { id: 'facetime', name: 'FaceTime' },
   { id: 'appstore', name: 'App Store' },
+  { id: 'itunes', name: 'iTunes Store' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },
   { id: 'github', name: 'GitHub' },
   { id: 'settings', name: 'Settings' },
+  { id: 'soundtest', name: 'Sound Test' },
 ];
 
 export const Dock: React.FC = () => {
@@ -138,10 +141,10 @@ const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, onClick 
       <motion.div
         ref={ref}
         style={{ width, height: width }}
-        className={`relative flex items-center justify-center rounded-2xl cursor-pointer shadow-lg
-          ${isActive ? 'bg-white/20 border-white/40' : 'bg-white/10 border-white/20'} 
+        className={`relative flex items-center justify-center cursor-pointer
+          ${isActive ? 'bg-white/20 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
-          border backdrop-blur-md hover:bg-white/30 transition-all
+          transition-all
         `}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}

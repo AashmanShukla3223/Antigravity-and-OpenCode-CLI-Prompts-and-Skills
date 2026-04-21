@@ -9,7 +9,7 @@ export const RestartDialog: React.FC = () => {
 
   useEffect(() => {
     let timer: any;
-    if (showRestartDialog && countdown > 0) {
+    if (showRestartDialog && countdown > 60) {
       timer = setInterval(() => {
         setCountdown(prev => prev - 1);
       }, 1000);

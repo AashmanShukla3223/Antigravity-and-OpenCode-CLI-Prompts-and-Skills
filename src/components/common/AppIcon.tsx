@@ -32,9 +32,76 @@ interface AppIconProps {
 export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32, isFull = false }) => {
   const iconProps = { size: size * 0.6, className: "z-10 text-white drop-shadow-lg hugeicon-tahoe" };
 
-  // High-fidelity Tahoe 2026 Glassmorphism Icon mapping
+  const localIcons: Record<string, string> = {
+    'safari': '/icons/safari.png',
+    'settings': '/icons/settings.png',
+    'music': '/icons/music.png',
+    'messages': '/icons/messages.png',
+    'facetime': '/icons/facetime.png',
+    'finder': '/icons/finder.png',
+    'systemsettings': '/icons/settings.png',
+    'itunes': '/icons/itunes.png',
+    'appstore': '/icons/appstore.png',
+    'mail': '/icons/mail.png',
+    'maps': '/icons/maps.png',
+    'photos': '/icons/photos.png',
+    'files': '/icons/files.png',
+    'soundtest': '/icons/garageband.png',
+    'trash': isFull ? '/icons/trash_full.png' : '/icons/trash_empty.png',
+    'calendar': '/icons/calendar.png',
+    'clock': '/icons/clock.png',
+    'contacts': '/icons/contacts.png',
+    'reminders': '/icons/reminders.png',
+    'stickies': '/icons/stickies.png',
+    'notes': '/icons/notes.png',
+    'terminal': '/icons/terminal.png',
+    'activitymonitor': '/icons/activity.png',
+    'calculator': '/icons/calculator.png',
+    'phone': '/icons/phone.png',
+    'keynote': '/icons/keynote.png',
+    'pages': '/icons/pages.png',
+    'numbers': '/icons/numbers.png',
+    'tv': '/icons/tv.png',
+    'applearcade': '/icons/arcade.png',
+    'iphonemirroring': '/icons/mirroring.png',
+    'console': '/icons/console.png',
+    'controlcenter': '/icons/controlcenter.png',
+    'keychainaccess': '/icons/keychain.png',
+    'apps': '/icons/apps.png',
+    'weather': '/icons/weather.png',
+    'camera': '/icons/camera.png',
+    'books': '/icons/books.png',
+    'wallet': '/icons/wallet.png',
+    'github': '/icons/github.png'
+  };
+
   const renderIcon = () => {
-    switch (id.toLowerCase()) {
+    const idLower = id.toLowerCase();
+    const localIcon = localIcons[idLower];
+    
+    if (localIcon) {
+      if (idLower === 'calendar') {
+        const date = new Date();
+        return (
+          <div className="relative flex flex-col items-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
+             <div className="w-full bg-[#FF3B30] h-[30%] flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-tighter">
+               {date.toLocaleDateString('en-US', { month: 'short' })}
+             </div>
+             <div className="flex-1 flex items-center justify-center text-xl font-light text-black pt-0.5">
+               {date.getDate()}
+             </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="w-full h-full">
+          <img src={localIcon} alt={id} className="w-full h-full object-contain" />
+        </div>
+      );
+    }
+
+    switch (idLower) {
       case 'finder':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-[#5AC8FA] to-[#007AFF] shadow-inner overflow-hidden border border-white/20">

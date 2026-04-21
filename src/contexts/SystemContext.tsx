@@ -28,7 +28,7 @@ const defaultState: TahoeV3State = {
   appearance: 'auto',
   sidebarMaterial: 'tinted',
   betaUpdates: false,
-  wallpaperUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fm=webp',
+  wallpaperUrl: '/wallpapers/tahoe-light.png',
   wallpaperType: 'image',
   dynamicWallpaperEnabled: true,
   isCameraOn: false,

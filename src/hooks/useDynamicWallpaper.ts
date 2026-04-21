@@ -5,19 +5,19 @@ type TahoeStage = 'Dawn' | 'Day' | 'Dusk' | 'Night';
 
 const STAGE_WALLPAPERS: Record<TahoeStage, { url: string; type: 'image' | 'video' }> = {
   Dawn: { 
-    url: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2564&auto=format&fm=webp', 
+    url: '/wallpapers/tahoe-light.png', 
     type: 'image' 
   },
   Day: { 
-    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fm=webp', 
+    url: '/wallpapers/tahoe-light.png', 
     type: 'image' 
   },
   Dusk: { 
-    url: 'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?q=80&w=2564&auto=format&fm=webp', 
+    url: '/wallpapers/tahoe-dark.png', 
     type: 'image' 
   },
   Night: { 
-    url: 'https://images.unsplash.com/photo-1506318137071-a8e063b4b477?q=80&w=2564&auto=format&fm=webp', 
+    url: '/wallpapers/tahoe-dark.png', 
     type: 'image' 
   }
 };

@@ -216,15 +216,22 @@ export const Finder: React.FC = () => {
 
           <div className="flex items-center gap-2">
             {currentFolderId === 'trash' && contents.length > 0 && (
-              <button 
-                onClick={() => { if(confirm('Empty Trash permanently?')) emptyTrash(); }}
+              <button
+                onClick={() => { 
+                  const audio = new Audio('/sounds/glass.aiff');
+                  audio.play().catch(e => console.log('Audio play failed', e));
+                  setTimeout(() => {
+                    if(confirm('Are you sure you want to permanently erase the items in the Trash?')) {
+                      emptyTrash(); 
+                    }
+                  }, 100);
+                }}
                 className="px-3 py-1 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg text-xs font-bold transition-all border border-red-500/20 mr-2"
               >
                 Empty
               </button>
             )}
-            <button onClick={handleAirDrop} title="AirDrop Secure Share" className="p-2 hover:bg-blue-50 hover:text-blue-500 rounded-lg transition-colors text-gray-500 flex items-center justify-center">
-               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <button onClick={handleAirDrop} title="AirDrop Secure Share" className="p-2 hover:bg-blue-50 hover:text-blue-500 rounded-lg transition-colors text-gray-500 flex items-center justify-center">               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             </button>
             <button onClick={handleCreateFolder} title="New Folder" className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-blue-500">
               <PlusSignIcon size={18} />
