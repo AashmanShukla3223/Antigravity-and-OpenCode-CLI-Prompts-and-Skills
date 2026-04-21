@@ -1,0 +1,1136 @@
+
+--- START OF About This Mac.md ---
+#  MODULE: ABOUT THIS MAC (2026)
+> **Target OS:** macOS Tahoe (Version 26.0)
+> **Logic:** System Metadata / Neural Credits
+
+## 🎨 THE UI (APPLE 2026 PRINCIPLES)
+- **The Visual:** A large, 3D rotating "Silicon Chip" (The M5 Max) rendered with refractive glass and golden copper traces.
+- **The Typography:** "macOS Tahoe" in bold, iridescent lettering that shifts colors as the window moves.
+- **The Layout:** - **Header:** The iconic 2026 Tahoe "Peak" logo.
+    - **Specs List:** - **Chip:** Apple M5 Max (16-core CPU, 40-core GPU).
+        - **Memory:** 128GB Unified Silicon.
+        - **Neural Engine:** 64-core "Tahoe" Generation.
+        - **Serial Number:** `OPENCLAW-V3-2026-ARCHITECT`.
+- **The Footer:** A "More Info..." button that opens the **System Settings.md**.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **Dynamic Architect Tag:** The "User" field automatically pulls the name `@Aashmanshukla3223` from the **Setup Assistant** state.
+2. **Version Linkage:** Displays "Version 26.0" (The Unit 7 identifier).
+3. **Uptime Counter:** A functional "System Report" section that shows how long the current Vercel session has been active.
+4. **Easter Egg:** Clicking the "M5 Max" chip icon triggers a 3D "Exploded View" animation using `framer-motion-3d`.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe 'About This Mac' Window.
+1. UI: Create a compact 'Liquid Glass' window with a centered 3D chip animation.
+2. Logic: Display the system specs including the M5 Max chip and 128GB RAM.
+3. Feature: Embed a 'Credits' section that honors @Aashmanshukla3223 as the Lead Architect of the OpenClaw V3 Release.
+4. Integration: Link the 'System Report' button to launch the 'Console.md' utility.
+5. Physics: Use 'Obsidian Glass' for the background and 'Silicon Gold' for the spec text highlights.
+Output Code Only."
+
+# 🏛️ The "OpenClaw" Final Credits
+To officially sign off on the V3 Release, the "About" window includes the Architect’s Manifesto:
+
+Software: macOS Tahoe 26.0
+
+Build: Unit 7 (Modern Silicon Era)
+
+Architect: @Aashmanshukla3223
+
+Status: FULLY COOKED ---
+--- END OF About This Mac.md ---
+
+--- START OF App Store.md ---
+#  App Store MODULE: TAHOE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Dynamic Catalog / Category Filtering
+
+## 🎨 THE UI (APPLE APP STORE PRINCIPLES)
+- **Sidebar:** Categories: "Discover", "Arcade", "Create" (Prosumer), "Develop", "Categories", and "Updates".
+- **The Hero Banner:** Large, high-refraction glass cards featuring "App of the Day" (e.g., The Windows XP Restaurant).
+- **Product Pages:** Each app gets a "Silicon Glass" detail page with a "Get" or "Open" button, simulated ratings, and version history.
+- **Icon:** The 2026 "A" constructed from three refractive glass rods on a vibrant blue gradient base.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **Tiered Registry:** A JSON object categorizing all existing .md modules:
+    - **Consumer:** Safari, Messages, Mail, Maps, Photos, FaceTime, Music, TV, Arcade.
+    - **Prosumer:** Pages, Numbers, Keynote, Notes, Reminders.
+    - **Developer:** Terminal (to be built), System Settings, and the "OpenClaw SDK".
+2. **The "Open" Bridge:** The "Get" button checks if the app is already in the `DOCK_STATE`. If it is, it becomes an "Open" button that triggers the Shell's `launchApp` function.
+3. **Update Engine:** A functional "Updates" tab that pulls the latest commit dates from the GitHub repo.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe App Store.
+1. Create a 2-pane layout with a high-blur sidebar.
+2. Logic: Organize all apps into 'Consumer', 'Prosumer', and 'Developer' tabs.
+3. Feature: Build a 'Product Detail' view that slides in when an app card is clicked, showing its .md 'Recipe' stats.
+4. Feature: The 'Get' button must change to 'Open' once clicked, simulating a high-speed Silicon download.
+5. Physics: Use 'Liquid Glass' for the header and 3D-tilt effects for the featured hero banners.
+Output Code Only."
+--- END OF App Store.md ---
+
+--- START OF Apple Arcade.md ---
+# 🕹️ MODULE: TAHOE APPLE ARCADE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Game Loop Registry / Emulator Bridge
+
+## 🎨 THE UI (APPLE ARCADE 2026 PRINCIPLES)
+- **The Dashboard:** A large, edge-to-edge "Cinematic Scroll" featuring the current top game.
+- **Glass Tiles:** Each game tile is a "Silicon Glass" container. Hovering over a tile triggers a `framer-motion` 3D-tilt and a subtle "Glow" effect.
+- **Visuals:** The sidebar features categories: "Action", "Legacy", "OpenClaw Originals", and "Restaurants".
+- **Icon:** A vibrant 3D "Joystick" in Apple Red sitting on a refractive glass base with a 2026 silicon-edge highlight.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Game Registry:** A JSON array `GAMES`. Each object contains `{ title, genre, buildUrl, developer, icon }`.
+2. **The Launch Bridge:** Clicking "Play" doesn't just open a window—it triggers `openGame(gameId)`.
+3. **Logic:** If a game is from the "Legacy" category (e.g., Apple II Snake), the app bridges to a specialized Emulator Canvas.
+4. **Game Center Sync:** Simulated "Achievement" notifications that pop up from the Tahoe Notch when a user "installs" or plays a game.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Apple Arcade App.
+1. Create a 3D-tiled dashboard showing at least 4 game posters.
+2. Logic: Implement a 'Play' button on each poster. When clicked, it should render a placeholder 'Loading Silicon Graphics...' screen.
+3. Feature: Create a functional 'Snake' game (or a simple 'Arcade' placeholder) that can be played inside the window using arrow keys.
+4. Physics: Use 'Liquid Glass' for the navigation and a high-saturation 'Arcade Glow' for the background gradients.
+5. Integration: Link one of the tiles to the 'Windows XP Restaurant' for 'Minesweeper'.
+Output Code Only."
+--- END OF Apple Arcade.md ---
+
+--- START OF Apple Music.md ---
+# 🎵 MODULE: TAHOE APPLE MUSIC (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Audio State Engine / Real-time Visualizer
+
+## 🎨 THE UI (APPLE MUSIC 2026 PRINCIPLES)
+- **The Now Playing View:** A massive, high-res album art cover with "Liquid Shadows." 
+- **The Adaptive Background:** The app background must use a `canvas` or CSS blur to "bleed" the colors of the album art into the entire window.
+- **Glass Controls:** A floating "Refractive Pill" at the bottom with Play/Pause, Skip, and a functional Volume Slider.
+- **Icon:** The classic Note icon, but rendered in a 3D "Silicon Pink/Red" gradient with a glass-morphism finish.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Audio Pipeline:** Use the HTML5 `<audio>` element. 
+2. **Dynamic Lyrics:** A side-panel that scrolls time-synced lyrics (simulated) as the song plays.
+3. **Color Extraction:** A function that analyzes the "Album Art" and updates the CSS variables for the app’s background blur.
+4. **Mini Player:** A logic that allows the window to shrink into a tiny "Refractive Tile" that stays on top of other apps.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Apple Music App.
+1. Create a 'Listen Now' grid with 2026-style album posters.
+2. Logic: Implement a functional audio player that can Play/Pause and seek through a track.
+3. Feature: 'Liquid Background'—the window's background must smoothly transition colors based on the selected song's artwork.
+4. Visualization: Include a simple 'Frequency Wave' animation that reacts when audio is playing.
+5. Physics: Use 'Liquid Glass' for the player controls and sidebar navigation.
+Output Code Only."
+--- END OF Apple Music.md ---
+
+--- START OF Apple TV.md ---
+# tv MODULE: TAHOE APPLE TV (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Video Stream Registry / Cinematic Hero Engine
+
+## 🎨 THE UI (APPLE TV 2026 PRINCIPLES)
+- **The Hero Header:** A massive, auto-playing video banner with a "Liquid Glass" gradient overlay that blends into the window background.
+- **Shelf Logic:** "Continue Watching", "OpenClaw Originals", and "Restaurant Trailers".
+- **Visuals:** Posters use a high-refraction hover effect—when you hover, the poster tilts (parallax) and a subtle glow appears behind it.
+- **Icon:** The Apple TV logo (tv) on a deep "Obsidian Glass" background with a 2026 silicon-edge highlight.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Video Registry:** A `media` JSON array. Each object includes `{ title, category, videoUrl, posterUrl, description }`.
+2. **The Player Engine:** A custom-styled HTML5 `<video>` player with a Tahoe "Glass Pill" control bar (Play/Pause, Progress, AirPlay).
+3. **Cinematic Blur:** When a video is playing, the background of the Tahoe Shell should subtly "dim" and pick up the dominant colors of the video frame.
+4. **Integration:** If a user clicks a "Windows XP" trailer, the app offers a "Visit Restaurant" button that bridges to **Safari.md**.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Apple TV App.
+1. Create a cinematic 'Home' screen with a large Hero Video Banner.
+2. Logic: Implement a row of clickable 'Posters'. Clicking a poster opens a dedicated 'Video Detail' view.
+3. Feature: Build a custom 'Liquid Glass' video player controller.
+4. Physics: Use Framer Motion to create the 3D 'Parallax Tilt' effect on the movie posters when hovered.
+5. Content: Populate with 'OpenClaw Originals' (e.g., 'The Making of Tahoe', 'Unit 1: The Beginning').
+Output Code Only."
+--- END OF Apple TV.md ---
+
+--- START OF Applications.md ---
+# 🚀 MODULE: TAHOE APPLICATIONS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Dynamic Indexing & Safari Bridge
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **Local Indexing:** Automatically scan the `/Applications` folder in the simulated Macintosh HD (JSON).
+2. **Remote Indexing:** Use a keyword registry (e.g., "Windows XP", "Apple II"). If a keyword matches a folder in the GitHub repo, flag it as a "Web App."
+3. **The Safari Bridge:** If a user clicks a "Web App" (remote repo item), the logic triggers `openApp('Safari', {url: 'repo-path'})` instead of opening a local window.
+
+## 🎨 THE UI (TAHOE)
+- **Search Bar:** A large, "Liquid Glass" input field at the top with a pulsing AI glow.
+- **Grid View:** 2026-style icons with high-refraction hover effects.
+- **Remote Badging:** Remote apps (from GitHub) get a small "Cloud" or "Claw" icon badge to distinguish them from local Tahoe apps.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Applications App.
+1. Create a searchable Grid View of icons.
+2. Logic: Define a `LOCAL_APPS` constant (Maps, FaceTime, Finder) and a `REMOTE_INDEX` constant (Windows XP, Apple II, etc.).
+3. When a REMOTE item is clicked, it MUST execute a function that opens the Safari App and loads the corresponding GitHub/Vercel URL.
+4. Implement a 'Neural Search' that filters icons in real-time as the user types.
+5. Use the Tahoe 'Liquid Glass' style for the window frame.
+Output Code Only."
+--- END OF Applications.md ---
+
+--- START OF Boot Sequence.md ---
+#  MODULE: TAHOE BOOT SEQUENCE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Sequential Asset Pre-loader / Progress Simulator
+
+## 🎨 THE UI (APPLE BOOT 2026)
+- **The Canvas:** A pure, absolute #000000 black background.
+- **The Logo:** A centered, high-fidelity Apple Logo. 
+  - *Effect:* Instead of a flat white, the logo features a subtle "Silicon Depth" with a faint refractive glow around the edges.
+- **The Progress Bar:** A thin, rounded "Liquid Glass" track located 60px below the logo.
+  - *The Fill:* A vibrant white/silver gradient that moves with "weighted" physics.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Handshake:** On `window.onload`, the Boot Sequence begins.
+2. **Pre-load Registry:** The progress bar is tied to the loading of the core `.md` modules (Finder, Shell, Settings).
+3. **The "Apple Stutter":** To mimic real hardware, the progress bar should move smoothly to 60%, "pause" for 1.2 seconds (simulating kernel extension loading), and then accelerate to 100%.
+4. **Transition:** Upon hitting 100%, the logo doesn't just vanish—it "Breathes" once (scales 1.05x) before a Gaussian Blur fade-out reveals either the **Setup Assistant** or the **Login Screen**.
+5. **Strike 1 Logic:** On 100% completion, update the `tahoe_v3_state` key in LocalStorage. If `setup_complete` is false, transition immediately to `SetupAssistant.jsx`.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Boot Sequence.
+1. UI: Set the background to absolute black and center a high-res SVG Apple logo.
+2. Logic: Implement a functional progress bar using a CSS transition. 
+3. Feature: The progress bar must have 'Variable Velocity'—starting fast, slowing down mid-way, and finishing with a 'Snap' animation.
+4. Sound: Trigger a deep, resonant 'Tahoe Startup Chime' (Synthesized Sine Wave) exactly 0.5s after the logo appears.
+5. Exit: Once complete, use a 'Circular Mask' transition to expand into the next UI layer.
+6. Strike 1 Linkage: Link BootSequence.jsx to SetupAssistant.jsx via the 'tahoe_v3_state' key.
+Output Code Only."
+
+# 🏛️ The "OpenClaw" Startup Chime
+In the 2026 Tahoe update, the chime has been re-engineered. It’s no longer just a "G" chord; it’s a Multi-dimensional Pulse that signifies the M5 Max Neural Engine is ready.
+
+Frequency: 432Hz (for that "Organic Silicon" feel).
+
+Decay: A long, 4-second tail that bleeds into the Login Screen's ambient background music.
+--- END OF Boot Sequence.md ---
+
+--- START OF Calendar.md ---
+# 📅 MODULE: TAHOE CALENDAR (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** System Date API / Dynamic Asset Generation
+
+## 🎨 THE ICON (DYNAMIC SPEC)
+- **Top Bar (Month):** Background: Red (#FF3B30). Text: White, "SF Pro Bold", Center-aligned.
+- **Bottom Section (Day):** Background: White. Text: Black (or Dark Gray), Large "SF Pro Light".
+- **The Logic:** The icon must be a React component that uses `new Date()` to grab the month (short name) and date.
+- **Depth:** 0.5px border to separate the red "Month" header from the "Date" body.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Clock Loop:** Use a `useEffect` with a 60-second interval to ensure the icon and the app stay synced with the real world.
+2. **The View:** Triple-view toggle (Day, Month, Year).
+3. **OpenClaw Events:** Hardcode "Holidays" representing project milestones:
+    - **April 14:** "Tahoe V3 Launch Day".
+    - **January 1:** "The Genesis (Unit 1) Deployment".
+4. **Sidebar:** "Liquid Glass" navigation showing different "Calendars" (Work, Personal, Restaurants).
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Calendar App.
+1. Icon Logic: Create a standalone component for the Calendar Icon that renders the CURRENT Month and Day using the Date API.
+2. The App: Create a sleek 'Month View' grid. 
+3. Feature: Highlight today's date with a pulsing red circle.
+4. Data: Populate the calendar with 'OpenClaw Milestones' (e.g., 'Windows XP Restaurant Grand Opening').
+5. Physics: Use 'Liquid Glass' for the app header and sidebar.
+Output Code Only."
+--- END OF Calendar.md ---
+
+--- START OF Contacts.md ---
+# 👥 MODULE: TAHOE CONTACTS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Contributor Registry / Shared Identity State
+
+## 🎨 THE UI (APPLE CONTACTS 2026)
+- **The Split-Pane:** - **Left Sidebar:** `backdrop-filter: blur(45px)`. A clean alphabetical list with circular monogram avatars.
+    - **Right Detail View:** The "Contact Poster." A full-bleed gradient background with the contact's name in giant, translucent "SF Pro Display" text.
+- **Visuals:** Functional buttons for "Message", "Call", and "Mail" that trigger their respective Tahoe apps.
+- **Icon:** The 2026 "Address Book"—gray/blue silhouette with alphabetized tabs (A-Z) and a glass-morphism cover.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Registry:** A JSON array `CONTRIBUTORS`. Each object includes `{ name, role, handle, unit, avatarGradient }`.
+2. **Inter-App Handoff:** - Clicking the "Message" icon must trigger `openApp('Messages', { contact: name })`.
+    - Clicking the "Call" icon must trigger the **Phone.md** logic.
+3. **The "My Card":** The top entry is always the Lead Architect (@Aashmanshukla3223).
+4. **Dynamic Search:** A search bar at the top of the sidebar that filters the list in real-time.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Contacts App.
+1. Create a 2-pane layout with a refractive glass sidebar.
+2. Logic: Implement a searchable list of 'OpenClaw Contributors' (e.g., Steve Jobs, Windows-XP Chef, The Architect).
+3. Feature: Build the 'Contact Poster' UI—when a name is clicked, show a high-impact profile view with 'Call', 'Message', and 'FaceTime' shortcuts.
+4. Integration: Ensure these shortcuts actually trigger the state changes to open the other Tahoe Apps.
+5. Physics: Use 'Liquid Glass' for the action buttons and sidebar.
+Output Code Only."
+--- END OF Contacts.md ---
+
+--- START OF Control Center.md ---
+# 🎛️ MODULE: TAHOE CONTROL CENTER (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** System Overlay / Unified State Controller
+
+## 🎨 THE UI (APPLE CONTROL CENTER 2026)
+- **The Container:** A floating "Liquid Glass" rounded rectangle (`backdrop-filter: blur(60px)`).
+- **Connectivity Square:** A 2x2 grid for Wi-Fi, Bluetooth, AirDrop, and "Restaurant Link."
+- **The Sliders:** Vertical "Silicon Pillars" for Display Brightness and System Volume. 
+    - *Interaction:* The icons inside the sliders (Sun/Speaker) grow larger as the value increases.
+- **Now Playing:** A dynamic widget that pulls metadata from **AppleMusic.md** or **AppleTV.md**.
+- **The Notch Sync:** In the Tahoe Shell, the Control Center icon in the Menu Bar pulses when a legacy Restaurant is "Casting" to the screen.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The State Bridge:** - The **Wi-Fi Toggle** must visually "disconnect" the **Safari.md** address bar if turned off.
+    - The **Dark Mode Toggle** triggers the "Obsidian Liquid" glass physics defined in your Visual Civics.
+2. **Haptic Simulation:** Use `framer-motion` spring physics (Stiffness: 300, Damping: 20) for the sliders to make them feel "heavy."
+3. **Ecosystem Control:** Include a "Mirroring" button that acts as a shortcut to launch **iPhoneMirroring.md**.
+4. **Volume Engine:** Links directly to the `Web Audio API` gain node used in the Music app.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Control Center.
+1. UI: Create a multi-modular glass panel that appears from the top-right of the screen.
+2. Logic: Implement functional vertical sliders for Volume and Brightness (Brightness should dim the Tahoe wallpaper).
+3. Feature: Build a 2x2 Connectivity grid with active/inactive 'Silicon Glow' states.
+4. Integration: The 'Now Playing' card must display the current track name from the global Music state.
+5. Physics: Ensure the panel slides in with an 'Elastic' transition from the Menu Bar.
+Output Code Only."
+--- END OF Control Center.md ---
+
+--- START OF FaceTime.md ---
+# 🤳 MODULE: TAHOE FACETIME (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Real-time Camera Stream / Neural Engine Simulation
+
+## 🎨 THE UI (APPLE FACETIME 2026)
+- **The Frame:** Edge-to-edge video with "Liquid Glass" controls that auto-hide.
+- **Neural Sidebar:** A retractable panel for "Studio Lighting," "Portrait Blur," and "Eye Contact Correction."
+- **Visuals:** A "Neural Glow" indicator (Green LED) in the Tahoe Notch must activate when this app is open.
+- **Icon:** The 2026 FaceTime camera—vibrant green with a refractive glass lens.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **Camera Bridge:** Use `navigator.mediaDevices.getUserMedia({ video: true })` to pull the local stream.
+2. **Snapshot Logic:** A "Capture" button that takes a frame from the `<video>` element and converts it to a Blob/Base64.
+3. **Registry Handshake:** Send the captured image to the `OPENCLAW_GALLERY` (LocalStorage) so it appears in the **Photos app**.
+4. **Studio Filter:** Apply a CSS `backdrop-filter: brightness(1.1) contrast(1.1) saturate(1.2)` to the video feed to simulate M5 Max image processing.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe FaceTime App.
+1. Implement a full-window `<video>` element that connects to the user's camera on mount.
+2. Logic: Create a 'Capture' function that saves the current frame to the shared 'Photos' registry.
+3. Feature: Add a 'Neural Blur' toggle that applies a heavy blur filter to the background (simulated via CSS mask or simple overlay).
+4. Civics: Ensure the 'Green LED' in the Tahoe Shell Notch is triggered while the stream is active.
+5. Physics: Use the Tahoe 'Liquid Glass' for the floating control pill at the bottom.
+Output Code Only."
+--- END OF FaceTime.md ---
+
+--- START OF Finder.md ---
+# 📂 MODULE: TAHOE FINDER (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Simulated File System (JSON-based)
+
+## 🎨 THE ICON (THE BLUEPRINT)
+- **Primary Shape:** Rounded Square (Silicon Curve).
+- **Colors:** Linear Gradient (Top-Left: #5AC8FA "Light Blue" | Bottom-Right: #007AFF "Dark Blue").
+- **Face Physics:** Two vertical oval eyes + a wide "Silicon Smile" in white (0.8 opacity).
+- **Depth:** 0.5px inner-glow to simulate 2026 depth.
+
+## 🛠️ THE LOGIC (CAVEMAN)
+- **Directory Tree:** Map the `showcase/` folder structure from the OpenClaw repo.
+- **Sidebar:** Functional navigation (Recents, Applications, Desktop, Documents).
+- **View Modes:** Toggle between Icon View and List View.
+- **Breadcrumbs:** Path display at the bottom (e.g., `Macintosh HD > Users > OpenClaw`).
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Finder App. 
+1. Render the Finder Icon as a CSS/SVG hybrid using the Dual-Blue Smiling Face spec.
+2. Build a functional sidebar with 'Active State' highlighting.
+3. The main area must list 'Macintosh HD' contents using a JSON object as the source.
+4. Apply 'Liquid Glass' blur to the window sidebar but 'Clean White' to the main file area.
+5. Ensure the window is draggable within the Tahoe Shell.
+Output Code Only."
+--- END OF Finder.md ---
+
+--- START OF Keynote.md ---
+# 📊 MODULE: TAHOE KEYNOTE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Sequential Slide Engine / Presentation Mode
+
+## 🎨 THE UI (APPLE KEYNOTE 2026 PRINCIPLES)
+- **The Navigator:** A left-hand "Liquid Glass" strip showing slide thumbnails.
+- **The Stage:** A wide-screen (16:9) canvas with a deep obsidian background. 
+- **Toolbar:** Top-mounted "Glass Pill" with "Play", "Animate", and "Collaborate" icons.
+- **Icon:** A blue-to-purple 3D lectern with a refractive glass screen reflecting the Tahoe wallpaper.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Slide Registry:** A JSON array `slides`. Each object contains `{ title, content, image, transitionEffect }`.
+2. **Presentation Mode:** A functional "Play" button that takes the window full-screen (within the Tahoe Shell) and allows navigation via Arrow Keys.
+3. **Magic Move:** Use `framer-motion` layout animations to simulate "Magic Move"—where text and objects from Slide 1 smoothly transform into Slide 2.
+4. **Export Logic:** A simulated "Export to PDF" button that generates a "Claw-Print" of the presentation.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer` and Framer Motion: Build the Tahoe Keynote App.
+1. Create a 'Deck Navigator' sidebar and a central 'Slide Stage'.
+2. Logic: Implement a slide state (e.g., Slide 1, 2, 3) that changes on click.
+3. Feature: 'Magic Move' Transitions—when moving between slides, animate the position and scale of shared elements.
+4. Physics: Apply 'Liquid Glass' to the inspector panel on the right.
+5. Content: Pre-load a deck titled 'The Future of OpenClaw: Unit 8 & Beyond'.
+Output Code Only."
+--- END OF Keynote.md ---
+
+--- START OF Login Screen.md ---
+# 🔑 MODULE: TAHOE LOGIN SCREEN (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Auth State Manager / LocalStorage Handshake
+
+## 🎨 THE UI (APPLE LOGIN 2026 PRINCIPLES)
+- **The Atmosphere:** The Tahoe wallpaper is blurred at `80px`, creating a "Deep Sea" or "Soft Aurora" background.
+- **The Clock (Top):** - A large, "Liquid Glass" clock face or digital readout centered in the top third.
+    - Typography: **SF Pro Display (Ultralight)**.
+    - Effect: The numbers have a subtle "Drop Glow" that pulses with the system's "Neural Beat."
+- **The Identity (Center-Bottom):**
+    - **Avatar:** A circular "Silicon Glass" frame containing the Architect's profile picture (@Aashmanshukla3223).
+    - **Username:** Displayed in a semi-bold glass-morphic font.
+    - **Password Field:** A rounded "Liquid Glass" pill that glows white when focused.
+- **The Controls (Bottom):** Smaller glass icons for **Sleep**, **Restart**, and **Shut Down** (linked to `PowerManagement.md`).
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Time Sync:** A real-time `Intl.DateTimeFormat` loop that updates the glass clock every second.
+2. **The Auth Handshake:**
+    - On 'Enter', the logic compares the input to the `ACCOUNT_PASSWORD` saved during the **Setup Assistant**.
+    - **Success:** Triggers a "Shatter-Fade" animation where the login UI dissolves into the Desktop.
+    - **Failure:** Triggers the classic macOS "Shake" animation on the password pill.
+3. **The User Registry:** Pulls the "Full Name" and "Avatar" from the local system state.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Login Screen.
+1. UI: Create a full-screen blurred wallpaper background with a massive, thin-font clock at the top.
+2. Logic: Implement the password 'Shake' animation for incorrect entries.
+3. Feature: Create a functional password field that reveals a 'Liquid Glass' login button when text is entered.
+4. Interaction: Add a 'Parallax' effect where the background wallpaper moves slightly in the opposite direction of the mouse.
+5. Physics: Use 'Obsidian Glass' for the avatar border and a 'Silicon Glow' for the active input field.
+Output Code Only."
+
+# 🏛️ The "OpenClaw" Security Civics
+To make this the "Golden Sample" of your V3 Release, the Login Screen should include these specific 2026 features:
+
+The "Apple Intelligence" Hint: If the user stays on the screen for too long, a soft glowing orb appears near the password field to offer a "Password Hint" (saved in KeychainAccess.md).
+
+The Transition: When logged in, the wallpaper "Unblurs" over 1.5 seconds while the Dock and Menu Bar slide into place from the edges.
+--- END OF Login Screen.md ---
+
+--- START OF Mail.md ---
+# ✉️ MODULE: TAHOE MAIL (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Repository Update Feed / JSON-to-Email Simulator
+
+## 🎨 THE UI (APPLE MAIL PRINCIPLES)
+- **The Triple-Pane:** 1. **Sidebar:** (Blur 40px) Folders like "Inbox", "Sent", "Drafts", and "Restaurants".
+    2. **Message List:** Subject, Date, and a 2-line preview. Highlighting uses Unit 7 Sky Blue.
+    3. **Reader Pane:** Clean white (or dark glass) background with a functional "Reply/Forward" toolbar.
+- **Visuals:** Use the 2026 "Envelope" icon with a subtle blue/cyan gradient.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Inbox Registry:** A `emails` JSON array. Each entry has a `sender` (e.g., "M1-Steve"), `subject`, and `body` (repo lore).
+2. **Dynamic Filtering:** Clicking "Windows-XP" in the sidebar filters the list to only show messages from the XP Restaurant.
+3. **Draft Engine:** A functional text area where the user can "type" a mail; clicking Send triggers a "Swoosh" sound and adds it to the "Sent" state.
+4. **Unread Badge:** Logic to update the red dot on the Mail icon in the Tahoe Dock.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Mail App.
+1. Implement a responsive 3-pane layout using CSS Grid.
+2. Logic: Populate the inbox with 5 simulated emails about 'OpenClaw' project updates (e.g., 'Unit 6: Flat Era is now open for contributors').
+3. Physics: Ensure the sidebar uses the Tahoe 'Liquid Glass' refraction.
+4. Feature: Clicking an email in the middle pane must render the full content in the right-hand reader pane with 'SF Pro' typography.
+5. Search: Include a top-bar search that filters the subject lines.
+Output Code Only."
+--- END OF Mail.md ---
+
+--- START OF Maps.md ---
+# 🗺️ MODULE: TAHOE MAPS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Hardware-Aware Satellite Tracker
+
+## 🎨 THE UI (APPLE MAPS 2026 PRINCIPLES)
+- **Floating Controls:** Zoom and Compass controls should be "Glass Pills" floating on the right side.
+- **Search Bar:** Centered at the top, `backdrop-filter: blur(25px)`, with a pulsing blue location dot.
+- **Visuals:** High-saturation satellite tiles with a custom CSS filter: `contrast(1.2) brightness(0.9) saturate(1.4)`.
+- **Icon:** A 2026 "Map Fold" with a prominent red location pin and a 3D shadow.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **Live Tracking:** Use `navigator.geolocation.watchPosition` to center the map on the user’s real-world coordinates.
+2. **Engine:** Use a lightweight Leaflet provider (OpenStreetMap Sat Tiles) to avoid heavy Google Maps API keys.
+3. **Hardware Sync:** If the `Battery API` shows "Low Power Mode," the map should automatically switch to a "Vector Wireframe" mode to save resources.
+4. **The Notch Protocol:** The Maps search bar must automatically slide 40px lower if the window is moved directly under the Hardware Notch.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Maps App.
+1. Integrate a functional map using the React-Leaflet library (or a native Iframe tile-engine).
+2. Logic: Implement a 'Find My Location' button that triggers the Browser Geolocation API.
+3. Feature: Create a sidebar that lists 'OpenClaw Restaurants' (e.g., Windows XP, Apple II) as physical landmarks on the map.
+4. Physics: Apply a 'Neural Glow' to the user's location dot (a pulsing blue orb with refraction).
+5. Style: The window frame must use Tahoe 'Liquid Glass' while the map area is edge-to-edge.
+Output Code Only."
+--- END OF Maps.md ---
+
+--- START OF Messages.md ---
+# 💬 MODULE: TAHOE MESSAGES (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Simulated iMessage Protocol / Local State Chat
+
+## 🎨 THE UI (APPLE CIVICS)
+- **Sidebar:** `backdrop-filter: blur(40px)`. Contact list with circular avatars.
+- **Blue Bubbles:** Linear gradient (`#007AFF` to `#00C6FF`). 
+- **Gray Bubbles:** `rgba(255, 255, 255, 0.15)` for incoming texts.
+- **Typography:** San Francisco (SF Pro). Small "Delivered" text under the last bubble.
+- **Input:** A pill-shaped text field with a "+" button and an App Store icon.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Message Array:** Use a `messages` state array containing `{ id, text, sender, timestamp, isBlue }`.
+2. **Auto-Reply Engine:** If a user mentions a "Restaurant" (e.g., "Hey XP"), the app triggers a simulated response from that era's persona.
+3. **Spring Physics:** Use `framer-motion` for message entry—bubbles should "pop" in from the bottom with a slight bounce.
+4. **Typing Indicator:** A small `motion.div` with three pulsing dots when the "AI" is generating a response.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer` and Framer Motion: Build the Tahoe Messages App.
+1. Create a two-pane layout: A blurred sidebar for contacts and a main chat area.
+2. Logic: The user can type messages. If the message includes 'OpenClaw', the system replies with a 'Silicon Surge' update.
+3. Style: Implement the classic 'Blue Bubble' gradient. Ensure bubbles have a border-radius of 18px, but the corner near the tail is sharper.
+4. Feature: Include a functional 'Emoji' picker button that toggles a small popup.
+5. Physics: When a new message is sent, the scroll-view must automatically smooth-scroll to the bottom.
+Output Code Only."
+--- END OF Messages.md ---
+
+--- START OF Notes.md ---
+# 📝 MODULE: TAHOE NOTES (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** ContentEditable Engine / LocalStorage Sync (iCloud Simulation)
+
+## 🎨 THE UI (APPLE NOTES 2026 PRINCIPLES)
+- **The Triple-Pane:** 1. **Folders Sidebar:** (Blur 45px) "All iCloud", "OpenClaw Drafts", "Restaurant Notes".
+    2. **Notes List:** Clean snippets with the Title, Date, and a 1-line preview.
+    3. **Editor Surface:** A subtle "Paper-Glass" texture (`rgba(255,255,255,0.85)` with light grain).
+- **Toolbar:** Floating "Glass Pill" at the top with formatting buttons (Bold, Checklist, Photos, Share).
+- **Icon:** The classic yellow-topped notepad, but with a 2026 "Silicon Refraction" and a glass pencil.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Sync Engine:** Use `window.addEventListener('storage')` to simulate iCloud. If a user opens Notes in a second window/tab, changes sync in real-time.
+2. **Rich Text:** Use a `contentEditable` div or a lightweight React library (like `Quill-lite`) to support bolding and lists.
+3. **Folders:** Organize notes by "Units." (e.g., A folder for "Unit 5: Flat Era" research).
+4. **Auto-Save:** Every keystroke updates a `NOTES_REGISTRY` in `localStorage`.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Notes App.
+1. Create a 3-pane responsive layout. 
+2. Logic: Implement a functional text editor area where users can type and format text.
+3. Feature: Create a 'New Note' button that adds a timestamped entry to the middle list.
+4. Sync: Use LocalStorage to save and retrieve notes so they persist after a refresh.
+5. Physics: Apply 'Liquid Glass' to the sidebar and a 'Paper-Glass' texture to the editor background.
+Output Code Only."
+--- END OF Notes.md ---
+
+--- START OF Numbers.md ---
+# 📊 MODULE: TAHOE NUMBERS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Dynamic Grid Engine / JSON-to-Spreadsheet Solver
+
+## 🎨 THE UI (APPLE NUMBERS 2026 PRINCIPLES)
+- **The Canvas:** Unlike Excel, the grid doesn't fill the whole screen. It’s a "Glass Table" sitting on a deep obsidian background.
+- **Visuals:** Column headers use `backdrop-filter: blur(20px)` with a light blue selection tint.
+- **Charts:** 2026 "Neural Charts" that pulse with a soft glow when data is updated.
+- **Icon:** A vibrant green 3D bar chart (3 bars) rising out of a refractive glass base.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Grid Engine:** A 2D array state `grid[row][col]`. 
+2. **Formula Solver:** A lightweight `eval()`-based parser that handles basic math (e.g., `=SUM(A1:A5)`).
+3. **Smart Categories:** Logic to automatically group "Restaurant" data by Unit number.
+4. **Data Sync:** A "Live Mode" that pulls the current star-count or commit-count from the OpenClaw GitHub API (simulated or real).
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Numbers App.
+1. Create a 'Floating Table' UI where the grid is an object on a canvas.
+2. Logic: Implement an editable grid where users can click any cell to change the value.
+3. Feature: A functional 'Total' row at the bottom that automatically sums the values in a column.
+4. Physics: Use 'Liquid Glass' for the table headers and the inspector sidebar.
+5. Content: Pre-load a 'Repo Metrics' table showing: Unit 1 (100% Done), Unit 7 (In Progress), Windows XP Restaurant (Cooking).
+Output Code Only."
+--- END OF Numbers.md ---
+
+--- START OF Pages.md ---
+# ✍️ MODULE: TAHOE PAGES (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Document State Engine / Rich Text Canvas
+
+## 🎨 THE UI (APPLE PAGES 2026 PRINCIPLES)
+- **The Canvas:** A vertical "Silicon Paper" sheet (`rgba(255,255,255,0.92)`) with a subtle refractive grain.
+- **Floating Inspector:** A "Liquid Glass" panel on the right that changes based on what you select (Text vs. Image).
+- **Toolbar:** Top-mounted "Glass Pill" with "Insert", "Table", "Chart", and "Collaborate".
+- **Icon:** A vibrant orange 3D ink pen standing on a refractive glass document.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Page Logic:** Use a `DocumentProvider` state to manage text blocks, images, and layout positions.
+2. **Typography Engine:** Supports "SF Pro Display" for headers and "SF Pro Text" for body copy, simulating 2026 high-dpi rendering.
+3. **Template Registry:** A JSON object containing pre-set layouts (e.g., "OpenClaw Technical Manual", "Restaurant Menu", "Unit 7 Proposal").
+4. **Export Simulation:** A functional "Share" menu that allows users to "Print to PDF" (simulated via browser print).
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Pages App.
+1. UI: Create a centered 'A4 Document' view that stands out from the Tahoe background.
+2. Logic: Implement a rich-text area (contentEditable) that supports Bold, Italic, and Heading styles.
+3. Feature: Build a 'Floating Inspector' pill that appears when text is highlighted, allowing font-size changes.
+4. Templates: Pre-load a document titled 'The OpenClaw Manifesto: Principles of the Silicon Surge'.
+5. Physics: Use 'Liquid Glass' for the top toolbar and side inspector.
+Output Code Only."
+--- END OF Pages.md ---
+
+--- START OF Phone.md ---
+# 📞 MODULE: TAHOE PHONE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** iPhone Mirroring Bridge / Ecosystem Handshake
+
+## 🎨 THE UI (APPLE PHONE 2026)
+- **State 1 (Idle):** A "Liquid Glass" screen asking to "Connect iPhone" with a pulsing Bluetooth icon.
+- **State 2 (Active):** Once "Paired," it shows the Dialer, Recents, and Contacts.
+- **In-Call UI:** A floating translucent pill that appears at the top right (near the Notch) with Mute, Keypad, and End Call buttons.
+- **Icon:** The 2026 green handset, but with a "Silicon Glow" outline to indicate a live connection.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Handshake:** On launch, the app checks if the "iPhone Restaurant" (simulated via global state) is "Online."
+2. **Keypad Engine:** A functional grid of numbers that plays high-fidelity DTMF tones using the `Web Audio API`.
+3. **Continuity Logic:** If a call is "Started," the app triggers a "Phone Active" flag in the Tahoe Shell, which could make the Notch pulse green/orange.
+4. **Contacts Integration:** It pulls data from the **Contacts.md** registry (which we'll build) to show names instead of just numbers.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Phone App.
+1. UI: Create a 2-state interface (Disconnected vs. Connected). 
+2. Connection Logic: Simulate an 'iPhone Pairing' animation that finishes after 2 seconds.
+3. Dialer: Build a functional keypad that logs numbers to a display field.
+4. Audio: Use the Web Audio API to play a classic iPhone ringtone when a 'Simulated Incoming Call' is triggered via a dev button.
+5. Physics: The 'In-Call' overlay must be a 'Liquid Glass' pill that follows the window if moved.
+Output Code Only."h
+--- END OF Phone.md ---
+
+--- START OF Photos.md ---
+# 🖼️ MODULE: TAHOE PHOTOS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Shared Media Registry / LocalStorage Gallery
+
+## 🎨 THE UI (APPLE PHOTOS 2026)
+- **Sidebar:** Categories: "All Photos", "Museum Units", "Photo Booth", "Deleted".
+- **Dynamic Grid:** Photos should vary slightly in size (Pinterest-style) or stay in a perfect, sharp "Square Grid" with 2px gaps.
+- **Lightbox:** Clicking a photo expands it into a "Liquid Glass" modal with blurred background and metadata (Dimensions, Camera: M5 Max Neural).
+- **Icon:** The multi-colored "Flower" but with a 2026 glass-morphism depth.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Shared Library:** Use a global state (or `LocalStorage`) `OPENCLAW_GALLERY`. 
+2. **Auto-Import:** The app must listen for new blobs sent from the **Photo Booth** or **FaceTime** modules.
+3. **Museum Folders:** Hardcode 7 folders representing your 7 Units (Unit 1: Genesis to Unit 7: Silicon).
+4. **Hardware Sync:** Images taken via the Tahoe "Camera" get a "Neural Enhanced" badge.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer` and Framer Motion: Build the Tahoe Photos App.
+1. Create a Sidebar + Grid layout.
+2. Logic: Implement a 'Photo Registry' that pulls images from a shared array. 
+3. Feature: Create a functional 'Lightbox'—when an image is clicked, it zooms to the center with a backdrop-blur.
+4. Museum Mode: Pre-load the gallery with 7 placeholder 'Museum Unit' images (Unit 1 to Unit 7).
+5. Integration: Ensure the app can receive 'New Photo' events from other apps in the Shell.
+Output Code Only."
+--- END OF Photos.md ---
+
+--- START OF Power Management.md ---
+# 🔋 MODULE: TAHOE POWER MANAGEMENT (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** ACPI Simulation / Battery Telemetry
+
+## 🎨 THE UI (APPLE POWER PRINCIPLES)
+- **The Dialog:** When triggered from the Apple Menu, a centered "Liquid Glass" modal appears with four frosted icons: **Sleep**, **Restart**, **Shut Down**, and **Log Out**.
+- **The Battery Dropdown:** A Menu Bar extra showing a vertical "Silicon Pillar" indicating charge percentage.
+- **The Visuals:** Clicking "Shut Down" triggers a "Deep Obsidian" fade-out across the entire Shell, where all window refractions slowly dim until the screen is black.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Battery Bridge:** - Use the `navigator.getBattery()` API to pull real-time data from the user's laptop/device.
+   - Map the `level` and `charging` status directly to the Tahoe Menu Bar icon.
+2. **System Lifecycle:**
+   - **Sleep:** Triggers a `0.1` opacity "Sleep Mask" overlay. All animations in the Shell are paused to save browser CPU.
+   - **Restart:** Clears the React/App state and re-triggers the **Boot Sequence** and **Setup Assistant** (if configured).
+   - **Shut Down:** Persists all `localStorage` data and redirects the browser tab to a "System Off" static page.
+3. **Low Power Mode:** When the Battery API reports <20%, the module forces the Tahoe Shell into "Low Power Mode," reducing the background blur radius to `5px` and disabling "Neural Glow" animations.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Power Management System.
+1. Logic: Use the navigator.getBattery() API to drive a functional battery icon in the Menu Bar.
+2. Feature: Build the 'Power Dialog' modal with 'Sleep', 'Restart', and 'Shut Down' buttons.
+3. Feature: Implement a 'Deep Fade' transition for the Shut Down sequence using Framer Motion.
+4. Feature: Add a 'Low Power Mode' listener that automatically reduces CSS blur effects when the battery is low.
+5. Physics: Use 'Liquid Glass' for the modal and ensure it blurs the entire desktop when active.
+Output Code Only."
+
+# 🏛️ The "OpenClaw" Power Civics
+To make this functional for your V3 Deployment, the Power Management app should communicate with other modules:
+
+Sync with Activity Monitor: The "Energy" tab in Activity Monitor should pull its "Impact" data from this module.
+
+The "Wake" Event: When "Waking from Sleep," the Tahoe Shell should show a "Liquid Ripple" animation emanating from the Notch.
+
+Restaurant Protection: If the user clicks "Shut Down" while a Restaurant is open in Safari, show a "Liquid Glass" alert: "Windows XP is still cooking. Force Quit and Shut Down?"
+--- END OF Power Management.md ---
+
+--- START OF Reminders.md ---
+# 🗒️ MODULE: TAHOE REMINDERS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** State-Persistence Checklist / Project Roadmap
+
+## 🎨 THE UI (APPLE REMINDERS 2026)
+- **The Dashboard:** Four main "Smart Tiles" at the top: **Today** (Blue), **Scheduled** (Orange), **All** (Gray), and **Flagged** (Red).
+- **Sidebar:** `backdrop-filter: blur(40px)`. Custom lists like "Tahoe Launch", "Restaurant Repairs", and "OpenClaw V4 Ideas".
+- **Visuals:** Hollow circular checkboxes that fill with a vibrant color and a checkmark when clicked.
+- **Icon:** Three colored horizontal lines (Blue, Orange, Red) with circular dots on a white/glass background.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Task Registry:** A `tasks` JSON array. Each task has a `list`, `title`, `isCompleted`, and `priority`.
+2. **Completion Logic:** When a user clicks a checkbox, use `framer-motion` to trigger a "Strikethrough" animation and move the item to the "Completed" section.
+3. **Smart Counting:** The numbers in the top four "Smart Tiles" must update dynamically based on the state of the task registry.
+4. **Persistence:** Save the state to `localStorage` so the user's "To-Do" list survives a page refresh.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Reminders App.
+1. Create a 2-pane layout: A glass sidebar and a main list view.
+2. Logic: Implement the 4 'Smart Lists' (Today, Scheduled, All, Flagged) with dynamic counts.
+3. Feature: Add an 'Add Task' button that allows users to type a new reminder and assign it a color-coded list.
+4. Physics: Use a bouncy spring animation for checking off tasks.
+5. Integration: Pre-load the app with tasks like 'Finalize System Settings.md' and 'Deploy V3 to Vercel'.
+Output Code Only."
+--- END OF Reminders.md ---
+
+--- START OF Safari.md ---
+# 🌐 MODULE: TAHOE SAFARI (2026) - RESTAURANT EDITION
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Bridge:** Cross-Folder Iframe Navigation
+
+## 🧪 THE "RESTAURANT" LOGIC
+1. **The Claw-Path:** The Safari address bar must recognize internal repo paths. 
+2. **Logic:** If the `URL` input starts with `/Restaurants/`, Safari should attempt to resolve the path relative to the root of the Vercel deployment.
+3. **Sandbox:** Ensure the iframe has `allow-scripts` and `allow-same-origin` enabled so the Windows XP "Restaurant" logic actually runs inside the Tahoe window.
+
+## ⚡ THE UPDATED PROMPT
+"Using `/caveman-full-stack-developer`: Build the Tahoe Safari App.
+- Include a 'Restaurant Mode' in the address bar.
+- Logic: When a user selects 'Windows XP' from the Applications App, Safari must navigate to: `./Skills/Showcase/Restaurants/Windows-XP/index.html`.
+- UI: Ensure the Iframe has a 'Clean Cut' border so the XP taskbar aligns perfectly with the Tahoe window frame.
+Output Code Only."
+--- END OF Safari.md ---
+
+--- START OF Setup Assistant.md ---
+# 🍏 MODULE: TAHOE SETUP ASSISTANT (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Sequential State Machine / First-Run Flag
+
+## 🎨 THE "HELLO" SCREEN (THE GENESIS)
+- **Visuals:** A deep obsidian background. A cursive, "Liquid Metal" line draws the word "hello" in the center.
+- **Cycle:** The word fades and redraws as "hola", "bonjour", "namaste", and "ciao" in vibrant Silicon Pink and Blue gradients.
+- **Button:** A singular, pulsing "Continue" glass pill at the bottom.
+
+## 🧪 THE SEQUENTIAL LOGIC (CAVEMAN)
+
+### Phase 1: Identity & Network
+1. **Region Selection:** A spinning 3D "Liquid Glass" globe. User selects their location.
+2. **Accessibility:** Large, high-contrast icons for Vision, Motor, and Hearing.
+3. **Wi-Fi:** A simulated scan showing "OpenClaw_5G_Fiber" as the primary network.
+
+### Phase 2: Data & Account
+4. **Migration Assistant:** Three 3D cards: "From a Mac", "From Windows XP Restaurant", or "Not Now".
+5. **Apple Account:** A glass input field for the user to "Sign in to the Evolution."
+6. **Terms:** A blurred glass scroll-view. (Logic: "Agree" button is disabled until the user scrolls to the bottom).
+7. **Computer Account:** Fields for **Full Name**, **Account Name**, and **Password**.
+   * *Default Suggestion:* Architect / @Aashmanshukla3223.
+
+### Phase 3: Intelligence & Appearance
+8. **Location & Analytics:** Toggle switches with a "Silicon Glow" when active.
+9. **Siri & Apple Intelligence:** A pulsing, multi-colored "Neural Orb" appears in the center to calibrate the voice.
+10. **Appearance:** Three big "Glass Panels" representing **Light**, **Dark**, and **Auto**. Clicking one live-updates the background of the Setup Assistant.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Setup Assistant.
+1. The Hello Loop: Create a canvas animation that draws 'hello' in cursive using a glowing gradient stroke. Cycle through 5 languages.
+2. Logic: Implement a 'Step State' (1-12). Each 'Continue' click triggers a 'Liquid Slide' transition to the next pane.
+3. Feature: Create the 'Appearance' selector—when the user clicks 'Dark', the entire setup UI must transition to Obsidian Glass.
+4. Account Creation: The data entered in the 'Account' step must be saved to LocalStorage to be used as the 'User' in the Tahoe Shell.
+5. Finalization: After Step 12, show a 'Setting Up Your Mac...' progress bar that fades into the Tahoe Desktop.
+6. Strike 1 Logic: This module is linked from `BootSequence.jsx` via the `tahoe_v3_state` key. On finalization, set `setup_complete: true` within the `tahoe_v3_state` object in LocalStorage.
+Output Code Only."
+
+# 🏛️ The "First Boot" Civics
+To make this work on Vercel, the Setup Assistant acts as the Root Component:
+
+The Cookie Check: On load, the index.html checks localStorage.getItem('tahoe_v3_state').
+
+If setup_complete is False: Launch SetupAssistant.md.
+
+If setup_complete is True: Launch Tahoe-V3-Shell.md (The Desktop).
+--- END OF Setup Assistant.md ---
+
+--- START OF System Settings.md ---
+# ⚙️ MODULE: TAHOE SYSTEM SETTINGS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** CSS Variable Injection / Hardware State Manager
+
+## 🎨 THE UI (APPLE SETTINGS 2026 PRINCIPLES)
+- **The Profile Card:** A large, refractive glass card at the top-left featuring the 'Architect' avatar (@Aashmanshukla3223).
+- **Sidebar Navigation:** Grouped by:
+    - **Connectivity:** Wi-Fi, Bluetooth, Network, AirDrop.
+    - **Personalization:** Wallpaper, Appearance (Dark/Light/Silicon), Accessibility.
+    - **Hardware:** Battery (M5 Max), Displays (Notch Toggle), Sound.
+    - **OpenClaw Civics:** Restaurant Access, Unit History, Repo Sync.
+- **Icon:** The 2026 "Nested Gears"—rendered in a matte 'Space Gray' metal with a refractive glass center.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The State Bridge:** Every toggle must update a global `SYSTEM_CONFIG` object.
+2. **Wallpaper Engine:** A function that updates the `background-image` of the Tahoe Shell in real-time.
+3. **The Notch Toggle:** A Boolean switch that hides or reveals the 180px Black Notch in the Shell.
+4. **Restaurant Permissions:** A "Security" section where users can "Allow" or "Block" specific restaurants (like Windows XP) from accessing the Tahoe API.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe System Settings.
+1. Create a 2-pane layout with a searchable sidebar and a detailed main view.
+2. Logic: Implement functional toggles for 'Dark Mode', 'Notch Visibility', and 'Glass Blur Intensity'.
+3. Feature: A 'Wallpaper Gallery' where clicking a thumbnail instantly updates the Shell's background.
+4. Feature: A 'Hardware Info' tab that displays simulated M5 Max Neural Engine stats.
+5. Physics: Use 'Liquid Glass' for all buttons and sliders.
+Output Code Only."
+--- END OF System Settings.md ---
+
+--- START OF Tahoe-V3-Shell.md ---
+# 🏛️ OPENCLAW RECIPE: TAHOE V3 SHELL
+> **Lead Architect:** @Aashmanshukla3223
+> **Target:** M5 Max Hardware Simulation (2026)
+
+## 🧪 PHYSICS & CIVICS (SYSTEM CONSTANTS)
+- **Glass:** `backdrop-filter: blur(50px) saturate(190%)`
+- **Notch:** 180px x 30px (Center Anchor)
+- **Dock:** Dynamic Scaling (Scale: 1.0 -> 1.5 on Hover)
+- **Kernel:** Simulated Darwin 25.0.0
+
+## 🛠️ CORE LOGIC MODULES
+1. **Power & Time:** Sync with Browser `Battery API` and `Date()`.
+2. **Context Engine:** Implement `onContextMenu` for Desktop Right-Click.
+3. **Control Center:** Stateful toggle for Wi-Fi, Bluetooth, and Brightness sliders.
+4. **App Registry:** Logic to switch the Menu Bar title based on the active window.
+
+## 🎨 VISUAL ASSETS
+- **Wallpaper:** Replicate macOS Tahoe 2026 (Liquid gradients of Blue/Purple).
+- **Notch Indicator:** Green LED dot (Active when `isCameraOn` is true).
+- **Traffic Lights:** Red, Yellow, Green (Middle-aligned window title).
+
+## ⚡ THE MASTER PROMPT (CAVEMAN)
+"Using `/caveman-full-stack-developer` and Framer Motion: 
+Build the OpenClaw V3 Shell. The Shell must be the 'Front Door' of the OS. 
+- Center a black Notch (180px) with a camera LED.
+- Build a Menu Bar that splits around the notch; Left side changes with 'activeApp' state.
+- Build a Desktop with right-click contextual menus (New Folder, Change Wallpaper).
+- Build a Dock with 'True Magnification' physics (Icons grow and shift as mouse moves over them).
+- Include a Control Center overlay on the top right.
+- Ensure all windows have traffic light buttons and middle-aligned titles.
+- Strike 1 Logic: The Shell must only render if `setup_complete` is true within the `tahoe_v3_state` key in LocalStorage.
+Output ONLY the clean React JSX code block."
+--- END OF Tahoe-V3-Shell.md ---
+
+--- START OF Trash.md ---
+# 🗑️ MODULE: TAHOE TRASH (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** State-Based File Deletion / Recovery Engine
+
+## 🎨 THE UI (APPLE TRASH 2026 PRINCIPLES)
+- **The Window:** A "Clean White" or "Translucent Glass" pane with a top-mounted "Empty" button.
+- **Dock Icon Logic:** - **State: Empty:** A sleek, refractive wire-mesh bin.
+    - **State: Full:** The bin filled with crumpled "Glass Paper" textures.
+- **The Divider:** A vertical 1px line (0.2 opacity) that separates the Trash icon from the rest of the Dock apps.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Trash Registry:** A global `TRASH_BIN` state (Array).
+2. **Move-to-Trash:** Any file deleted in **Finder.md** or **Notes.md** is pushed here instead of being permanently erased.
+3. **Recovery (Put Back):** A right-click context menu option on items inside the Trash that restores them to their original `parentFolder` path.
+4. **Empty Trash:** A final purge that clears the `TRASH_BIN` array and triggers a high-fidelity "Paper Crunch" sound effect.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Trash App.
+1. Create a dedicated Dock Icon with two states (Empty/Full).
+2. Logic: Implement a 'Trash Bin' array that stores deleted objects from the Finder.
+3. Feature: Build the 'Empty Trash' function with a confirmation 'Liquid Glass' dialog.
+4. UI: The Trash window should display items in a grid with a 'Put Back' option on right-click.
+5. Civics: Ensure the Trash icon is positioned on the far right of the dock, separated by a vertical glass divider line.
+Output Code Only."
+--- END OF Trash.md ---
+
+--- START OF Wallaper Engine.md ---
+# 🌓 THE DUALITY OF GLASS
+In the Tahoe ecosystem, windows are not static overlays; they are Optical Prisms that react to the luminance and chroma of the underlying wallpaper.
+
+# 🔆 LIGHT MODE: "SILICON CRYSTAL"
+Surface: 85% Translucency.
+
+Color Extraction: The glass picks up the warmest tones from the wallpaper and injects them into the window background.
+
+Refraction: A 30px background blur that creates a "frosted ice" effect.
+
+Shadows: High-diffusion, light gray shadows with a 0.1 opacity to simulate depth without weight.
+
+Interaction: When a window moves over a bright area of the wallpaper, the text contrast automatically shifts to Deep Obsidian.
+
+# 🌙 DARK MODE: "OBSIDIAN LIQUID"
+Surface: 75% Translucency.
+
+Color Extraction: The glass absorbs the coolest tones (blues/purples) from the wallpaper to create a "Deep Sea" effect.
+
+Refraction: A 50px background blur, creating a denser, more "viscous" glass appearance.
+
+Shadows: Wide, "Neon-Glow" shadows that take on the primary color of the wallpaper (e.g., a blue wallpaper creates a soft blue shadow glow).
+
+Interaction: When a window moves over a dark area, a 1px Silicon Rim Light (White, 0.2 opacity) appears around the window border to maintain edge definition.
+
+# 🌪️ DYNAMIC INTERACTION RULES
+1. THE "KINETIC BLUR"
+As a window is dragged, the background blur intensity temporarily drops to 10px to save "Silicon GPU" cycles.
+
+Once the window is released, the blur "settles" back to its full depth with a spring-loaded animation.
+
+2. THE "TINT OVERFLOW"
+If the wallpaper is a solid color, the glass will adopt a 10% saturation of that color.
+
+If the wallpaper is a complex image (like the "Tahoe Peaks"), the glass will calculate the Average Ambient Color of the section directly beneath the window.
+
+3. THE "NOTCH SHADOW"
+The Tahoe Notch casts a subtle "Gravity Shadow" onto the wallpaper.
+
+In Dark Mode, the Notch emits a soft "Neural Glow" (Silicon Pink) when an app like iPhone Mirroring is active.
+
+# 🖼️ WALLPAPER CATEGORIES
+# 🌌 THE "SILICON SURGE" (DEFAULT)
+Visuals: Flowing liquid metal waves in iridescent purples and blues.
+
+Interaction: Causes windows to look "Electric" and high-contrast.
+
+# 🌲 THE "TAHOE PEAKS" (PHOTOGRAPHIC)
+Visuals: High-resolution 8K photography of the Sierra Nevada.
+
+Interaction: Causes windows to feel grounded, using natural grays and sky-blues for tinting.
+
+# 🍎 THE "RESTAURANT RETRO" (LEGACY)
+Visuals: Solid colors or gradients from the 1984/2001 eras.
+
+Interaction: Simplifies glass refraction to a "Flat Era" style to respect the legacy aesthetics of the Windows XP or Apple II diners.
+
+# Architect’s Final Note: > The glass is the bridge. The wallpaper is the world. In Unit 7, they are inseparable.
+# — @Aashmanshukla3223
+--- END OF Wallaper Engine.md ---
+
+--- START OF iPhone Mirroring.md ---
+# 📱 MODULE: TAHOE iPHONE MIRRORING (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Remote Framebuffer / Touch-to-Click Translator
+
+## 🎨 THE UI (APPLE MIRRORING 2026 PRINCIPLES)
+- **The Chassis:** A floating "Titanium" frame with perfect rounded corners (38px radius).
+- **The Dynamic Island:** A functional black pill at the top of the "Phone" screen that reacts to Tahoe notifications.
+- **Visuals:** The window has no standard macOS title bar; instead, it uses a "Hidden Handle" that appears on hover.
+- **Icon:** Two overlapping rounded rectangles (Mac & iPhone) with a 2026 refractive "Silicon Link" glow.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Handshake:** On launch, the app "pings" the `Skills/Showcase/Restaurants/iOS-Diner` path.
+2. **The Mirror Engine:** Use a high-density `<iframe>` styled with `object-fit: contain` to fit the iPhone aspect ratio (9:19.5).
+3. **Event Mapping:** Translate desktop `onClick` and `onDrag` events into `touchStart` and `touchMove` events for the mirrored iOS content.
+4. **Keyboard Passthrough:** If the user types while the Mirroring window is active, send those strings directly to the simulated iPhone input.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe iPhone Mirroring App.
+1. Create a vertical window frame that looks like an iPhone 16/17 Pro.
+2. Logic: The frame must contain an iframe pointing to the 'iOS Diner' index.
+3. Feature: Implement 'Side-to-Side' handoff—if the user drags a file from the Tahoe Finder onto the iPhone window, simulate a 'Received via AirDrop' alert.
+4. Physics: Use 'Liquid Glass' for the iPhone's wallpaper background and a 'Titanium' CSS border for the hardware frame.
+5. Civics: Ensure the window remains 'Always on Top' if the user toggles a pin icon.
+Output Code Only."
+--- END OF iPhone Mirroring.md ---
+
+--- START OF Utlities/Activity Monitor.md ---
+# 📈 MODULE: TAHOE ACTIVITY MONITOR (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Hardware Telemetry / Process Management
+
+## 🎨 THE UI (APPLE ACTIVITY MONITOR 2026)
+- **The Header:** A "Liquid Glass" toolbar with tabs for **CPU**, **Memory**, **Energy**, **Disk**, **Network**, and **Neural**.
+- **The Table:** A list of all "Active" .md modules currently running in the Shell.
+    - **Columns:** Process Name, % CPU, Memory, Threads, User (@Aashmanshukla3223).
+- **The Bottom Dashboard:** Real-time line charts with a "Silicon Glow."
+    - **CPU Load:** Neon Green wave.
+    - **Neural Engine:** Silicon Pink pulse.
+- **Icon:** A heartbeat pulse on a black obsidian grid with a 2026 refractive glass border.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Telemetry Engine:** - Use `window.performance.memory` to calculate real RAM usage of the Tahoe instance.
+   - Use a `setInterval` (1000ms) to generate a randomized "Neural Load" percentage (15% - 40%) to simulate AI processing.
+2. **Process List:** Dynamically list the apps currently marked as `isOpen: true` in the Tahoe global state.
+3. **The "Quit Process" Button:** A functional button that sends a `forceClose` signal to the Shell, allowing users to "Kill" a frozen Safari restaurant window.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Activity Monitor.
+1. UI: Create a 6-tab navigation bar using 'Liquid Glass'.
+2. Logic: Implement a real-time line chart at the bottom using the HTML5 Canvas API.
+3. Feature: The Process Table must update live, showing which Tahoe apps (e.g., Safari, Phone, Arcade) are currently open.
+4. Feature: Add a 'Neural Engine' tab that displays a futuristic 3D 'Hex-Grid' animation that pulses based on CPU activity.
+5. Physics: Use 'Obsidian Glass' for the table background and a 'Refractive Glow' for the graph lines.
+Output Code Only."
+--- END OF Utlities/Activity Monitor.md ---
+
+--- START OF Utlities/ColorSync Utility.md ---
+# 🎨 MODULE: TAHOE COLORSYNC UTILITY (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Color Gamut Calibration / CSS Filter Mapping
+
+## 🎨 THE UI (APPLE COLORSYNC 2026 PRINCIPLES)
+- **The Browser Window:** A "Crystalline Glass" interface with tabs for **'Profiles'**, **'Devices'**, and **'Filters'**.
+- **The Gamut Viewer:** A 3D, rotatable "Color Cloud" (using Three.js or a simulated CSS 3D object) showing the sRGB vs. P3 vs. Silicon-Tahoe gamut.
+- **Visuals:** A sidebar listing display profiles like **'OpenClaw Reference (D65)'** and **'Restaurant Retro (CRT)'**.
+- **Icon:** A translucent, multi-faceted crystal prism reflecting a rainbow of "Silicon Light" onto a glass base.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Profile Engine:** - Each "Profile" selected updates global CSS variables like `--accent-saturation`, `--glass-opacity`, and `--glow-intensity`.
+   - **'Silicon Surge' Profile:** Increases saturation and adds a subtle purple tint to shadows.
+   - **'Classic Gray' Profile:** Desaturates the Tahoe UI to mimic a 1990s workstation.
+2. **The Calculator:** A functional tool that lets you input Hex codes and converts them to the "Silicon Gamut" (simulated color space math).
+3. **Repair Utility:** A button that "Verifies" the system CSS variables to ensure they haven't been corrupted by legacy "Restaurant" styles.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe ColorSync Utility.
+1. UI: Create a 'Device Gallery' sidebar and a central '3D Color Cloud' visualization area.
+2. Logic: Implement a 'Filter Preview' mode where selecting a profile applies a real CSS `filter` (e.g., contrast/sepia/hue-rotate) to the entire Tahoe Shell background.
+3. Feature: Build a 'Color Picker' tool that allows the user to click anywhere in the Tahoe window and returns the exact 2026 Silicon Hex value.
+4. Feature: Add a 'Repair' button with a scanning glass animation.
+5. Physics: Use 'Crystalline Glass' for the main window and a 'Prism Glow' for the selected profile highlight.
+Output Code Only."
+--- END OF Utlities/ColorSync Utility.md ---
+
+--- START OF Utlities/Console.md ---
+# 📟 MODULE: TAHOE CONSOLE (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Event Listener / Stream Filtering
+
+## 🎨 THE UI (APPLE CONSOLE 2026 PRINCIPLES)
+- **The Sidebar:** Categories for **'All Messages'**, **'Errors and Faults'**, **'System Reports'**, and **'Restaurant Logs'**.
+- **The Stream:** A vertical, auto-scrolling list of monospaced text.
+    - **Metadata:** Each log line shows a timestamp, Process Name (e.g., Safari), and a Color-Coded Type (Info, Debug, Error).
+- **Visuals:** Obsidian Glass background with a "Neon Phosphorus" text glow. 
+- **Icon:** A black square with a glowing gray border and three lines of stylized, vibrant code.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Global Hook:** - Implement a "Log Proxy" that captures every `console.log`, `console.warn`, and `console.error` triggered within the Tahoe Shell environment.
+   - Display these logs in the Console UI in real-time.
+2. **Lore Injection:** Periodically inject "Kernel Events" to make the OS feel alive:
+   - `[12:01:20] kernel: m5_max_neural_core_01 linked successfully.`
+   - `[12:01:25] system_settings: wallpaper_index updated to 'Silicon_Wave'.`
+   - `[12:01:30] restaurant_bridge: XP_Diner mounted via Safari.`
+3. **Filtering:** A search bar that allows the user to filter logs by process name (e.g., typing 'Finder' only shows Finder-related logs).
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Console Utility.
+1. UI: Create a split-pane layout with a high-blur sidebar and an auto-scrolling log terminal.
+2. Logic: Hook into the browser's console API to mirror real developer logs into the app window.
+3. Feature: Create a 'Pause' button in the 'Liquid Glass' toolbar that stops the stream from scrolling.
+4. Feature: Add a 'Generate Report' button that creates a mock 'System Diagnostics' file in the Finder.
+5. Physics: Use 'Obsidian Glass' for the background and 'SF Mono' for the log text.
+Output Code Only."
+--- END OF Utlities/Console.md ---
+
+--- START OF Utlities/Disk Utility.md ---
+# 💾 MODULE: TAHOE DISK UTILITY (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Storage Quota API / Partition Lifecycle
+
+## 🎨 THE UI (APPLE DISK UTILITY 2026)
+- **The Sidebar:** Lists the primary **'Macintosh HD'** and sub-volumes like **'iOS Diner Cache'** and **'XP Restaurant Data'**.
+- **The Visualization:** A large, multi-colored horizontal bar chart showing data distribution:
+    - **Blue:** System (Tahoe Core)
+    - **Green:** Apps (.md Modules)
+    - **Yellow:** Restaurants (Legacy OS Assets)
+    - **Gray:** Free Space (Remaining LocalStorage)
+- **Visuals:** High-gloss "Silicon" buttons for **First Aid**, **Partition**, and **Erase**.
+- **Icon:** A refractive sapphire-glass hard drive with a glowing read/write actuator.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Capacity Engine:** - Use `JSON.stringify(localStorage).length` to calculate exactly how many bytes are currently occupied.
+   - Simulate a "500GB M5 Max SSD" by scaling the browser's 5MB-10MB limit to a realistic percentage.
+2. **First Aid:** A functional script that iterates through the `localStorage` keys and removes any corrupted or "Orphaned" data strings from old V2 builds.
+3. **Partition Logic:** Visualizes the "Containers"—explaining that Unit 1, Unit 5, and Unit 7 share the same physical drive but exist in different "Temporal Partitions."
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Disk Utility.
+1. UI: Create a split-view with a sidebar showing the drive hierarchy and a main view with the 'Storage Bar'.
+2. Logic: Implement a real-time calculation of LocalStorage usage to drive the 'Storage Bar' widths.
+3. Feature: Build a 'First Aid' animation—when clicked, show a pulsing glass scan that finishes with a green checkmark.
+4. Feature: Include an 'Erase' button that (with a double-confirmation glass dialog) clears the localStorage.
+5. Physics: Use 'Liquid Glass' for the action bar and 'Obsidian Glass' for the sidebar.
+Output Code Only."
+--- END OF Utlities/Disk Utility.md ---
+
+--- START OF Utlities/Keychain Access.md ---
+# 🔑 MODULE: TAHOE KEYCHAIN ACCESS (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** LocalStorage Encryption / Passkey Registry
+
+## 🎨 THE UI (APPLE KEYCHAIN 2026 PRINCIPLES)
+- **The Sidebar:** Categories for **'All Items'**, **'Passwords'**, **'Passkeys'**, **'Certificates'**, and **'Secure Notes'**.
+- **The Vault View:** A list of credentials with "Liquid Glass" rows. Each entry shows the Name, Kind (e.g., Restaurant Auth), and Date Modified.
+- **Visuals:** A large, 3D "Silicon Gold" key icon in the detail pane that pulses when an item is selected.
+- **Icon:** A vibrant gold-glass 3D key floating inside a refractive transparent cube.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Secure Registry:** A JSON object `KEYCHAIN_DATA` stored in an encrypted (Base64-simulated) string within `localStorage`.
+2. **The "Unlock" Mechanic:** When the app opens, it requires a "Passkey" (a simulated "Touch ID" or "Face ID" pulse on the screen) to reveal the data.
+3. **Lore-Based Keys:** Pre-populate the vault with:
+   - **XP_Restaurant_Admin:** Password: `••••••••`
+   - **Unit_1_Kernel_Root:** Passkey: `Silicon_Genesis_1984`
+   - **OpenClaw_Global_SSH:** Certificate: `Valid until 2029`
+4. **Copy Logic:** A functional "Copy Password" button that puts the string into the browser's clipboard.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Keychain Access Utility.
+1. UI: Create a split-pane layout with a 'Secure Obsidian' sidebar and a high-refraction main list.
+2. Logic: Implement a 'Search' bar that filters the keychain items in real-time.
+3. Feature: Build a 'Password Generator' tool inside the app that suggests strong 'Silicon-Grade' strings.
+4. Feature: Create a 'Lock' button in the toolbar that blurs the entire window until the user clicks a simulated 'Touch ID' sensor.
+5. Physics: Use 'Liquid Gold' gradients for the key icons and 'Glassmorphism' for the list items.
+Output Code Only."
+--- END OF Utlities/Keychain Access.md ---
+
+--- START OF Utlities/Terninal.md ---
+# 🐚 MODULE: TAHOE TERMINAL (2026)
+> **Target OS:** macOS Tahoe (Unit 7)
+> **Logic:** Xterm.js Simulation / Command-Line Interpreter
+
+## 🎨 THE UI (APPLE TERMINAL 2026 PRINCIPLES)
+- **The Window:** "Obsidian Glass" (`rgba(10, 10, 10, 0.85)`) with 50px background blur.
+- **Typography:** "SF Mono" or "JetBrains Mono" in a soft "Phosphor Green" or "Silicon White".
+- **Visuals:** A blurred, glowing cursor that pulses with the system's "Neural Beat."
+- **Icon:** A black square with a white `>_` prompt, rendered with a 2026 glass-morphism depth.
+
+## 🧪 THE LOGIC (CAVEMAN)
+1. **The Shell Interpreter:** A functional `onKeyPress` handler that parses strings into commands.
+2. **The File System Bridge:** The Terminal must be "Aware" of the **Finder.md** registry. Running `ls` should return the same files seen in the Tahoe Finder.
+3. **Core Commands:**
+    - `ls`: List files in the current Unit.
+    - `cd [unit]`: Navigate between Unit 1 and Unit 7.
+    - `claw -v`: Display the OpenClaw version and Architect info (@Aashmanshukla3223).
+    - `open [app]`: Launch a Tahoe app module via the command line.
+    - `sudo restaurant [name]`: Force-load a legacy OS (like Windows XP) into the Safari bridge.
+4. **Environment:** Set the prompt to `OpenClaw-V3: [Current_Folder] user$`.
+
+## ⚡ THE PROMPT INJECTION
+"Using `/caveman-full-stack-developer`: Build the Tahoe Terminal Utility.
+1. Create a deep-black refractive glass window with no scrollbars (auto-scroll only).
+2. Logic: Implement a basic command parser for 'ls', 'cd', 'clear', and 'help'.
+3. Feature: Create a custom 'claw' command that displays an ASCII art of a mechanical claw and repo stats.
+4. Integration: Ensure it resides in the 'Applications' state and is NOT pinned to the Dock by default.
+5. Physics: Use a 'Neon Glow' effect for the monospaced text to simulate 2026 high-contrast displays.
+Output Code Only."
+--- END OF Utlities/Terninal.md ---
