@@ -16,7 +16,6 @@ import {
   Wallet01Icon,
   GithubIcon,
   Calendar01Icon,
-  Note01Icon,
   DashboardSquare01Icon,
   Video01Icon,
   UserIcon

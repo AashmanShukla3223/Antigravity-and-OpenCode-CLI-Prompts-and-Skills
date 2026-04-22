@@ -67,13 +67,15 @@ export const iconDebugger = {
     images.forEach((img: Element) => {
       const htmlImg = img as HTMLImageElement;
       const iconPath = htmlImg.src.split('/').pop();
-      state[iconPath] = {
-        src: htmlImg.src,
-        naturalWidth: htmlImg.naturalWidth,
-        naturalHeight: htmlImg.naturalHeight,
-        complete: htmlImg.complete,
-        currentSrc: htmlImg.currentSrc
-      };
+      if (iconPath) {
+        state[iconPath] = {
+          src: htmlImg.src,
+          naturalWidth: htmlImg.naturalWidth,
+          naturalHeight: htmlImg.naturalHeight,
+          complete: htmlImg.complete,
+          currentSrc: htmlImg.currentSrc
+        };
+      }
     });
     return state;
   }

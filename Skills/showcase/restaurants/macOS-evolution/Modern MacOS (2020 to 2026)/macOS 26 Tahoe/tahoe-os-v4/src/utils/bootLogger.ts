@@ -53,6 +53,13 @@ export const bootLogger = {
   }
 };
 
+declare global {
+  interface Window {
+    __TAHOE_DEBUG__?: boolean;
+    __tahoeBootLogger: typeof bootLogger;
+  }
+}
+
 // Auto-dump logs on window unload for debugging
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
@@ -63,4 +70,4 @@ if (typeof window !== 'undefined') {
 }
 
 // Make available globally for debugging
-(window as any).__tahoeBootLogger = bootLogger;
+window.__tahoeBootLogger = bootLogger;
