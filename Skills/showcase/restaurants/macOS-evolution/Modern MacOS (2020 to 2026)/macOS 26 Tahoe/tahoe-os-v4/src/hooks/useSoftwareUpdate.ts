@@ -13,17 +13,13 @@ export const useSoftwareUpdate = () => {
     // 2. Beta Fetcher Logic
     const checkGitHubForUpdate = async () => {
       try {
-        // Fallback repo if environment variable isn't set (commented out for sim)
-        // const repo = import.meta.env.VITE_GITHUB_REPO || 'owner/repo'; 
-        
-        // Simulated fetch for demonstration purposes so the user can experience it immediately
-        // In a real scenario, this would be: 
-        // const res = await fetch(`https://api.github.com/repos/${repo}/contents`);
-        // const tree = await res.json();
-        // const hasUpdate = tree.some((node: any) => node.name.startsWith('macOS-27') && node.type === 'dir');
-        
-        // Simulating the check discovering 'macOS-27'
-        const hasUpdate = true; 
+        const repo = "google-gemini/macOS-Tahoe"; // Default target repo
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents`);
+        const data = await response.json();
+
+        if (!data || data.length === 0) return;
+
+        const hasUpdate = data.find((item: any) => item.name === 'macOS-27' && item.type === 'dir');
 
         if (hasUpdate && !updateAvailable) {
           setUpdateAvailable(true);

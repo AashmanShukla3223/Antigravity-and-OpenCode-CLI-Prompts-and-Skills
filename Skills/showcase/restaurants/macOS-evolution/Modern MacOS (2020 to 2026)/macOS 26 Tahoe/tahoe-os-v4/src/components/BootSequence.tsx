@@ -19,27 +19,14 @@ export const BootSequence: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // 432Hz Sine wave boot chime
+    // Play Startup Chime from public/sounds
     const playChime = () => {
       try {
-        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(432, audioCtx.currentTime); // Organic Silicon
-
-        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 4);
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 4);
+        const audio = new Audio('/sounds/startup chime.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log("Startup chime blocked by browser policy. User interaction required.", e));
       } catch (e) {
-        console.error("Audio API error", e);
+        console.error("Audio playback error", e);
       }
     };
 
