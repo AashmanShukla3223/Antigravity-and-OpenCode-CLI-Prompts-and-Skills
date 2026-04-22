@@ -26,7 +26,7 @@ const apps = [
 ];
 
 export const Dock: React.FC = () => {
-  const { launchApp, openApps, activeApp, unminimizeApp, minimizedApps } = useSystem();
+  const { launchApp, openApps, activeApp, unminimizeApp, minimizedApps, launchingApp } = useSystem();
   const { getDirectoryContents } = useFileSystem();
   
   const trashContents = getDirectoryContents('trash');
@@ -67,6 +67,7 @@ export const Dock: React.FC = () => {
             isOpen={openApps.includes(app.id)}
             isMinimized={false}
             isActive={activeApp === app.id}
+            isLaunching={launchingApp === app.id}
             onClick={() => handleAppClick(app.id)}
           />
         ))}
@@ -117,7 +118,7 @@ export const Dock: React.FC = () => {
   );
 };
 
-const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, onClick }: any) => {
+const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, isLaunching, onClick }: any) => {
   const ref = useRef<HTMLDivElement>(null);
   
   // True Magnification (1.0 -> 1.5 on hover based on distance)
@@ -141,6 +142,10 @@ const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, onClick 
       <motion.div
         ref={ref}
         style={{ width, height: width }}
+        animate={isLaunching ? { 
+          y: [0, -20, 0],
+          transition: { repeat: Infinity, duration: 0.5, ease: "easeOut" }
+        } : { y: 0 }}
         className={`relative flex items-center justify-center cursor-pointer
           ${isActive ? 'bg-white/20 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}

@@ -79,18 +79,18 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     }
   };
 
-  // Genie Effect Variants
+  // Genie Effect Variants (Tahoe Liquid Glass Physics)
   const genieVariants: Variants = {
     initial: { 
       opacity: 0,
       scaleX: 0.1,
-      scaleY: 0.05,
-      y: 500,
-      filter: "blur(15px) saturate(200%)",
+      scaleY: 0,
+      y: 600,
+      filter: "blur(40px) saturate(200%) brightness(1.2)",
     },
     animate: { 
       opacity: 1, 
-      scaleX: 1,
+      scaleX: 1, 
       scaleY: 1, 
       scale: 1, 
       y: 0,
@@ -99,23 +99,25 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       top: isMaximized ? '30px' : '80px',
       left: isMaximized ? 0 : '80px',
       borderRadius: isMaximized ? 0 : '1rem',
-      filter: "blur(0px)",
+      filter: "blur(0px) saturate(100%) brightness(1)",
       transition: {
         type: "spring",
-        stiffness: 260,
-        damping: 26
+        stiffness: 180,
+        damping: 24,
+        mass: 1.2,
+        opacity: { duration: 0.4 },
+        y: { type: "spring", stiffness: 220, damping: 28 }
       }
     },
     exit: { 
       opacity: 0,
-      scaleX: 0.1,
-      scaleY: 0.05,
-      y: 500, // Aim for Dock
-      x: 0,
-      filter: "blur(15px) saturate(200%)",
-      transition: {
-        duration: 0.5,
-        ease: [0.645, 0.045, 0.355, 1.000] // Smooth cubic-bezier for "sucking" feel
+      scaleX: 0.2,
+      scaleY: 0,
+      y: 600,
+      filter: "blur(40px) saturate(200%) brightness(1.5)",
+      transition: { 
+        duration: 0.4, 
+        ease: [0.32, 0, 0.67, 0] // Smooth "sucking" feel
       }
     }
   };

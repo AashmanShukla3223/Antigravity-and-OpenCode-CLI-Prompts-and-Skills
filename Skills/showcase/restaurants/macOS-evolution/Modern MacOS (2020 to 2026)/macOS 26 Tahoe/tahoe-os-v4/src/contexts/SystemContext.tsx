@@ -50,6 +50,7 @@ interface SystemContextProps {
   openApps: string[];
   minimizedApps: string[];
   maximizedApps: string[];
+  launchingApp: string | null;
   launchApp: (appId: string) => void;
   closeApp: (appId: string) => void;
   minimizeApp: (appId: string) => void;
@@ -84,6 +85,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [openApps, setOpenApps] = useState<string[]>([]);
   const [minimizedApps, setMinimizedApps] = useState<string[]>([]);
   const [maximizedApps, setMaximizedApps] = useState<string[]>([]);
+  const [launchingApp, setLaunchingApp] = useState<string | null>(null);
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -205,13 +207,22 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const launchApp = useCallback((appId: string) => {
     setOpenApps(prev => {
-      if (!prev.includes(appId)) {
-        return [...prev, appId];
+      if (prev.includes(appId)) {
+        setMinimizedApps(m => m.filter(id => id !== appId));
+        setActiveApp(appId);
+        return prev;
       }
+      
+      setLaunchingApp(appId);
+      
+      setTimeout(() => {
+        setOpenApps(current => [...current, appId]);
+        setLaunchingApp(null);
+        setActiveApp(appId);
+      }, 1000);
+      
       return prev;
     });
-    setMinimizedApps(prev => prev.filter(id => id !== appId));
-    setActiveApp(appId);
   }, []);
 
   const closeApp = useCallback((appId: string) => {
@@ -254,6 +265,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       openApps,
       minimizedApps,
       maximizedApps,
+      launchingApp,
       launchApp,
       closeApp,
       minimizeApp,
