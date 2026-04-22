@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
+import { useTelemetry } from '../../hooks/useTelemetry';
 import { Finder } from '../apps/Finder';
 import { Safari } from '../apps/Safari';
 import { SystemSettings } from '../apps/SystemSettings';
@@ -55,7 +56,8 @@ const AppMap: Record<string, React.FC> = {
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { systemState, activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp } = useSystem();
+  const { systemState, activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
+  const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +67,15 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
   const zIndex = isActive ? 50 : openApps.indexOf(appId) + 10;
 
   const AppContent = AppMap[appId] || (() => <div className="p-8 text-white">App not found: {appId}</div>);
+
+  // CPU resistance formula: higher cpu pressure = stiffer drag
+  const dragElastic = Math.max(0.1, 0.5 - (telemetry.cpuPressure * 0.4));
+
+  const handleDragEnd = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate([15, 30, 15]); // Physical snap feedback
+    }
+  };
 
   // Genie Effect Variants
   const genieVariants: Variants = {
@@ -109,6 +120,10 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
 
   if (isMinimized) return null;
 
+  // Determine appearance based on power mode
+  const isEndurance = powerMode === 'Low Power';
+  const isProMotion = powerMode === 'High Performance';
+
   return (
     <motion.div
       ref={windowRef}
@@ -116,24 +131,29 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       dragControls={controls}
       dragListener={false}
       dragMomentum={false}
+      dragElastic={dragElastic}
+      onDragEnd={handleDragEnd}
       onPointerDown={() => setActiveApp(appId)}
       variants={genieVariants}
       initial="initial"
       animate="animate"
       exit="exit"
       style={{ zIndex, position: 'absolute' }}
-      className={`rounded-2xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'}`}
+      className={`rounded-2xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'} ${isEndurance ? 'bg-amber-900/40 border-amber-500/30' : 'bg-white/5 dark:bg-black/20'} ${isProMotion ? 'border-white/40' : 'border-white/20'}`}
     >
       {/* Liquid Glass Background - Low Power Mode check */}
-      <div className={`absolute inset-0 bg-white/5 dark:bg-black/20 saturate-[150%] border border-white/20 pointer-events-none ${systemState.lowPowerMode ? '' : 'backdrop-blur-[40px]'}`} />
+      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isEndurance ? '' : 'backdrop-blur-[40px]'} ${isProMotion ? 'backdrop-blur-[50px] saturate-[200%]' : ''}`} />
 
       {/* Title Bar */}
       <div 
-        className={`h-12 w-full flex items-center justify-between px-4 border-b border-white/10 select-none cursor-default relative z-10 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/5'}`}
+        className={`h-12 w-full flex items-center justify-between px-4 border-b border-white/10 select-none cursor-default relative z-10 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/5'} ${isEndurance ? 'bg-amber-900/60' : ''}`}
         onPointerDown={(e) => {
           if (!isMaximized) {
             setActiveApp(appId);
             controls.start(e);
+            if (navigator.vibrate) {
+              navigator.vibrate(10); // Tap feel
+            }
           }
         }}
       >
@@ -154,7 +174,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
         </div>
 
         {/* Title */}
-        <div className={`text-sm font-medium flex-1 text-center truncate pointer-events-none transition-opacity ${isActive ? 'text-white' : 'text-white/50'}`}>
+        <div className={`text-sm font-medium flex-1 text-center truncate pointer-events-none transition-opacity ${isActive ? 'text-white' : 'text-white/50'} ${isEndurance ? 'text-amber-100' : ''}`}>
           {appId.charAt(0).toUpperCase() + appId.slice(1)}
         </div>
 
@@ -163,7 +183,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 relative z-10 overflow-hidden bg-white/5">
+      <div className={`flex-1 relative z-10 overflow-hidden ${isEndurance ? 'bg-amber-950/80' : 'bg-white/5'}`}>
         <AppContent />
       </div>
     </motion.div>

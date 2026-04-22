@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Activity01Icon } from 'hugeicons-react';
+import { EKGCanvas } from './EKGCanvas';
+import { useTelemetry } from '../../hooks/useTelemetry';
 
 export const ActivityMonitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CPU' | 'Memory' | 'Network'>('CPU');
+  const telemetry = useTelemetry();
+  
   const [processes, setProcesses] = useState(
     Array.from({ length: 15 }).map((_, i) => ({
       id: 1000 + i,
@@ -13,18 +17,18 @@ export const ActivityMonitor: React.FC = () => {
     }))
   );
 
-  // Simulate updating stats
+  // Simulate updating stats, but scale cpu load with our telemetry
   useEffect(() => {
     const timer = setInterval(() => {
       setProcesses((prev) =>
         prev.map((p) => ({
           ...p,
-          cpu: (Math.random() * 15).toFixed(1),
+          cpu: (Math.random() * 15 + telemetry.cpuPressure * 20).toFixed(1),
         }))
       );
     }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [telemetry.cpuPressure]);
 
   return (
     <div className="flex flex-col h-full w-full bg-white text-black font-sans">
@@ -81,24 +85,20 @@ export const ActivityMonitor: React.FC = () => {
         <div className="flex-1 flex flex-col justify-center">
           <div className="flex justify-between text-xs mb-1">
             <span>System:</span>
-            <span className="text-red-500 font-medium">12.4%</span>
+            <span className="text-red-500 font-medium">{(12.4 + telemetry.cpuPressure * 10).toFixed(1)}%</span>
           </div>
           <div className="flex justify-between text-xs mb-1">
             <span>User:</span>
-            <span className="text-blue-500 font-medium">8.2%</span>
+            <span className="text-blue-500 font-medium">{(8.2 + telemetry.cpuPressure * 20).toFixed(1)}%</span>
           </div>
           <div className="flex justify-between text-xs mb-1">
             <span>Idle:</span>
-            <span className="text-gray-500 font-medium">79.4%</span>
+            <span className="text-gray-500 font-medium">{(79.4 - telemetry.cpuPressure * 30).toFixed(1)}%</span>
           </div>
         </div>
-        <div className="flex-[2] bg-black/5 rounded-md border border-black/10 overflow-hidden relative flex items-end">
-          {/* Decorative Graph */}
-          <div className="w-full h-1/2 bg-blue-500/20 flex items-end gap-[1px]">
-             {Array.from({ length: 40 }).map((_, i) => (
-               <div key={i} className="flex-1 bg-blue-500/50 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
-             ))}
-          </div>
+        <div className="flex-[2] rounded-md overflow-hidden relative flex items-end">
+          {/* EKG Canvas Graph */}
+          <EKGCanvas />
         </div>
       </div>
     </div>

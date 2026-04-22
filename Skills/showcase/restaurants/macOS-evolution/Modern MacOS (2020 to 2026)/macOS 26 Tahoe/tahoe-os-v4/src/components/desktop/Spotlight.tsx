@@ -11,17 +11,20 @@ import {
   BookOpen01Icon,
   Wallet01Icon,
   Store01Icon,
-  Message01Icon
+  Message01Icon,
+  MagicWand01Icon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { AIEngine } from '../../utils/AIEngine';
 
 interface SearchResult {
   id: string;
   name: string;
-  type: 'app' | 'file' | 'repo' | 'video' | 'image';
+  type: 'app' | 'file' | 'repo' | 'video' | 'image' | 'ai';
   icon: React.ElementType;
   url?: string;
   appId?: string;
+  aiResponse?: string;
 }
 
 const mockResults: SearchResult[] = [
@@ -42,13 +45,21 @@ const mockResults: SearchResult[] = [
 ];
 
 export const Spotlight: React.FC = () => {
-  const { showSpotlight, setShowSpotlight, launchApp } = useSystem();
+  const system = useSystem();
+  const { showSpotlight, setShowSpotlight, launchApp, updateSystemState, setPowerMode } = system;
   const [query, setInput] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [clipboardHistory, setClipboardHistory] = useState<string[]>([]);
   const [actionMessage, setActionMessage] = useState<{contact: string, text: string} | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize AI Engine
+  const aiEngine = useRef(new AIEngine('mock-key', 'gemini', {
+    launchApp,
+    updateSystemState,
+    setPowerMode
+  }));
 
   useEffect(() => {
     if (showSpotlight) {
@@ -77,6 +88,21 @@ export const Spotlight: React.FC = () => {
     }
 
     const cmd = query.toUpperCase().trim();
+    
+    // AI Command detection (e.g. starting with "AI " or "HEY APPLE ")
+    if (cmd.startsWith('AI ') || cmd.startsWith('HEY APPLE ')) {
+      const prompt = query.replace(/^(ai |hey apple )/i, '');
+      setResults([{
+        id: 'ai-prompt',
+        name: `Ask Apple Intelligence: "${prompt}"`,
+        type: 'ai',
+        icon: MagicWand01Icon,
+        aiResponse: 'Press Enter to execute.'
+      }]);
+      setSelectedIndex(0);
+      return;
+    }
+
     if (cmd.startsWith('MESSAGE ') || cmd.startsWith('MSG ')) {
        const parts = query.split(' ');
        if (parts.length > 2) {
@@ -118,19 +144,26 @@ export const Spotlight: React.FC = () => {
     setSelectedIndex(0);
   }, [query, launchApp, setShowSpotlight]);
 
-  const handleAction = (result?: SearchResult) => {
+  const handleAction = async (result?: SearchResult) => {
     if (actionMessage) {
       console.log(`Sent "${actionMessage.text}" to ${actionMessage.contact}`);
       setShowSpotlight(false);
       return;
     }
     if (result) {
-      if (result.type === 'app' && result.appId) {
+      if (result.type === 'ai') {
+        const prompt = query.replace(/^(ai |hey apple )/i, '');
+        const res = await aiEngine.current.executeCommand(prompt);
+        // Display result briefly before closing (in a real app we'd show it in UI)
+        alert(`Apple Intelligence:\n${res}`);
+        setShowSpotlight(false);
+      } else if (result.type === 'app' && result.appId) {
         launchApp(result.appId);
+        setShowSpotlight(false);
       } else if (result.url) {
         window.open(result.url, '_blank');
+        setShowSpotlight(false);
       }
-      setShowSpotlight(false);
     }
   };
 
@@ -211,7 +244,7 @@ export const Spotlight: React.FC = () => {
                       </div>
                     </div>
                     {selectedIndex === index && (
-                      <span className="text-xs text-white/50 font-medium">⏎ Open</span>
+                      <span className="text-xs text-white/50 font-medium">⏎ {result.type === 'ai' ? 'Execute' : 'Open'}</span>
                     )}
                   </div>
                 ))}
