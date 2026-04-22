@@ -12,20 +12,18 @@ import {
   Message01Icon
 } from 'hugeicons-react';
 
-interface Contact {
-  id: string;
-  name: string;
-  avatar: string;
-  color: string;
-  initials: string;
-}
+import { contacts, Contact } from '../../utils/contacts';
 
-const contacts: Contact[] = [
-  { id: '1', name: 'Mishthi Sharma', avatar: '🌸', color: 'bg-pink-500', initials: 'MS' },
-  { id: '2', name: 'Poorvika Gupta', avatar: '🌟', color: 'bg-blue-500', initials: 'PG' },
-  { id: '3', name: 'Ms. Sonia Bajpai', avatar: '🎓', color: 'bg-purple-600', initials: 'SB' },
-  { id: '4', name: 'Shreya Verma', avatar: '🦋', color: 'bg-emerald-500', initials: 'SV' },
+const getInitials = (name: string) => {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+};
+
+const colors = [
+  'bg-pink-500', 'bg-blue-500', 'bg-purple-600', 'bg-emerald-500', 
+  'bg-orange-500', 'bg-red-500', 'bg-indigo-500', 'bg-teal-500'
 ];
+
+const getContactColor = (id: number) => colors[id % colors.length];
 
 export const FaceTime: React.FC = () => {
   const { updateSystemState, systemState, launchApp } = useSystem();
@@ -36,6 +34,12 @@ export const FaceTime: React.FC = () => {
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isCalling, setIsCalling] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredContacts = contacts.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const startCamera = async () => {
@@ -88,22 +92,27 @@ export const FaceTime: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Search" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-9 pr-3 text-xs focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
               />
            </div>
         </div>
 
         <div className="flex-1 overflow-y-auto scrollbar-hide space-y-1 px-2">
-          {contacts.map(contact => (
+          {filteredContacts.map(contact => (
             <div 
               key={contact.id}
               className={`p-3 flex items-center justify-between rounded-xl transition-all group hover:bg-white/5`}
             >
                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${contact.color} flex items-center justify-center text-white font-bold text-sm shadow-inner relative`}>
-                     {contact.initials}
+                  <div className={`w-10 h-10 rounded-full ${getContactColor(contact.id)} flex items-center justify-center text-white font-bold text-sm shadow-inner relative`}>
+                     {getInitials(contact.name)}
                   </div>
-                  <span className="text-sm font-semibold tracking-tight">{contact.name}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold tracking-tight">{contact.name}</span>
+                    <span className="text-[10px] text-white/40 truncate w-32">{contact.title}</span>
+                  </div>
                </div>
                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => launchApp('messages')} className="p-2 hover:bg-white/10 rounded-lg text-blue-400">
@@ -126,8 +135,8 @@ export const FaceTime: React.FC = () => {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-zinc-900/90 backdrop-blur-2xl"
             >
-               <div className={`w-24 h-24 rounded-full ${selectedContact.color} flex items-center justify-center text-white text-3xl font-black mb-6 shadow-2xl animate-pulse`}>
-                  {selectedContact.initials}
+               <div className={`w-24 h-24 rounded-full ${getContactColor(selectedContact.id)} flex items-center justify-center text-white text-3xl font-black mb-6 shadow-2xl animate-pulse`}>
+                  {getInitials(selectedContact.name)}
                </div>
                <h2 className="text-3xl font-bold mb-2">{selectedContact.name}</h2>
                <p className="text-white/40 font-medium uppercase tracking-[0.3em] text-[10px] mb-12">FaceTime Video...</p>

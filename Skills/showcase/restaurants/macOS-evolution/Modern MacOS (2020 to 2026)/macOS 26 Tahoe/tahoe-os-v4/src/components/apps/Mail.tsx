@@ -3,12 +3,49 @@ import { motion } from 'framer-motion';
 import { Search01Icon, Mail01Icon, SentIcon, FileEditIcon, StarIcon, ArchiveIcon, Edit01Icon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 
+import { contacts } from '../../utils/contacts';
+
 const emailsData = [
-  { id: 1, sender: 'Craig F.', subject: 'Unit 6: Flat Era is now open for contributors', date: '10:42 AM', unread: true, body: 'Team, we are moving past the flat era and into the liquid glass future. Please check the new PRDs for Tahoe.' },
-  { id: 2, sender: 'Tim C.', subject: 'Apple Event: One More Thing', date: 'Yesterday', unread: false, body: 'I am excited to share that Tahoe OS 26 is going to be our most advanced OS yet. See you all at the keynote.' },
-  { id: 3, sender: 'Apple Developer', subject: 'Your app was approved', date: 'Monday', unread: false, body: 'Great news! Your app has been approved for the macOS 26 Store.' },
-  { id: 4, sender: 'Design Team', subject: 'New Liquid Glass specs', date: 'Sunday', unread: true, body: 'Attached are the updated refractive indices for the blur layers.' },
-  { id: 5, sender: 'Joz', subject: 'Hair Force One updates', date: 'Last Week', unread: false, body: 'Making sure the window dragging physics feel as smooth as ever at 120fps.' }
+  { 
+    id: 1, 
+    sender: contacts.find(c => c.name.includes('Sonia Bajpai'))?.name || 'Sonia Bajpai', 
+    subject: 'Tahoe OS Project Zero: Unit 7 Era', 
+    date: '10:42 AM', 
+    unread: true, 
+    body: 'Team, we are officially moving into the "Unit 7" era of Apple computing. Tahoe OS 26 must bridge the gap between legacy desktop metaphors and our futuristic "Frozen Prompt" architectures. I expect full commitment to the Silicon-Native Liquid Glass aesthetic.' 
+  },
+  { 
+    id: 2, 
+    sender: contacts.find(c => c.name.includes('Devyani Trivedi'))?.name || 'Devyani Trivedi', 
+    subject: 'Operations Update: Apple Park Logistics', 
+    date: 'Yesterday', 
+    unread: false, 
+    body: 'We have finalized the logistics for the upcoming Tahoe Digital HQ expansion. All SVPs should review the workspace allocation by Friday.' 
+  },
+  { 
+    id: 3, 
+    sender: contacts.find(c => c.name.includes('Nishi Garg'))?.name || 'Nishi Garg', 
+    subject: 'Liquid Glass Spec Finalization', 
+    date: 'Monday', 
+    unread: false, 
+    body: 'The 50px blur and 190% saturation standards are now locked. Lead devs should ensure all Framer Motion physics are tuned to 120fps.' 
+  },
+  { 
+    id: 4, 
+    sender: contacts.find(c => c.name.includes('Aaditya Kumar'))?.name || 'Aaditya Kumar', 
+    subject: 'M5 Chip Performance Heap', 
+    date: 'Sunday', 
+    unread: true, 
+    body: 'Early benchmarks for the M5 silicon show significant headroom. We are expanding the Performance Memory API to support larger heaps for the SystemContext.' 
+  },
+  { 
+    id: 5, 
+    sender: contacts.find(c => c.name.includes('Vanya Chaudhary'))?.name || 'Vanya Chaudhary', 
+    subject: 'UI: True-Magnification Dock', 
+    date: 'Last Week', 
+    unread: false, 
+    body: 'The magnification curves for the Dock are now mathematically perfect. Please pull the latest SVG path updates for the brand icons.' 
+  }
 ];
 
 export const Mail: React.FC = () => {

@@ -9,28 +9,30 @@ import {
   Location01Icon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { contacts, Contact } from '../../utils/contacts';
 
-interface Contact {
-  id: string;
-  name: string;
-  initials: string;
-  color: string;
-  phone: string;
-  email: string;
-  role: string;
-}
+const getInitials = (name: string) => {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+};
 
-const contacts: Contact[] = [
-  { id: '1', name: 'Mishthi Sharma', initials: 'MS', color: 'bg-pink-500', phone: '+1 (555) 012-3456', email: 'mishthi@apple.com', role: 'UX Architect' },
-  { id: '2', name: 'Poorvika Gupta', initials: 'PG', color: 'bg-blue-500', phone: '+1 (555) 012-7890', email: 'poorvika@apple.com', role: 'Silicon Engineer' },
-  { id: '3', name: 'Ms. Sonia Bajpai', initials: 'SB', color: 'bg-purple-600', phone: '+1 (555) 012-1111', email: 'sonia@apple.com', role: 'Genealogy Guardian' },
-  { id: '4', name: 'Shreya Verma', initials: 'SV', color: 'bg-emerald-500', phone: '+1 (555) 012-2222', email: 'shreya@apple.com', role: 'Core OS Lead' },
+const colors = [
+  'bg-pink-500', 'bg-blue-500', 'bg-purple-600', 'bg-emerald-500', 
+  'bg-orange-500', 'bg-red-500', 'bg-indigo-500', 'bg-teal-500'
 ];
+
+const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Contacts: React.FC = () => {
   const { launchApp } = useSystem();
   const [selectedId, setSelectedId] = useState(contacts[0].id);
   const selected = contacts.find(c => c.id === selectedId) || contacts[0];
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredContacts = contacts.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex h-full w-full bg-white dark:bg-zinc-950 text-black dark:text-white overflow-hidden font-sans">
@@ -49,19 +51,22 @@ export const Contacts: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Search" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-zinc-200/50 dark:bg-white/5 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs focus:ring-2 focus:ring-blue-500/50 outline-none"
               />
            </div>
         </div>
 
         <div className="flex-1 overflow-y-auto scrollbar-hide space-y-px">
-          {contacts.map(c => (
+          {filteredContacts.map(c => (
             <div 
               key={c.id}
               onClick={() => setSelectedId(c.id)}
               className={`px-6 py-3 cursor-pointer transition-all ${selectedId === c.id ? 'bg-blue-500 text-white font-bold' : 'hover:bg-zinc-200 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300'}`}
             >
-              {c.name}
+              <div className="text-sm">{c.name}</div>
+              <div className={`text-[10px] truncate ${selectedId === c.id ? 'text-white/80' : 'text-zinc-400'}`}>{c.title}</div>
             </div>
           ))}
         </div>
@@ -70,11 +75,12 @@ export const Contacts: React.FC = () => {
       {/* Profile Detail */}
       <div className="flex-1 overflow-y-auto p-12 scrollbar-hide">
          <div className="max-w-xl mx-auto flex flex-col items-center">
-            <div className={`w-32 h-32 rounded-full ${selected.color} flex items-center justify-center text-white text-4xl font-black shadow-2xl mb-6`}>
-               {selected.initials}
+            <div className={`w-32 h-32 rounded-full ${getContactColor(selected.id)} flex items-center justify-center text-white text-4xl font-black shadow-2xl mb-6`}>
+               {getInitials(selected.name)}
             </div>
-            <h2 className="text-4xl font-bold tracking-tight mb-1">{selected.name}</h2>
-            <p className="text-zinc-500 font-medium mb-8">{selected.role}</p>
+            <h2 className="text-4xl font-bold tracking-tight mb-1 text-center">{selected.name}</h2>
+            <p className="text-zinc-500 font-medium mb-1 text-center">{selected.title}</p>
+            <p className="text-zinc-400 text-sm font-semibold mb-8 uppercase tracking-widest">{selected.department}</p>
 
             {/* Quick Actions */}
             <div className="flex gap-4 mb-12">
@@ -108,8 +114,8 @@ export const Contacts: React.FC = () => {
                </div>
                <div className="p-4 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Location</div>
-                    <div className="text-sm font-medium">Apple Park, Cupertino</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1">Work</div>
+                    <div className="text-sm font-medium">{selected.work}</div>
                   </div>
                   <Location01Icon size={20} className="text-zinc-300" />
                </div>
