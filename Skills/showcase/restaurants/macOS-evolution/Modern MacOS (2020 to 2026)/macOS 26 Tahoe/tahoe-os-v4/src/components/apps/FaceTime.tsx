@@ -12,7 +12,7 @@ import {
   Message01Icon
 } from 'hugeicons-react';
 
-import { contacts, Contact } from '../../utils/contacts';
+import { contacts, type Contact } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();

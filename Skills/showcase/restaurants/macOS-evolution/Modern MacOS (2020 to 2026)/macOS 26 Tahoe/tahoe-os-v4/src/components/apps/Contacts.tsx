@@ -9,7 +9,7 @@ import {
   Location01Icon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
-import { contacts, Contact } from '../../utils/contacts';
+import { contacts } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
