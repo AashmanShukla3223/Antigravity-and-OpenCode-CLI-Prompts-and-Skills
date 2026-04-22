@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   GlobalIcon, 
   Mail01Icon, 
@@ -30,56 +30,69 @@ interface AppIconProps {
 }
 
 export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32, isFull = false }) => {
+  const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({});
   const iconProps = { size: size * 0.6, className: "z-10 text-white drop-shadow-lg hugeicon-tahoe" };
 
+  const base = (import.meta as any).env?.BASE_URL || '/';
   const localIcons: Record<string, string> = {
-    'safari': '/icons/safari.png',
-    'settings': '/icons/settings.png',
-    'music': '/icons/music.png',
-    'messages': '/icons/messages.png',
-    'facetime': '/icons/facetime.png',
-    'finder': '/icons/finder.png',
-    'systemsettings': '/icons/settings.png',
-    'itunes': '/icons/itunes.png',
-    'appstore': '/icons/appstore.png',
-    'mail': '/icons/mail.png',
-    'maps': '/icons/maps.png',
-    'photos': '/icons/photos.png',
-    'files': '/icons/files.png',
-    'soundtest': '/icons/garageband.png',
-    'trash': isFull ? '/icons/trash_full.png' : '/icons/trash_empty.png',
-    'calendar': '/icons/calendar.png',
-    'clock': '/icons/clock.png',
-    'contacts': '/icons/contacts.png',
-    'reminders': '/icons/reminders.png',
-    'stickies': '/icons/stickies.png',
-    'notes': '/icons/notes.png',
-    'terminal': '/icons/terminal.png',
-    'activitymonitor': '/icons/activity.png',
-    'calculator': '/icons/calculator.png',
-    'phone': '/icons/phone.png',
-    'keynote': '/icons/keynote.png',
-    'pages': '/icons/pages.png',
-    'numbers': '/icons/numbers.png',
-    'tv': '/icons/tv.png',
-    'applearcade': '/icons/arcade.png',
-    'iphonemirroring': '/icons/mirroring.png',
-    'console': '/icons/console.png',
-    'controlcenter': '/icons/controlcenter.png',
-    'keychainaccess': '/icons/keychain.png',
-    'apps': '/icons/apps.png',
-    'weather': '/icons/weather.png',
-    'camera': '/icons/camera.png',
-    'books': '/icons/books.png',
-    'wallet': '/icons/wallet.png',
-    'github': '/icons/github.png'
+    'safari': `${base}icons/safari.png`,
+    'settings': `${base}icons/settings.png`,
+    'music': `${base}icons/music.png`,
+    'messages': `${base}icons/messages.png`,
+    'facetime': `${base}icons/facetime.png`,
+    'finder': `${base}icons/finder.png`,
+    'systemsettings': `${base}icons/settings.png`,
+    'itunes': `${base}icons/itunes.png`,
+    'appstore': `${base}icons/appstore.png`,
+    'mail': `${base}icons/mail.png`,
+    'maps': `${base}icons/maps.png`,
+    'photos': `${base}icons/photos.png`,
+    'files': `${base}icons/files.png`,
+    'soundtest': `${base}icons/garageband.png`,
+    'trash': isFull ? `${base}icons/trash_full.png` : `${base}icons/trash_empty.png`,
+    'calendar': `${base}icons/calendar.png`,
+    'clock': `${base}icons/clock.png`,
+    'contacts': `${base}icons/contacts.png`,
+    'reminders': `${base}icons/reminders.png`,
+    'stickies': `${base}icons/stickies.png`,
+    'notes': `${base}icons/notes.png`,
+    'terminal': `${base}icons/terminal.png`,
+    'activitymonitor': `${base}icons/activity.png`,
+    'calculator': `${base}icons/calculator.png`,
+    'phone': `${base}icons/phone.png`,
+    'keynote': `${base}icons/keynote.png`,
+    'pages': `${base}icons/pages.png`,
+    'numbers': `${base}icons/numbers.png`,
+    'tv': `${base}icons/tv.png`,
+    'applearcade': `${base}icons/arcade.png`,
+    'iphonemirroring': `${base}icons/mirroring.png`,
+    'console': `${base}icons/console.png`,
+    'controlcenter': `${base}icons/controlcenter.png`,
+    'keychainaccess': `${base}icons/keychain.png`,
+    'apps': `${base}icons/apps.png`,
+    'weather': `${base}icons/weather.png`,
+    'camera': `${base}icons/camera.png`,
+    'books': `${base}icons/books.png`,
+    'wallet': `${base}icons/wallet.png`,
+    'github': `${base}icons/github.png`
+  };
+
+  const handleImageError = (iconId: string) => {
+    const iconPath = localIcons[iconId];
+    console.error(`❌ Icon load failed: ${iconId} (${iconPath})`, {
+      iconId,
+      iconPath,
+      timestamp: new Date().toISOString()
+    });
+    setImageLoadError(prev => ({ ...prev, [iconId]: true }));
   };
 
   const renderIcon = () => {
     const idLower = id.toLowerCase();
     const localIcon = localIcons[idLower];
+    const hasError = imageLoadError[idLower];
     
-    if (localIcon) {
+    if (localIcon && !hasError) {
       if (idLower === 'calendar') {
         const date = new Date();
         return (
@@ -96,12 +109,38 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
 
       return (
         <div className="w-full h-full">
-          <img src={localIcon} alt={id} className="w-full h-full object-contain" />
+          <img 
+            src={localIcon} 
+            alt={id} 
+            className="w-full h-full object-contain" 
+            onError={() => {
+              console.error(`Image failed: ${idLower} from ${localIcon}`);
+              handleImageError(idLower);
+            }}
+            onLoad={() => {
+              if (idLower === 'stickies') {
+                console.log('✅ Stickies.png loaded successfully');
+              }
+            }}
+            loading={idLower === 'stickies' ? 'eager' : 'lazy'}
+          />
         </div>
       );
     }
 
+    // Fallback icons for when image load fails or no icon defined
     switch (idLower) {
+      case 'stickies':
+        return (
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-yellow-300 to-yellow-500 border border-white/30 shadow-lg overflow-hidden">
+            <div className="space-y-1 px-2">
+              <div className="w-6 h-0.5 bg-black/20 rounded" />
+              <div className="w-5 h-0.5 bg-black/20 rounded" />
+              <div className="w-4 h-0.5 bg-black/20 rounded" />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
+          </div>
+        );
       case 'finder':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-[#5AC8FA] to-[#007AFF] shadow-inner overflow-hidden border border-white/20">
@@ -252,12 +291,6 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
              <Calendar01Icon {...iconProps} className="text-blue-500 hugeicon-tahoe" />
              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-transparent pointer-events-none" />
-          </div>
-        );
-      case 'stickies':
-        return (
-          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-yellow-200 to-yellow-400 border border-black/5 shadow-lg overflow-hidden">
-             <Note01Icon {...iconProps} className="text-yellow-900 hugeicon-tahoe" />
           </div>
         );
       case 'apps':
