@@ -50,12 +50,12 @@ export const Phone: React.FC = () => {
         <div className="w-full max-w-md mb-12">
            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-4 text-left px-2">Recent Continuity Sync</div>
            <div className="grid grid-cols-4 gap-4">
-              {contacts.slice(1, 5).map(contact => (
+              {[contacts.find(c => c.name.includes('Kritharth')), ...contacts.slice(2, 5)].map(contact => contact && (
                 <div key={contact.id} className="flex flex-col items-center gap-2">
                    <div className={`w-12 h-12 rounded-full ${getContactColor(contact.id)} flex items-center justify-center text-white font-bold text-xs shadow-lg border border-white/10`}>
                       {getInitials(contact.name)}
                    </div>
-                   <span className="text-[10px] font-medium text-zinc-400 truncate w-16">{contact.name.split(' ')[1]}</span>
+                   <span className="text-[10px] font-medium text-zinc-400 truncate w-16 text-center">{contact.name.split(' ')[0]}</span>
                 </div>
               ))}
            </div>
