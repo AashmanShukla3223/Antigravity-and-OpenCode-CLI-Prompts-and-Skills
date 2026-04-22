@@ -7,9 +7,7 @@ import {
   Call02Icon, 
   Message01Icon, 
   Video01Icon,
-  Mail01Icon,
   InformationCircleIcon,
-  Mic01Icon,
   MicOff01Icon,
   VolumeHighIcon
 } from 'hugeicons-react';
@@ -32,7 +30,6 @@ export const Phone: React.FC = () => {
   const [selectedId, setSelectedId] = useState(contacts[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialing, setIsDialing] = useState(false);
-  const [callDuration, setCallDuration] = useState(0);
 
   const selected = contacts.find(c => c.id === selectedId) || contacts[0];
 
