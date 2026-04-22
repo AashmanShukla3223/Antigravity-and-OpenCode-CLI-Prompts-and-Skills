@@ -26,6 +26,7 @@ import { Contacts } from '../apps/Contacts';
 import { AppleMusic } from '../apps/AppleMusic';
 import { iTunesStore } from '../apps/iTunesStore';
 import { SoundTest } from '../apps/SoundTest';
+import { Installer } from '../apps/Installer';
 
 interface WindowProps {
   appId: string;
@@ -53,6 +54,7 @@ const AppMap: Record<string, React.FC> = {
   music: AppleMusic,
   itunes: iTunesStore,
   soundtest: SoundTest,
+  installer: Installer,
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {

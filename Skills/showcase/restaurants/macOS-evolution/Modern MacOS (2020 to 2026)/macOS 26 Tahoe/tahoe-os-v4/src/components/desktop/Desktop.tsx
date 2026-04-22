@@ -12,14 +12,17 @@ import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
 import { Folder01Icon, File01Icon } from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
+import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
+import { NotificationBanner } from './NotificationBanner';
 
 export const Desktop: React.FC = () => {
   const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
-  // Initialize Dynamic Wallpaper Hook
+  // Initialize Hooks
   useDynamicWallpaper();
+  const { updateAvailable, dismissUpdate } = useSoftwareUpdate();
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -138,6 +141,7 @@ export const Desktop: React.FC = () => {
 
       <AboutThisMac />
       <RestartDialog />
+      <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} />
       <Spotlight />
 
       {/* Custom Context Menu */}
