@@ -59,6 +59,22 @@ export const BootSequence: React.FC = () => {
 
       await new Promise((r) => setTimeout(r, 800));
       
+      // Transition to next boot state
+      if (recoveryTriggered.current) {
+        console.log("Boot: Transitioning to recovery");
+        setBootState('recovery');
+      } else if (!systemState.setup_complete) {
+        console.log("Boot: Transitioning to setup");
+        setBootState('setup');
+      } else {
+        console.log("Boot: Transitioning to login");
+        setBootState('login');
+      }
+    };
+
+    // Safety timeout: if boot doesn't complete in 15s, force transition
+    const safetyTimeout = setTimeout(() => {
+      console.warn("Boot sequence timeout, forcing transition");
       if (recoveryTriggered.current) {
         setBootState('recovery');
       } else if (!systemState.setup_complete) {
@@ -66,12 +82,13 @@ export const BootSequence: React.FC = () => {
       } else {
         setBootState('login');
       }
-    };
+    }, 15000);
 
     startBoot();
 
     return () => {
       clearTimeout(chimeTimeout);
+      clearTimeout(safetyTimeout);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [systemState.setup_complete, setBootState]);

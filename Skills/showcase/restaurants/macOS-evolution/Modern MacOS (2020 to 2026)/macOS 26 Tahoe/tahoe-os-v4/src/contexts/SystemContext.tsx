@@ -97,19 +97,33 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Initialize from LocalStorage
   useEffect(() => {
-    const saved = localStorage.getItem('tahoe_v3_state');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('tahoe_v3_state');
+      if (saved) {
         const parsed = JSON.parse(saved);
         setSystemState({ ...defaultState, ...parsed });
-      } catch (e) {
-        console.error('Failed to parse tahoe_v3_state', e);
+      }
+    } catch (e) {
+      console.error('Failed to parse tahoe_v3_state, clearing corrupted data', e);
+      // Clear corrupted data to allow fresh start
+      try {
+        localStorage.removeItem('tahoe_v3_state');
+      } catch (e2) {
+        console.error('Failed to clear localStorage', e2);
       }
     }
 
-    // Battery API
+    // Battery API with timeout to prevent hanging
     if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((batt: any) => {
+      const batteryTimeout = setTimeout(() => {
+        console.warn('Battery API timeout, continuing without battery info');
+      }, 2000);
+      
+      Promise.race([
+        (navigator as any).getBattery(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Battery API timeout')), 2000))
+      ]).then((batt: any) => {
+        clearTimeout(batteryTimeout);
         const updateBattery = () => {
           setBattery({
             level: batt.level,
@@ -119,6 +133,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         updateBattery();
         batt.addEventListener('levelchange', updateBattery);
         batt.addEventListener('chargingchange', updateBattery);
+      }).catch((e) => {
+        clearTimeout(batteryTimeout);
+        console.warn('Battery API unavailable:', e);
       });
     }
 

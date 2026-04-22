@@ -32,16 +32,30 @@ export const SetupAssistant: React.FC = () => {
 
   useEffect(() => {
     if (step === 12) {
+      console.log("Setup Step 12: Initializing finalization timer");
       // Automatic finalization after 3s (progress bar fills)
+      // Capture form state at this moment
+      const userData = { fullName, accountName, password, avatar: selectedEmoji };
+      
       const timer = setTimeout(() => {
-        restoreSystemNodes();
-        updateSystemState({
-          setup_complete: true,
-          user: { fullName, accountName, password, avatar: selectedEmoji }
-        });
-        setBootState('desktop'); // Fade straight into the Desktop as per PRD
+        console.log("Setup Step 12: Auto-finalizing setup with data:", userData);
+        try {
+          restoreSystemNodes();
+          updateSystemState({
+            setup_complete: true,
+            user: userData
+          });
+          setBootState('desktop'); // Fade straight into the Desktop as per PRD
+        } catch (e) {
+          console.error("Setup finalization error:", e);
+          // Force transition anyway
+          setBootState('desktop');
+        }
       }, 3000);
-      return () => clearTimeout(timer);
+      return () => {
+        console.log("Setup Step 12: Clearing finalization timer");
+        clearTimeout(timer);
+      };
     }
   }, [step, fullName, accountName, password, selectedEmoji, updateSystemState, setBootState, restoreSystemNodes]);
 
@@ -366,12 +380,19 @@ export const SetupAssistant: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.5 }}
                 onClick={() => {
-                  restoreSystemNodes();
-                  updateSystemState({
-                    setup_complete: true,
-                    user: { fullName, accountName, password, avatar: selectedEmoji }
-                  });
-                  setBootState('desktop');
+                  console.log("Setup: Manual 'Get Started' button clicked");
+                  try {
+                    restoreSystemNodes();
+                    updateSystemState({
+                      setup_complete: true,
+                      user: { fullName, accountName, password, avatar: selectedEmoji }
+                    });
+                    console.log("Setup: Transitioning to desktop");
+                    setBootState('desktop');
+                  } catch (e) {
+                    console.error("Setup error on Get Started:", e);
+                    setBootState('desktop'); // Force transition anyway
+                  }
                 }}
                 className="px-10 py-3 rounded-xl bg-white text-black font-bold shadow-2xl hover:scale-105 transition-transform"
               >
