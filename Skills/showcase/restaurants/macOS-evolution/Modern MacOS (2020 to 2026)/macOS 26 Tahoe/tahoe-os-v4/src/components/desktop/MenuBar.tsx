@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
 import { 
   BatteryFullIcon, 
@@ -7,7 +7,8 @@ import {
   BatteryMedium01Icon, 
   Wifi01Icon, 
   Settings01Icon, 
-  Search01Icon
+  Search01Icon,
+  MagicWand01Icon
 } from 'hugeicons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
@@ -15,6 +16,91 @@ import { AppIcon } from '../common/AppIcon';
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
 }
+
+const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const { systemState, updateSystemState } = useSystem();
+  const [key, setKey] = useState(systemState.apiKey || '');
+  const [isSaved, setIsSaved] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    updateSystemState({ apiKey: key });
+    setIsSaved(true);
+    // In a real environment, we would trigger a backend/CLI write here.
+    // For this simulation, we'll signal the "pulse" bridge.
+    console.log('STARDUST_API_KEY_SYNC', key);
+    setTimeout(() => {
+      setIsSaved(false);
+      onClose();
+    }, 1500);
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[60px] saturate-[200%] border border-white/20 rounded-[28px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] p-5 z-50 text-white overflow-hidden"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+            <MagicWand01Icon size={20} />
+          </div>
+          <div>
+            <div className="text-sm font-bold tracking-tight">Apple Intelligence</div>
+            <div className="text-[10px] text-white/40 font-medium uppercase tracking-widest">System Controller</div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <p className="text-[11px] text-white/60 leading-relaxed">
+            Configure your Gemini API key to enable system-wide natural language control and predictive intelligence.
+          </p>
+
+          <div className="relative">
+            <input 
+              type="password"
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+              placeholder="Enter Gemini API Key..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/20"
+            />
+            {isSaved && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-green-400"
+              >
+                SAVED
+              </motion.div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <button 
+              onClick={handleSave}
+              className="flex-1 bg-white/10 hover:bg-white/20 py-2.5 rounded-xl text-xs font-bold transition-all border border-white/5"
+            >
+              Update Pulse Key
+            </button>
+          </div>
+          
+          <div className="text-[9px] text-center text-white/20 uppercase font-bold tracking-[0.2em] pt-2">
+            Encrypted & Silicon-Native
+          </div>
+        </div>
+
+        {/* Starlight Ambient Glow */}
+        <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/20 blur-[50px] pointer-events-none" />
+        <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none" />
+      </motion.div>
+    </>
+  );
+};
 
 const ForceQuit: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { openApps, closeApp } = useSystem();
@@ -211,6 +297,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
+  const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
 
@@ -402,6 +489,18 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
         >
           <Settings01Icon size={14} className="hugeicon-tahoe" />
         </div>
+        
+        {/* Apple Intelligence Icon */}
+        <div className="relative h-full">
+          <div 
+            className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-1 ${intelligenceOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+            onClick={() => setIntelligenceOpen(!intelligenceOpen)}
+          >
+            <MagicWand01Icon size={16} className={`hugeicon-tahoe ${intelligenceOpen ? 'text-purple-400' : 'text-white/80'}`} />
+          </div>
+          <IntelligencePopup isOpen={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} />
+        </div>
+
         <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition font-medium">
           {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>

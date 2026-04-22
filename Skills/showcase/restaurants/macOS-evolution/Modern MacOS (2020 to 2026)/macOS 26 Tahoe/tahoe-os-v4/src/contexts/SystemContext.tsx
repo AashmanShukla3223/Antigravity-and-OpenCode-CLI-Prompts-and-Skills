@@ -20,6 +20,7 @@ export interface TahoeV3State {
   notchVisible: boolean;
   glassBlurIntensity: number;
   lowPowerMode: boolean;
+  apiKey?: string;
 }
 
 const defaultState: TahoeV3State = {
@@ -35,6 +36,7 @@ const defaultState: TahoeV3State = {
   notchVisible: true,
   glassBlurIntensity: 50,
   lowPowerMode: false,
+  apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || '',
 };
 
 interface SystemContextProps {
