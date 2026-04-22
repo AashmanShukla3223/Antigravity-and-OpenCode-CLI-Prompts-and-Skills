@@ -11,7 +11,7 @@ export const SoundTest: React.FC = () => {
   const playSound = (name: string) => {
     // Standard alert simulation logic
     const audio = new Audio(`/sounds/${name}.mp3`);
-    audio.play().catch(e => {
+    audio.play().catch(() => {
         console.warn("AIFF not supported, trying fallback...");
         // Tahoe glass fallback (sine)
         if (name === 'glass') {
