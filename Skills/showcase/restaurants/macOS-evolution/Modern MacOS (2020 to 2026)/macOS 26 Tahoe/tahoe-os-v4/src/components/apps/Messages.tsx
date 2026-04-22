@@ -9,32 +9,35 @@ import {
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 
-interface Contact {
-  id: string;
-  name: string;
-  avatar: string;
-  color: string;
-  lastMessage: string;
-  initials: string;
-}
+import { contacts } from '../../utils/contacts';
 
-const contacts: Contact[] = [
-  { id: '1', name: 'Mishthi Sharma', avatar: '🌸', color: 'bg-pink-500', lastMessage: 'The Tahoe design is incredible!', initials: 'MS' },
-  { id: '2', name: 'Poorvika Gupta', avatar: '🌟', color: 'bg-blue-500', lastMessage: 'Did you see the new A19 chips?', initials: 'PG' },
-  { id: '3', name: 'Ms. Sonia Bajpai', avatar: '🎓', color: 'bg-purple-600', lastMessage: 'Reviewing the genealogy now.', initials: 'SB' },
-  { id: '4', name: 'Shreya Verma', avatar: '🦋', color: 'bg-emerald-500', lastMessage: 'Let’s FaceTime later!', initials: 'SV' },
+const getInitials = (name: string) => {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+};
+
+const colors = [
+  'bg-pink-500', 'bg-blue-500', 'bg-purple-600', 'bg-emerald-500', 
+  'bg-orange-500', 'bg-red-500', 'bg-indigo-500', 'bg-teal-500'
 ];
+
+const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Messages: React.FC = () => {
   const { launchApp } = useSystem();
-  const [selectedContact, setSelectedContact] = useState<Contact>(contacts[0]);
+  const [selectedContact, setSelectedContact] = useState(contacts[0]);
   const [inputText, setInputText] = useState('');
-  const [chatHistory, setChatHistory] = useState<Record<string, any[]>>({
-    '1': [{ id: 1, text: 'The Tahoe design is incredible!', isSender: false }],
-    '2': [{ id: 1, text: 'Did you see the new A19 chips?', isSender: false }],
-    '3': [{ id: 1, text: 'Reviewing the genealogy now.', isSender: false }],
-    '4': [{ id: 1, text: 'Let’s FaceTime later!', isSender: false }],
+  const [searchQuery, setSearchQuery] = useState('');
+  const [chatHistory, setChatHistory] = useState<Record<number, any[]>>({
+    1: [{ id: 1, text: 'The Tahoe design is incredible!', isSender: false }],
+    2: [{ id: 1, text: 'Unit 7 Era is officially underway.', isSender: false }],
+    3: [{ id: 1, text: 'Reviewing the workspace allocation.', isSender: false }],
+    4: [{ id: 1, text: 'Benchmarks look solid on M5.', isSender: false }],
   });
+
+  const filteredContacts = contacts.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [genmojiPrompt, setGenmojiPrompt] = useState('');
@@ -89,20 +92,22 @@ export const Messages: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Search" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-zinc-200/50 dark:bg-white/5 border-none rounded-lg py-1.5 pl-9 pr-3 text-xs focus:ring-2 focus:ring-blue-500/50 outline-none"
               />
            </div>
         </div>
 
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          {contacts.map(contact => (
+          {filteredContacts.map(contact => (
             <div 
               key={contact.id}
               onClick={() => setSelectedContact(contact)}
               className={`px-4 py-3 flex items-center gap-3 cursor-pointer transition-all ${selectedContact.id === contact.id ? 'bg-blue-500' : 'hover:bg-zinc-200 dark:hover:bg-white/5'}`}
             >
-               <div className={`w-12 h-12 rounded-full ${contact.color} flex items-center justify-center text-white font-bold text-lg shadow-inner border border-white/10 relative`}>
-                  {contact.initials}
+               <div className={`w-12 h-12 rounded-full ${getContactColor(contact.id)} flex items-center justify-center text-white font-bold text-lg shadow-inner border border-white/10 relative`}>
+                  {getInitials(contact.name)}
                   <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full" />
                </div>
                <div className="flex-1 min-w-0">
@@ -110,7 +115,7 @@ export const Messages: React.FC = () => {
                      <span className={`text-sm font-bold truncate ${selectedContact.id === contact.id ? 'text-white' : 'text-black dark:text-white'}`}>{contact.name}</span>
                      <span className={`text-[10px] ${selectedContact.id === contact.id ? 'text-white/70' : 'text-zinc-400'}`}>10:42 AM</span>
                   </div>
-                  <p className={`text-xs truncate ${selectedContact.id === contact.id ? 'text-white/80' : 'text-zinc-500'}`}>{contact.lastMessage}</p>
+                  <p className={`text-[10px] truncate ${selectedContact.id === contact.id ? 'text-white/80' : 'text-zinc-500'}`}>{contact.title}</p>
                </div>
             </div>
           ))}
@@ -122,8 +127,11 @@ export const Messages: React.FC = () => {
         {/* Chat Header */}
         <div className="h-16 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between px-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full ${selectedContact.color} flex items-center justify-center text-white text-xs font-black`}>{selectedContact.initials}</div>
-              <span className="font-bold tracking-tight">{selectedContact.name}</span>
+              <div className={`w-8 h-8 rounded-full ${getContactColor(selectedContact.id)} flex items-center justify-center text-white text-[10px] font-black`}>{getInitials(selectedContact.name)}</div>
+              <div className="flex flex-col">
+                <span className="font-bold tracking-tight text-sm leading-tight">{selectedContact.name}</span>
+                <span className="text-[9px] text-zinc-500 font-medium uppercase tracking-widest">{selectedContact.title}</span>
+              </div>
            </div>
            <div className="flex items-center gap-4">
               <button onClick={() => launchApp('facetime')} className="text-blue-500 hover:text-blue-600 transition-colors">
