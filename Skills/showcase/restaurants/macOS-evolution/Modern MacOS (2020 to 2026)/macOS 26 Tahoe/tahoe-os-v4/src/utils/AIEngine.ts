@@ -5,13 +5,13 @@ export interface SystemActions {
 }
 
 export class AIEngine {
-  private apiKey: string;
-  private provider: 'gemini' | 'openai' | 'anthropic';
+  private _apiKey: string;
+  private _provider: 'gemini' | 'openai' | 'anthropic';
   private actions: SystemActions;
 
   constructor(apiKey: string, provider: 'gemini' | 'openai' | 'anthropic', actions: SystemActions) {
-    this.apiKey = apiKey;
-    this.provider = provider;
+    this._apiKey = apiKey;
+    this._provider = provider;
     this.actions = actions;
   }
 

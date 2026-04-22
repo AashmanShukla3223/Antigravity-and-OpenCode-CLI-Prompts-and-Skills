@@ -56,7 +56,7 @@ const AppMap: Record<string, React.FC> = {
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { systemState, activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
+  const { activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
