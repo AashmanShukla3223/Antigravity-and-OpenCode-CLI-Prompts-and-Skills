@@ -18,6 +18,7 @@ export const IncomingCallOverlay: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const previewRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -26,12 +27,26 @@ export const IncomingCallOverlay: React.FC = () => {
       audioRef.current = new Audio('/sounds/opening.mp3');
       audioRef.current.loop = true;
       audioRef.current.play().catch(e => console.log("Audio play blocked", e));
+
+      // Start preview camera
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          if (previewRef.current) {
+            previewRef.current.srcObject = stream;
+          }
+        })
+        .catch(err => console.error("Preview camera error:", err));
     }
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
+      }
+      // Clean up preview if unmounting
+      if (previewRef.current?.srcObject) {
+        const stream = previewRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
       }
     };
   }, [incomingCall, accepted]);
@@ -71,11 +86,20 @@ export const IncomingCallOverlay: React.FC = () => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
+    // Clean up preview stream
+    if (previewRef.current?.srcObject) {
+      const stream = previewRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+    }
   };
 
   const handleDecline = () => {
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+    }
+    if (previewRef.current?.srcObject) {
+      const stream = previewRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
     }
     setIncomingCall(null);
@@ -94,49 +118,64 @@ export const IncomingCallOverlay: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-2xl"
-      >
-        {!accepted ? (
-          <motion.div
-            initial={{ scale: 0.9, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            className="w-[400px] bg-white/10 border border-white/20 rounded-[3rem] p-10 flex flex-col items-center text-center shadow-2xl"
-          >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-green-400 to-blue-500 mb-6 flex items-center justify-center text-4xl shadow-lg">
-              {incomingCall.contact.name.charAt(0)}
+      {!accepted ? (
+        <motion.div
+          initial={{ opacity: 0, x: -100, y: -20, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -100, scale: 0.9 }}
+          className="fixed top-12 left-6 z-[1000] w-[360px] bg-black/40 backdrop-blur-[50px] saturate-[200%] border border-white/20 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col pointer-events-auto"
+        >
+          {/* Notification Header */}
+          <div className="flex items-center gap-3 p-4 border-b border-white/10">
+            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg">
+               <Video01Icon size={16} />
             </div>
-            <h1 className="text-3xl font-black text-white mb-1">{incomingCall.contact.name}</h1>
-            <p className="text-white/50 text-sm font-bold uppercase tracking-widest mb-12">
-              {incomingCall.type === 'facetime' ? 'FaceTime Video...' : 'Incoming Call...'}
-            </p>
-
-            <div className="flex gap-12">
-              <button
-                onClick={handleDecline}
-                className="group flex flex-col items-center gap-2"
-              >
-                <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                   <Call02Icon size={32} className="rotate-[135deg]" />
-                </div>
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">Decline</span>
-              </button>
-
-              <button
-                onClick={handleAccept}
-                className="group flex flex-col items-center gap-2"
-              >
-                <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                   {incomingCall.type === 'facetime' ? <Video01Icon size={32} /> : <Call02Icon size={32} />}
-                </div>
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">Accept</span>
-              </button>
+            <div className="flex-1">
+               <div className="text-[11px] font-black uppercase tracking-widest text-white/40">Incoming FaceTime</div>
+               <div className="text-sm font-bold text-white">{incomingCall.contact.name}</div>
             </div>
-          </motion.div>
-        ) : (
+          </div>
+
+          {/* Live Preview Container */}
+          <div className="relative h-48 bg-zinc-900 flex items-center justify-center overflow-hidden">
+             <video 
+               ref={previewRef}
+               autoPlay
+               muted
+               playsInline
+               className="w-full h-full object-cover scale-x-[-1]"
+               style={{ filter: 'brightness(0.8) contrast(1.2)' }}
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+             <div className="absolute bottom-4 left-4 text-[10px] font-bold text-white/60 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                Live Preview
+             </div>
+          </div>
+
+          {/* Interactive Actions */}
+          <div className="p-4 flex gap-3">
+             <button
+               onClick={handleDecline}
+               className="flex-1 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-2xl text-red-400 text-xs font-black uppercase tracking-widest transition-all"
+             >
+               Decline
+             </button>
+             <button
+               onClick={handleAccept}
+               className="flex-1 py-3 bg-green-500 hover:bg-green-600 rounded-2xl text-white text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20"
+             >
+               Accept
+             </button>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-2xl"
+        >
           <div className="relative w-full h-full flex flex-col items-center justify-center">
             {/* Camera Feed with Tahoe Edge-Light Filter */}
             <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -183,8 +222,8 @@ export const IncomingCallOverlay: React.FC = () => {
                <ControlCircle icon={Message01Icon} />
             </div>
           </div>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 };
