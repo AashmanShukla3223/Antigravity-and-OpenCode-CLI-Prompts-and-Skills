@@ -50,6 +50,13 @@ export const SystemSettings: React.FC = () => {
         setStorageInfo({ used, total, percent: (used / total) * 100 });
       });
     }
+
+    const handleOpenTab = (e: any) => {
+      if (e.detail?.tab) setCurrentTab(e.detail.tab);
+      if (e.detail?.step !== undefined) setResetStep(e.detail.step);
+    };
+    window.addEventListener('open-settings-tab', handleOpenTab);
+    return () => window.removeEventListener('open-settings-tab', handleOpenTab);
   }, []);
 
   const handleReset = () => resetSystem('activation');
