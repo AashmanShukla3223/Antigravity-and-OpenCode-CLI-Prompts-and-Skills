@@ -72,7 +72,7 @@ export const AboutThisMac: React.FC = () => {
 
   const handleMoreInfo = () => {
     setShowAboutWindow(false);
-    launchApp('system-settings');
+    launchApp('settings');
     // Give System Settings a moment to mount/open if it wasn't already
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('open-settings-tab', { detail: { tab: 'General', step: 5 } }));
