@@ -32,7 +32,6 @@ export const Messages: React.FC = () => {
     2: [{ id: 1, text: 'Unit 7 Era is officially underway.', isSender: false }],
     3: [{ id: 1, text: 'Reviewing the workspace allocation.', isSender: false }],
     4: [{ id: 1, text: 'Benchmarks look solid on M5.', isSender: false }],
-    32: [{ id: 1, text: 'How is the new Liquid Glass implementation coming along?', isSender: false }],
   });
 
   const filteredContacts = contacts.filter(c => 

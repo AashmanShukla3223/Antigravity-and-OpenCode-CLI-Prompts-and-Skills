@@ -45,14 +45,6 @@ const emailsData = [
     date: 'Last Week', 
     unread: false, 
     body: 'The magnification curves for the Dock are now mathematically perfect. Please pull the latest SVG path updates for the brand icons.' 
-  },
-  { 
-    id: 6, 
-    sender: contacts.find(c => c.name.includes('Kritharth Tiwari'))?.name || 'Kritharth Tiwari', 
-    subject: 'Core Architecture Update: Tahoe v26.1', 
-    date: '11:15 AM', 
-    unread: true, 
-    body: 'Team, as we approach the final stages of Tahoe OS 26.0, I want us to start looking at the v26.1 roadmap. We need to prioritize deep integration of the Performance Memory API across all system components.' 
   }
 ];
 
