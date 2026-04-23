@@ -26,8 +26,9 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const FaceTime: React.FC = () => {
-  const { updateSystemState, systemState, launchApp } = useSystem();
+  const { updateSystemState, systemState, launchApp, setIncomingCall } = useSystem();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [_error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -40,6 +41,25 @@ export const FaceTime: React.FC = () => {
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    if (isCalling) {
+      ringtoneRef.current = new Audio('/sounds/opening.mp3');
+      ringtoneRef.current.loop = true;
+      ringtoneRef.current.play().catch(e => console.log("Ringtone blocked", e));
+    } else {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current = null;
+      }
+    }
+    return () => {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current = null;
+      }
+    };
+  }, [isCalling]);
 
   useEffect(() => {
     const startCamera = async () => {
@@ -73,6 +93,11 @@ export const FaceTime: React.FC = () => {
   const handleCall = (contact: Contact) => {
     setSelectedContact(contact);
     setIsCalling(true);
+    // Simulation: Call automatically triggers incoming call after 5 seconds
+    setTimeout(() => {
+      setIsCalling(false);
+      setIncomingCall({ contact, type: 'facetime' });
+    }, 5000);
   };
 
   return (

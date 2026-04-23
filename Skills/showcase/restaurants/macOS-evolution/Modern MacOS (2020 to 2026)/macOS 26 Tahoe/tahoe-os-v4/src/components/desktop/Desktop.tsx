@@ -14,6 +14,7 @@ import { Folder01Icon, File01Icon } from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { NotificationBanner } from './NotificationBanner';
+import { IncomingCallOverlay } from './IncomingCallOverlay';
 
 export const Desktop: React.FC = () => {
   const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp } = useSystem();
@@ -143,6 +144,7 @@ export const Desktop: React.FC = () => {
       <RestartDialog />
       <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} />
       <Spotlight />
+      <IncomingCallOverlay />
 
       {/* Custom Context Menu */}
       <AnimatePresence>

@@ -26,12 +26,32 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Phone: React.FC = () => {
-  const { launchApp } = useSystem();
+  const { launchApp, setIncomingCall } = useSystem();
   const [selectedId, setSelectedId] = useState(contacts[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialing, setIsDialing] = useState(false);
+  const ringtoneRef = React.useRef<HTMLAudioElement | null>(null);
 
   const selected = contacts.find(c => c.id === selectedId) || contacts[0];
+
+  React.useEffect(() => {
+    if (isDialing) {
+      ringtoneRef.current = new Audio('/sounds/opening.mp3');
+      ringtoneRef.current.loop = true;
+      ringtoneRef.current.play().catch(e => console.log("Ringtone blocked", e));
+    } else {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current = null;
+      }
+    }
+    return () => {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current = null;
+      }
+    };
+  }, [isDialing]);
 
   const filteredContacts = contacts.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -42,7 +62,11 @@ export const Phone: React.FC = () => {
 
   const handleDial = () => {
     setIsDialing(true);
-    // In the future, this would trigger the iPhone handoff
+    // Simulation: 5 second delay before incoming call
+    setTimeout(() => {
+      setIsDialing(false);
+      setIncomingCall({ contact: selected, type: 'phone' });
+    }, 5000);
   };
 
   return (

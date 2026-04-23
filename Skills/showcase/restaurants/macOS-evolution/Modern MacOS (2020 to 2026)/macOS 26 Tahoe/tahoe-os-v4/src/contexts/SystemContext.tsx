@@ -62,6 +62,8 @@ interface SystemContextProps {
   setShowSpotlight: (show: boolean) => void;
   showRestartDialog: boolean;
   setShowRestartDialog: (show: boolean) => void;
+  incomingCall: { contact: any; type: 'facetime' | 'phone' } | null;
+  setIncomingCall: (call: { contact: any; type: 'facetime' | 'phone' } | null) => void;
   contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null;
   setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null) => void;
   // Hardware Info
@@ -89,6 +91,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
+  const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null>(null);
 
   // Hardware State
@@ -280,6 +283,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setShowSpotlight,
       showRestartDialog,
       setShowRestartDialog,
+      incomingCall,
+      setIncomingCall,
       contextMenu,
       setContextMenu,
       battery,

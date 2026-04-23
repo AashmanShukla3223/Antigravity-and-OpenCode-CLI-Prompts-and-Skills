@@ -8,14 +8,78 @@ import {
   Wifi01Icon, 
   Settings01Icon, 
   Search01Icon,
-  MagicWand01Icon
+  MagicWand01Icon,
+  Video01Icon
 } from 'hugeicons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
+import { contacts } from '../../utils/contacts';
 
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
 }
+
+const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const { setIncomingCall } = useSystem();
+  const [calling, setCalling] = useState<number | null>(null);
+
+  if (!isOpen) return null;
+
+  const handleCall = (contact: any) => {
+    setCalling(contact.id);
+    // Simulation: 5 second delay before incoming call
+    setTimeout(() => {
+      setIncomingCall({ contact, type: 'facetime' });
+      setCalling(null);
+      onClose();
+    }, 5000);
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[60px] saturate-[200%] border border-white/20 rounded-[28px] shadow-2xl p-4 z-50 text-white overflow-hidden"
+      >
+        <div className="flex items-center justify-between mb-4 px-2">
+          <span className="text-sm font-bold text-white/50 uppercase tracking-widest">FaceTime Tahoe</span>
+          <Video01Icon size={16} className="text-green-400" />
+        </div>
+
+        <div className="max-h-[400px] overflow-y-auto pr-1 space-y-1 scrollbar-hide">
+          {contacts.map((contact) => (
+            <div
+              key={contact.id}
+              onClick={() => !calling && handleCall(contact)}
+              className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all ${
+                calling === contact.id ? 'bg-green-500/20 border border-green-500/30' : 'hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <div className="flex flex-col">
+                <span className="text-sm font-bold">{contact.name}</span>
+                <span className="text-[10px] text-white/40">{contact.title}</span>
+              </div>
+              {calling === contact.id ? (
+                <motion.div
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-[10px] font-bold text-green-400 uppercase tracking-widest"
+                >
+                  Initiating...
+                </motion.div>
+              ) : (
+                <Video01Icon size={18} className="text-white/20 hover:text-green-400 transition-colors" />
+              )}
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </>
+  );
+};
 
 const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { systemState, updateSystemState } = useSystem();
@@ -297,6 +361,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
+  const [facetimeMenuOpen, setFacetimeMenuOpen] = useState(false);
   const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
@@ -473,6 +538,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
             <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
           </div>
           <BatteryDropdown isOpen={batteryMenuOpen} battery={battery} onClose={() => setBatteryMenuOpen(false)} />
+        </div>
+        <div className="relative h-full">
+          <div 
+            className={`cursor-pointer px-2 h-full flex items-center rounded transition ${facetimeMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+            onClick={() => setFacetimeMenuOpen(!facetimeMenuOpen)}
+          >
+            <Video01Icon size={16} className={`hugeicon-tahoe ${facetimeMenuOpen ? 'text-green-400' : 'text-white/80'}`} />
+          </div>
+          <FaceTimeDropdown isOpen={facetimeMenuOpen} onClose={() => setFacetimeMenuOpen(false)} />
         </div>
         <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
           <Wifi01Icon size={14} className="hugeicon-tahoe" />
