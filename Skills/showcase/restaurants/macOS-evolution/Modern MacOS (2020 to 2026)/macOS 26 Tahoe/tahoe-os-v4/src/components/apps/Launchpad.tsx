@@ -20,6 +20,7 @@ const apps = [
   { id: 'stickies', name: 'Stickies' },
   { id: 'contacts', name: 'Contacts' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
+  { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },
 ];
 

@@ -15,12 +15,12 @@ import {
   BookOpen01Icon,
   Wallet01Icon,
   GithubIcon,
-  Calendar01Icon,
-  DashboardSquare01Icon,
+  Calendar01Icon, 
+  DashboardSquare01Icon, 
   Video01Icon,
-  UserIcon
-} from 'hugeicons-react';
-
+  UserIcon,
+  SmartPhone01Icon
+  } from 'hugeicons-react';
 interface AppIconProps {
   id: string;
   className?: string;
@@ -64,7 +64,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'numbers': `${base}icons/numbers.png`,
     'tv': `${base}icons/tv.png`,
     'applearcade': `${base}icons/arcade.png`,
-    'iphonemirroring': `${base}icons/mirroring.png`,
+    'iphonemirroring': `${base}icons/iPhone Mirroring.png`,
     'console': `${base}icons/console.png`,
     'controlcenter': `${base}icons/controlcenter.png`,
     'keychainaccess': `${base}icons/keychain.png`,
@@ -307,6 +307,13 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-green-400 to-green-600 border border-white/30 shadow-lg overflow-hidden">
              <Video01Icon {...iconProps} />
              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
+          </div>
+        );
+      case 'iphonemirroring':
+        return (
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-zinc-900 border border-white/20 shadow-lg overflow-hidden">
+             <SmartPhone01Icon {...iconProps} className="text-white hugeicon-tahoe" />
+             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
           </div>
         );
       case 'contacts':

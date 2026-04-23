@@ -28,6 +28,8 @@ import { iTunesStore } from '../apps/iTunesStore';
 import { SoundTest } from '../apps/SoundTest';
 import { Installer } from '../apps/Installer';
 
+import { iPhoneMirroring } from '../apps/iPhoneMirroring';
+
 interface WindowProps {
   appId: string;
 }
@@ -55,6 +57,7 @@ const AppMap: Record<string, React.FC> = {
   itunes: iTunesStore,
   soundtest: SoundTest,
   installer: Installer,
+  iphonemirroring: iPhoneMirroring,
 };
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {

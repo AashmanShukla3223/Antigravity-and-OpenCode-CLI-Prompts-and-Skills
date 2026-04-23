@@ -21,6 +21,7 @@ const apps = [
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },
   { id: 'github', name: 'GitHub' },
+  { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },
   { id: 'soundtest', name: 'Sound Test' },
 ];
