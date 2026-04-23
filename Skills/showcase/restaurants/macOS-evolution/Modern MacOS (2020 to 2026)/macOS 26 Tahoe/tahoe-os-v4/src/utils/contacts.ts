@@ -62,16 +62,6 @@ export const contacts: Contact[] = [
     faceTime: 'nishi.garg@icloud.com'
   },
   {
-    id: 32,
-    name: 'Kritharth Tiwari',
-    title: 'Senior VP of Software Engineering',
-    department: 'Software Engineering',
-    phone: '+91 98XXX XXXXX',
-    email: 'kritharth.tiwari@icloud.com',
-    work: 'Apple Park, Cupertino / Tahoe Digital HQ',
-    faceTime: 'kritharth.tiwari@icloud.com'
-  },
-  {
     id: 6,
     name: 'Ms. Shalu Bhatia',
     title: 'Chief Hardware Officer',
