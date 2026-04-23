@@ -72,11 +72,7 @@ const initialNodes: FileSystemNode[] = [
 const FileSystemContext = createContext<FileSystemContextProps | undefined>(undefined);
 
 export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [nodes, setNodes] = useState<FileSystemNode[]>(initialNodes);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Load from localStorage asynchronously to prevent blocking
-  useEffect(() => {
+  const [nodes, setNodes] = useState<FileSystemNode[]>(() => {
     try {
       const saved = localStorage.getItem('tahoe_v3_fs');
       if (saved) {
@@ -86,29 +82,22 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
           const macHD = initialNodes.find(n => n.id === 'macintosh-hd');
           if (macHD) parsed.push(macHD);
         }
-        setNodes(parsed);
+        return parsed;
       }
     } catch (e) {
-      console.error('Failed to load tahoe_v3_fs from localStorage', e);
-      // Clear corrupted data and use defaults
-      localStorage.removeItem('tahoe_v3_fs');
-      setNodes(initialNodes);
+      console.error('Failed to load tahoe_v3_fs', e);
     }
-    setIsLoaded(true);
-  }, []);
+    return initialNodes;
+  });
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('tahoe_v3_fs', JSON.stringify(nodes));
-    }
-  }, [nodes, isLoaded]);
+    localStorage.setItem('tahoe_v3_fs', JSON.stringify(nodes));
+  }, [nodes]);
 
   // Initial self-heal for critical nodes
   useEffect(() => {
-    if (isLoaded) {
-      restoreSystemNodes();
-    }
-  }, [isLoaded]);
+    restoreSystemNodes();
+  }, []);
 
   const createNode = (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => {
     setNodes(prev => [...prev, { 

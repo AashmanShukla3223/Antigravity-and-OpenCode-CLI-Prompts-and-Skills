@@ -82,7 +82,17 @@ const SystemContext = createContext<SystemContextProps | undefined>(undefined);
 
 export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [bootState, setBootState] = useState<BootState>('booting');
-  const [systemState, setSystemState] = useState<TahoeV3State>(defaultState);
+  const [systemState, setSystemState] = useState<TahoeV3State>(() => {
+    try {
+      const saved = localStorage.getItem('tahoe_v3_state');
+      if (saved) {
+        return { ...defaultState, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      console.error('Failed to parse tahoe_v3_state', e);
+    }
+    return defaultState;
+  });
   const [activeApp, setActiveApp] = useState<string | null>(null);
   const [openApps, setOpenApps] = useState<string[]>([]);
   const [minimizedApps, setMinimizedApps] = useState<string[]>([]);
@@ -102,24 +112,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(Date.now());
 
-  // Initialize from LocalStorage
+  // Initialize Hardware APIs
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('tahoe_v3_state');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setSystemState({ ...defaultState, ...parsed });
-      }
-    } catch (e) {
-      console.error('Failed to parse tahoe_v3_state, clearing corrupted data', e);
-      // Clear corrupted data to allow fresh start
-      try {
-        localStorage.removeItem('tahoe_v3_state');
-      } catch (e2) {
-        console.error('Failed to clear localStorage', e2);
-      }
-    }
-
     // Battery API with timeout to prevent hanging
     if ('getBattery' in navigator) {
       const batteryTimeout = setTimeout(() => {
@@ -159,7 +153,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       window.removeEventListener('launch-app', handleLaunchApp);
       clearInterval(ticker);
     };
-  }, []);
+  }, [startTime]);
 
   // Power Mode Logic based on Battery & lowPowerMode state
   useEffect(() => {

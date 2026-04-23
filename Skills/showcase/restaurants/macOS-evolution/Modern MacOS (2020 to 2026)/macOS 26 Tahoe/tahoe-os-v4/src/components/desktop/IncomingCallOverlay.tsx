@@ -120,10 +120,10 @@ export const IncomingCallOverlay: React.FC = () => {
     <AnimatePresence>
       {!accepted ? (
         <motion.div
-          initial={{ opacity: 0, x: -100, y: -20, scale: 0.9 }}
+          initial={{ opacity: 0, x: 100, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-          exit={{ opacity: 0, x: -100, scale: 0.9 }}
-          className="fixed top-12 left-6 z-[1000] w-[360px] bg-black/40 backdrop-blur-[50px] saturate-[200%] border border-white/20 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col pointer-events-auto"
+          exit={{ opacity: 0, x: 100, scale: 0.9 }}
+          className="fixed top-12 right-6 z-[1000] w-[360px] bg-black/40 backdrop-blur-[50px] saturate-[200%] border border-white/20 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col pointer-events-auto"
         >
           {/* Notification Header */}
           <div className="flex items-center gap-3 p-4 border-b border-white/10">
