@@ -79,7 +79,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       if (idLower === 'calendar') {
         const date = new Date();
         return (
-          <div className="relative flex flex-col items-center w-full h-full true-squircle bg-white border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex flex-col items-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
              <div className="w-full bg-[#FF3B30] h-[30%] flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-tighter">
                {date.toLocaleDateString('en-US', { month: 'short' })}
              </div>
@@ -91,7 +91,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       }
 
       return (
-        <div className="w-full h-full true-squircle">
+        <div className="w-full h-full rounded-[22%] overflow-hidden">
           <img 
             src={localIcon} 
             alt={id} 
@@ -105,7 +105,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     switch (idLower) {
       case 'stickies':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-yellow-300 to-yellow-500 border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-yellow-300 to-yellow-500 border border-white/30 shadow-lg overflow-hidden">
             <div className="space-y-1 px-2">
               <div className="w-6 h-0.5 bg-black/20 rounded" />
               <div className="w-5 h-0.5 bg-black/20 rounded" />
@@ -116,7 +116,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
         );
       case 'finder':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-[#5AC8FA] to-[#007AFF] shadow-inner overflow-hidden border border-white/20">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-[#5AC8FA] to-[#007AFF] shadow-inner overflow-hidden border border-white/20">
             <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
                <div className="flex gap-2.5">
                  <div className="w-2 h-4 bg-white/90 rounded-full" />
@@ -129,7 +129,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
         );
       case 'safari':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-white/10 backdrop-blur-md border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white/10 backdrop-blur-md border border-white/30 shadow-lg overflow-hidden">
             <div className="absolute w-[90%] h-[90%] rounded-full bg-gradient-to-br from-blue-400 to-blue-600 shadow-inner" />
             <GlobalIcon {...iconProps} />
             <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
@@ -137,21 +137,21 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
         );
       case 'mail':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-sky-400 to-blue-500 border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-sky-400 to-blue-500 border border-white/30 shadow-lg overflow-hidden">
              <div className="absolute top-0 w-full h-1/2 bg-white/10" />
              <Mail01Icon {...iconProps} />
           </div>
         );
       case 'messages':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-green-400 to-green-500 border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-green-400 to-green-600 border border-white/30 shadow-lg overflow-hidden">
              <Message01Icon {...iconProps} />
              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
           </div>
         );
       case 'photos':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-white border border-white/20 shadow-lg overflow-hidden p-1.5">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white border border-white/20 shadow-lg overflow-hidden p-1.5">
              <div className="grid grid-cols-2 grid-rows-2 gap-0.5 w-full h-full rounded-sm overflow-hidden">
                 <div className="bg-pink-400 rounded-tl-sm" />
                 <div className="bg-blue-400 rounded-tr-sm" />
@@ -163,39 +163,39 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
         );
       case 'settings':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-gray-400 to-gray-600 border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-gray-400 to-gray-600 border border-white/30 shadow-lg overflow-hidden">
              <Settings01Icon {...iconProps} />
              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
           </div>
         );
       case 'trash':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-white/5 backdrop-blur-md border border-white/10 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white/5 backdrop-blur-md border border-white/10 shadow-lg overflow-hidden">
              <Delete02Icon {...iconProps} className={`${isFull ? 'text-white' : 'text-white/40'} hugeicon-tahoe`} />
           </div>
         );
       case 'music':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-gradient-to-br from-pink-500 to-red-500 border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-pink-500 to-red-500 border border-white/30 shadow-lg overflow-hidden">
              <MusicNote01Icon {...iconProps} />
           </div>
         );
       case 'terminal':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-zinc-800 border border-white/20 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-zinc-800 border border-white/20 shadow-lg overflow-hidden">
              <ComputerTerminal01Icon {...iconProps} className="text-green-400 hugeicon-tahoe" />
           </div>
         );
       case 'iphonemirroring':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-zinc-900 border border-white/20 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-zinc-900 border border-white/20 shadow-lg overflow-hidden">
              <SmartPhone01Icon {...iconProps} className="text-white hugeicon-tahoe" />
              <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
           </div>
         );
       case 'contacts':
         return (
-          <div className="relative flex items-center justify-center w-full h-full true-squircle bg-white border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100 rounded-b-[22%]" />
              <UserIcon {...iconProps} className="text-gray-600 hugeicon-tahoe" />
              <div className="absolute top-2 right-2 flex gap-0.5">
@@ -205,14 +205,14 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
           </div>
         );
       default:
-        return <div className="bg-white/10 backdrop-blur-md w-full h-full true-squircle flex items-center justify-center text-white text-xs">{id}</div>;
+        return <div className="bg-white/10 backdrop-blur-md w-full h-full rounded-[22%] flex items-center justify-center text-white text-xs">{id}</div>;
     }
   };
 
   return (
     <div className={`w-full h-full relative group transition-transform ${className}`}>
       {renderIcon()}
-      <div className="absolute inset-0 true-squircle bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none" />
+      <div className="absolute inset-0 rounded-[22%] bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none" />
     </div>
   );
 };
