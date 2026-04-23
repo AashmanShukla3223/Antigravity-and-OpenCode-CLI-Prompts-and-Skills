@@ -139,11 +139,10 @@ export const AboutThisMac: React.FC = () => {
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none"
       >
-        {/* 2. Visuals: Centered Liquid Glass modal with 25px backdrop blur */}
-        <div className="w-[600px] bg-white/10 dark:bg-black/40 backdrop-blur-[25px] border border-white/20 dark:border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden pointer-events-auto flex flex-col font-sans">
+        <div className="w-[320px] bg-white/10 dark:bg-black/60 backdrop-blur-[25px] border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden pointer-events-auto flex flex-col font-sans p-8 items-center text-center">
           
-          {/* Header Controls */}
-          <div className="flex items-center px-4 py-3 border-b border-black/5 dark:border-white/5">
+          {/* Header Controls (Close only) */}
+          <div className="absolute top-6 left-6">
             <button 
               onClick={() => setShowAboutWindow(false)}
               className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF5F56]/80 flex items-center justify-center transition-colors group"
@@ -152,52 +151,60 @@ export const AboutThisMac: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex flex-1 p-8 gap-8 items-center">
-            {/* Left: Device Render */}
-            <div className="w-[240px] flex items-center justify-center drop-shadow-2xl">
-               {renderDeviceImage()}
-            </div>
+          {/* Device Render (Vertical Layout) */}
+          <div className="w-full flex items-center justify-center drop-shadow-2xl mb-8 mt-4">
+             {renderDeviceImage()}
+          </div>
 
-            {/* Right: System Specs */}
-            <div className="flex-1 flex flex-col text-black dark:text-white">
-               <h1 className="text-3xl font-bold tracking-tight mb-1">macOS <span className="font-light">Tahoe</span></h1>
-               <p className="text-sm text-black/50 dark:text-white/50 mb-6 font-medium tracking-wide">Version 26.0</p>
-               
-               <div className="space-y-3 font-mono text-xs text-black/80 dark:text-white/80">
-                 <div className="flex items-baseline">
-                   <span className="w-24 font-bold text-black/90 dark:text-white">Model</span>
-                   <span className="flex-1">{deviceType} (Tahoe-Native)</span>
-                 </div>
-                 <div className="flex items-baseline">
-                   <span className="w-24 font-bold text-black/90 dark:text-white">Processor</span>
-                   <span className="flex-1 truncate" title={`Apple Silicon (${hardware.cores} Cores)`}>
-                     Apple Silicon ({hardware.cores} Cores)
-                   </span>
-                 </div>
-                 <div className="flex items-baseline">
-                   <span className="w-24 font-bold text-black/90 dark:text-white">Graphics</span>
-                   <span className="flex-1 truncate" title={gpuInfo}>{gpuInfo}</span>
-                 </div>
-                 <div className="flex items-baseline">
-                   <span className="w-24 font-bold text-black/90 dark:text-white">Memory</span>
-                   <span className="flex-1">{memoryInfo.total} GB Unified Memory</span>
-                 </div>
-                 <div className="flex items-baseline">
-                   <span className="w-24 font-bold text-black/90 dark:text-white">Serial Number</span>
-                   <span className="flex-1">TH2600X01V3</span>
-                 </div>
+          {/* System Specs */}
+          <div className="flex flex-col text-black dark:text-white items-center w-full">
+             <h1 className="text-2xl font-black tracking-tight mb-1">macOS <span className="font-light">Tahoe</span></h1>
+             <p className="text-[10px] text-black/40 dark:text-white/40 mb-8 font-black uppercase tracking-[0.2em]">Version 26.0</p>
+             
+             <div className="space-y-4 font-mono text-[10px] text-black/60 dark:text-white/60 w-full px-2">
+               <div className="flex flex-col gap-1 border-b border-black/5 dark:border-white/5 pb-3">
+                 <span className="font-black text-black/90 dark:text-white uppercase tracking-widest text-[8px]">Processor</span>
+                 <span className="truncate">{hardware.cores} Cores ({navigator.platform || 'Unknown'})</span>
                </div>
+               <div className="flex flex-col gap-1 border-b border-black/5 dark:border-white/5 pb-3">
+                 <span className="font-black text-black/90 dark:text-white uppercase tracking-widest text-[8px]">Graphics</span>
+                 <span className="truncate">{gpuInfo}</span>
+               </div>
+               <div className="flex flex-col gap-1 border-b border-black/5 dark:border-white/5 pb-3">
+                 <span className="font-black text-black/90 dark:text-white uppercase tracking-widest text-[8px]">Memory</span>
+                 <span>{memoryInfo.total} GB</span>
+               </div>
+               <div className="flex flex-col gap-1">
+                 <span className="font-black text-black/90 dark:text-white uppercase tracking-widest text-[8px]">Serial Number</span>
+                 <span className="font-bold text-blue-500">Auto-Generated</span>
+               </div>
+             </div>
 
-               {/* 3. Navigation: More Info Button */}
-               <div className="mt-8">
-                 <button 
-                   onClick={handleMoreInfo}
-                   className="px-6 py-1.5 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 rounded-full text-xs font-bold transition-colors shadow-sm"
-                 >
-                   More Info...
-                 </button>
+             {/* Navigation & Actions */}
+             <div className="mt-8 flex flex-col gap-2 w-full">
+               <button 
+                 onClick={handleMoreInfo}
+                 className="w-full py-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-bold transition-all shadow-sm"
+               >
+                 More Info...
+               </button>
+               <div className="grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={handleMoreInfo}
+                    className="py-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-bold transition-all"
+                  >
+                    System Report
+                  </button>
+                  <a 
+                    href="https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/discussions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-bold transition-all flex items-center justify-center"
+                  >
+                    Feedback
+                  </a>
                </div>
-            </div>
+             </div>
           </div>
         </div>
       </motion.div>

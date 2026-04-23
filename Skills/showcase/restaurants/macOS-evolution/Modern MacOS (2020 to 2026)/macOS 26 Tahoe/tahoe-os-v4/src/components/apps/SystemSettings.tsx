@@ -109,25 +109,155 @@ export const SystemSettings: React.FC = () => {
     }
   }, [systemState.betaUpdates]);
 
+  const [gpuInfo, setGpuInfo] = useState('Apple GPU');
+  const [deviceType, setDeviceType] = useState('Desktop');
+
+  useEffect(() => {
+    // 1. The Intelligence: Classify the device
+    const ua = navigator.userAgent;
+    const isMobile = /Mobi|Android/i.test(ua) || (navigator as any).userAgentData?.mobile;
+    const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua) || 
+                    (!isMobile && navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+
+    if (isMobile) setDeviceType('Smartphone');
+    else if (isTablet) setDeviceType('Tablet');
+    else if (battery && (battery.level < 1 || !battery.isCharging)) setDeviceType('Laptop');
+    else setDeviceType('Desktop');
+
+    // 4. Real-Time Flex: GPU Info
+    const getGPU = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+          const debugInfo = (gl as any).getExtension('WEBGL_debug_renderer_info');
+          if (debugInfo) {
+            const renderer = (gl as any).getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            return renderer.replace(/ANGLE \(|\)|Direct3D.*|vs_.*|ps_.*/g, '').trim();
+          }
+        }
+      } catch (e) {}
+      return 'Apple M-Series GPU';
+    };
+    setGpuInfo(getGPU());
+  }, [battery]);
+
+  const renderDeviceImage = () => {
+    switch (deviceType) {
+      case 'Smartphone':
+        return (
+          <div className="relative w-20 h-36 bg-zinc-900 rounded-[1.5rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20" />
+            <div className="w-10 h-10 rounded-full bg-blue-500/30 blur-2xl animate-pulse" />
+            <div className="absolute top-2 w-8 h-3 bg-black rounded-full" />
+          </div>
+        );
+      case 'Tablet':
+        return (
+          <div className="relative w-32 h-44 bg-zinc-900 rounded-[1rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-pink-500/20" />
+             <div className="w-16 h-16 rounded-full bg-indigo-500/30 blur-3xl animate-pulse" />
+          </div>
+        );
+      case 'Laptop':
+        return (
+          <div className="relative w-40 h-28 flex flex-col items-center justify-end">
+            <div className="w-36 h-24 bg-zinc-900 rounded-t-lg border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-teal-500/10" />
+              <div className="w-12 h-12 rounded-full bg-blue-400/30 blur-2xl animate-pulse" />
+            </div>
+            <div className="w-40 h-2 bg-zinc-400 rounded-b-lg shadow-xl relative z-20" />
+          </div>
+        );
+      default:
+        return (
+          <div className="relative w-40 h-36 flex flex-col items-center justify-end">
+             <div className="w-40 h-28 bg-zinc-900 rounded-lg border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
+               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+               <div className="w-16 h-16 rounded-full bg-purple-500/30 blur-3xl animate-[pulse_4s_ease-in-out_infinite]" />
+             </div>
+             <div className="w-10 h-8 bg-zinc-300 relative z-0 -mt-1 shadow-inner" />
+             <div className="w-24 h-2 bg-zinc-400 rounded-t-lg shadow-xl relative z-20" />
+          </div>
+        );
+    }
+  };
+
   const renderGeneralContent = () => {
     switch (resetStep) {
       case 5: return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-y-auto pr-4 scrollbar-hide pb-12">
           <div className="flex items-center gap-4 mb-8">
             <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
             <h2 className="text-2xl font-semibold">About</h2>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center">
-             <div className="w-24 h-24 mb-6 text-[#00FF41] font-mono font-bold text-center leading-tight">.:'<br/>__ :'__<br/>.'' ` ' ``.</div>
-             <h3 className="text-2xl font-bold mb-1">macOS Tahoe</h3>
-             <p className="text-sm text-white/40 mb-8 font-mono uppercase tracking-[0.2em]">Version 26.4</p>
-             <div className="w-full space-y-4 max-w-md text-sm">
-               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Model</span><span className="font-medium text-white/90">Chromebook Tahoe-Virt</span></div>
-               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Chip</span><span className="font-medium text-white/90">Apple M5 Max (Simulated)</span></div>
-               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Memory</span><span className="font-medium text-white/90">{hardware.memory}GB Unified Silicon</span></div>
-               <div className="flex justify-between border-b border-white/5 pb-2"><span className="text-white/50">Serial Number</span><span className="font-mono text-white/90">TAHOE-V4-UNIT7</span></div>
+          
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-10 flex flex-col items-center text-center">
+             <div className="mb-8 drop-shadow-2xl">
+                {renderDeviceImage()}
              </div>
-             <button onClick={() => setShowAboutWindow(true)} className="mt-8 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-xl text-sm font-bold transition shadow-lg shadow-blue-500/20">System Report...</button>
+             
+             <h3 className="text-3xl font-black mb-1">macOS <span className="font-light">Tahoe</span></h3>
+             <p className="text-xs text-white/40 mb-10 font-black uppercase tracking-[0.3em]">Version 26.0 (Build 26A405)</p>
+             
+             <div className="w-full space-y-6 max-w-md text-left font-mono text-[11px]">
+               <div className="flex flex-col gap-1 border-b border-white/5 pb-4">
+                 <span className="text-white/30 uppercase tracking-widest font-black text-[9px]">Processor</span>
+                 <span className="text-white font-medium">{hardware.cores} Cores ({navigator.platform || 'Unknown'})</span>
+               </div>
+               <div className="flex flex-col gap-1 border-b border-white/5 pb-4">
+                 <span className="text-white/30 uppercase tracking-widest font-black text-[9px]">Graphics</span>
+                 <span className="text-white font-medium">{gpuInfo}</span>
+               </div>
+               <div className="flex flex-col gap-1 border-b border-white/5 pb-4">
+                 <span className="text-white/30 uppercase tracking-widest font-black text-[9px]">Memory</span>
+                 <span className="text-white font-medium">{hardware.memory} GB</span>
+               </div>
+               <div className="flex flex-col gap-1 border-b border-white/5 pb-4">
+                 <span className="text-white/30 uppercase tracking-widest font-black text-[9px]">Storage</span>
+                 <span className="text-white font-medium">{storageInfo.total} GB</span>
+               </div>
+               <div className="flex flex-col gap-1">
+                 <span className="text-white/30 uppercase tracking-widest font-black text-[9px]">Serial Number</span>
+                 <span className="text-blue-500 font-bold">Auto-Generated</span>
+               </div>
+             </div>
+
+             <div className="mt-12 flex gap-3 w-full max-w-md">
+                <button onClick={() => setShowAboutWindow(true)} className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold transition">System Report...</button>
+                <a 
+                  href="https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/discussions" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold transition flex items-center justify-center"
+                >
+                  Feedback
+                </a>
+             </div>
+          </div>
+          
+          <div className="mt-8 space-y-2">
+             <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between">
+                <div>
+                   <span className="text-sm font-medium block">Regulatory Certification</span>
+                   <span className="text-[10px] text-white/30">United States, European Union, Japan, China</span>
+                </div>
+                <ArrowRight01Icon size={16} className="text-white/20" />
+             </div>
+             <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between">
+                <div>
+                   <span className="text-sm font-medium block">Limited Warranty</span>
+                   <span className="text-xs text-green-500 font-bold">Active</span>
+                </div>
+                <span className="text-xs text-white/40">Expires: June 22, 2027</span>
+             </div>
+             <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between">
+                <div>
+                   <span className="text-sm font-medium block">Technical Support</span>
+                   <span className="text-xs text-white/40">Complimentary telephone support: Active</span>
+                </div>
+                <ArrowRight01Icon size={16} className="text-white/20" />
+             </div>
           </div>
         </div>
       );
