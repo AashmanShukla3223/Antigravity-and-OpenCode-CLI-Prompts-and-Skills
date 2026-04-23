@@ -95,6 +95,18 @@ export const DeviceRecovery: React.FC = () => {
           </button>
 
           <button
+            onClick={() => {
+              console.log('🚀 Force Starting Desktop...');
+              updateSystemState({ setup_complete: true });
+              setBootState('desktop');
+              setShowRecoveryUI(false);
+            }}
+            className="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+          >
+            🚀 Force Start Desktop
+          </button>
+
+          <button
             onClick={goToSetup}
             className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
           >

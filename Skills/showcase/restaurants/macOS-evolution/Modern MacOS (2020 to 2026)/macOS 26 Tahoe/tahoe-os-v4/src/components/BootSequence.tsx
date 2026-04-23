@@ -34,6 +34,7 @@ export const BootSequence: React.FC = () => {
 
     // Progress animation: fast to 60%, pause 1.2s, accelerate to 100%
     const startBoot = async () => {
+      console.log("🥾 Boot: startBoot() called");
       setProgress(60);
       await new Promise((r) => setTimeout(r, 1200));
       setProgress(100);
@@ -45,6 +46,8 @@ export const BootSequence: React.FC = () => {
       setFadeOut(true);
 
       await new Promise((r) => setTimeout(r, 800));
+      
+      console.log("🥾 Boot: Transitioning from booting stage. setup_complete:", systemState.setup_complete);
       
       // Transition to next boot state
       if (recoveryTriggered.current) {

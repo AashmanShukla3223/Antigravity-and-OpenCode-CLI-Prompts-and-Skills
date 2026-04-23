@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useSystem } from './contexts/SystemContext';
 import { BootSequence } from './components/BootSequence';
 import { SetupAssistant } from './components/SetupAssistant';
@@ -10,6 +11,10 @@ import { AnimatePresence } from 'framer-motion';
 
 function App() {
   const { bootState } = useSystem();
+
+  useEffect(() => {
+    console.log('🖥️ App: bootState changed to:', bootState);
+  }, [bootState]);
 
   return (
     <>

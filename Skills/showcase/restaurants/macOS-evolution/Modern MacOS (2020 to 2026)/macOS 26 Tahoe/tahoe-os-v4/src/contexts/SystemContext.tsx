@@ -212,18 +212,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveApp(appId);
         return prev;
       }
-      
+      return prev;
+    });
+
+    if (!openApps.includes(appId)) {
       setLaunchingApp(appId);
-      
       setTimeout(() => {
-        setOpenApps(current => [...current, appId]);
+        setOpenApps(current => {
+          if (current.includes(appId)) return current;
+          return [...current, appId];
+        });
         setLaunchingApp(null);
         setActiveApp(appId);
       }, 1000);
-      
-      return prev;
-    });
-  }, []);
+    }
+  }, [openApps]);
 
   const closeApp = useCallback((appId: string) => {
     setOpenApps(prev => prev.filter(id => id !== appId));
