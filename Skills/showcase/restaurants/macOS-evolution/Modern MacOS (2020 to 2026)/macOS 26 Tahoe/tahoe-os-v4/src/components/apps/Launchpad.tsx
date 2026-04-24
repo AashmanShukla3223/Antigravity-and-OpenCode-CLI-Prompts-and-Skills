@@ -25,6 +25,7 @@ const apps = [
   { id: 'notes', name: 'Notes' },
   { id: 'settings', name: 'Settings' },
   { id: 'facetime', name: 'FaceTime' },
+  { id: 'calendar', name: 'Calendar' },
   { id: 'music', name: 'Music' },
   { id: 'github', name: 'GitHub' }, 
 ];
