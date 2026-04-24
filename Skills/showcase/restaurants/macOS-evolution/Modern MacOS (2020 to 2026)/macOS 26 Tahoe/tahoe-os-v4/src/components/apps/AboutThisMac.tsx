@@ -6,7 +6,7 @@ import { useSystem } from '../../contexts/SystemContext';
 export const AboutThisMac: React.FC = () => {
   const { showAboutWindow, setShowAboutWindow, launchApp, battery, hardware } = useSystem();
   
-  const [gpuInfo, setGpuInfo] = useState(() => {
+  const [gpuInfo] = useState(() => {
     try {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Sun01Icon, 
   CloudIcon, 
   RainIcon, 
   SnowIcon, 
-  ThunderstormIcon,
-  Wind01Icon,
+  CloudAngledRainZapIcon,
+  FastWindIcon,
   DropletIcon,
   Navigation03Icon,
   Settings01Icon,
@@ -55,26 +55,11 @@ export const Weather: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // In a real Tahoe OS, we'd use a more robust Apple-style Glass background
-  // but we'll simulate the dynamic blue gradient based on condition
-  const bgGradient = useMemo(() => {
-    if (weather.condition.toLowerCase().includes('rain')) return 'from-blue-700 to-slate-800';
-    if (weather.condition.toLowerCase().includes('cloud')) return 'from-blue-400 to-blue-600';
-    return 'from-[#2DA9FF] to-[#1E86FF]';
-  }, [weather.condition]);
-
-  useEffect(() => {
-    if (apiKey) {
-      fetchWeather();
-    }
-  }, [apiKey, fetchWeather]);
-
   const fetchWeather = useCallback(async () => {
     if (!apiKey) return;
     setLoading(true);
     setError(null);
     try {
-      // OpenWeatherMap API implementation example
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Cupertino&appid=${apiKey}&units=imperial`);
       if (!res.ok) throw new Error('Invalid API Key or Network Error');
       const data = await res.json();
@@ -87,7 +72,7 @@ export const Weather: React.FC = () => {
         low: Math.round(data.main.temp_min),
         humidity: data.main.humidity,
         windSpeed: Math.round(data.wind.speed),
-        forecast: DEFAULT_WEATHER.forecast // Forecast requires a separate API call in free tier
+        forecast: DEFAULT_WEATHER.forecast
       });
     } catch (err: any) {
       setError(err.message);
@@ -95,6 +80,18 @@ export const Weather: React.FC = () => {
       setLoading(false);
     }
   }, [apiKey]);
+
+  const bgGradient = useMemo(() => {
+    if (weather.condition.toLowerCase().includes('rain')) return 'from-blue-700 to-slate-800';
+    if (weather.condition.toLowerCase().includes('cloud')) return 'from-blue-400 to-blue-600';
+    return 'from-[#2DA9FF] to-[#1E86FF]';
+  }, [weather.condition]);
+
+  useEffect(() => {
+    if (apiKey) {
+      fetchWeather();
+    }
+  }, [apiKey, fetchWeather]);
 
   const handleSaveKey = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -111,13 +108,12 @@ export const Weather: React.FC = () => {
     if (cond.includes('cloud')) return <CloudIcon size={size} className="text-white/80 hugeicon-tahoe" />;
     if (cond.includes('rain')) return <RainIcon size={size} className="text-blue-300 hugeicon-tahoe" />;
     if (cond.includes('snow')) return <SnowIcon size={size} className="text-white hugeicon-tahoe" />;
-    if (cond.includes('thunder')) return <ThunderstormIcon size={size} className="text-purple-300 hugeicon-tahoe" />;
+    if (cond.includes('thunder')) return <CloudAngledRainZapIcon size={size} className="text-purple-300 hugeicon-tahoe" />;
     return <Sun01Icon size={size} className="text-yellow-300 hugeicon-tahoe" />;
   };
 
   return (
     <div className={`h-full w-full bg-gradient-to-b ${bgGradient} text-white flex flex-col font-sans overflow-hidden transition-all duration-1000`}>
-      {/* Top Bar / Settings Toggle */}
       <div className="absolute top-4 right-4 z-20">
         <button 
           onClick={() => setShowSettings(!showSettings)}
@@ -156,7 +152,6 @@ export const Weather: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Main Display */}
           <div className="pt-12 pb-8 flex flex-col items-center text-center relative">
             {loading && <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase tracking-[0.3em] opacity-50 animate-pulse">Updating...</div>}
             
@@ -184,7 +179,6 @@ export const Weather: React.FC = () => {
             )}
           </div>
 
-          {/* Hourly Forecast Area (Apple Style Glass Cards) */}
           <div className="px-6 pb-6">
             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-5 overflow-hidden">
                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-4 px-1">Mostly sunny conditions expected.</h3>
@@ -202,7 +196,6 @@ export const Weather: React.FC = () => {
             </div>
           </div>
 
-          {/* 7-Day Forecast (Apple Style Glass Cards) */}
           <div className="px-6 pb-6 flex-1 overflow-y-auto scrollbar-hide">
             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-5 space-y-4">
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 px-1">7-Day Forecast</h3>
@@ -224,11 +217,10 @@ export const Weather: React.FC = () => {
             </div>
           </div>
 
-          {/* Details Grid (Multi-Column Apple Layout) */}
           <div className="px-6 pb-8 grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-4 flex flex-col justify-between h-28">
                <div className="flex items-center gap-2 text-white/40">
-                  <Wind01Icon size={14} />
+                  <FastWindIcon size={14} />
                   <span className="text-[10px] font-black uppercase tracking-widest">Wind</span>
                </div>
                <div className="flex flex-col">
