@@ -76,20 +76,6 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     const hasError = imageLoadError[idLower];
     
     if (localIcon && !hasError) {
-      if (idLower === 'calendar') {
-        const date = new Date();
-        return (
-          <div className="relative flex flex-col items-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
-             <div className="w-full bg-[#FF3B30] h-[30%] flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-tighter">
-               {date.toLocaleDateString('en-US', { month: 'short' })}
-             </div>
-             <div className="flex-1 flex items-center justify-center text-xl font-light text-black pt-0.5">
-               {date.getDate()}
-             </div>
-          </div>
-        );
-      }
-
       return (
         <div className="w-full h-full rounded-[22%] overflow-hidden">
           <img 
