@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSystem, Widget } from '../../contexts/SystemContext';
+import { useSystem, type Widget } from '../../contexts/SystemContext';
 import { 
   Calendar01Icon, 
   Video01Icon, 
   MusicNote01Icon, 
   Sun01Icon, 
-  AppsIcon,
+  Grid02Icon,
   Cancel01Icon
 } from 'hugeicons-react';
 
@@ -15,12 +15,11 @@ const WIDGET_TEMPLATES = [
   { type: 'facetime', name: 'FaceTime', icon: Video01Icon, color: 'bg-green-500' },
   { type: 'music', name: 'Music', icon: MusicNote01Icon, color: 'bg-pink-500' },
   { type: 'weather', name: 'Weather', icon: Sun01Icon, color: 'bg-blue-500' },
-  { type: 'all-apps', name: 'All Apps', icon: AppsIcon, color: 'bg-zinc-500' },
+  { type: 'all-apps', name: 'All Apps', icon: Grid02Icon, color: 'bg-zinc-500' },
 ] as const;
 
 export const WidgetPicker: React.FC = () => {
   const { showWidgetPicker, setShowWidgetPicker, updateSystemState, systemState } = useSystem();
-  const [activeCategory, setActiveCategory] = useState<'All' | 'Reminders' | 'FaceTime' | 'Music' | 'Weather'>('All');
 
   if (!showWidgetPicker) return null;
 
