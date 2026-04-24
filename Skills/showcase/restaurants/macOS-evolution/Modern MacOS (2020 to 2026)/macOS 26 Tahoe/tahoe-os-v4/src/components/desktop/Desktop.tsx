@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
@@ -77,6 +77,7 @@ export const Desktop: React.FC = () => {
   };
 
   const desktopItems = getDirectoryContents('desktop');
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Widget Actions
   const toggleReminder = (id: number) => {
@@ -102,6 +103,22 @@ export const Desktop: React.FC = () => {
     setIncomingCall({ contact: randomContact, type: 'facetime' });
   };
 
+  const handleWidgetDragEnd = (id: string, info: any) => {
+    if (!gridRef.current) return;
+    
+    const gridRect = gridRef.current.getBoundingClientRect();
+    const cellWidth = gridRect.width / 8;
+    const cellHeight = gridRect.height / 4;
+    
+    // Relative position within grid
+    const x = Math.max(0, Math.min(7, Math.round(info.point.x / cellWidth)));
+    const y = Math.max(0, Math.min(3, Math.round(info.point.y / cellHeight)));
+    
+    updateSystemState({
+      widgets: systemState.widgets.map(w => w.id === id ? { ...w, x, y } : w)
+    });
+  };
+
   return (
     <div 
       className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
@@ -111,7 +128,7 @@ export const Desktop: React.FC = () => {
       <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
 
       {/* Widgets Layer */}
-      <div className="absolute inset-0 z-0 p-8 pointer-events-none">
+      <div className="absolute inset-0 z-0 p-8 pointer-events-none" ref={gridRef}>
         <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
            {systemState.widgets.map((widget) => {
              const isReminders = widget.type === 'reminders';
@@ -123,6 +140,10 @@ export const Desktop: React.FC = () => {
              return (
                <motion.div
                  key={widget.id}
+                 drag
+                 dragMomentum={false}
+                 dragElastic={0.1}
+                 onDragEnd={(_, info) => handleWidgetDragEnd(widget.id, info)}
                  initial={{ opacity: 0, scale: 0.9 }}
                  animate={{ opacity: 1, scale: 1 }}
                  style={{ 

@@ -22,11 +22,25 @@ export const WidgetPicker: React.FC = () => {
   const { showWidgetPicker, setShowWidgetPicker, updateSystemState, systemState } = useSystem();
 
   const addWidget = (type: Widget['type']) => {
+    // Find first available y slot at x=0
+    let nextY = 0;
+    const sortedWidgetsAtX0 = systemState.widgets
+      .filter(w => w.x === 0)
+      .sort((a, b) => a.y - b.y);
+
+    for (const w of sortedWidgetsAtX0) {
+      if (w.y === nextY) {
+        // Assume medium size takes 2 slots in y? 
+        // Based on Desktop.tsx, medium takes span 2.
+        nextY += 2;
+      }
+    }
+
     const newWidget: Widget = {
       id: Math.random().toString(36).substr(2, 9),
       type,
-      x: Math.floor(Math.random() * 8), // Random grid snap initial
-      y: Math.floor(Math.random() * 4),
+      x: 0, // Extreme left
+      y: nextY > 2 ? 0 : nextY, // Basic stack or wrap if full
       size: 'medium'
     };
     
