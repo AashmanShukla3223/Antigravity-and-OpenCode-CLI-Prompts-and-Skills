@@ -10,15 +10,33 @@ import { AboutThisMac } from '../apps/AboutThisMac';
 import { RestartDialog } from './RestartDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
-import { Folder01Icon, File01Icon, Sun01Icon } from 'hugeicons-react';
+import { 
+  Folder01Icon, 
+  File01Icon, 
+  Sun01Icon, 
+  PlayIcon, 
+  PauseIcon, 
+  NextMomentIcon, 
+  Video01Icon,
+  Calendar01Icon,
+  Tick01Icon,
+  Grid02Icon
+} from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
+import { contacts } from '../../utils/contacts';
+
+// Dummy songs for music widget - normally these would come from a central source
+const songs = [
+  { id: '1', title: 'Baby', artist: 'Justin Bieber', url: '/music/baby.mp3', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200&h=200&auto=format&fit=crop' },
+  { id: '2', title: 'Believer', artist: 'Imagine Dragons', url: '/music/believer.mp3', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=200&h=200&auto=format&fit=crop' },
+];
 
 export const Desktop: React.FC = () => {
-  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker } = useSystem();
+  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
@@ -63,6 +81,30 @@ export const Desktop: React.FC = () => {
 
   const desktopItems = getDirectoryContents('desktop');
 
+  // Widget Actions
+  const toggleReminder = (id: number) => {
+    updateSystemState({
+      reminders: systemState.reminders.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
+    });
+  };
+
+  const toggleMusic = () => {
+    updateSystemState({
+      music: { ...systemState.music, isPlaying: !systemState.music.isPlaying }
+    });
+  };
+
+  const nextSong = () => {
+    updateSystemState({
+      music: { ...systemState.music, currentSongIndex: (systemState.music.currentSongIndex + 1) % songs.length }
+    });
+  };
+
+  const triggerFaceTime = () => {
+    const randomContact = contacts[Math.floor(Math.random() * contacts.length)];
+    setIncomingCall({ contact: randomContact, type: 'facetime' });
+  };
+
   return (
     <div 
       className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
@@ -74,49 +116,150 @@ export const Desktop: React.FC = () => {
       {/* Widgets Layer */}
       <div className="absolute inset-0 z-0 p-8 pointer-events-none">
         <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
-           {systemState.widgets.map((widget) => (
-             <motion.div
-               key={widget.id}
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               style={{ 
-                 gridColumnStart: widget.x + 1, 
-                 gridRowStart: widget.y + 1,
-                 gridColumnEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 4}`,
-                 gridRowEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 2}`
-               }}
-               className="bg-white/10 backdrop-blur-xl rounded-[2rem] border border-white/20 p-4 pointer-events-auto shadow-xl group relative"
-             >
-                <div className="flex items-center gap-2 mb-2">
-                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                     widget.type === 'reminders' ? 'bg-orange-500' :
-                     widget.type === 'facetime' ? 'bg-green-500' :
-                     widget.type === 'music' ? 'bg-pink-500' :
-                     widget.type === 'weather' ? 'bg-blue-500' : 'bg-zinc-500'
-                   }`}>
-                      {widget.type === 'reminders' && <Folder01Icon size={14} className="text-white" />}
-                      {widget.type === 'weather' && <Sun01Icon size={14} className="text-white" />}
-                   </div>
-                   <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">{widget.type}</span>
-                </div>
-                
-                {/* Widget Content Placeholder */}
-                <div className="flex-1 flex items-center justify-center">
-                   <span className="text-white/20 text-xs font-medium">Widget Content</span>
-                </div>
+           {systemState.widgets.map((widget) => {
+             const isReminders = widget.type === 'reminders';
+             const isMusic = widget.type === 'music';
+             const isFaceTime = widget.type === 'facetime';
+             const isAllApps = widget.type === 'all-apps';
+             const isWeather = widget.type === 'weather';
 
-                <button 
-                  onClick={() => {
-                    updateSystemState({
-                      widgets: systemState.widgets.filter(w => w.id !== widget.id)
-                    });
-                  }}
-                  className="absolute -top-2 -left-2 w-6 h-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <span className="text-white text-xs">−</span>
-                </button>
-             </motion.div>
-           ))}
+             return (
+               <motion.div
+                 key={widget.id}
+                 initial={{ opacity: 0, scale: 0.9 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 style={{ 
+                   gridColumnStart: widget.x + 1, 
+                   gridRowStart: widget.y + 1,
+                   gridColumnEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 4}`,
+                   gridRowEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 2}`
+                 }}
+                 className="bg-white/10 backdrop-blur-xl rounded-[2.5rem] border border-white/20 p-5 pointer-events-auto shadow-2xl group relative flex flex-col overflow-hidden"
+               >
+                  {/* Widget Header */}
+                  <div className="flex items-center gap-2 mb-3 z-10">
+                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-lg ${
+                       isReminders ? 'bg-orange-500' :
+                       isFaceTime ? 'bg-green-500' :
+                       isMusic ? 'bg-pink-500' :
+                       isWeather ? 'bg-blue-500' : 'bg-zinc-500'
+                     }`}>
+                        {isReminders && <Calendar01Icon size={16} className="text-white" />}
+                        {isWeather && <Sun01Icon size={16} className="text-white" />}
+                        {isMusic && <PlayIcon size={16} className="text-white" />}
+                        {isFaceTime && <Video01Icon size={16} className="text-white" />}
+                        {isAllApps && <Grid02Icon size={16} className="text-white" />}
+                     </div>
+                     <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">{widget.type.replace('-', ' ')}</span>
+                  </div>
+                  
+                  {/* Widget Content */}
+                  <div className="flex-1 flex flex-col z-10 overflow-hidden">
+                     {isReminders && (
+                       <div className="space-y-2">
+                          {systemState.reminders.slice(0, 3).map(reminder => (
+                            <div key={reminder.id} className="flex items-center gap-3 group/item">
+                               <button 
+                                 onClick={(e) => { e.stopPropagation(); toggleReminder(reminder.id); }}
+                                 className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${reminder.completed ? 'bg-orange-500 border-orange-500' : 'border-white/20 hover:border-orange-400'}`}
+                               >
+                                  {reminder.completed && <Tick01Icon size={8} className="text-white" />}
+                               </button>
+                               <span className={`text-xs truncate transition-all ${reminder.completed ? 'text-white/30 line-through' : 'text-white font-medium'}`}>
+                                  {reminder.text}
+                               </span>
+                            </div>
+                          ))}
+                       </div>
+                     )}
+
+                     {isMusic && (
+                       <div className="flex flex-col items-center justify-center h-full gap-3">
+                          <img 
+                            src={songs[systemState.music.currentSongIndex].cover} 
+                            className={`w-16 h-16 rounded-xl shadow-2xl transition-transform duration-700 ${systemState.music.isPlaying ? 'scale-110' : 'scale-95'}`} 
+                            alt="Cover"
+                          />
+                          <div className="text-center">
+                             <div className="text-[11px] font-bold text-white truncate w-32">{songs[systemState.music.currentSongIndex].title}</div>
+                             <div className="text-[9px] text-white/50 truncate w-32">{songs[systemState.music.currentSongIndex].artist}</div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                             <button onClick={toggleMusic} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                                {systemState.music.isPlaying ? <PauseIcon size={14} className="text-white" /> : <PlayIcon size={14} className="text-white" />}
+                             </button>
+                             <button onClick={nextSong} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                                <NextMomentIcon size={14} className="text-white" />
+                             </button>
+                          </div>
+                       </div>
+                     )}
+
+                     {isFaceTime && (
+                        <div className="flex flex-col gap-3 h-full justify-center">
+                           <div className="text-xs text-white/60 font-medium">Recently Called</div>
+                           <div className="flex -space-x-2">
+                              {contacts.slice(0, 4).map((c, i) => (
+                                <div key={c.id} className={`w-8 h-8 rounded-full border-2 border-black/20 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-white`} style={{ zIndex: 10 - i }}>
+                                   {c.name[0]}
+                                </div>
+                              ))}
+                           </div>
+                           <button 
+                             onClick={triggerFaceTime}
+                             className="w-full py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[10px] font-bold rounded-xl transition-colors border border-green-500/30"
+                           >
+                              SIMULATE CALL
+                           </button>
+                        </div>
+                     )}
+
+                     {isAllApps && (
+                        <div className="grid grid-cols-4 gap-2">
+                           {['safari', 'mail', 'messages', 'photos', 'maps', 'music', 'notes', 'settings'].map(app => (
+                             <div 
+                               key={app} 
+                               onClick={() => launchApp(app)}
+                               className="aspect-square bg-white/5 hover:bg-white/20 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                             >
+                                <img src={`/icons/${app}.png`} className="w-6 h-6 object-contain" alt={app} />
+                             </div>
+                           ))}
+                           <div 
+                             onClick={() => launchApp('launchpad')}
+                             className="aspect-square bg-blue-500/20 hover:bg-blue-500/40 rounded-lg flex items-center justify-center cursor-pointer transition-colors border border-blue-500/30 col-span-4 mt-1"
+                           >
+                              <span className="text-[10px] font-bold text-blue-400">OPEN LAUNCHPAD</span>
+                           </div>
+                        </div>
+                     )}
+
+                     {isWeather && (
+                        <div className="flex flex-col items-center justify-center h-full">
+                           <Sun01Icon size={48} className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)] mb-2" />
+                           <div className="text-3xl font-black text-white">24°</div>
+                           <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Sunny</div>
+                        </div>
+                     )}
+                  </div>
+
+                  {/* Delete Button */}
+                  <button 
+                    onClick={() => {
+                      updateSystemState({
+                        widgets: systemState.widgets.filter(w => w.id !== widget.id)
+                      });
+                    }}
+                    className="absolute top-4 right-4 w-6 h-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                  >
+                    <span className="text-white text-xs leading-none">−</span>
+                  </button>
+
+                  {/* Glass highlight */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+               </motion.div>
+             );
+           })}
         </div>
       </div>
 

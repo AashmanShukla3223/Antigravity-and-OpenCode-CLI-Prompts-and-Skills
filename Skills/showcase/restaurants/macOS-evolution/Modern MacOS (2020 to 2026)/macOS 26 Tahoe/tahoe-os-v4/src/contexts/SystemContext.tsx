@@ -10,6 +10,17 @@ export interface Widget {
   size: 'small' | 'medium' | 'large';
 }
 
+export interface Reminder {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+export interface MusicState {
+  currentSongIndex: number;
+  isPlaying: boolean;
+}
+
 export interface TahoeV3State {
   setup_complete: boolean;
   user: {
@@ -30,6 +41,8 @@ export interface TahoeV3State {
   lowPowerMode: boolean;
   apiKey?: string;
   widgets: Widget[];
+  reminders: Reminder[];
+  music: MusicState;
 }
 
 const defaultState: TahoeV3State = {
@@ -47,6 +60,15 @@ const defaultState: TahoeV3State = {
   lowPowerMode: false,
   apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || '',
   widgets: [],
+  reminders: [
+    { id: 1, text: 'Finalize macOS Tahoe Core', completed: false },
+    { id: 2, text: 'Review Liquid Glass Physics', completed: true },
+    { id: 3, text: 'Sync Sovereign Identity', completed: false },
+  ],
+  music: {
+    currentSongIndex: 0,
+    isPlaying: false
+  }
 };
 
 interface SystemContextProps {
