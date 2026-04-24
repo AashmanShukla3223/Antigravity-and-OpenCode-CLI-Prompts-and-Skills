@@ -16,11 +16,8 @@ import {
   Sun01Icon, 
   PlayIcon, 
   PauseIcon, 
-  NextMomentIcon, 
-  Video01Icon,
-  Calendar01Icon,
-  Tick01Icon,
-  Grid02Icon
+  ArrowRight01Icon, 
+  Tick01Icon
 } from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
@@ -138,17 +135,12 @@ export const Desktop: React.FC = () => {
                >
                   {/* Widget Header */}
                   <div className="flex items-center gap-2 mb-3 z-10">
-                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-lg ${
-                       isReminders ? 'bg-orange-500' :
-                       isFaceTime ? 'bg-green-500' :
-                       isMusic ? 'bg-pink-500' :
-                       isWeather ? 'bg-blue-500' : 'bg-zinc-500'
-                     }`}>
-                        {isReminders && <Calendar01Icon size={16} className="text-white" />}
-                        {isWeather && <Sun01Icon size={16} className="text-white" />}
-                        {isMusic && <PlayIcon size={16} className="text-white" />}
-                        {isFaceTime && <Video01Icon size={16} className="text-white" />}
-                        {isAllApps && <Grid02Icon size={16} className="text-white" />}
+                     <div className="w-7 h-7 flex items-center justify-center">
+                        <img 
+                          src={`/icons/${isReminders ? 'reminders' : isWeather ? 'weather' : isMusic ? 'music' : isFaceTime ? 'facetime' : 'apps'}.png`} 
+                          className="w-full h-full object-contain drop-shadow-md" 
+                          alt={widget.type}
+                        />
                      </div>
                      <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">{widget.type.replace('-', ' ')}</span>
                   </div>
@@ -189,7 +181,7 @@ export const Desktop: React.FC = () => {
                                 {systemState.music.isPlaying ? <PauseIcon size={14} className="text-white" /> : <PlayIcon size={14} className="text-white" />}
                              </button>
                              <button onClick={nextSong} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                                <NextMomentIcon size={14} className="text-white" />
+                                <ArrowRight01Icon size={14} className="text-white" />
                              </button>
                           </div>
                        </div>
