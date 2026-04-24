@@ -21,6 +21,14 @@ export interface MusicState {
   isPlaying: boolean;
 }
 
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  lastModified: number;
+}
+
 export interface TahoeV3State {
   setup_complete: boolean;
   user: {
@@ -45,6 +53,7 @@ export interface TahoeV3State {
   music: MusicState;
   runningApps: string[];
   pinnedApps: string[];
+  notes: Note[];
 }
 
 const defaultState: TahoeV3State = {
@@ -72,7 +81,23 @@ const defaultState: TahoeV3State = {
     isPlaying: false
   },
   runningApps: [],
-  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'appstore', 'settings']
+  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'appstore', 'notes', 'settings'],
+  notes: [
+    { 
+      id: '1', 
+      title: 'Tahoe OS Vision', 
+      content: 'The "Unit 7" era is about fluid interfaces and silicon-native glass. We must push Framer Motion to its limits.', 
+      date: '10:42 AM', 
+      lastModified: Date.now() 
+    },
+    { 
+      id: '2', 
+      title: 'AI Integration Ideas', 
+      content: 'Apple Intelligence should handle tone adjustment in Notes and automatic summarization of long thoughts.', 
+      date: 'Yesterday', 
+      lastModified: Date.now() - 86400000 
+    }
+  ]
 };
 
 interface SystemContextProps {

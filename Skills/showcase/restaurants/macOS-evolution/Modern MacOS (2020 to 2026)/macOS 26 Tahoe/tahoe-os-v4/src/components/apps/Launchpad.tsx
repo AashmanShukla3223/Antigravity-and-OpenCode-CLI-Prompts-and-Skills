@@ -22,6 +22,7 @@ const apps = [
   { id: 'activitymonitor', name: 'Activity Monitor' },
   { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'weather', name: 'Weather' },
+  { id: 'notes', name: 'Notes' },
   { id: 'settings', name: 'Settings' },
 ];
 

@@ -30,6 +30,7 @@ import { Installer } from '../apps/Installer';
 
 import { IPhoneMirroring } from '../apps/iPhoneMirroring';
 import { Weather } from '../apps/Weather';
+import { Notes } from '../apps/Notes';
 
 interface WindowProps {
   appId: string;
@@ -60,6 +61,7 @@ const AppMap: Record<string, React.FC<any>> = {
   installer: Installer,
   iphonemirroring: IPhoneMirroring,
   weather: Weather,
+  notes: Notes,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
