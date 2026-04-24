@@ -62,12 +62,16 @@ export const Dock: React.FC = () => {
       window.open('https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/', '_blank');
       return;
     }
+    if (appId === 'finder') {
+        launchApp('finder');
+        return;
+    }
     if (appId === 'apps') {
        launchApp('launchpad');
        return;
     }
     if (appId === 'trash') {
-       launchApp('finder');
+       launchApp('trash');
        window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'trash' }));
        return;
     }
