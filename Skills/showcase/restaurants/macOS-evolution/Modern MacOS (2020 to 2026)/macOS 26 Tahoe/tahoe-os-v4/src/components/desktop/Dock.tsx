@@ -4,7 +4,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import { AppIcon } from '../common/AppIcon';
 
-const apps = [
+const ALL_APPS = [
   { id: 'finder', name: 'Finder' },
   { id: 'apps', name: 'Applications' },
   { id: 'safari', name: 'Safari' },
@@ -25,14 +25,34 @@ const apps = [
   { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },
   { id: 'soundtest', name: 'Sound Test' },
+  { id: 'reminders', name: 'Reminders' },
+  { id: 'stickies', name: 'Stickies' },
+  { id: 'activitymonitor', name: 'Activity Monitor' },
 ];
 
 export const Dock: React.FC = () => {
-  const { launchApp, openApps, activeApp, unminimizeApp, minimizedApps, launchingApp } = useSystem();
+  const { launchApp, activeApp, unminimizeApp, minimizedApps, launchingApp, systemState, setContextMenu } = useSystem();
   const { getDirectoryContents } = useFileSystem();
   
   const trashContents = getDirectoryContents('trash');
   const isTrashFull = trashContents.length > 0;
+
+  // Combine pinned apps and currently running apps (dot indicator)
+  const dockApps = Array.from(new Set([...systemState.pinnedApps, ...systemState.runningApps]))
+    .map(id => ALL_APPS.find(a => a.id === id))
+    .filter(Boolean) as { id: string, name: string }[];
+
+  // Always keep Applications and GitHub in dock for this demo
+  const staticApps = [
+    { id: 'apps', name: 'Applications' },
+    ...dockApps,
+    { id: 'github', name: 'GitHub' }
+  ];
+
+  // Remove duplicates while preserving order (roughly)
+  const finalApps = staticApps.filter((app, index, self) =>
+    index === self.findIndex((t) => t.id === app.id)
+  );
 
   // Dock true magnification physics
   const mouseX = useMotionValue(Infinity);
@@ -54,6 +74,12 @@ export const Dock: React.FC = () => {
     launchApp(appId);
   };
 
+  const handleContextMenu = (e: React.MouseEvent, appId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.pageX, y: e.pageY, type: 'dock', targetId: appId });
+  };
+
   return (
     <div className="absolute bottom-4 w-full flex justify-center z-40 pointer-events-none">
       <div 
@@ -61,16 +87,17 @@ export const Dock: React.FC = () => {
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
-        {apps.map((app) => (
+        {finalApps.map((app) => (
           <DockIcon 
             key={app.id} 
             app={app} 
             mouseX={mouseX} 
-            isOpen={openApps.includes(app.id)}
+            isRunning={systemState.runningApps.includes(app.id)}
             isMinimized={false}
             isActive={activeApp === app.id}
             isLaunching={launchingApp === app.id}
             onClick={() => handleAppClick(app.id)}
+            onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
           />
         ))}
         
@@ -120,7 +147,7 @@ export const Dock: React.FC = () => {
   );
 };
 
-const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, isLaunching, onClick }: any) => {
+const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLaunching, onClick, onContextMenu }: any) => {
   const ref = useRef<HTMLDivElement>(null);
   
   // True Magnification (1.0 -> 1.5 on hover based on distance)
@@ -156,13 +183,14 @@ const DockIcon = ({ app, mouseX, isOpen, isMinimized, isFull, isActive, isLaunch
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={onClick}
+        onContextMenu={onContextMenu}
         whileTap={{ scale: 0.9 }}
       >
         <AppIcon id={app.id} size={48} isFull={isFull} />
       </motion.div>
       
-      {/* Open indicator dot */}
-      {isOpen && (
+      {/* Open indicator dot - Shows if the app is RUNNING (process active) */}
+      {isRunning && (
         <div className={`absolute -bottom-1.5 w-1 h-1 bg-white/80 rounded-full shadow-[0_0_5px_white] transition-opacity ${isMinimized ? 'opacity-30' : 'opacity-100'}`} />
       )}
     </div>

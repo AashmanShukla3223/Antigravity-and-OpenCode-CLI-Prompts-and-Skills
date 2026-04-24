@@ -43,6 +43,8 @@ export interface TahoeV3State {
   widgets: Widget[];
   reminders: Reminder[];
   music: MusicState;
+  runningApps: string[];
+  pinnedApps: string[];
 }
 
 const defaultState: TahoeV3State = {
@@ -68,7 +70,9 @@ const defaultState: TahoeV3State = {
   music: {
     currentSongIndex: 0,
     isPlaying: false
-  }
+  },
+  runningApps: [],
+  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'appstore', 'settings']
 };
 
 interface SystemContextProps {
@@ -85,6 +89,7 @@ interface SystemContextProps {
   launchingApp: string | null;
   launchApp: (appId: string) => void;
   closeApp: (appId: string) => void;
+  quitApp: (appId: string) => void;
   minimizeApp: (appId: string) => void;
   unminimizeApp: (appId: string) => void;
   toggleMaximizeApp: (appId: string) => void;
@@ -98,8 +103,8 @@ interface SystemContextProps {
   setShowWidgetPicker: (show: boolean) => void;
   incomingCall: { contact: any; type: 'facetime' | 'phone' } | null;
   setIncomingCall: (call: { contact: any; type: 'facetime' | 'phone' } | null) => void;
-  contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null;
-  setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null) => void;
+  contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null;
+  setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null) => void;
   // Hardware Info
   battery: { level: number; isCharging: boolean };
   wifi: boolean;
@@ -137,7 +142,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
   const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null>(null);
 
   // Hardware State
   const [battery, setBattery] = useState({ level: 1, isCharging: true });
@@ -147,7 +152,22 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(() => Date.now());
 
+  const updateSystemState = useCallback((updates: Partial<TahoeV3State>) => {
+    setSystemState(prev => {
+      const newState = { ...prev, ...updates };
+      localStorage.setItem('tahoe_v3_state', JSON.stringify(newState));
+      return newState;
+    });
+  }, []);
+
   const launchApp = useCallback((appId: string) => {
+    // Add to running apps if not there
+    if (!systemState.runningApps.includes(appId)) {
+      updateSystemState({
+        runningApps: [...systemState.runningApps, appId]
+      });
+    }
+
     setOpenApps(prev => {
       if (prev.includes(appId)) {
         setMinimizedApps(m => m.filter(id => id !== appId));
@@ -168,7 +188,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveApp(appId);
       }, 1000);
     }
-  }, [openApps]);
+  }, [openApps, systemState.runningApps, updateSystemState]);
 
   // Initialize Hardware APIs
   useEffect(() => {
@@ -241,14 +261,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [systemState.appearance]);
 
-  const updateSystemState = useCallback((updates: Partial<TahoeV3State>) => {
-    setSystemState(prev => {
-      const newState = { ...prev, ...updates };
-      localStorage.setItem('tahoe_v3_state', JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
   const resetSystem = useCallback((targetState: BootState = 'recovery') => {
     localStorage.removeItem('tahoe_v3_state');
     setSystemState(defaultState);
@@ -266,6 +278,13 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setMaximizedApps(prev => prev.filter(id => id !== appId));
     setActiveApp(prev => prev === appId ? null : prev);
   }, []);
+
+  const quitApp = useCallback((appId: string) => {
+    closeApp(appId);
+    updateSystemState({
+      runningApps: systemState.runningApps.filter(id => id !== appId)
+    });
+  }, [closeApp, systemState.runningApps, updateSystemState]);
 
   const minimizeApp = useCallback((appId: string) => {
     setMinimizedApps(prev => {
@@ -303,6 +322,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       launchingApp,
       launchApp,
       closeApp,
+      quitApp,
       minimizeApp,
       unminimizeApp,
       toggleMaximizeApp,

@@ -33,7 +33,7 @@ const songs = [
 ];
 
 export const Desktop: React.FC = () => {
-  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall } = useSystem();
+  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall, quitApp } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
@@ -404,7 +404,7 @@ export const Desktop: React.FC = () => {
                 <div className="px-4 py-1.5 text-sm text-white/50 cursor-default mx-1.5 flex justify-between">Set Tone <span className="text-[10px]">▶</span></div>
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Summarize</div>
               </>
-            ) : (
+            ) : contextMenu.type === 'item' ? (
               <>
                 <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white/30">Item Actions</div>
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-red-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
@@ -425,6 +425,30 @@ export const Desktop: React.FC = () => {
                      />
                    ))}
                 </div>
+              </>
+            ) : (
+              <>
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Show All Windows</div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
+                   const appId = contextMenu.targetId;
+                   if (appId) {
+                     const isPinned = systemState.pinnedApps.includes(appId);
+                     updateSystemState({
+                       pinnedApps: isPinned 
+                         ? systemState.pinnedApps.filter(id => id !== appId)
+                         : [...systemState.pinnedApps, appId]
+                     });
+                   }
+                   setContextMenu(null);
+                }}>
+                  {contextMenu.targetId && systemState.pinnedApps.includes(contextMenu.targetId) ? 'Unpin from Dock' : 'Keep in Dock'}
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-red-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
+                   if (contextMenu.targetId) quitApp(contextMenu.targetId);
+                   setContextMenu(null);
+                }}>Quit</div>
               </>
             )}
           </motion.div>

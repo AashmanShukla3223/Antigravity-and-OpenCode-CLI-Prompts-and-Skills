@@ -67,7 +67,7 @@ const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
 );
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
+  const { activeApp, setActiveApp, closeApp, quitApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
@@ -173,7 +173,17 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
         {/* Traffic Lights */}
         <div className="flex items-center gap-2 w-20">
           <button 
-            onClick={(e) => { e.stopPropagation(); closeApp(appId); }}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              // Standard macOS behavior: 
+              // Utilities (Terminal, Activity Monitor) usually quit on close.
+              // Main apps (Music, Safari) stay running in background.
+              if (appId === 'terminal' || appId === 'activitymonitor' || appId === 'installer') {
+                quitApp(appId);
+              } else {
+                closeApp(appId); 
+              }
+            }}
             className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 flex items-center justify-center border border-black/10"
           />
           <button 
