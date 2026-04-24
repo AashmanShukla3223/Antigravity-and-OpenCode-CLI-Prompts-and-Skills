@@ -77,6 +77,11 @@ export const Dock: React.FC = () => {
        window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'trash' }));
        return;
     }
+    if (appId === 'downloads') {
+       launchApp('finder');
+       window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'downloads' }));
+       return;
+    }
     launchApp(appId);
   };
 
@@ -139,6 +144,16 @@ export const Dock: React.FC = () => {
           <div className="w-[1px] h-10 bg-white/20 mx-1 self-center" />
         )}
         
+        {/* Downloads */}
+        <DockIcon 
+          app={{ id: 'downloads', name: 'Downloads' }} 
+          mouseX={mouseX} 
+          isOpen={false}
+          isMinimized={false}
+          isActive={activeApp === 'downloads'}
+          onClick={() => handleAppClick('downloads')}
+        />
+
         {/* Trash */}
         <DockIcon 
           app={{ id: 'trash', name: 'Trash' }} 
