@@ -108,12 +108,12 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     } else if (!localIcon && idLower.includes('.')) {
       // Dynamic mime resolver
       localIcon = FileSystemResolver.getMimeIcon(idLower);
-    } else if (!localIcon && idLower.startsWith('device-')) {
-      localIcon = FileSystemResolver.getDeviceIcon(idLower.replace('device-', ''));
-    } else if (!localIcon && idLower.startsWith('category-')) {
-      localIcon = FileSystemResolver.getCategoryIcon(idLower.replace('category-', ''));
-    } else if (!localIcon && idLower.startsWith('pref-')) {
-      localIcon = FileSystemResolver.getPreferenceIcon(idLower.replace('pref-', ''));
+    } else if (!localIcon && id.startsWith('device-')) {
+      localIcon = FileSystemResolver.getDeviceIcon(id.replace('device-', ''));
+    } else if (!localIcon && id.startsWith('category-')) {
+      localIcon = FileSystemResolver.getCategoryIcon(id.replace('category-', ''));
+    } else if (!localIcon && id.startsWith('pref-')) {
+      localIcon = FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''));
     }
     
     if (localIcon && !hasError) {
