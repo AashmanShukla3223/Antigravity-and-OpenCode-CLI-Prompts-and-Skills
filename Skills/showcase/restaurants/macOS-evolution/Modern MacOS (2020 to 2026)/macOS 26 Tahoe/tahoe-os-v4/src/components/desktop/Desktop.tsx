@@ -24,6 +24,7 @@ import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
 
 // Dummy songs for music widget - normally these would come from a central source
@@ -136,6 +137,7 @@ export const Desktop: React.FC = () => {
              const isFaceTime = widget.type === 'facetime';
              const isAllApps = widget.type === 'all-apps';
              const isWeather = widget.type === 'weather';
+             const isDevices = widget.type === 'connected-devices';
 
              return (
                <motion.div
@@ -157,11 +159,21 @@ export const Desktop: React.FC = () => {
                   {/* Widget Header */}
                   <div className="flex items-center gap-2 mb-3 z-10">
                      <div className="w-7 h-7 flex items-center justify-center">
-                        <img 
-                          src={`/icons/${isReminders ? 'reminders' : isWeather ? 'weather' : isMusic ? 'music' : isFaceTime ? 'facetime' : 'apps'}.png`} 
-                          className="w-full h-full object-contain drop-shadow-md" 
-                          alt={widget.type}
-                        />
+                        {isDevices ? (
+                          <img 
+                            src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')} 
+                            className="w-full h-full object-contain drop-shadow-md invert" 
+                            alt={widget.type}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <img 
+                            src={`/icons/${isReminders ? 'reminders' : isWeather ? 'weather' : isMusic ? 'music' : isFaceTime ? 'facetime' : 'apps'}.png`} 
+                            className="w-full h-full object-contain drop-shadow-md" 
+                            alt={widget.type}
+                            loading="lazy"
+                          />
+                        )}
                      </div>
                      <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">{widget.type.replace('-', ' ')}</span>
                   </div>
@@ -252,6 +264,38 @@ export const Desktop: React.FC = () => {
                            <Sun01Icon size={48} className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)] mb-2" />
                            <div className="text-3xl font-black text-white">24°</div>
                            <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Sunny</div>
+                        </div>
+                     )}
+
+                     {isDevices && (
+                        <div className="flex flex-col gap-2 h-full justify-center px-1">
+                           <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
+                              <div className="flex items-center gap-3">
+                                 <img src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <div>
+                                    <div className="text-[10px] font-bold text-white leading-tight">iPhone 18 Pro Max</div>
+                                    <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">Connected</div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
+                              <div className="flex items-center gap-3">
+                                 <img src={FileSystemResolver.getDeviceIcon('audio-headphones')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <div>
+                                    <div className="text-[10px] font-bold text-white leading-tight">AirPods Pro</div>
+                                    <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">Connected</div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm opacity-50">
+                              <div className="flex items-center gap-3">
+                                 <img src={FileSystemResolver.getDeviceIcon('input-touchscreen')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <div>
+                                    <div className="text-[10px] font-bold text-white leading-tight">Apple Watch Ultra</div>
+                                    <div className="text-[8px] text-white/40 font-bold uppercase tracking-widest">Disconnected</div>
+                                 </div>
+                              </div>
+                           </div>
                         </div>
                      )}
                   </div>
@@ -498,3 +542,4 @@ export const Desktop: React.FC = () => {
     </div>
   );
 };
+

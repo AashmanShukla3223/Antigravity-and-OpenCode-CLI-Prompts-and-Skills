@@ -10,6 +10,7 @@ import {
   UserIcon,
   SmartPhone01Icon
   } from 'hugeicons-react';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 interface AppIconProps {
   id: string;
@@ -30,15 +31,15 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       'folder': 'folder.png',
       'folder-user-home': 'user-home.png',
       'folder-desktop': 'user-desktop.png',
-      'folder-documents': 'folder-documents.png',
-      'folder-downloads': 'folder-download.png',
-      'folder-pictures': 'folder-images.png',
-      'folder-movies': 'folder-videos.png',
-      'folder-music': 'folder-music.png',
-      'folder-root': 'folder-root.png',
-      'folder-system': 'folder-root.png',
-      'folder-library': 'folder-temp.png',
-      'folder-public': 'folder-public.png',
+      'folder-documents': 'folder.png',
+      'folder-downloads': 'folder.png',
+      'folder-pictures': 'folder.png',
+      'folder-movies': 'folder.png',
+      'folder-music': 'folder.png',
+      'folder-root': 'folder.png',
+      'folder-system': 'folder.png',
+      'folder-library': 'folder.png',
+      'folder-public': 'folder.png',
       'folder-templates': 'folder-templates.png'
     };
     
@@ -88,19 +89,6 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'books': `${base}icons/books.png`,
     'wallet': `${base}icons/wallet.png`,
     'github': `${base}icons/github.png`,
-    // New folder icons
-    'folder': `${base}folder icons/blue/folder.png`,
-    'folder-user-home': `${base}folder icons/blue/user-home.png`,
-    'folder-desktop': `${base}folder icons/blue/user-desktop.png`,
-    'folder-documents': `${base}folder icons/blue/folder-documents.png`,
-    'folder-downloads': `${base}folder icons/blue/folder-download.png`,
-    'folder-pictures': `${base}folder icons/blue/folder-images.png`,
-    'folder-movies': `${base}folder icons/blue/folder-videos.png`,
-    'folder-music': `${base}folder icons/blue/folder-music.png`,
-    'folder-root': `${base}folder icons/blue/folder-root.png`,
-    'folder-system': `${base}folder icons/blue/folder-root.png`,
-    'folder-library': `${base}folder icons/blue/folder-temp.png`,
-    'folder-public': `${base}folder icons/blue/folder-public.png`,
   };
 
   const handleImageError = (iconId: string) => {
@@ -111,21 +99,41 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     const idLower = id.toLowerCase();
     let localIcon = localIcons[idLower];
     const hasError = imageLoadError[idLower];
+    let overlay: string | null = null;
 
     // Special handling for folders
     if (idLower.startsWith('folder-') || idLower === 'folder') {
       localIcon = getFolderPath(idLower, folderColor);
+      overlay = FileSystemResolver.getEmblemOverlay(idLower);
+    } else if (!localIcon && idLower.includes('.')) {
+      // Dynamic mime resolver
+      localIcon = FileSystemResolver.getMimeIcon(idLower);
+    } else if (!localIcon && idLower.startsWith('device-')) {
+      localIcon = FileSystemResolver.getDeviceIcon(idLower.replace('device-', ''));
+    } else if (!localIcon && idLower.startsWith('category-')) {
+      localIcon = FileSystemResolver.getCategoryIcon(idLower.replace('category-', ''));
+    } else if (!localIcon && idLower.startsWith('pref-')) {
+      localIcon = FileSystemResolver.getPreferenceIcon(idLower.replace('pref-', ''));
     }
     
     if (localIcon && !hasError) {
       return (
-        <div className="w-full h-full rounded-[22%] overflow-hidden flex items-center justify-center">
+        <div className="relative w-full h-full rounded-[22%] overflow-hidden flex items-center justify-center">
           <img 
             src={localIcon} 
             alt={id} 
             className="w-full h-full object-contain" 
             onError={() => handleImageError(idLower)}
+            loading="lazy"
           />
+          {overlay && (
+            <img 
+              src={overlay}
+              alt="Emblem"
+              className="absolute inset-0 w-[45%] h-[45%] object-contain m-auto translate-y-1.5 opacity-90"
+              loading="lazy"
+            />
+          )}
         </div>
       );
     }

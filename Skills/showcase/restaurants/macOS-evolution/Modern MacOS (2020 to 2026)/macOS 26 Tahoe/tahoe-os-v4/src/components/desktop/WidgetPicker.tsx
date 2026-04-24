@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem, type Widget } from '../../contexts/SystemContext';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { 
   Calendar01Icon, 
   Video01Icon, 
@@ -16,6 +17,7 @@ const WIDGET_TEMPLATES = [
   { type: 'music', name: 'Music', icon: MusicNote01Icon, color: 'bg-pink-500' },
   { type: 'weather', name: 'Weather', icon: Sun01Icon, color: 'bg-blue-500' },
   { type: 'all-apps', name: 'All Apps', icon: Grid02Icon, color: 'bg-zinc-500' },
+  { type: 'connected-devices', name: 'Devices', customIconUrl: FileSystemResolver.getDeviceIcon('phone-apple-iphone'), color: 'bg-zinc-800' },
 ] as const;
 
 export const WidgetPicker: React.FC = () => {
@@ -89,7 +91,15 @@ export const WidgetPicker: React.FC = () => {
                    className="flex-shrink-0 w-40 h-40 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 cursor-pointer group hover:bg-white/10 transition-colors relative overflow-hidden"
                  >
                     <div className={`w-12 h-12 rounded-2xl ${tmpl.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                       <tmpl.icon size={24} className="text-white" />
+                       {(() => {
+                         const customIconUrl = (tmpl as any).customIconUrl;
+                         const Icon = (tmpl as any).icon;
+                         return customIconUrl ? (
+                           <img src={customIconUrl} className="w-6 h-6 object-contain" loading="lazy" />
+                         ) : (
+                           Icon && <Icon size={24} className="text-white" />
+                         );
+                       })()}
                     </div>
                     <span className="text-xs font-bold text-white/60 group-hover:text-white transition-colors">{tmpl.name}</span>
                     

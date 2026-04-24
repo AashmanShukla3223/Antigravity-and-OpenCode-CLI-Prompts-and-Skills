@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wifi01Icon, BluetoothIcon, Sun01Icon, VolumeHighIcon, MoonIcon, Mic01Icon, BatteryCharging01Icon } from 'hugeicons-react';
+import { MoonIcon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
-const ViscousSlider = ({ icon: Icon, defaultValue = 50 }: { icon: any, defaultValue?: number }) => {
+const ViscousSlider = ({ iconSrc, defaultValue = 50 }: { iconSrc: string, defaultValue?: number }) => {
   const [value, setValue] = useState(defaultValue);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +32,7 @@ const ViscousSlider = ({ icon: Icon, defaultValue = 50 }: { icon: any, defaultVa
           }
         }}
       />
-      <Icon size={14} className="text-gray-500 relative z-10 mix-blend-difference ml-2 pointer-events-none hugeicon-tahoe" />
+      <img src={iconSrc} alt="slider icon" className="w-3.5 h-3.5 relative z-10 mix-blend-difference ml-2 pointer-events-none" loading="lazy" />
     </div>
   );
 };
@@ -55,7 +56,7 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
               <div className="flex-1 bg-white/10 rounded-2xl p-3 flex flex-col gap-3">
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => setWifi(!wifi)}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${wifi ? 'bg-blue-500' : 'bg-gray-500/50'}`}>
-                    <Wifi01Icon size={16} className={`${wifi ? 'text-white' : 'text-gray-400'} hugeicon-tahoe`} />
+                    <img src={FileSystemResolver.getDeviceIcon('network-wireless')} alt="Wi-Fi" className={`w-4 h-4 ${!wifi && 'opacity-50 grayscale'}`} loading="lazy" />
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-sm">Wi-Fi</div>
@@ -64,7 +65,7 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
                 </div>
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => setBluetooth(!bluetooth)}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${bluetooth ? 'bg-blue-500' : 'bg-gray-500/50'}`}>
-                    <BluetoothIcon size={16} className={`${bluetooth ? 'text-white' : 'text-gray-400'} hugeicon-tahoe`} />
+                    <img src={FileSystemResolver.getDeviceIcon('bluetooth')} alt="Bluetooth" className={`w-4 h-4 ${!bluetooth && 'opacity-50 grayscale'}`} loading="lazy" />
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-sm">Bluetooth</div>
@@ -83,24 +84,24 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
             {/* Sliders */}
             <div className="bg-white/10 rounded-2xl p-3 flex flex-col gap-3">
               <div className="font-medium text-xs text-white/50 pl-1">Display</div>
-              <ViscousSlider icon={Sun01Icon} defaultValue={66} />
+              <ViscousSlider iconSrc={FileSystemResolver.getStatusIcon('video-display-brightness')} defaultValue={66} />
             </div>
             
             <div className="bg-white/10 rounded-2xl p-3 flex flex-col gap-3">
               <div className="font-medium text-xs text-white/50 pl-1">Sound</div>
-              <ViscousSlider icon={VolumeHighIcon} defaultValue={50} />
+              <ViscousSlider iconSrc={FileSystemResolver.getStatusIcon('audio-volume-high')} defaultValue={50} />
             </div>
 
             {/* Bottom Row: Mic & Battery */}
             <div className="flex gap-4">
                <div className="flex-1 bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/20 transition-colors">
-                  <Mic01Icon size={20} className="text-orange-400 hugeicon-tahoe" />
+                  <img src={FileSystemResolver.getDeviceIcon('audio-input-microphone')} alt="Mic" className="w-5 h-5" loading="lazy" />
                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Microphone</span>
                </div>
                <div className="flex-1 bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2">
                   <div className="flex items-center gap-2">
                      <span className="text-lg font-black">{Math.round(battery.level * 100)}%</span>
-                     {battery.isCharging && <BatteryCharging01Icon size={14} className="text-green-400" />}
+                     <img src={FileSystemResolver.getStatusIcon(battery.isCharging ? 'battery-100-charging' : 'battery-100')} alt="Battery" className="w-4 h-4" loading="lazy" />
                   </div>
                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Battery</span>
                </div>

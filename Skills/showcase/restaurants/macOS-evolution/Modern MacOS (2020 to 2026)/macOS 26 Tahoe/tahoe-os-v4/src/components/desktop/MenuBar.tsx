@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
 import { 
-  BatteryFullIcon, 
-  BatteryCharging01Icon, 
-  BatteryLowIcon, 
-  BatteryMedium01Icon, 
-  Wifi01Icon, 
   Settings01Icon, 
   Search01Icon,
   MagicWand01Icon,
@@ -13,6 +8,7 @@ import {
 } from 'hugeicons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
 
 interface MenuBarProps {
@@ -527,13 +523,13 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
             onClick={() => setBatteryMenuOpen(!batteryMenuOpen)}
           >
             {battery.isCharging ? (
-              <BatteryCharging01Icon size={14} className="rotate-90 hugeicon-tahoe text-green-400" />
+              <img src={FileSystemResolver.getStatusIcon('battery-100-charging')} alt="Battery Charging" className="w-4 h-4" loading="lazy" />
             ) : battery.level > 0.8 ? (
-              <BatteryFullIcon size={14} className="rotate-90 hugeicon-tahoe" />
+              <img src={FileSystemResolver.getStatusIcon('battery-100')} alt="Battery Full" className="w-4 h-4" loading="lazy" />
             ) : battery.level > 0.3 ? (
-              <BatteryMedium01Icon size={14} className="rotate-90 hugeicon-tahoe" />
+              <img src={FileSystemResolver.getStatusIcon('battery-050')} alt="Battery Medium" className="w-4 h-4" loading="lazy" />
             ) : (
-              <BatteryLowIcon size={14} className="rotate-90 hugeicon-tahoe text-red-400" />
+              <img src={FileSystemResolver.getStatusIcon('battery-020')} alt="Battery Low" className="w-4 h-4" loading="lazy" />
             )}
             <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
           </div>
@@ -549,7 +545,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           <FaceTimeDropdown isOpen={facetimeMenuOpen} onClose={() => setFacetimeMenuOpen(false)} />
         </div>
         <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
-          <Wifi01Icon size={14} className="hugeicon-tahoe" />
+          <img src={FileSystemResolver.getDeviceIcon('network-wireless')} alt="Wi-Fi" className="w-4 h-4" loading="lazy" />
         </div>
         <div 
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"

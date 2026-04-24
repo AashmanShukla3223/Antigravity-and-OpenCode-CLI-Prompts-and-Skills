@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Wifi01Icon, 
-  BatteryFullIcon,
   SignalIcon,
+  Wifi01Icon,
   Settings01Icon,
   Search01Icon,
-  File01Icon,
   AiCloudIcon,
   Alert01Icon
 } from 'hugeicons-react';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 const HARDCODED_LOCK_PATH = 'Skills/showcase/restaurants';
 
@@ -154,86 +153,94 @@ export const IPhoneMirroring: React.FC = () => {
             key="active"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-[320px] h-[640px] bg-zinc-950 rounded-[3.5rem] border-[10px] border-zinc-900 shadow-2xl relative flex flex-col overflow-hidden ring-1 ring-white/10"
+            className="relative w-[340px] h-[680px] flex items-center justify-center"
           >
-            {/* Dynamic Island Area */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-end px-4 gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]" />
-               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            </div>
+            <img 
+              src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')} 
+              alt="iPhone Frame" 
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none z-50 drop-shadow-2xl" 
+              loading="lazy"
+            />
+            <div className="w-[300px] h-[630px] bg-black rounded-[2.5rem] relative flex flex-col overflow-hidden">
+              {/* Dynamic Island Area */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-50 flex items-center justify-end px-3 gap-2">
+                 <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]" />
+                 <div className="w-1 h-1 rounded-full bg-green-500" />
+              </div>
 
-            {/* Status Bar */}
-            <div className="h-12 flex justify-between items-end px-8 pb-1 z-20">
-               <span className="text-[11px] font-bold text-white">
-                 {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-               </span>
-               <div className="flex items-center gap-1.5 text-white/90">
-                  <SignalIcon size={12} />
-                  <Wifi01Icon size={12} />
-                  <BatteryFullIcon size={12} className="text-green-400" />
-               </div>
-            </div>
+              {/* Status Bar */}
+              <div className="h-10 flex justify-between items-end px-6 pb-1 z-20">
+                 <span className="text-[10px] font-bold text-white">
+                   {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                 </span>
+                 <div className="flex items-center gap-1 text-white/90">
+                    <SignalIcon size={10} />
+                    <Wifi01Icon size={10} />
+                    <img src={FileSystemResolver.getStatusIcon('battery-100')} alt="Battery" className="w-3 h-3" loading="lazy" />
+                 </div>
+              </div>
 
-            {/* iOS 27 Main Interface */}
-            <div className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto scrollbar-hide">
-               <header className="mt-4 flex justify-between items-start">
-                  <div>
-                    <h2 className="text-2xl font-black text-white tracking-tighter">Continuity</h2>
-                    <p className="text-blue-500 text-[8px] font-black uppercase tracking-widest">Locked: Restaurants</p>
-                  </div>
-                  <div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                     <AiCloudIcon size={16} className="text-blue-500" />
-                  </div>
-               </header>
+              {/* iOS 27 Main Interface */}
+              <div className="flex-1 p-5 flex flex-col gap-5 overflow-y-auto scrollbar-hide">
+                 <header className="mt-2 flex justify-between items-start">
+                    <div>
+                      <h2 className="text-xl font-black text-white tracking-tighter">Continuity</h2>
+                      <p className="text-blue-500 text-[7px] font-black uppercase tracking-widest">Locked: Restaurants</p>
+                    </div>
+                    <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                       <AiCloudIcon size={14} className="text-blue-500" />
+                    </div>
+                 </header>
 
-               <div className="space-y-2.5 pb-20">
-                  {AUTHORIZED_ASSETS.map((logic, i) => {
-                    const isMissing = logic.path.includes('MISSING');
-                    return (
-                      <motion.div 
-                        key={logic.name}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className={`p-4 ${isMissing ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/5'} backdrop-blur-3xl border rounded-2xl flex items-center gap-4 group transition-all cursor-pointer`}
-                      >
-                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isMissing ? 'bg-red-500/10 border-red-500/20' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/5'}`}>
-                            {isMissing ? <Alert01Icon size={16} className="text-red-400" /> : <File01Icon size={16} className="text-blue-400" />}
-                         </div>
-                         <div className="flex-1 min-w-0">
-                            <div className={`text-[12px] font-bold truncate ${isMissing ? 'text-red-200' : 'text-white'}`}>{logic.name}</div>
-                            <div className={`text-[8px] font-bold uppercase tracking-tighter ${isMissing ? 'text-red-400/80' : 'text-white/40'}`}>{logic.type} &bull; {logic.path}</div>
-                         </div>
-                      </motion.div>
-                    );
-                  })}
+                 <div className="space-y-2 pb-20">
+                    {AUTHORIZED_ASSETS.map((logic, i) => {
+                      const isMissing = logic.path.includes('MISSING');
+                      return (
+                        <motion.div 
+                          key={logic.name}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                          className={`p-3 ${isMissing ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/5'} backdrop-blur-3xl border rounded-2xl flex items-center gap-3 group transition-all cursor-pointer`}
+                        >
+                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${isMissing ? 'bg-red-500/10 border-red-500/20' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/5'}`}>
+                              {isMissing ? <Alert01Icon size={14} className="text-red-400" /> : <img src={FileSystemResolver.getMimeIcon('document')} className="w-4 h-4" loading="lazy" />}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <div className={`text-[10px] font-bold truncate ${isMissing ? 'text-red-200' : 'text-white'}`}>{logic.name}</div>
+                              <div className={`text-[7px] font-bold uppercase tracking-tighter ${isMissing ? 'text-red-400/80' : 'text-white/40'}`}>{logic.type} &bull; {logic.path}</div>
+                           </div>
+                        </motion.div>
+                      );
+                    })}
 
-                  <div className="mt-6 p-5 bg-blue-600 rounded-[2rem] shadow-xl relative overflow-hidden group">
-                     <div className="relative z-10 flex flex-col gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
-                           <Wifi01Icon size={16} className="text-white" />
-                        </div>
-                        <div>
-                           <h4 className="text-white font-black text-sm">Hardware Handoff</h4>
-                           <p className="text-white/60 text-[10px] leading-tight">Surgical link verified for {HARDCODED_LOCK_PATH}</p>
-                        </div>
-                     </div>
-                     <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12 blur-2xl" />
-                  </div>
-               </div>
-            </div>
+                    <div className="mt-4 p-4 bg-blue-600 rounded-3xl shadow-xl relative overflow-hidden group">
+                       <div className="relative z-10 flex flex-col gap-2">
+                          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
+                             <img src={FileSystemResolver.getDeviceIcon('network-wireless')} className="w-3 h-3 invert" loading="lazy" />
+                          </div>
+                          <div>
+                             <h4 className="text-white font-black text-xs">Hardware Handoff</h4>
+                             <p className="text-white/60 text-[8px] leading-tight">Surgical link verified for {HARDCODED_LOCK_PATH}</p>
+                          </div>
+                       </div>
+                       <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl" />
+                    </div>
+                 </div>
+              </div>
 
-            {/* iOS Dock */}
-            <div className="absolute bottom-4 left-4 right-4 h-20 bg-white/5 backdrop-blur-[30px] border border-white/5 flex items-center justify-around px-4 rounded-[2rem] z-20">
-               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-green-400 to-green-600" />
-               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600" />
-               <div className="w-11 h-11 rounded-2xl bg-zinc-800 flex items-center justify-center border border-white/5"><Settings01Icon size={20} className="text-white/40" /></div>
-               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600" />
-            </div>
+              {/* iOS Dock */}
+              <div className="absolute bottom-3 left-3 right-3 h-16 bg-white/10 backdrop-blur-[20px] border border-white/10 flex items-center justify-around px-3 rounded-3xl z-20">
+                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600" />
+                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600" />
+                 <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center border border-white/5"><Settings01Icon size={18} className="text-white/40" /></div>
+                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600" />
+              </div>
 
-            {/* Home Indicator */}
-            <div className="absolute bottom-1 left-0 right-0 h-4 flex justify-center items-end pb-2 z-30">
-               <div className="w-24 h-1 bg-white/30 rounded-full" />
+              {/* Home Indicator */}
+              <div className="absolute bottom-1 left-0 right-0 h-3 flex justify-center items-end pb-1.5 z-30">
+                 <div className="w-20 h-1 bg-white/30 rounded-full" />
+              </div>
             </div>
           </motion.div>
         )}

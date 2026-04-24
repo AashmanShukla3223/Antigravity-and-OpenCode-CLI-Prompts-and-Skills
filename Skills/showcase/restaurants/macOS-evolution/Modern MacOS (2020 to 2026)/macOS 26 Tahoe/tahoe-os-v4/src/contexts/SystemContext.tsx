@@ -4,7 +4,7 @@ type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activ
 
 export interface Widget {
   id: string;
-  type: 'reminders' | 'facetime' | 'music' | 'weather' | 'all-apps';
+  type: 'reminders' | 'facetime' | 'music' | 'weather' | 'all-apps' | 'connected-devices';
   x: number;
   y: number;
   size: 'small' | 'medium' | 'large';
