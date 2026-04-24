@@ -28,6 +28,7 @@ const ALL_APPS = [
   { id: 'soundtest', name: 'Sound Test' },
   { id: 'reminders', name: 'Reminders' },
   { id: 'stickies', name: 'Stickies' },
+  { id: 'contacts', name: 'Contacts' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
 ];
 
