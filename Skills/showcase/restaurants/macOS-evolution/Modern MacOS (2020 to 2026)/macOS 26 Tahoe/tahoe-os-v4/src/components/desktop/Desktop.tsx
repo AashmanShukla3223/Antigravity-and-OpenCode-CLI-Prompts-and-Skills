@@ -432,19 +432,30 @@ export const Desktop: React.FC = () => {
                   <>
                     <div className="border-b border-white/10 my-1 mx-3" />
                     <div className="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/30">Folder Color</div>
-                    <div className="px-4 py-2 flex gap-2 mx-1.5">
-                       {['blue', 'green', 'grey'].map(color => (
-                         <button 
-                           key={color}
-                           onClick={() => {
-                             if (contextMenu.targetId) updateNode(contextMenu.targetId, { color });
-                             setContextMenu(null);
-                           }}
-                           className={`w-5 h-5 rounded-full border border-white/10 hover:scale-125 transition-transform shadow-lg ${
-                             color === 'blue' ? 'bg-blue-500' : color === 'green' ? 'bg-green-500' : 'bg-gray-500'
-                           }`}
-                         />
-                       ))}
+                    <div className="px-4 py-2 flex flex-wrap gap-2 mx-1.5">
+                       {['blue', 'green', 'grey', 'nord', 'orange', 'purple', 'red', 'yellow'].map(color => {
+                         const colorMap: Record<string, string> = {
+                           blue: 'bg-blue-500',
+                           green: 'bg-green-500',
+                           grey: 'bg-gray-500',
+                           nord: 'bg-[#5E81AC]',
+                           orange: 'bg-orange-500',
+                           purple: 'bg-purple-500',
+                           red: 'bg-red-500',
+                           yellow: 'bg-yellow-500'
+                         };
+                         return (
+                           <button 
+                             key={color}
+                             onClick={() => {
+                               if (contextMenu.targetId) updateNode(contextMenu.targetId, { color });
+                               setContextMenu(null);
+                             }}
+                             className={`w-5 h-5 rounded-full border border-white/10 hover:scale-125 transition-transform shadow-lg ${colorMap[color]}`}
+                             title={color.charAt(0).toUpperCase() + color.slice(1)}
+                           />
+                         );
+                       })}
                     </div>
                   </>
                 )}
