@@ -21,8 +21,6 @@ const WIDGET_TEMPLATES = [
 export const WidgetPicker: React.FC = () => {
   const { showWidgetPicker, setShowWidgetPicker, updateSystemState, systemState } = useSystem();
 
-  if (!showWidgetPicker) return null;
-
   const addWidget = (type: Widget['type']) => {
     const newWidget: Widget = {
       id: Math.random().toString(36).substr(2, 9),

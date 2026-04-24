@@ -10,11 +10,12 @@ import { AboutThisMac } from '../apps/AboutThisMac';
 import { RestartDialog } from './RestartDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
-import { Folder01Icon, File01Icon } from 'hugeicons-react';
+import { Folder01Icon, File01Icon, Sun01Icon } from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
+import { WidgetPicker } from './WidgetPicker';
 
 export const Desktop: React.FC = () => {
   const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker } = useSystem();
@@ -69,6 +70,55 @@ export const Desktop: React.FC = () => {
       onContextMenu={handleContextMenu}
     >
       <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
+
+      {/* Widgets Layer */}
+      <div className="absolute inset-0 z-0 p-8 pointer-events-none">
+        <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
+           {systemState.widgets.map((widget) => (
+             <motion.div
+               key={widget.id}
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               style={{ 
+                 gridColumnStart: widget.x + 1, 
+                 gridRowStart: widget.y + 1,
+                 gridColumnEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 4}`,
+                 gridRowEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 2}`
+               }}
+               className="bg-white/10 backdrop-blur-xl rounded-[2rem] border border-white/20 p-4 pointer-events-auto shadow-xl group relative"
+             >
+                <div className="flex items-center gap-2 mb-2">
+                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                     widget.type === 'reminders' ? 'bg-orange-500' :
+                     widget.type === 'facetime' ? 'bg-green-500' :
+                     widget.type === 'music' ? 'bg-pink-500' :
+                     widget.type === 'weather' ? 'bg-blue-500' : 'bg-zinc-500'
+                   }`}>
+                      {widget.type === 'reminders' && <Folder01Icon size={14} className="text-white" />}
+                      {widget.type === 'weather' && <Sun01Icon size={14} className="text-white" />}
+                   </div>
+                   <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">{widget.type}</span>
+                </div>
+                
+                {/* Widget Content Placeholder */}
+                <div className="flex-1 flex items-center justify-center">
+                   <span className="text-white/20 text-xs font-medium">Widget Content</span>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    updateSystemState({
+                      widgets: systemState.widgets.filter(w => w.id !== widget.id)
+                    });
+                  }}
+                  className="absolute -top-2 -left-2 w-6 h-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="text-white text-xs">−</span>
+                </button>
+             </motion.div>
+           ))}
+        </div>
+      </div>
 
       {/* Desktop Items Grid */}
       <div className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none">
@@ -145,6 +195,7 @@ export const Desktop: React.FC = () => {
       <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} />
       <Spotlight />
       <IncomingCallOverlay />
+      <WidgetPicker />
 
       {/* Custom Context Menu */}
       <AnimatePresence>
