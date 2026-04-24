@@ -2,6 +2,14 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 
 type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
 
+export interface Widget {
+  id: string;
+  type: 'reminders' | 'facetime' | 'music' | 'weather' | 'all-apps';
+  x: number;
+  y: number;
+  size: 'small' | 'medium' | 'large';
+}
+
 export interface TahoeV3State {
   setup_complete: boolean;
   user: {
@@ -21,6 +29,7 @@ export interface TahoeV3State {
   glassBlurIntensity: number;
   lowPowerMode: boolean;
   apiKey?: string;
+  widgets: Widget[];
 }
 
 const defaultState: TahoeV3State = {
@@ -37,6 +46,7 @@ const defaultState: TahoeV3State = {
   glassBlurIntensity: 50,
   lowPowerMode: false,
   apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || '',
+  widgets: [],
 };
 
 interface SystemContextProps {
@@ -62,6 +72,8 @@ interface SystemContextProps {
   setShowSpotlight: (show: boolean) => void;
   showRestartDialog: boolean;
   setShowRestartDialog: (show: boolean) => void;
+  showWidgetPicker: boolean;
+  setShowWidgetPicker: (show: boolean) => void;
   incomingCall: { contact: any; type: 'facetime' | 'phone' } | null;
   setIncomingCall: (call: { contact: any; type: 'facetime' | 'phone' } | null) => void;
   contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null;
@@ -101,6 +113,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
+  const [showWidgetPicker, setShowWidgetPicker] = useState(false);
   const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing'; targetId?: string } | null>(null);
 
@@ -277,6 +290,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setShowSpotlight,
       showRestartDialog,
       setShowRestartDialog,
+      showWidgetPicker,
+      setShowWidgetPicker,
       incomingCall,
       setIncomingCall,
       contextMenu,

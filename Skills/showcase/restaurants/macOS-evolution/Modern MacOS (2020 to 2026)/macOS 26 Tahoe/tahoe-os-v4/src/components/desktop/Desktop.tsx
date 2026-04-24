@@ -17,7 +17,7 @@ import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 
 export const Desktop: React.FC = () => {
-  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp } = useSystem();
+  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
@@ -176,6 +176,13 @@ export const Desktop: React.FC = () => {
                 </div>
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => updateSystemState({ wallpaperUrl: 'https://images.unsplash.com/photo-1635837958542-a381046eb53e?q=80&w=2670&auto=format&fm=webp', wallpaperType: 'image' })}>
                   Change Wallpaper
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
+                   setShowWidgetPicker(true);
+                   setContextMenu(null);
+                }}>
+                  Edit Widgets
                 </div>
               </>
             ) : contextMenu.type === 'writing' ? (
