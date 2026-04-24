@@ -26,7 +26,7 @@ const apps = [
 ];
 
 export const Launchpad: React.FC = () => {
-  const { launchApp, closeApp } = useSystem();
+  const { launchApp, closeApp, setContextMenu } = useSystem();
   const [search, setSearch] = useState('');
 
   const filteredApps = apps.filter(app => 
@@ -69,6 +69,11 @@ export const Launchpad: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleLaunch(app.id)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setContextMenu({ x: e.pageX, y: e.pageY, type: 'dock', targetId: app.id });
+              }}
               className="flex flex-col items-center gap-3 cursor-pointer group"
             >
               <div className="w-20 h-20 relative transition-transform duration-300">
