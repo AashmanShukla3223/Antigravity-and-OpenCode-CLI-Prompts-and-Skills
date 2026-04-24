@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import type { TagColor } from '../../contexts/FileSystemContext';
 import { useSystem } from '../../contexts/SystemContext';
+import { AppIcon } from '../common/AppIcon';
 import { 
-  Folder01Icon, 
   File01Icon, 
-  Grid02Icon, 
   ArrowLeft01Icon as ChevronLeft, 
   ArrowRight01Icon as ChevronRight,
   PlusSignIcon,
-  Delete02Icon,
-  ComputerIcon,
-  Database01Icon
+  Delete02Icon
 } from 'hugeicons-react';
 
 export const FinderIcon = () => (
@@ -117,14 +114,14 @@ export const Finder: React.FC = () => {
   };
 
   const favorites = [
-    { id: 'desktop', name: 'Desktop', icon: <Grid02Icon size={16} /> },
-    { id: 'documents', name: 'Documents', icon: <File01Icon size={16} /> },
-    { id: 'downloads', name: 'Downloads', icon: <Folder01Icon size={16} /> },
-    { id: 'user-home', name: 'Architect', icon: <ComputerIcon size={16} /> }
+    { id: 'desktop', name: 'Desktop', icon: <AppIcon id="folder-desktop" size={16} /> },
+    { id: 'documents', name: 'Documents', icon: <AppIcon id="folder-documents" size={16} /> },
+    { id: 'downloads', name: 'Downloads', icon: <AppIcon id="folder-downloads" size={16} /> },
+    { id: 'user-home', name: 'Architect', icon: <AppIcon id="folder-user-home" size={16} /> }
   ];
 
   const locations = [
-    { id: 'root', name: 'Macintosh HD', icon: <Database01Icon size={16} /> }
+    { id: 'root', name: 'Macintosh HD', icon: <AppIcon id="disk" size={16} /> }
   ];
 
   return (
@@ -258,7 +255,7 @@ export const Finder: React.FC = () => {
         >
           {contents.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-2">
-              <Folder01Icon size={48} strokeWidth={1} className="opacity-20" />
+              <AppIcon id="folder" size={48} className="opacity-20" />
               <span className="text-xs font-bold uppercase tracking-widest">Empty Folder</span>
             </div>
           ) : (
@@ -275,11 +272,11 @@ export const Finder: React.FC = () => {
                     border-2
                   `}
                 >
-                  <div className="relative">
+                  <div className="relative w-12 h-12 flex items-center justify-center">
                     {node.type === 'folder' ? (
-                      <Folder01Icon size={48} strokeWidth={1} className="text-blue-400 fill-blue-50 drop-shadow-sm" />
+                      <AppIcon id={node.customIcon || `folder-${node.id}`} size={48} />
                     ) : (
-                      <File01Icon size={48} strokeWidth={1} className="text-gray-400 fill-gray-50" />
+                      <File01Icon size={40} strokeWidth={1} className="text-gray-400 fill-gray-50" />
                     )}
                     
                     {/* Tags */}

@@ -59,12 +59,25 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'console': `${base}icons/console.png`,
     'controlcenter': `${base}icons/controlcenter.png`,
     'keychainaccess': `${base}icons/keychain.png`,
-    'apps': `${base}icons/apps.png`,
+    'apps': `${base}folder icons/blue/folder-templates.ico`,
     'weather': `${base}icons/weather.png`,
     'camera': `${base}icons/camera.png`,
     'books': `${base}icons/books.png`,
     'wallet': `${base}icons/wallet.png`,
-    'github': `${base}icons/github.png`
+    'github': `${base}icons/github.png`,
+    // New folder icons
+    'folder': `${base}folder icons/blue/folder.ico`,
+    'folder-user-home': `${base}folder icons/blue/user-home.ico`,
+    'folder-desktop': `${base}folder icons/blue/user-desktop.ico`,
+    'folder-documents': `${base}folder icons/blue/folder-documents.ico`,
+    'folder-downloads': `${base}folder icons/blue/folder-download.ico`,
+    'folder-pictures': `${base}folder icons/blue/folder-images.ico`,
+    'folder-movies': `${base}folder icons/blue/folder-videos.ico`,
+    'folder-music': `${base}folder icons/blue/folder-music.ico`,
+    'folder-root': `${base}folder icons/blue/folder-root.ico`,
+    'folder-system': `${base}folder icons/blue/folder-root.ico`,
+    'folder-library': `${base}folder icons/blue/folder-temp.ico`,
+    'folder-public': `${base}folder icons/blue/folder-public.ico`,
   };
 
   const handleImageError = (iconId: string) => {
@@ -73,16 +86,21 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
 
   const renderIcon = () => {
     const idLower = id.toLowerCase();
-    const localIcon = localIcons[idLower];
+    let localIcon = localIcons[idLower];
     const hasError = imageLoadError[idLower];
+
+    // Fallback for folders
+    if (!localIcon && (idLower.startsWith('folder-') || idLower === 'folder')) {
+      localIcon = localIcons['folder'];
+    }
     
     if (localIcon && !hasError) {
       return (
-        <div className="w-full h-full rounded-[22%] overflow-hidden">
+        <div className="w-full h-full rounded-[22%] overflow-hidden flex items-center justify-center">
           <img 
             src={localIcon} 
             alt={id} 
-            className="w-full h-full object-cover" 
+            className="w-full h-full object-contain" 
             onError={() => handleImageError(idLower)}
           />
         </div>
