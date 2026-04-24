@@ -81,7 +81,7 @@ const defaultState: TahoeV3State = {
     isPlaying: false
   },
   runningApps: [],
-  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'appstore', 'notes', 'settings'],
+  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'calendar', 'appstore', 'notes', 'settings'],
   notes: [
     { 
       id: '1', 

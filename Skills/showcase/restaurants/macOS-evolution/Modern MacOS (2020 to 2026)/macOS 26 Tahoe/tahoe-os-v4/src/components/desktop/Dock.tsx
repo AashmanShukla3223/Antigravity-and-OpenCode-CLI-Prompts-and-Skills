@@ -25,6 +25,7 @@ const ALL_APPS = [
   { id: 'github', name: 'GitHub' },
   { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },
+  { id: 'calendar', name: 'Calendar' },
   { id: 'soundtest', name: 'Sound Test' },
   { id: 'reminders', name: 'Reminders' },
   { id: 'stickies', name: 'Stickies' },
