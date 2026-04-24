@@ -16,13 +16,37 @@ interface AppIconProps {
   className?: string;
   size?: number;
   isFull?: boolean;
+  folderColor?: string;
 }
 
-export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32, isFull = false }) => {
+export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32, isFull = false, folderColor = "blue" }) => {
   const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({});
   const iconProps = { size: size * 0.6, className: "z-10 text-white drop-shadow-lg hugeicon-tahoe" };
 
   const base = (import.meta as any).env?.BASE_URL || '/';
+
+  const getFolderPath = (iconId: string, color: string) => {
+    const mappings: Record<string, string> = {
+      'folder': 'folder.png',
+      'folder-user-home': 'user-home.png',
+      'folder-desktop': 'user-desktop.png',
+      'folder-documents': 'folder-documents.png',
+      'folder-downloads': 'folder-download.png',
+      'folder-pictures': 'folder-images.png',
+      'folder-movies': 'folder-videos.png',
+      'folder-music': 'folder-music.png',
+      'folder-root': 'folder-root.png',
+      'folder-system': 'folder-root.png',
+      'folder-library': 'folder-temp.png',
+      'folder-public': 'folder-public.png',
+      'folder-templates': 'folder-templates.png',
+      'apps': 'folder-templates.png'
+    };
+    
+    const fileName = mappings[iconId] || 'folder.png';
+    return `${base}folder icons/${color}/${fileName}`;
+  };
+
   const localIcons: Record<string, string> = {
     'safari': `${base}icons/safari.png`,
     'settings': `${base}icons/settings.png`,
@@ -89,9 +113,9 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     let localIcon = localIcons[idLower];
     const hasError = imageLoadError[idLower];
 
-    // Fallback for folders
-    if (!localIcon && (idLower.startsWith('folder-') || idLower === 'folder')) {
-      localIcon = localIcons['folder'];
+    // Special handling for folders
+    if (idLower.startsWith('folder-') || idLower === 'folder' || idLower === 'apps') {
+      localIcon = getFolderPath(idLower, folderColor);
     }
     
     if (localIcon && !hasError) {

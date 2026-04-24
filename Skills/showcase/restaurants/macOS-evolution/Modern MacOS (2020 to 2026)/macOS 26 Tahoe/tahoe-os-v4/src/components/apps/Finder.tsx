@@ -274,7 +274,7 @@ export const Finder: React.FC = () => {
                 >
                   <div className="relative w-12 h-12 flex items-center justify-center">
                     {node.type === 'folder' ? (
-                      <AppIcon id={node.customIcon || `folder-${node.id}`} size={48} />
+                      <AppIcon id={node.customIcon || `folder-${node.id}`} size={48} folderColor={node.color} />
                     ) : (
                       <File01Icon size={40} strokeWidth={1} className="text-gray-400 fill-gray-50" />
                     )}

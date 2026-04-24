@@ -14,6 +14,7 @@ export type FileSystemNode = {
   isLocked?: boolean;
   tags?: TagColor[];
   customIcon?: string;
+  color?: string;
 };
 
 interface FileSystemContextProps {
