@@ -5,8 +5,32 @@ import { useSystem } from '../../contexts/SystemContext';
 
 export const AboutThisMac: React.FC = () => {
   const { showAboutWindow, setShowAboutWindow, launchApp, battery, hardware } = useSystem();
-  const [gpuInfo, setGpuInfo] = useState('Apple GPU');
-  const [memoryInfo, setMemoryInfo] = useState({ used: 0, total: hardware.memory || 16 });
+  
+  const [gpuInfo, setGpuInfo] = useState(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        const debugInfo = (gl as any).getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          const renderer = (gl as any).getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          return renderer.replace(/ANGLE \(|\)|Direct3D.*|vs_.*|ps_.*/g, '').trim();
+        }
+      }
+    } catch (e) {
+      console.warn('WebGL not supported for GPU info');
+    }
+    return 'Apple M-Series GPU';
+  });
+
+  const [memoryInfo, setMemoryInfo] = useState(() => {
+    if ((performance as any).memory) {
+      const used = Math.round((performance as any).memory.usedJSHeapSize / 1024 / 1024);
+      const total = Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 / 1024);
+      return { used, total: total || hardware.memory || 16 };
+    }
+    return { used: 0, total: hardware.memory || 16 };
+  });
 
   // 1. The Intelligence: Classify the device
   const deviceType = useMemo(() => {
@@ -35,26 +59,6 @@ export const AboutThisMac: React.FC = () => {
 
   useEffect(() => {
     if (showAboutWindow) {
-      // 4. Real-Time Flex: CPU/GPU Info
-      const getGPU = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-          if (gl) {
-            const debugInfo = (gl as any).getExtension('WEBGL_debug_renderer_info');
-            if (debugInfo) {
-              const renderer = (gl as any).getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-              // Clean up common messy GPU strings
-              return renderer.replace(/ANGLE \(|\)|Direct3D.*|vs_.*|ps_.*/g, '').trim();
-            }
-          }
-        } catch (e) {
-          console.warn('WebGL not supported for GPU info');
-        }
-        return 'Apple M-Series GPU';
-      };
-      setGpuInfo(getGPU() || 'Apple M-Series GPU');
-
       // Update memory dynamically using performance API if available
       const updateMemory = () => {
         if ((performance as any).memory) {

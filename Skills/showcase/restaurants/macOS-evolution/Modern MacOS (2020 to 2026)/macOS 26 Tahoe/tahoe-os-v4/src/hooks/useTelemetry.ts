@@ -20,11 +20,13 @@ export const useTelemetry = () => {
   });
 
   const frameRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(performance.now());
+  const lastTimeRef = useRef<number>(0);
   const frameCountRef = useRef<number>(0);
-  const lastFpsTimeRef = useRef<number>(performance.now());
+  const lastFpsTimeRef = useRef<number>(0);
 
   useEffect(() => {
+    lastTimeRef.current = performance.now();
+    lastFpsTimeRef.current = performance.now();
     let isActive = true;
 
     const tick = (time: number) => {

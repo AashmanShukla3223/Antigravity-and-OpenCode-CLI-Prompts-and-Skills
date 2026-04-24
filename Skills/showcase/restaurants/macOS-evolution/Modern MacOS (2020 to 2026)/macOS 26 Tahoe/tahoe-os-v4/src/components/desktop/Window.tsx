@@ -24,17 +24,18 @@ import { FaceTime } from '../apps/FaceTime';
 import { Contacts } from '../apps/Contacts';
 
 import { AppleMusic } from '../apps/AppleMusic';
-import { iTunesStore } from '../apps/iTunesStore';
+import { ITunesStore } from '../apps/iTunesStore';
 import { SoundTest } from '../apps/SoundTest';
 import { Installer } from '../apps/Installer';
 
-import { iPhoneMirroring } from '../apps/iPhoneMirroring';
+import { IPhoneMirroring } from '../apps/iPhoneMirroring';
+import { Weather } from '../apps/Weather';
 
 interface WindowProps {
   appId: string;
 }
 
-const AppMap: Record<string, React.FC> = {
+const AppMap: Record<string, React.FC<any>> = {
   finder: Finder,
   safari: Safari,
   settings: SystemSettings,
@@ -54,11 +55,16 @@ const AppMap: Record<string, React.FC> = {
   facetime: FaceTime,
   contacts: Contacts,
   music: AppleMusic,
-  itunes: iTunesStore,
+  itunes: ITunesStore,
   soundtest: SoundTest,
   installer: Installer,
-  iphonemirroring: iPhoneMirroring,
+  iphonemirroring: IPhoneMirroring,
+  weather: Weather,
 };
+
+const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
+  <div className="p-8 text-white">App not found: {appId}</div>
+);
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
   const { activeApp, setActiveApp, closeApp, openApps, minimizedApps, maximizedApps, minimizeApp, toggleMaximizeApp, powerMode } = useSystem();
@@ -71,7 +77,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
   const isMaximized = maximizedApps.includes(appId);
   const zIndex = isActive ? 50 : openApps.indexOf(appId) + 10;
 
-  const AppContent = AppMap[appId] || (() => <div className="p-8 text-white">App not found: {appId}</div>);
+  const AppContent = AppMap[appId];
 
   // CPU resistance formula: higher cpu pressure = stiffer drag
   const dragElastic = Math.max(0.1, 0.5 - (telemetry.cpuPressure * 0.4));
@@ -191,7 +197,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
 
       {/* Content Area */}
       <div className={`flex-1 relative z-10 overflow-hidden ${isEndurance ? 'bg-amber-950/80' : 'bg-white/5'}`}>
-        <AppContent />
+        {AppContent ? <AppContent /> : <AppNotFound appId={appId} />}
       </div>
     </motion.div>
   );

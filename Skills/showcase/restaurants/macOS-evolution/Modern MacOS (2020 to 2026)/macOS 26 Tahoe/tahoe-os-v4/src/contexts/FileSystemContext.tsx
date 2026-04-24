@@ -90,6 +90,28 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     return initialNodes;
   });
 
+  const restoreSystemNodes = () => {
+    setNodes(prev => {
+      const criticalIds = ['root', 'trash', 'apps', 'library', 'system', 'users', 'user-home', 'desktop'];
+      const missingNodes = initialNodes.filter(node => 
+        criticalIds.includes(node.id) && !prev.some(p => p.id === node.id)
+      );
+
+      if (missingNodes.length === 0) return prev;
+
+      // Also ensure existing critical nodes are in the correct hierarchy (not in trash)
+      const restored = prev.map(node => {
+        if (criticalIds.includes(node.id) && node.parentId === 'trash') {
+          const original = initialNodes.find(i => i.id === node.id);
+          return original ? { ...node, parentId: original.parentId } : node;
+        }
+        return node;
+      });
+
+      return [...restored, ...missingNodes];
+    });
+  };
+
   useEffect(() => {
     localStorage.setItem('tahoe_v3_fs', JSON.stringify(nodes));
   }, [nodes]);
@@ -158,28 +180,6 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
       }
       return n;
     }));
-  };
-
-  const restoreSystemNodes = () => {
-    setNodes(prev => {
-      const criticalIds = ['root', 'trash', 'apps', 'library', 'system', 'users', 'user-home', 'desktop'];
-      const missingNodes = initialNodes.filter(node => 
-        criticalIds.includes(node.id) && !prev.some(p => p.id === node.id)
-      );
-
-      if (missingNodes.length === 0) return prev;
-
-      // Also ensure existing critical nodes are in the correct hierarchy (not in trash)
-      const restored = prev.map(node => {
-        if (criticalIds.includes(node.id) && node.parentId === 'trash') {
-          const original = initialNodes.find(i => i.id === node.id);
-          return original ? { ...node, parentId: original.parentId } : node;
-        }
-        return node;
-      });
-
-      return [...restored, ...missingNodes];
-    });
   };
 
   return (

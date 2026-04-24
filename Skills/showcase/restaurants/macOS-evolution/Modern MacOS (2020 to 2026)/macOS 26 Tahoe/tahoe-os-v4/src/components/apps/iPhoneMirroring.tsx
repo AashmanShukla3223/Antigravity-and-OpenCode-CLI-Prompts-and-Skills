@@ -18,7 +18,7 @@ const AUTHORIZED_ASSETS = [
   { name: 'iPhone Mirroring PRD.md', type: 'Design Specs', path: 'PRDs/' }
 ];
 
-export const iPhoneMirroring: React.FC = () => {
+export const IPhoneMirroring: React.FC = () => {
   const [stage, setStage] = useState<'idle' | 'authorizing' | 'scanning' | 'booting' | 'active'>('idle');
   const [bootProgress, setBootProgress] = useState(0);
   const [time, setTime] = useState(new Date());

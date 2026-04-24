@@ -29,7 +29,7 @@ export class AIEngine {
       }
 
       if (lowerPrompt.includes('open') || lowerPrompt.includes('launch')) {
-        const apps = ['messages', 'safari', 'terminal', 'finder', 'settings', 'activitymonitor', 'photos'];
+        const apps = ['messages', 'safari', 'terminal', 'finder', 'settings', 'activitymonitor', 'photos', 'weather'];
         for (const app of apps) {
           if (lowerPrompt.includes(app)) {
             this.actions.launchApp(app);

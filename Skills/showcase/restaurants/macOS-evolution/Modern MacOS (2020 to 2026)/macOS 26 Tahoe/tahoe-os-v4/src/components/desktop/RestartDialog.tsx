@@ -7,8 +7,13 @@ export const RestartDialog: React.FC = () => {
   const { showRestartDialog, setShowRestartDialog, setBootState } = useSystem();
   const [countdown, setCountdown] = useState(60);
 
+  const handleRestart = () => {
+    setShowRestartDialog(false);
+    setBootState('booting');
+  };
+
   useEffect(() => {
-    let timer: any;
+    let timer: NodeJS.Timeout | undefined;
     if (showRestartDialog && countdown > 60) {
       timer = setInterval(() => {
         setCountdown(prev => prev - 1);
@@ -16,13 +21,8 @@ export const RestartDialog: React.FC = () => {
     } else if (countdown === 0) {
       handleRestart();
     }
-    return () => clearInterval(timer);
+    return () => timer && clearInterval(timer);
   }, [showRestartDialog, countdown]);
-
-  const handleRestart = () => {
-    setShowRestartDialog(false);
-    setBootState('booting');
-  };
 
   const handleRecovery = () => {
     setShowRestartDialog(false);

@@ -20,6 +20,7 @@ const apps = [
   { id: 'itunes', name: 'iTunes Store' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },
+  { id: 'weather', name: 'Weather' },
   { id: 'github', name: 'GitHub' },
   { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },

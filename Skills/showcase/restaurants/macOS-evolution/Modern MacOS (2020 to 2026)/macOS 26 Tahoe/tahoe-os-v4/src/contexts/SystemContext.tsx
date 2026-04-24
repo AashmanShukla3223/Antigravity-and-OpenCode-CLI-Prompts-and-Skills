@@ -110,7 +110,30 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [bluetooth, setBluetooth] = useState(true);
   const [powerMode, setPowerMode] = useState<'Low Power' | 'Normal' | 'High Performance'>('Normal');
   const [uptime, setUptime] = useState(0);
-  const [startTime] = useState(Date.now());
+  const [startTime] = useState(() => Date.now());
+
+  const launchApp = useCallback((appId: string) => {
+    setOpenApps(prev => {
+      if (prev.includes(appId)) {
+        setMinimizedApps(m => m.filter(id => id !== appId));
+        setActiveApp(appId);
+        return prev;
+      }
+      return prev;
+    });
+
+    if (!openApps.includes(appId)) {
+      setLaunchingApp(appId);
+      setTimeout(() => {
+        setOpenApps(current => {
+          if (current.includes(appId)) return current;
+          return [...current, appId];
+        });
+        setLaunchingApp(null);
+        setActiveApp(appId);
+      }, 1000);
+    }
+  }, [openApps]);
 
   // Initialize Hardware APIs
   useEffect(() => {
@@ -201,29 +224,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setShowAboutWindow(false);
     setBootState(targetState);
   }, []);
-
-  const launchApp = useCallback((appId: string) => {
-    setOpenApps(prev => {
-      if (prev.includes(appId)) {
-        setMinimizedApps(m => m.filter(id => id !== appId));
-        setActiveApp(appId);
-        return prev;
-      }
-      return prev;
-    });
-
-    if (!openApps.includes(appId)) {
-      setLaunchingApp(appId);
-      setTimeout(() => {
-        setOpenApps(current => {
-          if (current.includes(appId)) return current;
-          return [...current, appId];
-        });
-        setLaunchingApp(null);
-        setActiveApp(appId);
-      }, 1000);
-    }
-  }, [openApps]);
 
   const closeApp = useCallback((appId: string) => {
     setOpenApps(prev => prev.filter(id => id !== appId));

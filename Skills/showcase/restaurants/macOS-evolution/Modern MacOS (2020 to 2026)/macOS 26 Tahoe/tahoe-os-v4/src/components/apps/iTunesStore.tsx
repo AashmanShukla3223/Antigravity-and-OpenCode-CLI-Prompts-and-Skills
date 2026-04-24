@@ -19,7 +19,7 @@ const items: StoreItem[] = [
   { id: 'silicon_pack', title: 'Silicon Surge Pack', description: 'Extra system sounds and effects', price: '$1.99' },
 ];
 
-export const iTunesStore: React.FC = () => {
+export const ITunesStore: React.FC = () => {
   const [showApplePay, setShowApplePay] = useState(false);
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [purchasedIds, setPurchasedIds] = useState<string[]>([]);
