@@ -45,8 +45,9 @@ export const Dock: React.FC = () => {
     .map(id => ALL_APPS.find(a => a.id === id))
     .filter(Boolean) as { id: string, name: string }[];
 
-  // Applications and GitHub are special static anchors in this dock
+  // Applications, Finder and GitHub are special static anchors in this dock
   const finalApps = [
+    { id: 'finder', name: 'Finder' },
     { id: 'apps', name: 'Applications' },
     ...dockApps,
     { id: 'github', name: 'GitHub' }
@@ -71,7 +72,7 @@ export const Dock: React.FC = () => {
        return;
     }
     if (appId === 'trash') {
-       launchApp('trash');
+       launchApp('finder');
        window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'trash' }));
        return;
     }
