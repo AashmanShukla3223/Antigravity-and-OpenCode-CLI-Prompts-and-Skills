@@ -7,15 +7,21 @@ import {
   Settings01Icon,
   Search01Icon,
   File01Icon,
-  AiCloudIcon
+  AiCloudIcon,
+  Alert01Icon
 } from 'hugeicons-react';
 
 const HARDCODED_LOCK_PATH = 'Skills/showcase/restaurants';
 
-// Strict logic assets discovered ONLY in the hardcoded path
+// Strict logic assets discovered ONLY in the hardcoded path.
+// Constraints Applied: If a keyword is mentioned but the logic is missing, FLAG IT AS MISSING.
 const AUTHORIZED_ASSETS = [
   { name: 'iPhone Mirroring.md', type: 'System Logic', path: 'macOS 26 Tahoe/' },
-  { name: 'iPhone Mirroring PRD.md', type: 'Design Specs', path: 'PRDs/' }
+  { name: 'iPhone Mirroring PRD.md', type: 'Design Specs', path: 'PRDs/' },
+  { name: 'iOS-Diner', type: 'Source Logic', path: 'MISSING - FLAGGED' },
+  { name: 'Event Mapping (touchStart/touchMove)', type: 'Logic', path: 'MISSING - FLAGGED' },
+  { name: 'AirDrop Handoff', type: 'Logic', path: 'MISSING - FLAGGED' },
+  { name: 'Mirror Engine (iframe)', type: 'Logic', path: 'MISSING - FLAGGED' }
 ];
 
 export const IPhoneMirroring: React.FC = () => {
@@ -169,7 +175,7 @@ export const IPhoneMirroring: React.FC = () => {
             </div>
 
             {/* iOS 27 Main Interface */}
-            <div className="flex-1 p-6 flex flex-col gap-6">
+            <div className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto scrollbar-hide">
                <header className="mt-4 flex justify-between items-start">
                   <div>
                     <h2 className="text-2xl font-black text-white tracking-tighter">Continuity</h2>
@@ -180,24 +186,27 @@ export const IPhoneMirroring: React.FC = () => {
                   </div>
                </header>
 
-               <div className="space-y-2.5">
-                  {AUTHORIZED_ASSETS.map((logic, i) => (
-                    <motion.div 
-                      key={logic.name}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="p-4 bg-white/[0.03] backdrop-blur-3xl border border-white/5 rounded-2xl flex items-center gap-4 group hover:bg-white/[0.08] transition-all cursor-pointer"
-                    >
-                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center border border-white/5">
-                          <File01Icon size={16} className="text-blue-400" />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <div className="text-[12px] font-bold text-white truncate">{logic.name}</div>
-                          <div className="text-[8px] font-bold text-white/20 uppercase tracking-tighter">{logic.type}</div>
-                       </div>
-                    </motion.div>
-                  ))}
+               <div className="space-y-2.5 pb-20">
+                  {AUTHORIZED_ASSETS.map((logic, i) => {
+                    const isMissing = logic.path.includes('MISSING');
+                    return (
+                      <motion.div 
+                        key={logic.name}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className={`p-4 ${isMissing ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/5'} backdrop-blur-3xl border rounded-2xl flex items-center gap-4 group transition-all cursor-pointer`}
+                      >
+                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isMissing ? 'bg-red-500/10 border-red-500/20' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/5'}`}>
+                            {isMissing ? <Alert01Icon size={16} className="text-red-400" /> : <File01Icon size={16} className="text-blue-400" />}
+                         </div>
+                         <div className="flex-1 min-w-0">
+                            <div className={`text-[12px] font-bold truncate ${isMissing ? 'text-red-200' : 'text-white'}`}>{logic.name}</div>
+                            <div className={`text-[8px] font-bold uppercase tracking-tighter ${isMissing ? 'text-red-400/80' : 'text-white/40'}`}>{logic.type} &bull; {logic.path}</div>
+                         </div>
+                      </motion.div>
+                    );
+                  })}
 
                   <div className="mt-6 p-5 bg-blue-600 rounded-[2rem] shadow-xl relative overflow-hidden group">
                      <div className="relative z-10 flex flex-col gap-3">
@@ -215,7 +224,7 @@ export const IPhoneMirroring: React.FC = () => {
             </div>
 
             {/* iOS Dock */}
-            <div className="h-20 bg-white/5 backdrop-blur-[30px] border-t border-white/5 flex items-center justify-around px-4 mb-4 mx-4 rounded-[2rem]">
+            <div className="absolute bottom-4 left-4 right-4 h-20 bg-white/5 backdrop-blur-[30px] border border-white/5 flex items-center justify-around px-4 rounded-[2rem] z-20">
                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-green-400 to-green-600" />
                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600" />
                <div className="w-11 h-11 rounded-2xl bg-zinc-800 flex items-center justify-center border border-white/5"><Settings01Icon size={20} className="text-white/40" /></div>
@@ -223,8 +232,8 @@ export const IPhoneMirroring: React.FC = () => {
             </div>
 
             {/* Home Indicator */}
-            <div className="h-4 flex justify-center items-end pb-2">
-               <div className="w-24 h-1 bg-white/10 rounded-full" />
+            <div className="absolute bottom-1 left-0 right-0 h-4 flex justify-center items-end pb-2 z-30">
+               <div className="w-24 h-1 bg-white/30 rounded-full" />
             </div>
           </motion.div>
         )}
