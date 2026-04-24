@@ -4,7 +4,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import { AppIcon } from '../common/AppIcon';
 
-const apps = [
+const ALL_APPS = [
   { id: 'finder', name: 'Finder' },
   { id: 'apps', name: 'Applications' },
   { id: 'safari', name: 'Safari' },
@@ -26,6 +26,9 @@ const apps = [
   { id: 'iphonemirroring', name: 'iPhone Mirroring' },
   { id: 'settings', name: 'Settings' },
   { id: 'soundtest', name: 'Sound Test' },
+  { id: 'reminders', name: 'Reminders' },
+  { id: 'stickies', name: 'Stickies' },
+  { id: 'activitymonitor', name: 'Activity Monitor' },
 ];
 
 export const Dock: React.FC = () => {
@@ -34,6 +37,21 @@ export const Dock: React.FC = () => {
   
   const trashContents = getDirectoryContents('trash');
   const isTrashFull = trashContents.length > 0;
+
+  // Combine pinned apps and currently running apps (dot indicator)
+  const dockAppsIds = Array.from(new Set([...systemState.pinnedApps, ...systemState.runningApps]));
+  const dockApps = dockAppsIds
+    .map(id => ALL_APPS.find(a => a.id === id))
+    .filter(Boolean) as { id: string, name: string }[];
+
+  // Applications and GitHub are special static anchors in this dock
+  const finalApps = [
+    { id: 'apps', name: 'Applications' },
+    ...dockApps,
+    { id: 'github', name: 'GitHub' }
+  ].filter((app, index, self) => 
+    index === self.findIndex((t) => t.id === app.id)
+  );
 
   // Dock true magnification physics
   const mouseX = useMotionValue(Infinity);
@@ -59,7 +77,7 @@ export const Dock: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     // Offset Y to be above the dock
-    setContextMenu({ x: e.pageX, y: e.pageY - 120, type: 'dock', targetId: appId });
+    setContextMenu({ x: e.pageX, y: e.pageY, type: 'dock', targetId: appId });
   };
 
   return (
@@ -69,7 +87,7 @@ export const Dock: React.FC = () => {
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
-        {apps.map((app) => (
+        {finalApps.map((app) => (
           <DockIcon 
             key={app.id} 
             app={app} 
