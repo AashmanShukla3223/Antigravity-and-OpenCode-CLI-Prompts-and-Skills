@@ -56,12 +56,13 @@ const initialNodes: FileSystemNode[] = [
   { id: 'app-stickies', name: 'Stickies.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
   { id: 'app-contacts', name: 'Contacts.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
   { id: 'app-github', name: 'GitHub.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
+  { id: 'app-facetime', name: 'FaceTime.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
 
   // User Home (Architect)
   { id: 'user-home', name: 'Architect', type: 'folder', parentId: 'users', modifiedAt: Date.now() },
   { id: 'desktop', name: 'Desktop', type: 'folder', parentId: 'user-home', modifiedAt: Date.now() },
   { id: 'documents', name: 'Documents', type: 'folder', parentId: 'user-home', modifiedAt: Date.now() },
-  { id: 'downloads', name: 'Downloads', type: 'folder', parentId: 'user-home', modifiedAt: Date.now() },
+  { id: 'downloads', name: 'Downloads', type: 'folder', parentId: 'trash', modifiedAt: Date.now() },
   { id: 'pictures', name: 'Pictures', type: 'folder', parentId: 'user-home', modifiedAt: Date.now() },
   { id: 'movies', name: 'Movies', type: 'folder', parentId: 'user-home', modifiedAt: Date.now() },
 

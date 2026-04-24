@@ -24,6 +24,9 @@ const apps = [
   { id: 'weather', name: 'Weather' },
   { id: 'notes', name: 'Notes' },
   { id: 'settings', name: 'Settings' },
+  { id: 'facetime', name: 'FaceTime' },
+  { id: 'music', name: 'Music' },
+  { id: 'github', name: 'GitHub' }, 
 ];
 
 export const Launchpad: React.FC = () => {
