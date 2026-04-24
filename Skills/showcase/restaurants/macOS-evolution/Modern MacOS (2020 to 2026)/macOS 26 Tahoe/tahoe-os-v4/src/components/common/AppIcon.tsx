@@ -103,6 +103,17 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     }
 
     switch (idLower) {
+      case 'weather':
+        return (
+          <div className="w-full h-full rounded-[22%] overflow-hidden bg-gradient-to-b from-blue-400 to-blue-600 shadow-lg border border-white/20">
+            <img 
+              src={localIcons['weather']} 
+              alt="Weather" 
+              className="w-full h-full object-cover scale-110" 
+              onError={() => handleImageError('weather')}
+            />
+          </div>
+        );
       case 'stickies':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-yellow-300 to-yellow-500 border border-white/30 shadow-lg overflow-hidden">
