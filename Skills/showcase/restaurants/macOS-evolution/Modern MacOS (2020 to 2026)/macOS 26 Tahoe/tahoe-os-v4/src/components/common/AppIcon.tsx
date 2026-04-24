@@ -39,8 +39,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       'folder-system': 'folder-root.png',
       'folder-library': 'folder-temp.png',
       'folder-public': 'folder-public.png',
-      'folder-templates': 'folder-templates.png',
-      'apps': 'folder-templates.png'
+      'folder-templates': 'folder-templates.png'
     };
     
     const fileName = mappings[iconId] || 'folder.png';
@@ -114,7 +113,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     const hasError = imageLoadError[idLower];
 
     // Special handling for folders
-    if (idLower.startsWith('folder-') || idLower === 'folder' || idLower === 'apps') {
+    if (idLower.startsWith('folder-') || idLower === 'folder') {
       localIcon = getFolderPath(idLower, folderColor);
     }
     
