@@ -108,8 +108,6 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     // Special handling for folders
     if (idLower.startsWith('folder-') || idLower === 'folder') {
       localIcon = getFolderPath(idLower, folderColor);
-      const emblem = FileSystemResolver.getEmblemOverlay(idLower);
-      overlay = emblem ? `${base}${emblem}` : null;
     } else if (!localIcon && idLower.includes('.')) {
       // Dynamic mime resolver
       localIcon = `${base}${FileSystemResolver.getMimeIcon(idLower)}`;
