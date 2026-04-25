@@ -25,23 +25,23 @@ const apps: AppItem[] = [
   { id: 'crazyerrors', name: 'Crazy Errors' },
   
   // Smart Folders
-  { id: 'category-org.gnome.Software.Socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
-  { id: 'category-applications-development', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github'] },
-  { id: 'category-applications-utilities', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
+  { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
+  { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github'] },
+  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
 ];
 
 const subApps: Record<string, AppItem[]> = {
-  'category-org.gnome.Software.Socialize': [
+  'socialize': [
     { id: 'messages', name: 'Messages' },
     { id: 'mail', name: 'Mail' },
     { id: 'facetime', name: 'FaceTime' },
     { id: 'contacts', name: 'Contacts' }
   ],
-  'category-applications-development': [
+  'developer': [
     { id: 'terminal', name: 'Terminal' },
     { id: 'github', name: 'GitHub' }
   ],
-  'category-applications-utilities': [
+  'utility': [
     { id: 'settings', name: 'Settings' },
     { id: 'activitymonitor', name: 'Activity Monitor' },
     { id: 'weather', name: 'Weather' },

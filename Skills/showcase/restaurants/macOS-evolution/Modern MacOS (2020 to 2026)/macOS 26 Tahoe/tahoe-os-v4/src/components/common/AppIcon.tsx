@@ -90,6 +90,9 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'wallet': `${base}icons/wallet.png`,
     'github': `${base}icons/github.png`,
     'crazyerrors': `${base}assets/mimes/application-x-executable.png`,
+    'socialize': `${base}icons/socialize.png`,
+    'developer': `${base}icons/developer.png`,
+    'utility': `${base}icons/utility.png`,
   };
 
   const handleImageError = (iconId: string) => {
