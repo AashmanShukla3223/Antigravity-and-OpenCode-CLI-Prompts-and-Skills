@@ -104,16 +104,17 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     // Special handling for folders
     if (idLower.startsWith('folder-') || idLower === 'folder') {
       localIcon = getFolderPath(idLower, folderColor);
-      overlay = FileSystemResolver.getEmblemOverlay(idLower);
+      const emblem = FileSystemResolver.getEmblemOverlay(idLower);
+      overlay = emblem ? `${base}${emblem}` : null;
     } else if (!localIcon && idLower.includes('.')) {
       // Dynamic mime resolver
-      localIcon = FileSystemResolver.getMimeIcon(idLower);
+      localIcon = `${base}${FileSystemResolver.getMimeIcon(idLower)}`;
     } else if (!localIcon && id.startsWith('device-')) {
-      localIcon = FileSystemResolver.getDeviceIcon(id.replace('device-', ''));
+      localIcon = `${base}${FileSystemResolver.getDeviceIcon(id.replace('device-', ''))}`;
     } else if (!localIcon && id.startsWith('category-')) {
-      localIcon = FileSystemResolver.getCategoryIcon(id.replace('category-', ''));
+      localIcon = `${base}${FileSystemResolver.getCategoryIcon(id.replace('category-', ''))}`;
     } else if (!localIcon && id.startsWith('pref-')) {
-      localIcon = FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''));
+      localIcon = `${base}${FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''))}`;
     }
     
     if (localIcon && !hasError) {

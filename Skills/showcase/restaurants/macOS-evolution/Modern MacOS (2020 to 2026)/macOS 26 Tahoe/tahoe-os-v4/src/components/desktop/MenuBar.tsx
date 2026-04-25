@@ -362,6 +362,8 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
 
+  const base = (import.meta as any).env?.BASE_URL || '/';
+
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -523,13 +525,13 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
             onClick={() => setBatteryMenuOpen(!batteryMenuOpen)}
           >
             {battery.isCharging ? (
-              <img src={FileSystemResolver.getStatusIcon('battery-100-charging')} alt="Battery Charging" className="w-4 h-4" loading="lazy" />
+              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-100-charging')}`} alt="Battery Charging" className="w-4 h-4" loading="lazy" />
             ) : battery.level > 0.8 ? (
-              <img src={FileSystemResolver.getStatusIcon('battery-100')} alt="Battery Full" className="w-4 h-4" loading="lazy" />
+              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-100')}`} alt="Battery Full" className="w-4 h-4" loading="lazy" />
             ) : battery.level > 0.3 ? (
-              <img src={FileSystemResolver.getStatusIcon('battery-050')} alt="Battery Medium" className="w-4 h-4" loading="lazy" />
+              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-050')}`} alt="Battery Medium" className="w-4 h-4" loading="lazy" />
             ) : (
-              <img src={FileSystemResolver.getStatusIcon('battery-020')} alt="Battery Low" className="w-4 h-4" loading="lazy" />
+              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-020')}`} alt="Battery Low" className="w-4 h-4" loading="lazy" />
             )}
             <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
           </div>
@@ -545,7 +547,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           <FaceTimeDropdown isOpen={facetimeMenuOpen} onClose={() => setFacetimeMenuOpen(false)} />
         </div>
         <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
-          <img src={FileSystemResolver.getDeviceIcon('network-wireless')} alt="Wi-Fi" className="w-4 h-4" loading="lazy" />
+          <img src={`${base}${FileSystemResolver.getDeviceIcon('network-wireless')}`} alt="Wi-Fi" className="w-4 h-4" loading="lazy" />
         </div>
         <div 
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"

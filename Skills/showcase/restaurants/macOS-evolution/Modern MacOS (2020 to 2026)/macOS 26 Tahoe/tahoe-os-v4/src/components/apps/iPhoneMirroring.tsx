@@ -27,6 +27,7 @@ export const IPhoneMirroring: React.FC = () => {
   const [stage, setStage] = useState<'idle' | 'authorizing' | 'scanning' | 'booting' | 'active'>('idle');
   const [bootProgress, setBootProgress] = useState(0);
   const [time, setTime] = useState(new Date());
+  const base = (import.meta as any).env?.BASE_URL || '/';
 
   useEffect(() => {
     // Initial stage: Authorize the hardcoded path
@@ -156,7 +157,7 @@ export const IPhoneMirroring: React.FC = () => {
             className="relative w-[340px] h-[680px] flex items-center justify-center"
           >
             <img 
-              src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')} 
+              src={`${base}${FileSystemResolver.getDeviceIcon('phone-apple-iphone')}`} 
               alt="iPhone Frame" 
               className="absolute inset-0 w-full h-full object-contain pointer-events-none z-50 drop-shadow-2xl" 
               loading="lazy"
@@ -176,7 +177,7 @@ export const IPhoneMirroring: React.FC = () => {
                  <div className="flex items-center gap-1 text-white/90">
                     <SignalIcon size={10} />
                     <Wifi01Icon size={10} />
-                    <img src={FileSystemResolver.getStatusIcon('battery-100')} alt="Battery" className="w-3 h-3" loading="lazy" />
+                    <img src={`${base}${FileSystemResolver.getStatusIcon('battery-100')}`} alt="Battery" className="w-3 h-3" loading="lazy" />
                  </div>
               </div>
 
@@ -204,7 +205,7 @@ export const IPhoneMirroring: React.FC = () => {
                           className={`p-3 ${isMissing ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/5'} backdrop-blur-3xl border rounded-2xl flex items-center gap-3 group transition-all cursor-pointer`}
                         >
                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${isMissing ? 'bg-red-500/10 border-red-500/20' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/5'}`}>
-                              {isMissing ? <Alert01Icon size={14} className="text-red-400" /> : <img src={FileSystemResolver.getMimeIcon('document')} className="w-4 h-4" loading="lazy" />}
+                              {isMissing ? <Alert01Icon size={14} className="text-red-400" /> : <img src={`${base}${FileSystemResolver.getMimeIcon('document')}`} className="w-4 h-4" loading="lazy" />}
                            </div>
                            <div className="flex-1 min-w-0">
                               <div className={`text-[10px] font-bold truncate ${isMissing ? 'text-red-200' : 'text-white'}`}>{logic.name}</div>
@@ -217,7 +218,7 @@ export const IPhoneMirroring: React.FC = () => {
                     <div className="mt-4 p-4 bg-blue-600 rounded-3xl shadow-xl relative overflow-hidden group">
                        <div className="relative z-10 flex flex-col gap-2">
                           <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
-                             <img src={FileSystemResolver.getDeviceIcon('network-wireless')} className="w-3 h-3 invert" loading="lazy" />
+                             <img src={`${base}${FileSystemResolver.getDeviceIcon('network-wireless')}`} className="w-3 h-3 invert" loading="lazy" />
                           </div>
                           <div>
                              <h4 className="text-white font-black text-xs">Hardware Handoff</h4>

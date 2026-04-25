@@ -36,6 +36,7 @@ export const SystemSettings: React.FC = () => {
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 512, percent: 0 });
 
   const username = systemState.user.accountName || systemState.user.fullName || 'Architect';
+  const base = (import.meta as any).env?.BASE_URL || '/';
 
   useEffect(() => {
     if (navigator.storage && navigator.storage.estimate) {
@@ -402,18 +403,17 @@ export const SystemSettings: React.FC = () => {
             <div className="flex flex-col"><span className="text-sm font-bold truncate w-24">{systemState.user.fullName || username}</span><span className="text-[9px] uppercase font-black text-white/30 tracking-[0.2em]">Apple Account</span></div>
           </div>
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-2 tracking-widest uppercase">Connectivity</div>
-          <SidebarItem name="Wi-Fi" iconUrl={FileSystemResolver.getPreferenceIcon('network-wireless-hotspot')} color="bg-blue-500" active={currentTab === 'Wi-Fi'} onClick={() => setCurrentTab('Wi-Fi')} />
-          <SidebarItem name="Bluetooth" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-system-bluetooth')} color="bg-blue-600" active={currentTab === 'Bluetooth'} onClick={() => setCurrentTab('Bluetooth')} />
+          <SidebarItem name="Wi-Fi" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('network-wireless-hotspot')}`} color="bg-blue-500" active={currentTab === 'Wi-Fi'} onClick={() => setCurrentTab('Wi-Fi')} />
+          <SidebarItem name="Bluetooth" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system-bluetooth')}`} color="bg-blue-600" active={currentTab === 'Bluetooth'} onClick={() => setCurrentTab('Bluetooth')} />
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Personalization</div>
-          <SidebarItem name="Appearance" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-desktop-theme-global')} color="bg-gradient-to-br from-indigo-500 to-blue-600" active={currentTab === 'Appearance'} onClick={() => { setCurrentTab('Appearance'); setResetStep(0); }} />
-          <SidebarItem name="Wallpaper" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-desktop-wallpaper')} color="bg-gradient-to-br from-pink-500 to-red-600" active={currentTab === 'Wallpaper'} onClick={() => setCurrentTab('Wallpaper')} />
-          <SidebarItem name="General" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-system')} color="bg-gray-500" active={currentTab === 'General'} onClick={() => { setCurrentTab('General'); setResetStep(0); }} />
+          <SidebarItem name="Appearance" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-theme-global')}`} color="bg-gradient-to-br from-indigo-500 to-blue-600" active={currentTab === 'Appearance'} onClick={() => { setCurrentTab('Appearance'); setResetStep(0); }} />
+          <SidebarItem name="Wallpaper" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-wallpaper')}`} color="bg-gradient-to-br from-pink-500 to-red-600" active={currentTab === 'Wallpaper'} onClick={() => setCurrentTab('Wallpaper')} />
+          <SidebarItem name="General" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system')}`} color="bg-gray-500" active={currentTab === 'General'} onClick={() => { setCurrentTab('General'); setResetStep(0); }} />
           <div className="text-[10px] font-bold text-white/30 px-2 py-1 mb-1 mt-4 tracking-widest uppercase">Hardware</div>
-          <SidebarItem name="Display" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-desktop-display')} color="bg-blue-400" active={currentTab === 'Display'} onClick={() => setCurrentTab('Display')} />
-          <SidebarItem name="Sound" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-desktop-sound')} color="bg-pink-500" active={currentTab === 'Sound'} onClick={() => setCurrentTab('Sound')} />
-          <SidebarItem name="Battery" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-system-power')} color="bg-green-500" active={currentTab === 'Battery'} onClick={() => setCurrentTab('Battery')} />
-          <SidebarItem name="Wallet & Apple Pay" iconUrl={FileSystemResolver.getPreferenceIcon('preferences-desktop-cryptography')} color="bg-zinc-900" active={currentTab === 'Wallet'} onClick={() => setCurrentTab('Wallet')} />
-        </div>
+          <SidebarItem name="Display" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-display')}`} color="bg-blue-400" active={currentTab === 'Display'} onClick={() => setCurrentTab('Display')} />
+          <SidebarItem name="Sound" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-sound')}`} color="bg-pink-500" active={currentTab === 'Sound'} onClick={() => setCurrentTab('Sound')} />
+          <SidebarItem name="Battery" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system-power')}`} color="bg-green-500" active={currentTab === 'Battery'} onClick={() => setCurrentTab('Battery')} />
+          <SidebarItem name="Wallet & Apple Pay" iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-cryptography')}`} color="bg-zinc-900" active={currentTab === 'Wallet'} onClick={() => setCurrentTab('Wallet')} />        </div>
       </div>
       <div className="flex-1 p-8 overflow-y-auto scrollbar-hide">
         <AnimatePresence mode="wait">
