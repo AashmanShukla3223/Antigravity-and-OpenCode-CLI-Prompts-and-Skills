@@ -269,7 +269,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       count++;
       if (count > 1000) clearSystemErrors();
-    }, 100);
+    }, 2000);
     
     stormIntervalRef.current = interval as any;
   }, [clearSystemErrors]);
