@@ -207,34 +207,36 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const initiateRestart = useCallback(() => {
     setIsShuttingDown(true);
-    setShutdownStep(0);
     
-    // Step 0: Clear only dialogs/modals
+    // Step 0: Clear only dialogs/modals immediately
     setShowRestartDialog(false);
     setShowAboutWindow(false);
     setShowSpotlight(false);
     setShowWidgetPicker(false);
 
-    // Sequential Shutdown Sequence (300ms delays)
-    setTimeout(() => setShutdownStep(1), 300); // Slide Dock to extreme bottom
-    setTimeout(() => setShutdownStep(2), 600); // Slide Menu Bar to extreme top
+    // Sequential Shutdown Sequence
+    setShutdownStep(1); // T+0ms: Slide Dock to extreme bottom
+    
+    setTimeout(() => setShutdownStep(2), 300); // T+300ms: Slide Menu Bar to extreme top
+    
     setTimeout(() => {
-      setShutdownStep(3); // Fade/Shrink Widgets/Icons/Windows
+      setShutdownStep(3); // T+600ms: Fade/Shrink Widgets/Icons/Windows
       // Clear memory-heavy states only now so they can animate out
       clearSystemErrors();
       setOpenApps([]);
       setMinimizedApps([]);
       setMaximizedApps([]);
       setActiveApp(null);
-    }, 900); 
-    setTimeout(() => setShutdownStep(4), 1200); // Fade Wallpaper to Black
+    }, 600); 
+
+    setTimeout(() => setShutdownStep(4), 900); // T+900ms: Fade Wallpaper to Black & Beachball Cursor
     
     // Handover to BootSequence
     setTimeout(() => {
       setBootState('booting');
       setIsShuttingDown(false);
       setShutdownStep(0);
-    }, 2800);
+    }, 1200);
   }, [clearSystemErrors, setBootState]);
 
   const triggerSystemError = useCallback(() => {

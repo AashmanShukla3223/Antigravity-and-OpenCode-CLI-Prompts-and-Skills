@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import './cursors.css';
 import App from './App.tsx';
 import { SystemProvider } from './contexts/SystemContext.tsx';
 import { FileSystemProvider } from './contexts/FileSystemContext.tsx';
