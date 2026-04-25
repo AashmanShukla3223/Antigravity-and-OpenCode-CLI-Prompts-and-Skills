@@ -34,7 +34,7 @@ const songs = [
 ];
 
 export const Desktop: React.FC = () => {
-  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall, quitApp } = useSystem();
+  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall, quitApp, systemErrors } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
@@ -539,6 +539,35 @@ export const Desktop: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global System Errors */}
+      {systemErrors.length > 0 && (
+        <div className="absolute inset-0 pointer-events-none z-[9999] overflow-hidden">
+          {systemErrors.map((err, i) => (
+            <motion.div
+              key={err.id}
+              initial={{ opacity: 0, scale: 0.8, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              style={{
+                position: 'absolute',
+                left: err.x,
+                top: err.y,
+                zIndex: 10000 + i
+              }}
+              className="w-[280px] bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl flex items-start gap-4 pointer-events-auto"
+            >
+              <div className="absolute inset-0 rounded-2xl" style={{ backdropFilter: 'blur(15px)' }} />
+              <div className="relative z-10 w-10 h-10 flex-shrink-0">
+                <img src={err.icon} className="w-full h-full object-contain" alt="Error Icon" />
+              </div>
+              <div className="relative z-10 flex-1">
+                <h4 className="text-[11px] font-black text-white/40 uppercase tracking-wider mb-1">System Error</h4>
+                <p className="text-xs text-white font-medium leading-tight">{err.message}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

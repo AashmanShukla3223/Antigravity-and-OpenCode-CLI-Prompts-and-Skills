@@ -353,7 +353,7 @@ const BatteryDropdown: React.FC<{
 };
 
 export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
-  const { activeApp, setShowAboutWindow, launchApp, setBootState, battery, setShowSpotlight, showSpotlight } = useSystem();
+  const { activeApp, setShowAboutWindow, launchApp, setBootState, battery, setShowSpotlight, showSpotlight, clearSystemErrors } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
@@ -460,7 +460,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const menuKeys = Object.keys(appMenus).map(k => k.charAt(0).toUpperCase() + k.slice(1));
 
   return (
-    <div className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
+    <div onClick={clearSystemErrors} className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
       
       <div className="flex items-center gap-1 pointer-events-auto h-full pr-10">
         <div className="relative h-full">

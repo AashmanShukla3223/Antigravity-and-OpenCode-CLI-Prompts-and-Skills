@@ -29,6 +29,14 @@ export interface Note {
   lastModified: number;
 }
 
+export interface ActiveError {
+  id: string;
+  x: number;
+  y: number;
+  message: string;
+  icon: string;
+}
+
 export interface TahoeV3State {
   setup_complete: boolean;
   user: {
@@ -140,6 +148,9 @@ interface SystemContextProps {
   setPowerMode: (mode: 'Low Power' | 'Normal' | 'High Performance') => void;
   hardware: { cores: number; memory?: number };
   uptime: number;
+  systemErrors: ActiveError[];
+  triggerSystemError: () => void;
+  clearSystemErrors: () => void;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -176,6 +187,87 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [powerMode, setPowerMode] = useState<'Low Power' | 'Normal' | 'High Performance'>('Normal');
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(() => Date.now());
+
+  // Global Error Storm State
+  const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
+  const stormIntervalRef = React.useRef<any>(null);
+
+  const clearSystemErrors = useCallback(() => {
+    if (stormIntervalRef.current) clearInterval(stormIntervalRef.current);
+    stormIntervalRef.current = null;
+    setSystemErrors([]);
+  }, []);
+
+  const triggerSystemError = useCallback(() => {
+    if (stormIntervalRef.current) return;
+    
+    let count = 0;
+    const ERROR_MESSAGES = [
+      "The disk is full of bubbles",
+      "Kernel Panic: Too much vibe",
+      "Memory Leak in the Gold Mine",
+      "System Overheating: Silicon Meltdown",
+      "Quantum Bit Flip detected in Reality",
+      "Logic Error: App is too cool for this OS",
+      "Refractive Index out of bounds",
+      "Glass Blur is becoming solid",
+      "User Identity found in Trash",
+      "Finder found something it shouldn't have",
+      "CPU is vibing too hard",
+      "GPU is drawing outside the lines"
+    ];
+    
+    const ERROR_ICONS = [
+      "dialog-warning",
+      "dialog-error",
+      "dialog-information",
+      "software-updates-important",
+      "security-high",
+      "security-low",
+      "socialize" // Required constraint
+    ];
+
+    const base = (import.meta as any).env?.BASE_URL || '/';
+    
+    const playSound = (name: string) => {
+      const audio = new Audio(`${base}sounds/${name}.mp3`);
+      audio.play().catch(e => console.warn('Audio play failed', e));
+    };
+
+    const interval = setInterval(() => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
+      const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
+      
+      const offset = (count % 25) * 30;
+      const x = 100 + offset;
+      const y = 100 + offset;
+
+      let iconPath = `${base}assets/status/${iconName}.png`;
+      if (iconName === 'socialize') {
+        iconPath = `${base}icons/socialize.png`;
+      }
+      
+      const newError: ActiveError = {
+        id, x, y, message, icon: iconPath
+      };
+
+      setSystemErrors(prev => {
+        const next = [...prev, newError];
+        if (next.length > 60) return next.slice(1);
+        return next;
+      });
+
+      if (count % 5 === 0) {
+        playSound('Sosumi'); // Rhythmic alert
+      }
+
+      count++;
+      if (count > 1000) clearSystemErrors();
+    }, 100);
+    
+    stormIntervalRef.current = interval as any;
+  }, [clearSystemErrors]);
 
   const updateSystemState = useCallback((updates: Partial<TahoeV3State>) => {
     setSystemState(prev => {
@@ -374,7 +466,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         cores: navigator.hardwareConcurrency || 8,
         memory: (performance as any).memory?.jsHeapSizeLimit ? Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 / 1024) : 16
       },
-      uptime
+      uptime,
+      systemErrors,
+      triggerSystemError,
+      clearSystemErrors
     }}>
       {children}
     </SystemContext.Provider>

@@ -1,48 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
-interface ActiveError {
-  id: string;
-  x: number;
-  y: number;
-  message: string;
-  icon: string;
-}
-
-const ERROR_MESSAGES = [
-  "The disk is full of bubbles",
-  "Kernel Panic: Too much vibe",
-  "Memory Leak in the Gold Mine",
-  "System Overheating: Silicon Meltdown",
-  "Quantum Bit Flip detected in Reality",
-  "Logic Error: App is too cool for this OS",
-  "Refractive Index out of bounds",
-  "Glass Blur is becoming solid",
-  "User Identity found in Trash",
-  "Finder found something it shouldn't have",
-  "CPU is vibing too hard",
-  "GPU is drawing outside the lines"
-];
-
-const ERROR_ICONS = [
-  "dialog-warning",
-  "dialog-error",
-  "dialog-information",
-  "software-updates-important",
-  "security-high",
-  "security-low"
-];
-
 export const CrazyErrors: React.FC = () => {
-  const { closeApp, systemState } = useSystem();
+  const { closeApp, systemState, triggerSystemError } = useSystem();
   const [stage, setStage] = useState<'stage1' | 'stage2' | 'storm'>('stage1');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
-  const [activeErrors, setActiveErrors] = useState<ActiveError[]>([]);
   
-  const stormIntervalRef = useRef<any>(null);
   const base = (import.meta as any).env?.BASE_URL || '/';
 
   const playSound = (name: string) => {
@@ -52,12 +18,6 @@ export const CrazyErrors: React.FC = () => {
 
   useEffect(() => {
     playSound('Blow');
-    
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') killStorm();
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
   }, []);
 
   const handleStage1Confirm = () => {
@@ -67,56 +27,15 @@ export const CrazyErrors: React.FC = () => {
 
   const handleStage2Confirm = (e: React.FormEvent) => {
     e.preventDefault();
-    // Using provided system password or fallback to 'tahoe2026'
     const correctPassword = systemState.user.password || 'tahoe2026';
     if (password === correctPassword || password === 'admin') {
       setStage('storm');
-      unleashErrorStorm();
+      triggerSystemError();
+      closeApp('crazyerrors');
     } else {
       setError(true);
       setTimeout(() => setError(false), 500);
     }
-  };
-
-  const unleashErrorStorm = () => {
-    let count = 0;
-    const interval = setInterval(() => {
-      spawnError(count);
-      count++;
-      if (count > 1000) clearInterval(interval); // Safety stop
-    }, 100);
-    stormIntervalRef.current = interval as any;
-  };
-
-  const spawnError = (index: number) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
-    const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
-    
-    // Recursive Cascade Logic: +20px offset
-    const offset = (index % 25) * 20;
-    const x = 100 + offset;
-    const y = 100 + offset;
-
-    const newError: ActiveError = {
-      id,
-      x,
-      y,
-      message,
-      icon: `${base}${FileSystemResolver.getStatusIcon(iconName)}`
-    };
-
-    setActiveErrors(prev => {
-      const next = [...prev, newError];
-      if (next.length > 50) return next.slice(1); // Limiter: Max 50 for Vivo Y02
-      return next;
-    });
-  };
-
-  const killStorm = () => {
-    if (stormIntervalRef.current) clearInterval(stormIntervalRef.current);
-    setActiveErrors([]);
-    closeApp('crazyerrors');
   };
 
   return (
@@ -202,42 +121,6 @@ export const CrazyErrors: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {stage === 'storm' && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Kill Switch Button */}
-          <button 
-            onClick={killStorm}
-            className="absolute top-12 right-12 z-[1000] px-6 py-2 bg-red-500 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-2xl pointer-events-auto hover:bg-red-600 transition-colors"
-          >
-            Force Quit (Esc)
-          </button>
-
-          {activeErrors.map((err, i) => (
-            <motion.div
-              key={err.id}
-              initial={{ opacity: 0, scale: 0.8, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              style={{
-                position: 'absolute',
-                left: err.x,
-                top: err.y,
-                zIndex: 500 + i
-              }}
-              className="w-[280px] bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl flex items-start gap-4"
-            >
-              <div className="absolute inset-0 rounded-2xl" style={{ backdropFilter: 'blur(15px)' }} />
-              <div className="relative z-10 w-10 h-10 flex-shrink-0">
-                <img src={err.icon} className="w-full h-full object-contain" alt="Error Icon" />
-              </div>
-              <div className="relative z-10 flex-1">
-                <h4 className="text-[11px] font-black text-white/40 uppercase tracking-wider mb-1">System Error</h4>
-                <p className="text-xs text-white font-medium leading-tight">{err.message}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
