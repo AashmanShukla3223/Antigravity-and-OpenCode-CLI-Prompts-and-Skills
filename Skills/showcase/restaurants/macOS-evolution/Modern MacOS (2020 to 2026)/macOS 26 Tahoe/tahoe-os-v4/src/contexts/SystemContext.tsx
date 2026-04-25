@@ -151,6 +151,9 @@ interface SystemContextProps {
   systemErrors: ActiveError[];
   triggerSystemError: () => void;
   clearSystemErrors: () => void;
+  isShuttingDown: boolean;
+  shutdownStep: number;
+  initiateRestart: () => void;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -180,6 +183,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null>(null);
 
+  // Shutdown Sequence State
+  const [isShuttingDown, setIsShuttingDown] = useState(false);
+  const [shutdownStep, setShutdownStep] = useState(0);
+
   // Hardware State
   const [battery, setBattery] = useState({ level: 1, isCharging: true });
   const [wifi, setWifi] = useState(true);
@@ -197,6 +204,35 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     stormIntervalRef.current = null;
     setSystemErrors([]);
   }, []);
+
+  const initiateRestart = useCallback(() => {
+    setIsShuttingDown(true);
+    setShutdownStep(0);
+    
+    // Clear all memory-heavy states
+    clearSystemErrors();
+    setOpenApps([]);
+    setMinimizedApps([]);
+    setMaximizedApps([]);
+    setActiveApp(null);
+    setShowRestartDialog(false);
+    setShowAboutWindow(false);
+    setShowSpotlight(false);
+    setShowWidgetPicker(false);
+
+    // Sequential Shutdown Sequence (300ms delays)
+    setTimeout(() => setShutdownStep(1), 300); // Hide Dock
+    setTimeout(() => setShutdownStep(2), 600); // Hide Menu Bar
+    setTimeout(() => setShutdownStep(3), 900); // Hide Widgets/Icons
+    setTimeout(() => setShutdownStep(4), 1200); // Fade Wallpaper to Black
+    
+    // Handover to BootSequence
+    setTimeout(() => {
+      setBootState('booting');
+      setIsShuttingDown(false);
+      setShutdownStep(0);
+    }, 2500);
+  }, [clearSystemErrors, setBootState]);
 
   const triggerSystemError = useCallback(() => {
     if (stormIntervalRef.current) return;
@@ -477,7 +513,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       uptime,
       systemErrors,
       triggerSystemError,
-      clearSystemErrors
+      clearSystemErrors,
+      isShuttingDown,
+      shutdownStep,
+      initiateRestart
     }}>
       {children}
     </SystemContext.Provider>

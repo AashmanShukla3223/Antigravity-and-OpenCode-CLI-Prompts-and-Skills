@@ -34,7 +34,23 @@ const songs = [
 ];
 
 export const Desktop: React.FC = () => {
-  const { systemState, updateSystemState, openApps, minimizedApps, contextMenu, setContextMenu, showSpotlight, setShowSpotlight, launchApp, setShowWidgetPicker, setIncomingCall, quitApp, systemErrors } = useSystem();
+  const { 
+    systemState, 
+    updateSystemState, 
+    openApps, 
+    minimizedApps, 
+    contextMenu, 
+    setContextMenu, 
+    showSpotlight, 
+    setShowSpotlight, 
+    launchApp, 
+    setShowWidgetPicker, 
+    setIncomingCall, 
+    quitApp, 
+    systemErrors,
+    shutdownStep,
+    clearSystemErrors
+  } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   
@@ -54,10 +70,13 @@ export const Desktop: React.FC = () => {
         e.preventDefault();
         setShowSpotlight(!showSpotlight);
       }
+      if (e.key === 'Escape') {
+        clearSystemErrors();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSpotlight, setShowSpotlight]);
+  }, [showSpotlight, setShowSpotlight, clearSystemErrors]);
 
   useEffect(() => {
     const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -129,7 +148,12 @@ export const Desktop: React.FC = () => {
       <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
 
       {/* Widgets Layer */}
-      <div className="absolute inset-0 z-0 p-8 pointer-events-none" ref={gridRef}>
+      <motion.div 
+        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0 z-0 p-8 pointer-events-none" 
+        ref={gridRef}
+      >
         <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
            {systemState.widgets.map((widget) => {
              const isReminders = widget.type === 'reminders';
@@ -271,7 +295,7 @@ export const Desktop: React.FC = () => {
                         <div className="flex flex-col gap-2 h-full justify-center px-1">
                            <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
                               <div className="flex items-center gap-3">
-                                 <img src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <img src={`${FileSystemResolver.getDeviceIcon('phone-apple-iphone')}`} className="w-6 h-6 object-contain" loading="lazy" />
                                  <div>
                                     <div className="text-[10px] font-bold text-white leading-tight">iPhone 18 Pro Max</div>
                                     <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">Connected</div>
@@ -280,7 +304,7 @@ export const Desktop: React.FC = () => {
                            </div>
                            <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
                               <div className="flex items-center gap-3">
-                                 <img src={FileSystemResolver.getDeviceIcon('audio-headphones')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <img src={`${FileSystemResolver.getDeviceIcon('audio-headphones')}`} className="w-6 h-6 object-contain" loading="lazy" />
                                  <div>
                                     <div className="text-[10px] font-bold text-white leading-tight">AirPods Pro</div>
                                     <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">Connected</div>
@@ -289,7 +313,7 @@ export const Desktop: React.FC = () => {
                            </div>
                            <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm opacity-50">
                               <div className="flex items-center gap-3">
-                                 <img src={FileSystemResolver.getDeviceIcon('input-touchscreen')} className="w-6 h-6 object-contain" loading="lazy" />
+                                 <img src={`${FileSystemResolver.getDeviceIcon('input-touchscreen')}`} className="w-6 h-6 object-contain" loading="lazy" />
                                  <div>
                                     <div className="text-[10px] font-bold text-white leading-tight">Apple Watch Ultra</div>
                                     <div className="text-[8px] text-white/40 font-bold uppercase tracking-widest">Disconnected</div>
@@ -318,10 +342,14 @@ export const Desktop: React.FC = () => {
              );
            })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Desktop Items Grid */}
-      <div className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none">
+      <motion.div 
+        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
+      >
          {desktopItems.map(item => (
            <motion.div
              key={item.id}
@@ -355,7 +383,7 @@ export const Desktop: React.FC = () => {
               </span>
            </motion.div>
          ))}
-      </div>
+      </motion.div>
 
       {/* The Notch (180px x 30px, Center Anchor) */}
       {systemState.notchVisible && (
@@ -366,11 +394,28 @@ export const Desktop: React.FC = () => {
       )}
 
       {/* OS Shell Components */}
-      <MenuBar toggleControlCenter={(e) => {
-        e.stopPropagation();
-        setControlCenterOpen(!controlCenterOpen);
-        setContextMenu(null);
-      }} />
+      <motion.div 
+        animate={{ 
+          y: shutdownStep >= 2 ? -50 : 0, 
+          opacity: shutdownStep >= 2 ? 0 : 1 
+        }}
+        transition={{ duration: 0.5 }}
+        className="contents"
+      >
+        <MenuBar toggleControlCenter={(e) => {
+          e.stopPropagation();
+          setControlCenterOpen(!controlCenterOpen);
+          setContextMenu(null);
+        }} />
+      </motion.div>
+
+      {/* Shutdown Overlay (Final Blackout) */}
+      <motion.div 
+        className="fixed inset-0 z-[10000] bg-black pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: shutdownStep >= 4 ? 1 : 0 }}
+        transition={{ duration: 1 }}
+      />
 
       {/* Windows Layer */}
       <div className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none">
@@ -388,7 +433,16 @@ export const Desktop: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <Dock />
+      <motion.div 
+        animate={{ 
+          y: shutdownStep >= 1 ? 100 : 0, 
+          opacity: shutdownStep >= 1 ? 0 : 1 
+        }}
+        transition={{ duration: 0.5 }}
+        className="contents"
+      >
+        <Dock />
+      </motion.div>
 
       <AboutThisMac />
       <RestartDialog />
@@ -571,4 +625,3 @@ export const Desktop: React.FC = () => {
     </div>
   );
 };
-

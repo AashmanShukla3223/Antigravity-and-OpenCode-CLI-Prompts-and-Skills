@@ -353,7 +353,7 @@ const BatteryDropdown: React.FC<{
 };
 
 export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
-  const { activeApp, setShowAboutWindow, launchApp, setBootState, battery, setShowSpotlight, showSpotlight, clearSystemErrors } = useSystem();
+  const { activeApp, setShowAboutWindow, launchApp, setBootState, battery, setShowSpotlight, showSpotlight, clearSystemErrors, setShowRestartDialog, initiateRestart } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
@@ -378,8 +378,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
 
   const handlePowerAction = (action: string) => {
     setAppleMenuOpen(false);
-    if (action === 'restart' || action === 'shutdown') {
-      setBootState('booting');
+    if (action === 'restart') {
+      setShowRestartDialog(true);
+    } else if (action === 'shutdown') {
+      initiateRestart(); // Immediate shutdown for now
     } else if (action === 'sleep' || action === 'lock' || action === 'logout') {
       setBootState('login');
     }
