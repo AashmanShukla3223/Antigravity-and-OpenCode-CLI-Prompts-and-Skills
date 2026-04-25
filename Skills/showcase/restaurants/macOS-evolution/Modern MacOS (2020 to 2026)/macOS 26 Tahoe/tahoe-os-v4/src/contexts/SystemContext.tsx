@@ -229,12 +229,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, 900); 
     setTimeout(() => setShutdownStep(4), 1200); // Fade Wallpaper to Black
     
-    // Handover to BootSequence + FULL RESET
+    // Handover to BootSequence
     setTimeout(() => {
-      // Clear persistence to ensure "Fresh" state on next boot
-      localStorage.removeItem('tahoe_v3_state');
-      setSystemState(defaultState);
-      
       setBootState('booting');
       setIsShuttingDown(false);
       setShutdownStep(0);
