@@ -89,7 +89,7 @@ const defaultState: TahoeV3State = {
     isPlaying: false
   },
   runningApps: [],
-  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'calendar', 'appstore', 'notes', 'settings'],
+  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'calendar', 'soundtest', 'appstore', 'notes', 'settings'],
   notes: [
     { 
       id: '1', 
@@ -214,7 +214,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       "User Identity found in Trash",
       "Finder found something it shouldn't have",
       "CPU is vibing too hard",
-      "GPU is drawing outside the lines"
+      "GPU is drawing outside the lines",
+      "Please Send it to Apple: This error is a feature, not a bug",
+      "Your Mac is experiencing a moment of self-awareness. Please wait while it contemplates existence.",
+      "macOS is not initalized. Please turn it off and on again."
     ];
     
     const ERROR_ICONS = [
@@ -269,7 +272,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       count++;
       if (count > 1000) clearSystemErrors();
-    }, 2000);
+    }, 1000);
     
     stormIntervalRef.current = interval as any;
   }, [clearSystemErrors]);
