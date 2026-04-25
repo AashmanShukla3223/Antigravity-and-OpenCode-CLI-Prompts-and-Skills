@@ -59,6 +59,7 @@ const initialNodes: FileSystemNode[] = [
   { id: 'app-github', name: 'GitHub.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
   { id: 'app-facetime', name: 'FaceTime.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
   { id: 'app-calendar', name: 'Calendar.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
+  { id: 'app-crazyerrors', name: 'Crazy Errors.app', type: 'file', parentId: 'apps', modifiedAt: Date.now() },
 
   // User Home (Architect)
   { id: 'user-home', name: 'Architect', type: 'folder', parentId: 'users', modifiedAt: Date.now() },

@@ -32,6 +32,7 @@ import { IPhoneMirroring } from '../apps/iPhoneMirroring';
 import { Weather } from '../apps/Weather';
 import { Notes } from '../apps/Notes';
 import { Calendar } from '../apps/Calendar';
+import { CrazyErrors } from '../apps/CrazyErrors';
 
 interface WindowProps {
   appId: string;
@@ -64,6 +65,7 @@ const AppMap: Record<string, React.FC<any>> = {
   weather: Weather,
   notes: Notes,
   calendar: Calendar,
+  crazyerrors: CrazyErrors,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (

@@ -22,6 +22,7 @@ const apps: AppItem[] = [
   { id: 'wallet', name: 'Wallet' },
   { id: 'music', name: 'Music' },
   { id: 'calendar', name: 'Calendar' },
+  { id: 'crazyerrors', name: 'Crazy Errors' },
   
   // Smart Folders
   { id: 'category-org.gnome.Software.Socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
