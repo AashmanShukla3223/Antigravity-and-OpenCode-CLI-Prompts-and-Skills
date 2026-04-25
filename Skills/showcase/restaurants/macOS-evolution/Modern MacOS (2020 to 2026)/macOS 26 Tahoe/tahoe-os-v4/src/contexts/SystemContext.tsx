@@ -209,21 +209,24 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsShuttingDown(true);
     setShutdownStep(0);
     
-    // Clear all memory-heavy states
-    clearSystemErrors();
-    setOpenApps([]);
-    setMinimizedApps([]);
-    setMaximizedApps([]);
-    setActiveApp(null);
+    // Step 0: Clear only dialogs/modals
     setShowRestartDialog(false);
     setShowAboutWindow(false);
     setShowSpotlight(false);
     setShowWidgetPicker(false);
 
     // Sequential Shutdown Sequence (300ms delays)
-    setTimeout(() => setShutdownStep(1), 300); // Hide Dock
-    setTimeout(() => setShutdownStep(2), 600); // Hide Menu Bar
-    setTimeout(() => setShutdownStep(3), 900); // Hide Widgets/Icons
+    setTimeout(() => setShutdownStep(1), 300); // Slide Dock to extreme bottom
+    setTimeout(() => setShutdownStep(2), 600); // Slide Menu Bar to extreme top
+    setTimeout(() => {
+      setShutdownStep(3); // Fade Widgets/Icons/Windows
+      // Clear memory-heavy states only now so they can animate out
+      clearSystemErrors();
+      setOpenApps([]);
+      setMinimizedApps([]);
+      setMaximizedApps([]);
+      setActiveApp(null);
+    }, 900); 
     setTimeout(() => setShutdownStep(4), 1200); // Fade Wallpaper to Black
     
     // Handover to BootSequence
@@ -231,7 +234,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setBootState('booting');
       setIsShuttingDown(false);
       setShutdownStep(0);
-    }, 2500);
+    }, 2800);
   }, [clearSystemErrors, setBootState]);
 
   const triggerSystemError = useCallback(() => {

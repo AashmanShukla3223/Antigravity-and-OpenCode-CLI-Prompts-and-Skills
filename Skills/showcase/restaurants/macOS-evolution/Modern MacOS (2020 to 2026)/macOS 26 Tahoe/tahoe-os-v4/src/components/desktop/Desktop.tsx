@@ -396,10 +396,10 @@ export const Desktop: React.FC = () => {
       {/* OS Shell Components */}
       <motion.div 
         animate={{ 
-          y: shutdownStep >= 2 ? -50 : 0, 
+          y: shutdownStep >= 2 ? -100 : 0, 
           opacity: shutdownStep >= 2 ? 0 : 1 
         }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="contents"
       >
         <MenuBar toggleControlCenter={(e) => {
@@ -414,17 +414,21 @@ export const Desktop: React.FC = () => {
         className="fixed inset-0 z-[10000] bg-black pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: shutdownStep >= 4 ? 1 : 0 }}
-        transition={{ duration: 1 }}
+        transition={{ duration: 0.8 }}
       />
 
       {/* Windows Layer */}
-      <div className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none">
+      <motion.div 
+        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none"
+      >
         <AnimatePresence>
           {openApps.filter(id => !minimizedApps.includes(id)).map(appId => (
             <Window key={appId} appId={appId} />
           ))}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {/* Control Center Overlay */}
       <AnimatePresence>
@@ -435,10 +439,10 @@ export const Desktop: React.FC = () => {
 
       <motion.div 
         animate={{ 
-          y: shutdownStep >= 1 ? 100 : 0, 
+          y: shutdownStep >= 1 ? 300 : 0, 
           opacity: shutdownStep >= 1 ? 0 : 1 
         }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="contents"
       >
         <Dock />
