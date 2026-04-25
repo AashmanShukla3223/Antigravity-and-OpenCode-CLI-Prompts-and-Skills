@@ -30,7 +30,9 @@ const ALL_APPS = [
   { id: 'reminders', name: 'Reminders' },
   { id: 'stickies', name: 'Stickies' },
   { id: 'contacts', name: 'Contacts' },
-  { id: 'activitymonitor', name: 'Activity Monitor' },
+  { id: 'activitymonitor', name: 'Activity Monitor' }
+  { id: 'soundtest', name: 'Sound Test' }
+   },
 ];
 
 export const Dock: React.FC = () => {
