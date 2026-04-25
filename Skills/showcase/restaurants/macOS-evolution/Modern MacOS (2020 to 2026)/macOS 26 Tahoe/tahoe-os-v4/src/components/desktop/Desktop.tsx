@@ -404,10 +404,10 @@ export const Desktop: React.FC = () => {
       {/* OS Shell Components */}
       <motion.div 
         animate={{ 
-          y: shutdownStep >= 2 ? -100 : 0
+          y: shutdownStep >= 2 ? -150 : 0
         }}
         transition={{ duration: 0.6, ease: "anticipate" }}
-        className="contents"
+        className="absolute top-0 left-0 right-0 z-40"
       >
         <MenuBar toggleControlCenter={(e) => {
           e.stopPropagation();
@@ -450,10 +450,10 @@ export const Desktop: React.FC = () => {
 
       <motion.div 
         animate={{ 
-          y: shutdownStep >= 1 ? 300 : 0
+          y: shutdownStep >= 1 ? 400 : 0
         }}
         transition={{ duration: 0.6, ease: "anticipate" }}
-        className="contents"
+        className="fixed bottom-0 left-0 right-0 z-40"
       >
         <Dock />
       </motion.div>

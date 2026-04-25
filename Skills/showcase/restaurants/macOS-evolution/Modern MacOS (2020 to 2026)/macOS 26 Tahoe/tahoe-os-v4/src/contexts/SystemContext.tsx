@@ -219,7 +219,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setTimeout(() => setShutdownStep(1), 300); // Slide Dock to extreme bottom
     setTimeout(() => setShutdownStep(2), 600); // Slide Menu Bar to extreme top
     setTimeout(() => {
-      setShutdownStep(3); // Fade Widgets/Icons/Windows
+      setShutdownStep(3); // Fade/Shrink Widgets/Icons/Windows
       // Clear memory-heavy states only now so they can animate out
       clearSystemErrors();
       setOpenApps([]);
@@ -229,8 +229,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, 900); 
     setTimeout(() => setShutdownStep(4), 1200); // Fade Wallpaper to Black
     
-    // Handover to BootSequence
+    // Handover to BootSequence + FULL RESET
     setTimeout(() => {
+      // Clear persistence to ensure "Fresh" state on next boot
+      localStorage.removeItem('tahoe_v3_state');
+      setSystemState(defaultState);
+      
       setBootState('booting');
       setIsShuttingDown(false);
       setShutdownStep(0);
