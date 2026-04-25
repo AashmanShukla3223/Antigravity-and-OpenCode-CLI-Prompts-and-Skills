@@ -149,8 +149,12 @@ export const Desktop: React.FC = () => {
 
       {/* Widgets Layer */}
       <motion.div 
-        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
+        animate={{ 
+          opacity: shutdownStep >= 3 ? 0 : 1,
+          scale: shutdownStep >= 3 ? 0.5 : 1,
+          filter: shutdownStep >= 3 ? "blur(20px)" : "blur(0px)"
+        }}
+        transition={{ duration: 0.5, ease: "backIn" }}
         className="absolute inset-0 z-0 p-8 pointer-events-none" 
         ref={gridRef}
       >
@@ -346,8 +350,12 @@ export const Desktop: React.FC = () => {
 
       {/* Desktop Items Grid */}
       <motion.div 
-        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
+        animate={{ 
+          opacity: shutdownStep >= 3 ? 0 : 1,
+          scale: shutdownStep >= 3 ? 0.8 : 1,
+          y: shutdownStep >= 3 ? 20 : 0
+        }}
+        transition={{ duration: 0.4, ease: "circIn" }}
         className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
       >
          {desktopItems.map(item => (
@@ -419,8 +427,12 @@ export const Desktop: React.FC = () => {
 
       {/* Windows Layer */}
       <motion.div 
-        animate={{ opacity: shutdownStep >= 3 ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
+        animate={{ 
+          opacity: shutdownStep >= 3 ? 0 : 1,
+          scale: shutdownStep >= 3 ? 0 : 1,
+          filter: shutdownStep >= 3 ? "blur(40px)" : "blur(0px)"
+        }}
+        transition={{ duration: 0.6, ease: "anticipate" }}
         className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none"
       >
         <AnimatePresence>
