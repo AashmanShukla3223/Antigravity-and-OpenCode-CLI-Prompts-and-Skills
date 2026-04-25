@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cancel01Icon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const AboutThisMac: React.FC = () => {
   const { showAboutWindow, setShowAboutWindow, launchApp, battery, hardware } = useSystem();
@@ -42,24 +43,15 @@ export const AboutThisMac: React.FC = () => {
     if (isMobile) return 'Smartphone';
     if (isTablet) return 'Tablet';
     
-    // If battery.charging is detected on a desktop agent (not mobile/tablet) -> Laptop
-    // Otherwise Desktop Monitor
-    // We check if battery exists and has a level less than 1, or is charging but not full, 
-    // or just rely on the navigator battery API to differentiate. 
-    // Note: Chrome on Desktop PC also exposes getBattery. 
-    // We'll use a rough heuristic: if battery level is not exactly 1 or charging is false, it's a laptop.
-    // Otherwise, assume it's a Mac Studio / Desktop.
     if (battery && (battery.level < 1 || !battery.isCharging)) {
       return 'Laptop';
     }
     
-    // Fallback for Desktop
     return 'Desktop';
   }, [battery]);
 
   useEffect(() => {
     if (showAboutWindow) {
-      // Update memory dynamically using performance API if available
       const updateMemory = () => {
         if ((performance as any).memory) {
           const used = Math.round((performance as any).memory.usedJSHeapSize / 1024 / 1024);
@@ -77,7 +69,6 @@ export const AboutThisMac: React.FC = () => {
   const handleMoreInfo = () => {
     setShowAboutWindow(false);
     launchApp('settings');
-    // Give System Settings a moment to mount/open if it wasn't already
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('open-settings-tab', { detail: { tab: 'General', step: 5 } }));
     }, 100);
@@ -85,50 +76,54 @@ export const AboutThisMac: React.FC = () => {
 
   if (!showAboutWindow) return null;
 
-  // 2. The Visuals: 3D Photorealistic Render placeholders
+  // 2. The Visuals: High-Res Device Assets
   const renderDeviceImage = () => {
+    const base = (import.meta as any).env?.BASE_URL || '/';
+    
     switch (deviceType) {
       case 'Smartphone':
         return (
-          <div className="relative w-32 h-56 bg-zinc-900 rounded-[2rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20" />
-            <div className="w-16 h-16 rounded-full bg-blue-500/30 blur-2xl animate-pulse" />
-            <div className="absolute top-2 w-12 h-4 bg-black rounded-full" />
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('phone-apple-iphone')}`} 
+              className="w-32 h-32 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" 
+              alt="iPhone" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       case 'Tablet':
         return (
-          <div className="relative w-48 h-64 bg-zinc-900 rounded-[1.5rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-pink-500/20" />
-             <div className="w-24 h-24 rounded-full bg-indigo-500/30 blur-3xl animate-pulse" />
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('tablet')}`} 
+              className="w-40 h-40 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" 
+              alt="iPad" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       case 'Laptop':
         return (
-          <div className="relative w-56 h-36 flex flex-col items-center justify-end">
-            {/* Screen */}
-            <div className="w-52 h-32 bg-zinc-900 rounded-t-xl border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-teal-500/10" />
-              <div className="w-20 h-20 rounded-full bg-blue-400/30 blur-2xl animate-pulse" />
-            </div>
-            {/* Base */}
-            <div className="w-56 h-3 bg-zinc-400 rounded-b-xl shadow-xl relative z-20">
-               <div className="absolute inset-x-20 top-0 h-0.5 bg-zinc-500/50 rounded-b-full" />
-            </div>
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('computer-laptop', true)}`} 
+              className="w-44 h-44 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" 
+              alt="MacBook" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-teal-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       case 'Desktop':
       default:
         return (
-          <div className="relative w-56 h-48 flex flex-col items-center justify-end">
-             {/* Display */}
-             <div className="w-56 h-36 bg-zinc-900 rounded-xl border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
-               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
-               <div className="w-24 h-24 rounded-full bg-purple-500/30 blur-3xl animate-[pulse_4s_ease-in-out_infinite]" />
-             </div>
-             {/* Stand */}
-             <div className="w-16 h-12 bg-zinc-300 relative z-0 -mt-2 shadow-inner border-x border-zinc-400" />
-             <div className="w-32 h-2 bg-zinc-400 rounded-t-lg shadow-xl relative z-20" />
+          <div className="relative w-48 h-48 flex items-center justify-center">
+             <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('computer', true)}`} 
+              className="w-44 h-44 object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" 
+              alt="Mac Studio" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
     }
@@ -145,7 +140,6 @@ export const AboutThisMac: React.FC = () => {
       >
         <div className="w-[320px] bg-white/10 dark:bg-black/60 backdrop-blur-[25px] border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden pointer-events-auto flex flex-col font-sans p-8 items-center text-center">
           
-          {/* Header Controls (Close only) */}
           <div className="absolute top-6 left-6">
             <button 
               onClick={() => setShowAboutWindow(false)}
@@ -155,12 +149,10 @@ export const AboutThisMac: React.FC = () => {
             </button>
           </div>
 
-          {/* Device Render (Vertical Layout) */}
           <div className="w-full flex items-center justify-center drop-shadow-2xl mb-8 mt-4">
              {renderDeviceImage()}
           </div>
 
-          {/* System Specs */}
           <div className="flex flex-col text-black dark:text-white items-center w-full">
              <h1 className="text-2xl font-black tracking-tight mb-1">macOS <span className="font-light">Tahoe</span></h1>
              <p className="text-[10px] text-black/40 dark:text-white/40 mb-8 font-black uppercase tracking-[0.2em]">Version 26.0</p>
@@ -184,7 +176,6 @@ export const AboutThisMac: React.FC = () => {
                </div>
              </div>
 
-             {/* Navigation & Actions */}
              <div className="mt-8 flex flex-col gap-2 w-full">
                <button 
                  onClick={handleMoreInfo}

@@ -139,41 +139,51 @@ export const SystemSettings: React.FC = () => {
   }, [battery]);
 
   const renderDeviceImage = () => {
+    const base = (import.meta as any).env?.BASE_URL || '/';
+
     switch (deviceType) {
       case 'Smartphone':
         return (
-          <div className="relative w-20 h-36 bg-zinc-900 rounded-[1.5rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20" />
-            <div className="w-10 h-10 rounded-full bg-blue-500/30 blur-2xl animate-pulse" />
-            <div className="absolute top-2 w-8 h-3 bg-black rounded-full" />
+          <div className="relative w-40 h-40 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('phone-apple-iphone')}`} 
+              className="w-24 h-24 object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]" 
+              alt="iPhone" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       case 'Tablet':
         return (
-          <div className="relative w-32 h-44 bg-zinc-900 rounded-[1rem] border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-pink-500/20" />
-             <div className="w-16 h-16 rounded-full bg-indigo-500/30 blur-3xl animate-pulse" />
+          <div className="relative w-40 h-40 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('tablet')}`} 
+              className="w-32 h-32 object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]" 
+              alt="iPad" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       case 'Laptop':
         return (
-          <div className="relative w-40 h-28 flex flex-col items-center justify-end">
-            <div className="w-36 h-24 bg-zinc-900 rounded-t-lg border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-teal-500/10" />
-              <div className="w-12 h-12 rounded-full bg-blue-400/30 blur-2xl animate-pulse" />
-            </div>
-            <div className="w-40 h-2 bg-zinc-400 rounded-b-lg shadow-xl relative z-20" />
+          <div className="relative w-40 h-40 flex items-center justify-center">
+            <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('computer-laptop', true)}`} 
+              className="w-36 h-36 object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]" 
+              alt="MacBook" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-teal-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
       default:
         return (
-          <div className="relative w-40 h-36 flex flex-col items-center justify-end">
-             <div className="w-40 h-28 bg-zinc-900 rounded-lg border-4 border-zinc-800 shadow-2xl flex items-center justify-center overflow-hidden relative z-10">
-               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
-               <div className="w-16 h-16 rounded-full bg-purple-500/30 blur-3xl animate-[pulse_4s_ease-in-out_infinite]" />
-             </div>
-             <div className="w-10 h-8 bg-zinc-300 relative z-0 -mt-1 shadow-inner" />
-             <div className="w-24 h-2 bg-zinc-400 rounded-t-lg shadow-xl relative z-20" />
+          <div className="relative w-40 h-40 flex items-center justify-center">
+             <img 
+              src={`${base}${FileSystemResolver.getDeviceIcon('computer', true)}`} 
+              className="w-36 h-36 object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)]" 
+              alt="Mac Studio" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl -z-10" />
           </div>
         );
     }

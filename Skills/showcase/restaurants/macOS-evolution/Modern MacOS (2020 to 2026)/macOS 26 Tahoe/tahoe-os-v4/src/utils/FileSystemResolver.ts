@@ -43,8 +43,8 @@ export class FileSystemResolver {
     return `assets/preferences/${prefName}.png`;
   }
 
-  static getDeviceIcon(deviceName: string): string {
-    return `assets/devices/${deviceName}.png`;
+  static getDeviceIcon(deviceName: string, isAlt: boolean = false): string {
+    return isAlt ? `assets/devices/Alt/${deviceName}.png` : `assets/devices/${deviceName}.png`;
   }
 
   static getCategoryIcon(categoryName: string): string {
