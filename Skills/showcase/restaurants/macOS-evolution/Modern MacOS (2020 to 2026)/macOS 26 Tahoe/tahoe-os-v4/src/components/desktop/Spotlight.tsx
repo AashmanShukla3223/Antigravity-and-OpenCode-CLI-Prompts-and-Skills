@@ -154,8 +154,8 @@ export const Spotlight: React.FC = () => {
       if (result.type === 'ai') {
         const prompt = query.replace(/^(ai |hey apple )/i, '');
         const res = await aiEngine.current.executeCommand(prompt);
-        // Display result briefly before closing (in a real app we'd show it in UI)
-        alert(`Apple Intelligence:\n${res}`);
+        // Display result briefly before closing
+        await system.showAlert(res, 'Apple Intelligence');
         setShowSpotlight(false);
       } else if (result.type === 'app' && result.appId) {
         launchApp(result.appId);

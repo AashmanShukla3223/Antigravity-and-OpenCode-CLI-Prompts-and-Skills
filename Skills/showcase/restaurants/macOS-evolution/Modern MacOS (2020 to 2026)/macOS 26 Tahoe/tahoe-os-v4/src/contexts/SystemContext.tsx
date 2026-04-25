@@ -37,6 +37,15 @@ export interface ActiveError {
   icon: string;
 }
 
+export interface SystemDialogConfig {
+  type: 'alert' | 'confirm' | 'prompt';
+  title: string;
+  message: string;
+  defaultValue?: string;
+  onConfirm: (value?: string) => void;
+  onCancel: () => void;
+}
+
 export interface TahoeV3State {
   setup_complete: boolean;
   user: {
@@ -154,6 +163,11 @@ interface SystemContextProps {
   isShuttingDown: boolean;
   shutdownStep: number;
   initiateRestart: () => void;
+  systemDialog: SystemDialogConfig | null;
+  setSystemDialog: (config: SystemDialogConfig | null) => void;
+  showAlert: (message: string, title?: string) => Promise<void>;
+  showConfirm: (message: string, title?: string) => Promise<boolean>;
+  showPrompt: (message: string, defaultValue?: string, title?: string) => Promise<string | null>;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -180,6 +194,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
+  const [systemDialog, setSystemDialog] = useState<SystemDialogConfig | null>(null);
   const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null>(null);
 
@@ -213,6 +228,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setShowAboutWindow(false);
     setShowSpotlight(false);
     setShowWidgetPicker(false);
+    setSystemDialog(null);
 
     // Sequential Shutdown Sequence
     setShutdownStep(1); // T+0ms: Slide Dock to extreme bottom
@@ -473,6 +489,61 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
   }, []);
 
+  const showAlert = useCallback((message: string, title: string = 'System Alert'): Promise<void> => {
+    return new Promise((resolve) => {
+      setSystemDialog({
+        type: 'alert',
+        title,
+        message,
+        onConfirm: () => {
+          setSystemDialog(null);
+          resolve();
+        },
+        onCancel: () => {
+          setSystemDialog(null);
+          resolve();
+        }
+      });
+    });
+  }, []);
+
+  const showConfirm = useCallback((message: string, title: string = 'Confirm Action'): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setSystemDialog({
+        type: 'confirm',
+        title,
+        message,
+        onConfirm: () => {
+          setSystemDialog(null);
+          resolve(true);
+        },
+        onCancel: () => {
+          setSystemDialog(null);
+          resolve(false);
+        }
+      });
+    });
+  }, []);
+
+  const showPrompt = useCallback((message: string, defaultValue: string = '', title: string = 'Input Required'): Promise<string | null> => {
+    return new Promise((resolve) => {
+      setSystemDialog({
+        type: 'prompt',
+        title,
+        message,
+        defaultValue,
+        onConfirm: (value) => {
+          setSystemDialog(null);
+          resolve(value || null);
+        },
+        onCancel: () => {
+          setSystemDialog(null);
+          resolve(null);
+        }
+      });
+    });
+  }, []);
+
   return (
     <SystemContext.Provider value={{
       bootState,
@@ -521,7 +592,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       clearSystemErrors,
       isShuttingDown,
       shutdownStep,
-      initiateRestart
+      initiateRestart,
+      systemDialog,
+      setSystemDialog,
+      showAlert,
+      showConfirm,
+      showPrompt
     }}>
       {children}
     </SystemContext.Provider>

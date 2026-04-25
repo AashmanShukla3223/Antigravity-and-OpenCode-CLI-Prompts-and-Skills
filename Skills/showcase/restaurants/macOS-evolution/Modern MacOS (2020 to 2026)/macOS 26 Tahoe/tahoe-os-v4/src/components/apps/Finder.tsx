@@ -31,7 +31,7 @@ const tagColors: TagColor[] = ['red', 'orange', 'yellow', 'green', 'blue', 'purp
 
 export const Finder: React.FC = () => {
   const { nodes, getDirectoryContents, createNode, deleteNode, getPath, addTag, removeTag, emptyTrash } = useFileSystem();
-  const { setContextMenu, systemState } = useSystem();
+  const { setContextMenu, systemState, showPrompt, showConfirm } = useSystem();
   
   const [currentFolderId, setCurrentFolderId] = useState<string | null>('user-home');
   const [history, setHistory] = useState<string[]>(['user-home']);
@@ -80,8 +80,8 @@ export const Finder: React.FC = () => {
     }
   };
 
-  const handleCreateFolder = () => {
-    const name = prompt('Enter folder name:', 'New Folder');
+  const handleCreateFolder = async () => {
+    const name = await showPrompt('Enter folder name:', 'New Folder', 'New Folder');
     if (name) {
       createNode({
         name,
@@ -93,8 +93,8 @@ export const Finder: React.FC = () => {
     }
   };
 
-  const handleCreateFile = () => {
-    const name = prompt('Enter file name:', 'untitled.txt');
+  const handleCreateFile = async () => {
+    const name = await showPrompt('Enter file name:', 'untitled.txt', 'New File');
     if (name) {
       createNode({
         name,
@@ -214,14 +214,16 @@ export const Finder: React.FC = () => {
           <div className="flex items-center gap-2">
             {currentFolderId === 'trash' && contents.length > 0 && (
               <button
-                onClick={() => { 
+                onClick={async () => { 
                   const audio = new Audio('/sounds/glass.aiff');
                   audio.play().catch(e => console.log('Audio play failed', e));
-                  setTimeout(() => {
-                    if(confirm('Are you sure you want to permanently erase the items in the Trash?')) {
-                      emptyTrash(); 
-                    }
-                  }, 100);
+                  const confirmed = await showConfirm(
+                    'Are you sure you want to permanently erase the items in the Trash?',
+                    'Empty Trash'
+                  );
+                  if(confirmed) {
+                    emptyTrash(); 
+                  }
                 }}
                 className="px-3 py-1 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg text-xs font-bold transition-all border border-red-500/20 mr-2"
               >

@@ -8,6 +8,7 @@ import { ControlCenter } from './ControlCenter';
 import { Window } from './Window';
 import { AboutThisMac } from '../apps/AboutThisMac';
 import { RestartDialog } from './RestartDialog';
+import { SystemDialog } from './SystemDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
 import { 
@@ -49,7 +50,8 @@ export const Desktop: React.FC = () => {
     quitApp, 
     systemErrors,
     shutdownStep,
-    clearSystemErrors
+    clearSystemErrors,
+    showPrompt
   } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -460,6 +462,7 @@ export const Desktop: React.FC = () => {
 
       <AboutThisMac />
       <RestartDialog />
+      <SystemDialog />
       <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} />
       <Spotlight />
       <IncomingCallOverlay />
@@ -483,8 +486,8 @@ export const Desktop: React.FC = () => {
           >
             {contextMenu.type === 'desktop' ? (
               <>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
-                  const name = prompt('Folder Name:', 'New Folder');
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={async () => {
+                  const name = await showPrompt('Enter folder name:', 'New Folder', 'New Folder');
                   if (name) createNode({ name, type: 'folder', parentId: 'desktop' });
                   setContextMenu(null);
                 }}>New Folder</div>
