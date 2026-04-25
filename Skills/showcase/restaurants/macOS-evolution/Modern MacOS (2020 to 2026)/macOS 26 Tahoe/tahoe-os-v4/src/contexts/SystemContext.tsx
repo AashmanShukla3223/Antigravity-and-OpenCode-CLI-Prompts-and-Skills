@@ -227,6 +227,11 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       "socialize" // Required constraint
     ];
 
+    const SOUNDS = [
+      "Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero",
+      "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"
+    ];
+
     const base = (import.meta as any).env?.BASE_URL || '/';
     
     const playSound = (name: string) => {
@@ -258,9 +263,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return next;
       });
 
-      if (count % 5 === 0) {
-        playSound('Sosumi'); // Rhythmic alert
-      }
+      // Play a random sound from all 14 for every error
+      const randomSound = SOUNDS[Math.floor(Math.random() * SOUNDS.length)];
+      playSound(randomSound);
 
       count++;
       if (count > 1000) clearSystemErrors();
