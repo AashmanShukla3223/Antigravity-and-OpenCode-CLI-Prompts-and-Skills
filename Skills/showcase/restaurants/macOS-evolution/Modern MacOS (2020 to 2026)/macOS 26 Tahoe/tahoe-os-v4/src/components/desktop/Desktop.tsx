@@ -17,7 +17,8 @@ import {
   Sun01Icon, 
   PlayIcon, 
   PauseIcon, 
-  ArrowRight01Icon, 
+  ArrowRight01Icon,
+  ArrowLeft01Icon, 
   Tick01Icon
 } from 'hugeicons-react';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
@@ -27,12 +28,7 @@ import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
-
-// Dummy songs for music widget - normally these would come from a central source
-const songs = [
-  { id: '1', title: 'Baby', artist: 'Justin Bieber', url: '/music/baby.mp3', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200&h=200&auto=format&fit=crop' },
-  { id: '2', title: 'Believer', artist: 'Imagine Dragons', url: '/music/believer.mp3', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=200&h=200&auto=format&fit=crop' },
-];
+import { songs } from '../../utils/MusicData';
 
 export const Desktop: React.FC = () => {
   const { 
@@ -51,7 +47,11 @@ export const Desktop: React.FC = () => {
     systemErrors,
     shutdownStep,
     clearSystemErrors,
-    showPrompt
+    showPrompt,
+    playSong,
+    pauseSong,
+    nextSong,
+    prevSong
   } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -105,18 +105,6 @@ export const Desktop: React.FC = () => {
   const toggleReminder = (id: number) => {
     updateSystemState({
       reminders: systemState.reminders.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
-    });
-  };
-
-  const toggleMusic = () => {
-    updateSystemState({
-      music: { ...systemState.music, isPlaying: !systemState.music.isPlaying }
-    });
-  };
-
-  const nextSong = () => {
-    updateSystemState({
-      music: { ...systemState.music, currentSongIndex: (systemState.music.currentSongIndex + 1) % songs.length }
     });
   };
 
@@ -230,20 +218,47 @@ export const Desktop: React.FC = () => {
 
                      {isMusic && (
                        <div className="flex flex-col items-center justify-center h-full gap-3">
-                          <img 
-                            src={songs[systemState.music.currentSongIndex].cover} 
-                            className={`w-16 h-16 rounded-xl shadow-2xl transition-transform duration-700 ${systemState.music.isPlaying ? 'scale-110' : 'scale-95'}`} 
-                            alt="Cover"
-                          />
-                          <div className="text-center">
-                             <div className="text-[11px] font-bold text-white truncate w-32">{songs[systemState.music.currentSongIndex].title}</div>
-                             <div className="text-[9px] text-white/50 truncate w-32">{songs[systemState.music.currentSongIndex].artist}</div>
+                          <div className="relative group/cover">
+                             <img 
+                              src={songs[systemState.music.currentSongIndex].cover} 
+                              className={`w-20 h-20 rounded-2xl shadow-2xl transition-transform duration-700 ${systemState.music.isPlaying ? 'scale-105' : 'scale-95'}`} 
+                              alt="Cover"
+                            />
+                            {systemState.music.isPlaying && (
+                              <div className="absolute -bottom-1 -right-1 flex gap-0.5 items-end h-4 bg-black/40 backdrop-blur-md px-1.5 py-1 rounded-lg">
+                                 {[1, 2, 3].map(i => (
+                                   <motion.div 
+                                      key={i}
+                                      animate={{ height: [2, 8, 4, 10, 2] }}
+                                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                                      className="w-0.5 bg-red-500 rounded-full"
+                                   />
+                                 ))}
+                              </div>
+                            )}
                           </div>
+                          <div className="text-center w-full">
+                             <div className="text-[12px] font-black text-white truncate px-2">{songs[systemState.music.currentSongIndex].title}</div>
+                             <div className="text-[10px] text-white/50 truncate px-2">{songs[systemState.music.currentSongIndex].artist}</div>
+                          </div>
+                          
+                          {/* Mini Progress Bar */}
+                          <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden mb-1">
+                             <motion.div 
+                                className="h-full bg-white/80"
+                                initial={false}
+                                animate={{ width: `${systemState.music.playbackProgress}%` }}
+                             />
+                          </div>
+
                           <div className="flex items-center gap-4">
-                             <button onClick={toggleMusic} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                                {systemState.music.isPlaying ? <PauseIcon size={14} className="text-white" /> : <PlayIcon size={14} className="text-white" />}
+                             <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+                                <ArrowLeft01Icon size={14} className="text-white" />
                              </button>
-                             <button onClick={nextSong} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                             <button onClick={(e) => { e.stopPropagation(); systemState.music.isPlaying ? pauseSong() : playSong(); }} className="w-10 h-10 rounded-full bg-white text-black hover:bg-white/90 flex items-center justify-center transition-transform hover:scale-110 shadow-xl shadow-white/10">
+                                {systemState.music.isPlaying ? <PauseIcon size={20} fill="currentColor" /> : <PlayIcon size={20} fill="currentColor" className="ml-0.5" />}
+                             </button>
+                             <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
                                 <ArrowRight01Icon size={14} className="text-white" />
                              </button>
                           </div>

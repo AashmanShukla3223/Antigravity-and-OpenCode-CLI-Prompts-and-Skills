@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { songs } from '../utils/MusicData';
 
 type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
 
@@ -19,6 +20,8 @@ export interface Reminder {
 export interface MusicState {
   currentSongIndex: number;
   isPlaying: boolean;
+  playbackProgress: number;
+  volume: number;
 }
 
 export interface Note {
@@ -95,7 +98,9 @@ const defaultState: TahoeV3State = {
   ],
   music: {
     currentSongIndex: 0,
-    isPlaying: false
+    isPlaying: false,
+    playbackProgress: 0,
+    volume: 0.8
   },
   runningApps: [],
   pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'calendar', 'soundtest', 'appstore', 'notes', 'settings'],
@@ -168,6 +173,13 @@ interface SystemContextProps {
   showAlert: (message: string, title?: string) => Promise<void>;
   showConfirm: (message: string, title?: string) => Promise<boolean>;
   showPrompt: (message: string, defaultValue?: string, title?: string) => Promise<string | null>;
+  // Music Controls
+  playSong: (index?: number) => void;
+  pauseSong: () => void;
+  nextSong: () => void;
+  prevSong: () => void;
+  setVolume: (val: number) => void;
+  updatePlaybackProgress: (val: number) => void;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -210,9 +222,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(() => Date.now());
 
-  // Global Error Storm State
   const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
   const stormIntervalRef = React.useRef<any>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const clearSystemErrors = useCallback(() => {
     if (stormIntervalRef.current) clearInterval(stormIntervalRef.current);
@@ -341,6 +353,72 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return newState;
     });
   }, []);
+
+  const playSong = useCallback((index?: number) => {
+    const isUnlocked = localStorage.getItem('tahoe_music_unlocked') === 'true';
+    if (!isUnlocked) return;
+
+    if (audioRef.current) {
+      if (index !== undefined) {
+        audioRef.current.src = songs[index].url;
+        updateSystemState({ music: { ...systemState.music, currentSongIndex: index, isPlaying: true, playbackProgress: 0 } });
+      } else {
+        if (!audioRef.current.src) {
+           audioRef.current.src = songs[systemState.music.currentSongIndex].url;
+        }
+        updateSystemState({ music: { ...systemState.music, isPlaying: true } });
+      }
+      audioRef.current.play().catch(e => console.warn('Music play failed', e));
+    }
+  }, [systemState.music, updateSystemState]);
+
+  const pauseSong = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      updateSystemState({ music: { ...systemState.music, isPlaying: false } });
+    }
+  }, [systemState.music, updateSystemState]);
+
+  const nextSong = useCallback(() => {
+    const nextIndex = (systemState.music.currentSongIndex + 1) % songs.length;
+    playSong(nextIndex);
+  }, [systemState.music.currentSongIndex, playSong]);
+
+  const prevSong = useCallback(() => {
+    const prevIndex = (systemState.music.currentSongIndex - 1 + songs.length) % songs.length;
+    playSong(prevIndex);
+  }, [systemState.music.currentSongIndex, playSong]);
+
+  const setVolume = useCallback((val: number) => {
+    if (audioRef.current) {
+      audioRef.current.volume = val;
+      updateSystemState({ music: { ...systemState.music, volume: val } });
+    }
+  }, [systemState.music, updateSystemState]);
+
+  const updatePlaybackProgress = useCallback((val: number) => {
+     if (audioRef.current && audioRef.current.duration) {
+        audioRef.current.currentTime = (val / 100) * audioRef.current.duration;
+     }
+  }, []);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.addEventListener('timeupdate', () => {
+        if (audioRef.current) {
+          const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+          setSystemState(prev => ({
+            ...prev,
+            music: { ...prev.music, playbackProgress: progress || 0 }
+          }));
+        }
+      });
+      audioRef.current.addEventListener('ended', () => {
+        nextSong();
+      });
+    }
+  }, [nextSong]);
 
   const launchApp = useCallback((appId: string) => {
     // Add to running apps if not there
@@ -597,7 +675,13 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setSystemDialog,
       showAlert,
       showConfirm,
-      showPrompt
+      showPrompt,
+      playSong,
+      pauseSong,
+      nextSong,
+      prevSong,
+      setVolume,
+      updatePlaybackProgress
     }}>
       {children}
     </SystemContext.Provider>
