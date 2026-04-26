@@ -4,7 +4,6 @@ import {
   Shield01Icon, 
   LockIcon, 
   Clock01Icon, 
-  Download01Icon, 
   Compass01Icon, 
   HardDriveIcon,
   UserIcon,
@@ -43,10 +42,10 @@ export const MacOSRecovery: React.FC = () => {
   const username = systemState.user.fullName || 'Architect';
 
   const utilities = [
-    { id: 'tm', name: 'Restore from Time Machine', desc: 'Restore from a local backup or neural snapshot.', icon: Clock01Icon, color: 'bg-green-500' },
-    { id: 'reinstall', name: 'Reinstall macOS Tahoe', desc: 'Download and reinstall a fresh copy of macOS.', icon: Download01Icon, color: 'bg-blue-500' },
-    { id: 'safari', name: 'Safari', desc: 'Browse Apple Support to get help with your Mac.', icon: Compass01Icon, color: 'bg-white' },
-    { id: 'disk', name: 'Disk Utility', desc: 'Repair or erase a disk using Disk Utility.', icon: HardDriveIcon, color: 'bg-gray-500' },
+    { id: 'tm', name: 'Restore from Time Machine', desc: 'Restore from a local backup or neural snapshot.', iconPath: '/icons/time-machine.png' },
+    { id: 'reinstall', name: 'Reinstall macOS Tahoe', desc: 'Download and reinstall a fresh copy of macOS.', iconPath: '/icons/tahoe-installer.png' },
+    { id: 'safari', name: 'Safari', desc: 'Browse Apple Support to get help with your Mac.', iconPath: '/icons/safari.png' },
+    { id: 'disk', name: 'Disk Utility', desc: 'Repair or erase a disk using Disk Utility.', iconPath: '/icons/disk-utility.png' },
   ];
 
   const handleFinish = () => setBootState('booting');
@@ -186,8 +185,8 @@ export const MacOSRecovery: React.FC = () => {
                    onClick={() => setStep(util.id === 'tm' ? 4 : util.id === 'reinstall' ? 5 : util.id === 'safari' ? 6 : 7)}
                    className="flex items-center gap-6 p-6 bg-white/5 border border-white/5 rounded-[32px] cursor-pointer transition-all group backdrop-blur-xl shadow-2xl"
                  >
-                    <div className={`w-16 h-16 rounded-[22px] ${util.color} flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform`}>
-                       <util.icon size={32} className={util.id === 'safari' ? 'text-blue-500 hugeicon-tahoe' : 'text-white hugeicon-tahoe'} />
+                    <div className="w-16 h-16 rounded-[22px] bg-white/5 flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform overflow-hidden p-2">
+                       <img src={util.iconPath} alt={util.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1">
                        <h3 className="text-xl font-bold text-white/90">{util.name}</h3>

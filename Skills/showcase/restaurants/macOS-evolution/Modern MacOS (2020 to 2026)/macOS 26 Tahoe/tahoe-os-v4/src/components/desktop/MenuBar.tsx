@@ -363,8 +363,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     showSpotlight, 
     clearSystemErrors, 
     setShowRestartDialog, 
-    initiateRestart, 
-    initiateSystemHandoff 
+    initiateRestart
   } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
@@ -501,9 +500,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
               { label: 'Sleep', action: () => handlePowerAction('sleep') },
               { label: 'Restart...', action: () => handlePowerAction('restart') },
               { label: 'Shut Down...', action: () => handlePowerAction('shutdown') },
-              { separator: true },
-              { label: 'Restart to Recovery...', action: () => initiateSystemHandoff('recovery') },
-              { label: 'Activation Lock...', action: () => initiateSystemHandoff('activation') },
               { separator: true },
               { label: 'Lock Screen', action: () => handlePowerAction('lock') },
               { label: 'Log Out...', action: () => handlePowerAction('logout') },
