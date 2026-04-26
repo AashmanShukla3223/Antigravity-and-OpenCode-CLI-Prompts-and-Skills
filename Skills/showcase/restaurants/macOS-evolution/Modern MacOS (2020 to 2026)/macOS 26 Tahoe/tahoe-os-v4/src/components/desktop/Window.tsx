@@ -27,6 +27,8 @@ import { AppleMusic } from '../apps/AppleMusic';
 import { ITunesStore } from '../apps/iTunesStore';
 import { SoundTest } from '../apps/SoundTest';
 import { Installer } from '../apps/Installer';
+import { TimeMachine } from '../apps/TimeMachine';
+import { DiskUtility } from '../apps/DiskUtility';
 
 import { IPhoneMirroring } from '../apps/iPhoneMirroring';
 import { Weather } from '../apps/Weather';
@@ -61,6 +63,8 @@ const AppMap: Record<string, React.FC<any>> = {
   itunes: ITunesStore,
   soundtest: SoundTest,
   installer: Installer,
+  timemachine: TimeMachine,
+  diskutility: DiskUtility,
   iphonemirroring: IPhoneMirroring,
   weather: Weather,
   notes: Notes,
