@@ -8,6 +8,7 @@ export const LoginScreen: React.FC = () => {
   const { setBootState, systemState, battery } = useSystem();
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -15,10 +16,21 @@ export const LoginScreen: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const playSound = (name: string) => {
+    const audio = new Audio(`/sounds/${name}.mp3`);
+    audio.play().catch(e => console.warn('Audio play failed', e));
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === systemState.user.password || !systemState.user.password) {
-      setBootState('desktop');
+      setIsLoggingIn(true);
+      playSound('Glass');
+      
+      // Wait for progress bar (1.2s) + a small buffer
+      setTimeout(() => {
+        setBootState('desktop');
+      }, 1500);
     } else {
       setError(true);
       setTimeout(() => setError(false), 500);
@@ -89,27 +101,44 @@ export const LoginScreen: React.FC = () => {
         </h2>
         
         <form onSubmit={handleLogin} className="flex flex-col items-center gap-4">
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(false); }}
-            className={`w-56 bg-white/10 border ${error ? 'border-red-500/50' : 'border-white/20'} rounded-xl px-4 py-3 text-white placeholder-white/40 backdrop-blur-2xl focus:outline-none focus:ring-2 ${error ? 'focus:ring-red-500/50' : 'focus:ring-blue-500/50'} text-center transition-all shadow-xl`}
-            autoFocus
-          />
-          <AnimatePresence>
-            {error && (
-              <motion.p 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-red-400 text-xs font-bold"
-              >
-                Wrong Password
-              </motion.p>
-            )}
-          </AnimatePresence>
-          <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] mt-2">Press Return to Unlock</p>
+          {!isLoggingIn ? (
+            <>
+              <input
+                type="password"
+                placeholder="Enter Password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                className={`w-56 bg-white/10 border ${error ? 'border-red-500/50' : 'border-white/20'} rounded-xl px-4 py-3 text-white placeholder-white/40 backdrop-blur-2xl focus:outline-none focus:ring-2 ${error ? 'focus:ring-red-500/50' : 'focus:ring-blue-500/50'} text-center transition-all shadow-xl`}
+                autoFocus
+              />
+              <AnimatePresence>
+                {error && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-red-400 text-xs font-bold"
+                  >
+                    Wrong Password
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] mt-2">Press Return to Unlock</p>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-4 mt-2">
+              <div className="w-56 h-1.5 bg-white/10 rounded-full overflow-hidden border border-white/5 backdrop-blur-sm">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                  style={{ willChange: 'width' }}
+                />
+              </div>
+              <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] animate-pulse">Mounting System...</p>
+            </div>
+          )}
         </form>
       </motion.div>
 

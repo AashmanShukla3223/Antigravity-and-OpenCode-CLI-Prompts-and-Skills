@@ -60,6 +60,18 @@ export const Desktop: React.FC = () => {
   useDynamicWallpaper();
   const { updateAvailable, dismissUpdate } = useSoftwareUpdate();
 
+  useEffect(() => {
+    // Play the reveal shimmer sound when Dock starts animating
+    const timer = setTimeout(() => {
+       const audio = new Audio('/sounds/Hero.mp3');
+       audio.play().catch(e => console.warn('Hero sound failed', e));
+    }, 250); // Stagger step 2 (Dock)
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setContextMenu({ x: e.pageX, y: e.pageY, type: 'desktop' });
@@ -135,18 +147,33 @@ export const Desktop: React.FC = () => {
       onClick={closeMenus}
       onContextMenu={handleContextMenu}
     >
-      <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
+      <motion.div
+        initial={{ filter: 'blur(30px) saturate(50%)', scale: 1.1 }}
+        animate={{ filter: 'blur(0px) saturate(100%)', scale: 1 }}
+        transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+        className="absolute inset-0 z-[-1]"
+        style={{ willChange: 'filter, transform' }}
+      >
+        <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
+      </motion.div>
 
       {/* Widgets Layer */}
       <motion.div 
+        initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
         animate={{ 
           opacity: shutdownStep >= 3 ? 0 : 1,
           scale: shutdownStep >= 3 ? 0.5 : 1,
           filter: shutdownStep >= 3 ? "blur(20px)" : "blur(0px)"
         }}
-        transition={{ duration: 0.5, ease: "backIn" }}
+        transition={{ 
+          opacity: { delay: 0.75, duration: 0.8 },
+          scale: { delay: 0.75, duration: 0.8, type: 'spring', stiffness: 100 },
+          filter: { delay: 0.75, duration: 0.8 },
+          default: { duration: 0.5, ease: "backIn" } 
+        }}
         className="absolute inset-0 z-0 p-8 pointer-events-none" 
         ref={gridRef}
+        style={{ willChange: 'opacity, transform, filter' }}
       >
         <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
            {systemState.widgets.map((widget) => {
@@ -367,13 +394,19 @@ export const Desktop: React.FC = () => {
 
       {/* Desktop Items Grid */}
       <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ 
           opacity: shutdownStep >= 3 ? 0 : 1,
           scale: shutdownStep >= 3 ? 0.8 : 1,
           y: shutdownStep >= 3 ? 20 : 0
         }}
-        transition={{ duration: 0.4, ease: "circIn" }}
+        transition={{ 
+          opacity: { delay: 0.8, duration: 0.6 },
+          scale: { delay: 0.8, duration: 0.6 },
+          default: { duration: 0.4, ease: "circIn" }
+        }}
         className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
+        style={{ willChange: 'opacity, transform' }}
       >
          {desktopItems.map(item => (
            <motion.div
@@ -420,11 +453,17 @@ export const Desktop: React.FC = () => {
 
       {/* OS Shell Components */}
       <motion.div 
+        initial={{ y: -32, opacity: 0 }}
         animate={{ 
-          y: shutdownStep >= 2 ? -150 : 0
+          y: shutdownStep >= 2 ? -150 : 0,
+          opacity: 1
         }}
-        transition={{ duration: 0.6, ease: "anticipate" }}
+        transition={{ 
+          y: { duration: 0.6, ease: "anticipate" },
+          opacity: { duration: 0.4 }
+        }}
         className="absolute top-0 left-0 right-0 z-40"
+        style={{ willChange: 'transform, opacity' }}
       >
         <MenuBar toggleControlCenter={(e) => {
           e.stopPropagation();
@@ -466,11 +505,17 @@ export const Desktop: React.FC = () => {
       </AnimatePresence>
 
       <motion.div 
+        initial={{ y: 150, opacity: 0 }}
         animate={{ 
-          y: shutdownStep >= 1 ? 400 : 0
+          y: shutdownStep >= 1 ? 400 : 0,
+          opacity: 1
         }}
-        transition={{ duration: 0.6, ease: "anticipate" }}
+        transition={{ 
+          y: { delay: 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
+          opacity: { delay: 0.25, duration: 0.4 }
+        }}
         className="fixed bottom-0 left-0 right-0 z-40"
+        style={{ willChange: 'transform, opacity' }}
       >
         <Dock />
       </motion.div>
