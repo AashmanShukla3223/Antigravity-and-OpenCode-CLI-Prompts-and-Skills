@@ -168,6 +168,9 @@ interface SystemContextProps {
   isShuttingDown: boolean;
   shutdownStep: number;
   initiateRestart: () => void;
+  isHandoff: boolean;
+  handoffTarget: BootState | null;
+  initiateSystemHandoff: (target: BootState) => void;
   systemDialog: SystemDialogConfig | null;
   setSystemDialog: (config: SystemDialogConfig | null) => void;
   showAlert: (message: string, title?: string) => Promise<void>;
@@ -213,6 +216,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Shutdown Sequence State
   const [isShuttingDown, setIsShuttingDown] = useState(false);
   const [shutdownStep, setShutdownStep] = useState(0);
+  const [isHandoff, setIsHandoff] = useState(false);
+  const [handoffTarget, setHandoffTarget] = useState<BootState | null>(null);
 
   // Hardware State
   const [battery, setBattery] = useState({ level: 1, isCharging: true });
@@ -338,6 +343,34 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setTimeout(() => {
       setBootState('booting');
       setIsShuttingDown(false);
+      setShutdownStep(0);
+    }, 1200);
+  }, [clearSystemErrors, setBootState, pauseSong]);
+
+  const initiateSystemHandoff = useCallback((target: BootState) => {
+    setIsHandoff(true);
+    setHandoffTarget(target);
+    pauseSong();
+    
+    // Step 0: Clear only dialogs/modals immediately
+    setShowRestartDialog(false);
+    setShowAboutWindow(false);
+    setShowSpotlight(false);
+    setShowWidgetPicker(false);
+    setSystemDialog(null);
+
+    // Sequential Shutdown Sequence
+    setShutdownStep(1); // T+0ms: Slide Dock
+    setTimeout(() => setShutdownStep(2), 300); // T+300ms: Slide Menu Bar
+    setTimeout(() => {
+      setShutdownStep(3); // T+600ms: Fade Widgets/Icons
+      clearSystemErrors();
+    }, 600); 
+
+    setTimeout(() => {
+      setBootState(target);
+      setIsHandoff(false);
+      setHandoffTarget(null);
       setShutdownStep(0);
     }, 1200);
   }, [clearSystemErrors, setBootState, pauseSong]);
@@ -492,7 +525,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       window.removeEventListener('launch-app', handleLaunchApp);
       clearInterval(ticker);
     };
-  }, [startTime]);
+  }, [startTime, launchApp]);
 
   // Power Mode Logic based on Battery & lowPowerMode state
   useEffect(() => {
@@ -672,6 +705,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       isShuttingDown,
       shutdownStep,
       initiateRestart,
+      isHandoff,
+      handoffTarget,
+      initiateSystemHandoff,
       systemDialog,
       setSystemDialog,
       showAlert,

@@ -46,6 +46,7 @@ export const Desktop: React.FC = () => {
     quitApp, 
     systemErrors,
     shutdownStep,
+    isHandoff,
     clearSystemErrors,
     showPrompt,
     playSong,
@@ -149,26 +150,39 @@ export const Desktop: React.FC = () => {
     >
       <motion.div
         initial={{ filter: 'blur(30px) saturate(50%)', scale: 1.1 }}
-        animate={{ filter: 'blur(0px) saturate(100%)', scale: 1 }}
-        transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+        animate={{ 
+          filter: isHandoff && shutdownStep >= 3 ? 'blur(100px) saturate(0%)' : 'blur(0px) saturate(100%)', 
+          scale: isHandoff && shutdownStep >= 3 ? 1.2 : 1,
+          opacity: isHandoff && shutdownStep >= 3 ? 0.3 : 1
+        }}
+        transition={{ delay: isHandoff ? 0 : 0.5, duration: 1.2, ease: "easeOut" }}
         className="absolute inset-0 z-[-1]"
-        style={{ willChange: 'filter, transform' }}
+        style={{ willChange: 'filter, transform, opacity' }}
       >
         <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
       </motion.div>
+
+      {/* Handoff Overlay (Deep System Blur) */}
+      <motion.div 
+        className="fixed inset-0 z-[100] bg-zinc-900/60 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHandoff && shutdownStep >= 3 ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        style={{ backdropFilter: 'blur(100px)' }}
+      />
 
       {/* Widgets Layer */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
         animate={{ 
-          opacity: shutdownStep >= 3 ? 0 : 1,
-          scale: shutdownStep >= 3 ? 0.5 : 1,
-          filter: shutdownStep >= 3 ? "blur(20px)" : "blur(0px)"
+          opacity: (shutdownStep >= 3) ? 0 : 1,
+          scale: (shutdownStep >= 3) ? 0.5 : 1,
+          filter: (shutdownStep >= 3) ? "blur(20px)" : "blur(0px)"
         }}
         transition={{ 
-          opacity: { delay: 0.75, duration: 0.8 },
-          scale: { delay: 0.75, duration: 0.8, type: 'spring', stiffness: 100 },
-          filter: { delay: 0.75, duration: 0.8 },
+          opacity: { delay: isHandoff ? 0 : 0.75, duration: 0.8 },
+          scale: { delay: isHandoff ? 0 : 0.75, duration: 0.8, type: 'spring', stiffness: 100 },
+          filter: { delay: isHandoff ? 0 : 0.75, duration: 0.8 },
           default: { duration: 0.5, ease: "backIn" } 
         }}
         className="absolute inset-0 z-0 p-8 pointer-events-none" 
@@ -396,13 +410,13 @@ export const Desktop: React.FC = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ 
-          opacity: shutdownStep >= 3 ? 0 : 1,
-          scale: shutdownStep >= 3 ? 0.8 : 1,
-          y: shutdownStep >= 3 ? 20 : 0
+          opacity: (shutdownStep >= 3) ? 0 : 1,
+          scale: (shutdownStep >= 3) ? 0.8 : 1,
+          y: (shutdownStep >= 3) ? 20 : 0
         }}
         transition={{ 
-          opacity: { delay: 0.8, duration: 0.6 },
-          scale: { delay: 0.8, duration: 0.6 },
+          opacity: { delay: isHandoff ? 0 : 0.8, duration: 0.6 },
+          scale: { delay: isHandoff ? 0 : 0.8, duration: 0.6 },
           default: { duration: 0.4, ease: "circIn" }
         }}
         className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
@@ -455,8 +469,8 @@ export const Desktop: React.FC = () => {
       <motion.div 
         initial={{ y: -32, opacity: 0 }}
         animate={{ 
-          y: shutdownStep >= 2 ? -150 : 0,
-          opacity: 1
+          y: (shutdownStep >= 2) ? -150 : 0,
+          opacity: (shutdownStep >= 2 && isHandoff) ? 0 : 1
         }}
         transition={{ 
           y: { duration: 0.6, ease: "anticipate" },
@@ -507,12 +521,12 @@ export const Desktop: React.FC = () => {
       <motion.div 
         initial={{ y: 150, opacity: 0 }}
         animate={{ 
-          y: shutdownStep >= 1 ? 400 : 0,
-          opacity: 1
+          y: (shutdownStep >= 1) ? 400 : 0,
+          opacity: (shutdownStep >= 1 && isHandoff) ? 0 : 1
         }}
         transition={{ 
-          y: { delay: 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
-          opacity: { delay: 0.25, duration: 0.4 }
+          y: { delay: isHandoff ? 0 : 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
+          opacity: { delay: isHandoff ? 0 : 0.25, duration: 0.4 }
         }}
         className="fixed bottom-0 left-0 right-0 z-40"
         style={{ willChange: 'transform, opacity' }}
