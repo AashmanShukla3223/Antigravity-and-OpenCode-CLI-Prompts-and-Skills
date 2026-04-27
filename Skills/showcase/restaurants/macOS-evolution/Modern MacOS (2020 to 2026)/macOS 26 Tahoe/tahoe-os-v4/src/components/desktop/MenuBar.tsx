@@ -172,9 +172,11 @@ const ForceQuit: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          drag
+          dragMomentum={false}
+          initial={{ opacity: 0, scale: 0.9, y: 100 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          exit={{ opacity: 0, scale: 0.9, y: 100 }}
           className="w-[350px] bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto text-black dark:text-white"
         >
           <div className="p-4 flex flex-col items-center">
