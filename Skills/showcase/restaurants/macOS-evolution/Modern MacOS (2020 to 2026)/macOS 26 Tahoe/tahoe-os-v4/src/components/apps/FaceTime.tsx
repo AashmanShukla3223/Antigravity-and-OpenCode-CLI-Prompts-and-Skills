@@ -12,7 +12,7 @@ import {
   Message01Icon
 } from 'hugeicons-react';
 
-import { contacts, type Contact } from '../../utils/contacts';
+import { getAppContacts, type Contact } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
@@ -27,6 +27,7 @@ const getContactColor = (id: number) => colors[id % colors.length];
 
 export const FaceTime: React.FC = () => {
   const { updateSystemState, systemState, launchApp, setIncomingCall } = useSystem();
+  const appContacts = getAppContacts(systemState.user.fullName);
   const videoRef = useRef<HTMLVideoElement>(null);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -37,7 +38,7 @@ export const FaceTime: React.FC = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredContacts = contacts.filter(c => 
+  const filteredContacts = appContacts.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );

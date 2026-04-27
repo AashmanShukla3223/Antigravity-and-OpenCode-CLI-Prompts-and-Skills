@@ -50,7 +50,20 @@ const emailsData = [
 
 export const Mail: React.FC = () => {
   const { systemState } = useSystem();
-  const [emails] = useState(emailsData);
+  
+  // Reorder emails: if user matches a sender, put that email at the top
+  const [emails] = useState(() => {
+    const fullName = systemState.user.fullName;
+    if (fullName) {
+      const userEmail = emailsData.find(e => e.sender.toLowerCase() === fullName.toLowerCase());
+      if (userEmail) {
+        const rest = emailsData.filter(e => e.id !== userEmail.id);
+        return [userEmail, ...rest];
+      }
+    }
+    return emailsData;
+  });
+
   const [selectedEmail, setSelectedEmail] = useState(emails[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFolder, setActiveFolder] = useState('Inbox');

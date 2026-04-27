@@ -9,7 +9,7 @@ import {
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 
-import { contacts } from '../../utils/contacts';
+import { getAppContacts } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
@@ -23,8 +23,9 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Messages: React.FC = () => {
-  const { launchApp } = useSystem();
-  const [selectedContact, setSelectedContact] = useState(contacts[0]);
+  const { launchApp, systemState } = useSystem();
+  const appContacts = getAppContacts(systemState.user.fullName);
+  const [selectedContact, setSelectedContact] = useState(appContacts[0]);
   const [inputText, setInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [chatHistory, setChatHistory] = useState<Record<number, any[]>>({
@@ -34,7 +35,7 @@ export const Messages: React.FC = () => {
     4: [{ id: 1, text: 'Benchmarks look solid on M5.', isSender: false }],
   });
 
-  const filteredContacts = contacts.filter(c => 
+  const filteredContacts = appContacts.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );

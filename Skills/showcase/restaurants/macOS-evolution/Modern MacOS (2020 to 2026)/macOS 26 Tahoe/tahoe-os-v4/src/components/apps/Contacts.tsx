@@ -9,7 +9,7 @@ import {
   Location01Icon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
-import { contacts } from '../../utils/contacts';
+import { getAppContacts } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
@@ -23,12 +23,13 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Contacts: React.FC = () => {
-  const { launchApp } = useSystem();
-  const [selectedId, setSelectedId] = useState(contacts[0].id);
-  const selected = contacts.find(c => c.id === selectedId) || contacts[0];
+  const { launchApp, systemState } = useSystem();
+  const appContacts = getAppContacts(systemState.user.fullName);
+  const [selectedId, setSelectedId] = useState(appContacts[0].id);
+  const selected = appContacts.find(c => c.id === selectedId) || appContacts[0];
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredContacts = contacts.filter(c => 
+  const filteredContacts = appContacts.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.department.toLowerCase().includes(searchQuery.toLowerCase())

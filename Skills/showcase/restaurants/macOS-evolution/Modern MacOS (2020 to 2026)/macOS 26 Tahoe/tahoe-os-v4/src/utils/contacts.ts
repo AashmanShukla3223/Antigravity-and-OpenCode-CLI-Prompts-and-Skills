@@ -333,3 +333,14 @@ export const contacts: Contact[] = [
     faceTime: 'swarn.gupta@icloud.com'
   }
 ];
+
+export const getAppContacts = (fullName?: string): Contact[] => {
+  if (fullName) {
+    const matchedContact = contacts.find(c => c.name.toLowerCase() === fullName.toLowerCase());
+    if (matchedContact) {
+      const rest = contacts.filter(c => c.id !== matchedContact.id);
+      return [matchedContact, ...rest];
+    }
+  }
+  return contacts;
+};

@@ -12,7 +12,7 @@ import {
   VolumeHighIcon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
-import { contacts } from '../../utils/contacts';
+import { getAppContacts } from '../../utils/contacts';
 
 const getInitials = (name: string) => {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
@@ -26,13 +26,14 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Phone: React.FC = () => {
-  const { launchApp, setIncomingCall } = useSystem();
-  const [selectedId, setSelectedId] = useState(contacts[0].id);
+  const { launchApp, setIncomingCall, systemState } = useSystem();
+  const appContacts = getAppContacts(systemState.user.fullName);
+  const [selectedId, setSelectedId] = useState(appContacts[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialing, setIsDialing] = useState(false);
   const ringtoneRef = React.useRef<HTMLAudioElement | null>(null);
 
-  const selected = contacts.find(c => c.id === selectedId) || contacts[0];
+  const selected = appContacts.find(c => c.id === selectedId) || appContacts[0];
 
   React.useEffect(() => {
     if (isDialing) {
@@ -53,12 +54,12 @@ export const Phone: React.FC = () => {
     };
   }, [isDialing]);
 
-  const filteredContacts = contacts.filter(c => 
+  const filteredContacts = appContacts.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const favorites = contacts.slice(0, 5); // Default favorites for simulation
+  const favorites = appContacts.slice(0, 5); // Default favorites for simulation
 
   const handleDial = () => {
     setIsDialing(true);
