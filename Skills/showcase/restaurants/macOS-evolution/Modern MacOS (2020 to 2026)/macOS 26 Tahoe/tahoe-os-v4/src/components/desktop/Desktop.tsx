@@ -146,7 +146,7 @@ export const Desktop: React.FC = () => {
     <div 
       className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
       onClick={closeMenus}
-      onContextMenu={handleContextMenu}
+      onContextMenu={systemState.isSystemInfected ? (e) => e.preventDefault() : handleContextMenu}
     >
       <motion.div
         initial={{ filter: 'blur(30px) saturate(50%)', scale: 1.1 }}
@@ -185,7 +185,7 @@ export const Desktop: React.FC = () => {
           filter: { delay: isHandoff ? 0 : 0.75, duration: 0.8 },
           default: { duration: 0.5, ease: "backIn" } 
         }}
-        className="absolute inset-0 z-0 p-8 pointer-events-none" 
+        className={`absolute inset-0 z-0 p-8 pointer-events-none ${systemState.isSystemInfected ? 'opacity-20 blur-xl' : ''}`} 
         ref={gridRef}
         style={{ willChange: 'opacity, transform, filter' }}
       >
@@ -410,8 +410,8 @@ export const Desktop: React.FC = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ 
-          opacity: (shutdownStep >= 3) ? 0 : 1,
-          scale: (shutdownStep >= 3) ? 0.8 : 1,
+          opacity: (shutdownStep >= 3 || systemState.isSystemInfected) ? 0 : 1,
+          scale: (shutdownStep >= 3 || systemState.isSystemInfected) ? 0.8 : 1,
           y: (shutdownStep >= 3) ? 20 : 0
         }}
         transition={{ 
@@ -476,7 +476,7 @@ export const Desktop: React.FC = () => {
           y: { duration: 0.6, ease: "anticipate" },
           opacity: { duration: 0.4 }
         }}
-        className="absolute top-0 left-0 right-0 z-40"
+        className={`absolute top-0 left-0 right-0 z-40 ${systemState.isSystemInfected ? 'pointer-events-none' : ''}`}
         style={{ willChange: 'transform, opacity' }}
       >
         <MenuBar toggleControlCenter={(e) => {
@@ -528,7 +528,7 @@ export const Desktop: React.FC = () => {
           y: { delay: isHandoff ? 0 : 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
           opacity: { delay: isHandoff ? 0 : 0.25, duration: 0.4 }
         }}
-        className="fixed bottom-0 left-0 right-0 z-40"
+        className={`fixed bottom-0 left-0 right-0 z-40 ${systemState.isSystemInfected ? 'pointer-events-none' : ''}`}
         style={{ willChange: 'transform, opacity' }}
       >
         <Dock />
