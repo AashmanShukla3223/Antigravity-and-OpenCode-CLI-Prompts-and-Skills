@@ -699,7 +699,7 @@ export const Desktop: React.FC = () => {
                 top: err.y,
                 zIndex: 10000 + i
               }}
-              className="w-[280px] bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl flex items-start gap-4 pointer-events-auto"
+              className={`w-[280px] bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl flex items-start gap-4 pointer-events-auto ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
             >
               <div className="absolute inset-0 rounded-2xl" style={{ backdropFilter: 'blur(15px)' }} />
               <div className="relative z-10 w-10 h-10 flex-shrink-0">

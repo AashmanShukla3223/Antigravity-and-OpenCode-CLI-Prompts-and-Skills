@@ -4,7 +4,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const CrazyErrors: React.FC = () => {
-  const { closeApp, systemState, triggerSystemError } = useSystem();
+  const { closeApp, systemState, triggerSystemError, updateSystemState } = useSystem();
   const [stage, setStage] = useState<'stage1' | 'stage2' | 'storm'>('stage1');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
@@ -30,6 +30,7 @@ export const CrazyErrors: React.FC = () => {
     const correctPassword = systemState.user.password || 'tahoe2026';
     if (password === correctPassword || password === 'admin') {
       setStage('storm');
+      updateSystemState({ isSystemInfected: true });
       triggerSystemError();
       closeApp('crazyerrors');
     } else {

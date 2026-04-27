@@ -38,6 +38,7 @@ export interface ActiveError {
   y: number;
   message: string;
   icon: string;
+  type?: 'standard' | 'vertical_stretch' | 'horizontal_glitch';
 }
 
 export interface SystemDialogConfig {
@@ -51,6 +52,7 @@ export interface SystemDialogConfig {
 
 export interface TahoeV3State {
   setup_complete: boolean;
+  isSystemInfected: boolean;
   user: {
     fullName: string;
     accountName: string;
@@ -78,6 +80,7 @@ export interface TahoeV3State {
 
 const defaultState: TahoeV3State = {
   setup_complete: false,
+  isSystemInfected: false,
   user: { fullName: '', accountName: '', password: '', avatar: '👤' },
   appearance: 'auto',
   sidebarMaterial: 'tinted',
@@ -230,6 +233,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
   const stormIntervalRef = React.useRef<any>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const infectionMusicRef = React.useRef<HTMLAudioElement | null>(null);
 
   const updateSystemState = useCallback((updates: Partial<TahoeV3State>) => {
     setSystemState(prev => {
@@ -308,6 +312,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const clearSystemErrors = useCallback(() => {
     if (stormIntervalRef.current) clearInterval(stormIntervalRef.current);
     stormIntervalRef.current = null;
+    if (infectionMusicRef.current) {
+      infectionMusicRef.current.pause();
+      infectionMusicRef.current = null;
+    }
     setSystemErrors([]);
   }, []);
 
@@ -419,22 +427,32 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       audio.play().catch(e => console.warn('Audio play failed', e));
     };
 
+    // Background music loop
+    if (!infectionMusicRef.current) {
+      infectionMusicRef.current = new Audio(`${base}music/jutti-meri.mp3`);
+      infectionMusicRef.current.loop = true;
+      infectionMusicRef.current.volume = 0.7;
+      infectionMusicRef.current.play().catch(e => console.warn('Infection music failed', e));
+    }
+
     const interval = setInterval(() => {
       const id = Math.random().toString(36).substr(2, 9);
       const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
       const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
       
-      const offset = (count % 25) * 30;
-      const x = 100 + offset;
-      const y = 100 + offset;
+      const x = Math.random() * (window.innerWidth - 300);
+      const y = Math.random() * (window.innerHeight - 150);
 
       let iconPath = `${base}assets/status/${iconName}.png`;
       if (iconName === 'socialize') {
         iconPath = `${base}icons/socialize.png`;
       }
       
+      const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = ['standard', 'vertical_stretch', 'horizontal_glitch'];
+      const type = types[Math.floor(Math.random() * types.length)];
+
       const newError: ActiveError = {
-        id, x, y, message, icon: iconPath
+        id, x, y, message, icon: iconPath, type
       };
 
       setSystemErrors(prev => {
@@ -448,11 +466,14 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       playSound(randomSound);
 
       count++;
+      if (count === 10) {
+        initiateRestart();
+      }
       if (count > 1000) clearSystemErrors();
-    }, 1000);
+    }, 2000); // 2 seconds as requested
     
     stormIntervalRef.current = interval as any;
-  }, [clearSystemErrors]);
+  }, [clearSystemErrors, initiateRestart]);
 
   const launchApp = useCallback((appId: string) => {
     // Add to running apps if not there

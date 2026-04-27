@@ -5,7 +5,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const RestartDialog: React.FC = () => {
-  const { showRestartDialog, setShowRestartDialog, initiateRestart, setBootState } = useSystem();
+  const { showRestartDialog, setShowRestartDialog, initiateRestart, setBootState, systemState } = useSystem();
   const [countdown, setCountdown] = useState(60);
   const base = (import.meta as any).env?.BASE_URL || '/';
 
@@ -63,12 +63,14 @@ export const RestartDialog: React.FC = () => {
 
           <div className="flex flex-col gap-4 w-full">
             <div className="flex gap-3 w-full">
-              <button 
-                onClick={() => setShowRestartDialog(false)}
-                className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border border-white/10"
-              >
-                Cancel
-              </button>
+              {!systemState.isSystemInfected && (
+                <button 
+                  onClick={() => setShowRestartDialog(false)}
+                  className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border border-white/10"
+                >
+                  Cancel
+                </button>
+              )}
               <button 
                 onClick={handleRestart}
                 className="flex-1 h-12 bg-white text-black hover:bg-white/90 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-white/10"

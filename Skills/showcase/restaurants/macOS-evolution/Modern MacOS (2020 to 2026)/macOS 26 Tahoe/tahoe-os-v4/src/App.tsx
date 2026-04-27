@@ -10,7 +10,18 @@ import { DeviceRecovery } from './components/DeviceRecovery';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function App() {
-  const { bootState, isShuttingDown, shutdownStep } = useSystem();
+  const { bootState, setBootState, systemState, triggerSystemError, isShuttingDown, shutdownStep } = useSystem();
+
+  useEffect(() => {
+    if (systemState.isSystemInfected) {
+      setBootState('desktop');
+      // Delay slightly to ensure desktop is mounted
+      const timer = setTimeout(() => {
+        triggerSystemError();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [systemState.isSystemInfected, setBootState, triggerSystemError]);
 
   useEffect(() => {
     console.log('🖥️ App: bootState changed to:', bootState);

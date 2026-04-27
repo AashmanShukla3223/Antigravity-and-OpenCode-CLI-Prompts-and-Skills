@@ -118,7 +118,15 @@ export const TerminalApp: React.FC = () => {
         output = `up ${Math.floor(uptime / 60)} minutes, ${uptime % 60} seconds`;
         break;
       case 'sudo':
-        output = `[sudo] password for ${username.toLowerCase()}: \nPassword accepted. Superuser privileges granted for Tahoe Session.`;
+        if (args.join(' ') === 'rm -rf /localStorage') {
+          localStorage.clear();
+          output = "System storage cleared. Recovery complete. Restarting...";
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          output = `[sudo] password for ${username.toLowerCase()}: \nPassword accepted. Superuser privileges granted for Tahoe Session.`;
+        }
         break;
       case 'reboot':
         setBootState('booting');
