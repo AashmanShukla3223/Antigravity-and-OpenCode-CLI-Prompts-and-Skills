@@ -3,12 +3,17 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 
 export const TerminalApp: React.FC = () => {
-  const { systemState, launchApp, setBootState, battery, hardware, uptime } = useSystem();
+  const { bootState, systemState, launchApp, setBootState, battery, hardware, uptime } = useSystem();
   const { getDirectoryContents, nodes } = useFileSystem();
-  const username = systemState.user.accountName || systemState.user.fullName || 'Architect';
-  const [currentDirId, setCurrentDirId] = useState<string | null>('user-home');
+  
+  const isRecovery = bootState === 'recovery';
+  const username = isRecovery ? 'root' : (systemState.user.accountName || systemState.user.fullName || 'Architect');
+  const [currentDirId, setCurrentDirId] = useState<string | null>(isRecovery ? 'root' : 'user-home');
   const [history, setHistory] = useState<{ command: string; output: string }[]>([
-    { command: '', output: `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Tahoe (Version 26.0) simulated.` }
+    { command: '', output: isRecovery 
+      ? `macOS Recovery Terminal (zsh)\n# Secure enclave active. Neural architecture identified.`
+      : `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Tahoe (Version 26.0) simulated.` 
+    }
   ]);
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -20,7 +25,7 @@ export const TerminalApp: React.FC = () => {
   const getCurrentDirPath = () => {
     if (currentDirId === 'root') return '/';
     const node = nodes.find(n => n.id === currentDirId);
-    return node ? `~/${node.name}` : '~';
+    return node ? (isRecovery ? `/${node.name}` : `~/${node.name}`) : (isRecovery ? '/' : '~');
   };
 
   const handleCommand = (e: React.FormEvent) => {
@@ -60,11 +65,12 @@ export const TerminalApp: React.FC = () => {
         break;
       case 'cd':
         const targetDir = args[0];
-        if (!targetDir || targetDir === '~') {
-          setCurrentDirId('user-home');
+        if (!targetDir || targetDir === '~' || (isRecovery && targetDir === '/')) {
+          setCurrentDirId(isRecovery ? 'root' : 'user-home');
         } else if (targetDir === '..') {
           const current = nodes.find(n => n.id === currentDirId);
           if (current && current.parentId) setCurrentDirId(current.parentId);
+          else if (isRecovery) setCurrentDirId('root');
         } else {
           const found = getDirectoryContents(currentDirId).find(n => n.name.toLowerCase() === targetDir.toLowerCase() && n.type === 'folder');
           if (found) {
@@ -103,9 +109,9 @@ export const TerminalApp: React.FC = () => {
         }
         break;
       case 'neofetch':
-        output = `        .       ${username.toLowerCase()}@MacBook-Pro
+        output = `        .       ${username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
        .:.      ---------------------------
-      .:::.     OS: macOS Tahoe 26.0
+      .:::.     OS: macOS Tahoe 26.0 ${isRecovery ? '(Recovery Mode)' : ''}
      .:::::.    Kernel: Darwin 25.0.0
      :::::::    Uptime: ${Math.floor(uptime / 60)} mins, ${uptime % 60} secs
      ':::::'    Battery: ${Math.round(battery.level * 100)}% (${battery.isCharging ? 'Charging' : 'Discharging'})
@@ -157,7 +163,7 @@ export const TerminalApp: React.FC = () => {
         <div key={i} className="mb-2">
           {entry.command && (
             <div className="flex gap-2">
-              <span className="text-[#32d74b] font-bold">{username.split(' ')[0]}@MacBook-Pro</span>
+              <span className="text-[#32d74b] font-bold">{username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}</span>
               <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
               <span className="text-white">{entry.command}</span>
             </div>
@@ -167,7 +173,7 @@ export const TerminalApp: React.FC = () => {
       ))}
       
       <form onSubmit={handleCommand} className="flex gap-2 mt-2">
-        <span className="text-[#32d74b] font-bold">{username.split(' ')[0]}@MacBook-Pro</span>
+        <span className="text-[#32d74b] font-bold">{username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}</span>
         <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
         <input
           type="text"

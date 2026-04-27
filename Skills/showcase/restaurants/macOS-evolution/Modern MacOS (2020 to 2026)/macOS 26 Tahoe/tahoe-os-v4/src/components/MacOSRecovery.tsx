@@ -17,6 +17,7 @@ import {
 } from 'hugeicons-react';
 import { useSystem } from '../contexts/SystemContext';
 import { SystemMenuBar } from './common/SystemMenuBar';
+import { TerminalApp } from './apps/TerminalApp';
 
 export const MacOSRecovery: React.FC = () => {
   const { setBootState, systemState, showAlert } = useSystem();
@@ -515,10 +516,8 @@ export const MacOSRecovery: React.FC = () => {
                 <span className="text-[11px] font-black opacity-40 uppercase tracking-[0.3em] text-white">Terminal — zsh — 80x24</span>
                 <div className="w-16" />
               </div>
-              <div className="flex-1 p-8 font-mono text-[13px] text-green-400 space-y-3 overflow-y-auto scrollbar-hide">
-                <p className="opacity-50 tracking-widest"># macOS Recovery Shell v4.0.26 (M5 Max)</p>
-                <p className="opacity-50 tracking-widest"># Neural architecture identified. Secure enclave online.</p>
-                <p className="pt-4 flex gap-2">root@recovery <span className="text-white">~</span> % <span className="w-2 h-5 bg-green-500 animate-pulse" /></p>
+              <div className="flex-1 overflow-hidden">
+                <TerminalApp />
               </div>
             </motion.div>
           </div>
