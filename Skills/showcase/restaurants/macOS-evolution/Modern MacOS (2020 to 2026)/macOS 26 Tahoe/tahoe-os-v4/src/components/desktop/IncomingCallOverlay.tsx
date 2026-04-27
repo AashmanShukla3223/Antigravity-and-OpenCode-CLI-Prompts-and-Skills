@@ -34,6 +34,7 @@ export const IncomingCallOverlay: React.FC = () => {
           if (previewRef.current) {
             previewRef.current.srcObject = stream;
           }
+          updateSystemState({ isCameraOn: true });
         })
         .catch(err => console.error("Preview camera error:", err));
     }
