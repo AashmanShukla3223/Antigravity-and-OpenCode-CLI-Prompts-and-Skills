@@ -107,8 +107,8 @@ const defaultState: TahoeV3State = {
     playbackProgress: 0,
     volume: 0.8
   },
-  runningApps: [],
-  pinnedApps: ['finder', 'safari', 'messages', 'music', 'photos', 'calendar', 'soundtest', 'appstore', 'itunes', 'notes', 'settings'],
+  runningApps: ['installer'],
+  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'photos', 'calendar', 'soundtest', 'appstore', 'itunes', 'notes', 'settings'],
   notes: [
     { 
       id: '1', 
@@ -213,7 +213,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return defaultState;
   });
   const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [openApps, setOpenApps] = useState<string[]>([]);
+  const [openApps, setOpenApps] = useState<string[]>(['installer']);
   const [minimizedApps, setMinimizedApps] = useState<string[]>([]);
   const [maximizedApps, setMaximizedApps] = useState<string[]>([]);
   const [launchingApp, setLaunchingApp] = useState<string | null>(null);
