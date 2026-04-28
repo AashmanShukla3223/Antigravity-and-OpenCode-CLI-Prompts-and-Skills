@@ -18,6 +18,7 @@ const apps: AppItem[] = [
   { id: 'maps', name: 'Maps' },
   { id: 'phone', name: 'Phone' },
   { id: 'appstore', name: 'App Store' },
+  { id: 'itunes', name: 'iTunes Store' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },
   { id: 'music', name: 'Music' },
