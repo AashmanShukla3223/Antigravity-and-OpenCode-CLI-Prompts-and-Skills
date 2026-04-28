@@ -114,26 +114,27 @@ export const Installer: React.FC = () => {
             <img 
               src={`${base}${FileSystemResolver.getStatusIcon('dialog-warning')}`} 
               className="warning-icon-installer w-16 h-16 object-contain" 
+              style={{ minWidth: '64px', minHeight: '64px' }}
               alt="Warning" 
             />
           </div>
           
-          <h1 className="text-[26px] font-bold text-black mb-3 tracking-tight">Installation Failed</h1>
-          <p className="text-[13px] text-black/70 max-w-sm leading-[1.4] font-medium">
-            The installer encountered an error that caused the installation to fail. Contact the software manufacturer for assistance.
+          <h1 className="text-[26px] font-bold text-black mb-3 tracking-tight">The installation failed.</h1>
+          <p className="text-[13px] text-black/70 max-w-sm leading-[1.4] font-normal">
+            Contact the manufacturer for assistance.
           </p>
         </div>
 
         {/* Footer Buttons */}
         <div className="absolute bottom-8 right-10 flex gap-3">
           <button 
-            className="px-6 py-1.5 bg-white border border-black/10 rounded-lg text-[13px] text-black shadow-sm opacity-40 cursor-not-allowed font-medium"
+            className="px-6 py-1.5 bg-white border border-black/10 rounded-lg text-[13px] text-black shadow-sm opacity-40 cursor-not-allowed font-normal"
           >
             Go Back
           </button>
           <button 
             onClick={handleClose}
-            className="px-10 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] active:bg-[#0051A8] text-white rounded-lg text-[13px] font-semibold shadow-sm transition-colors"
+            className="px-10 py-1.5 bg-[#007AFF] hover:bg-[#0062CC] active:bg-[#0051A8] text-white rounded-lg text-[13px] font-bold shadow-sm transition-colors"
           >
             Close
           </button>

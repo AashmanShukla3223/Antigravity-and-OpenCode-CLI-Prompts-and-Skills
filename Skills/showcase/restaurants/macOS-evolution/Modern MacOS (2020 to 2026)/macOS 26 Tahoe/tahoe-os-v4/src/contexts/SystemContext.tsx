@@ -395,7 +395,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const triggerSystemError = useCallback(() => {
     if (stormIntervalRef.current) return;
     
-    let count = 0;
     const ERROR_MESSAGES = [
       "The disk is full of bubbles",
       "Kernel Panic: Too much vibe",
@@ -421,7 +420,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       "software-updates-important",
       "security-high",
       "security-low",
-      "socialize" // Required constraint
+      "socialize"
     ];
 
     const SOUNDS = [
@@ -438,7 +437,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       audio.play().catch(e => console.warn('Audio play failed', e));
     };
 
-    // Background music loop
+    // Background music loop - Persistent loop
     if (!infectionMusicRef.current) {
       infectionMusicRef.current = new Audio(`${base}music/jutti-meri.mp3`);
       infectionMusicRef.current.loop = true;
@@ -446,49 +445,70 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       infectionMusicRef.current.play().catch(e => console.warn('Infection music failed', e));
     }
 
+    // High-fidelity recursive spawning (2-3 per second)
     const interval = setInterval(() => {
-      const id = Math.random().toString(36).substr(2, 9);
-      const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
-      const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
+      const spawnCount = Math.floor(Math.random() * 2) + 2; // 2 or 3
       
-      const x = Math.random() * (window.innerWidth - 300);
-      const y = Math.random() * (window.innerHeight - 150);
+      for (let s = 0; s < spawnCount; s++) {
+        const id = Math.random().toString(36).substr(2, 9);
+        const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
+        const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
+        
+        // Modal Variations: Vertical (320x580) and Horizontal (700x240) alerts
+        const orientation = Math.random() > 0.5 ? 'vertical' : 'horizontal';
+        const width = orientation === 'vertical' ? 320 : 700;
+        const height = orientation === 'vertical' ? 580 : 240;
 
-      let iconPath = `${base}assets/status/${iconName}.png`;
-      if (iconName === 'socialize') {
-        iconPath = `${base}icons/socialize.png`;
+        const x = Math.random() * (window.innerWidth - width);
+        const y = Math.random() * (window.innerHeight - height);
+
+        let iconPath = `${base}assets/status/${iconName}.png`;
+        if (iconName === 'socialize') {
+          iconPath = `${base}icons/socialize.png`;
+        }
+        
+        const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = ['standard', 'vertical_stretch', 'horizontal_glitch'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        // Random combination of buttons
+        const buttons = [...AVAILABLE_BUTTONS].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
+
+        const newError: ActiveError = {
+          id, x, y, message, icon: iconPath, type, orientation, buttons
+        };
+
+        setSystemErrors(prev => {
+          const next = [...prev, newError];
+          // Endgame: When the screen is 80% covered (simulated by 80 modals)
+          if (next.length >= 80) {
+            clearInterval(interval);
+            stormIntervalRef.current = null;
+            // Trigger dead drive state
+            updateSystemState({ isSystemInfected: true }); 
+            setTimeout(() => {
+               initiateRestart(); 
+            }, 1000);
+          }
+          return next;
+        });
+
+        // SFX Percussion: Every modal spawn triggers a random classic Apple sound
+        const randomSound = SOUNDS[Math.floor(Math.random() * SOUNDS.length)];
+        playSound(randomSound);
       }
-      
-      const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = ['standard', 'vertical_stretch', 'horizontal_glitch'];
-      const type = types[Math.floor(Math.random() * types.length)];
-      
-      const orientation = Math.random() > 0.5 ? 'vertical' : 'horizontal';
-      const buttons = [...AVAILABLE_BUTTONS].sort(() => 0.5 - Math.random()).slice(0, 3);
-
-      const newError: ActiveError = {
-        id, x, y, message, icon: iconPath, type, orientation, buttons
-      };
-
-      setSystemErrors(prev => {
-        const next = [...prev, newError];
-        if (next.length > 60) return next.slice(1);
-        return next;
-      });
-
-      // Play a random sound from all 14 for every error
-      const randomSound = SOUNDS[Math.floor(Math.random() * SOUNDS.length)];
-      playSound(randomSound);
-
-      count++;
-      if (count >= 10) {
-        clearInterval(interval);
-        stormIntervalRef.current = null;
-        initiateRestart();
-      }
-    }, 2000); // 2 seconds as requested
+    }, 1000); // Check every second, spawns multiple modals
     
     stormIntervalRef.current = interval as any;
-  }, [clearSystemErrors, initiateRestart]);
+  }, [updateSystemState, initiateRestart]);
+
+  // Persistence Check: If infected, start chaos loop upon desktop load
+  useEffect(() => {
+    if (bootState === 'desktop' && localStorage.getItem('tahoe_infected') === 'true') {
+      setTimeout(() => {
+        triggerSystemError();
+      }, 2000); // Grace period after desktop load
+    }
+  }, [bootState, triggerSystemError]);
 
   const launchApp = useCallback((appId: string) => {
     // Add to running apps if not there

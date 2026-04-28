@@ -7,14 +7,18 @@ export const BootSequence: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [breathe, setBreathe] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [isDeadDrive, setIsDeadDrive] = useState(false);
   const recoveryTriggered = useRef(false);
 
   useEffect(() => {
+    const isInfected = localStorage.getItem('tahoe_infected') === 'true' && systemState.isSystemInfected;
+    
     // Keyboard listener for Recovery Mode (Ctrl + M acting as Cmd + R)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === 'm') {
         recoveryTriggered.current = true;
         console.log("Recovery Mode Triggered via Keyboard Shortcut");
+        setIsDeadDrive(false); // Recovery overrides dead drive
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -24,7 +28,7 @@ export const BootSequence: React.FC = () => {
       try {
         const audio = new Audio('/sounds/startup chime.mp3');
         audio.volume = 0.5;
-        audio.play().catch(e => console.log("Startup chime blocked by browser policy. User interaction required.", e));
+        audio.play().catch(e => console.log("Startup chime blocked", e));
       } catch (e) {
         console.error("Audio playback error", e);
       }
@@ -34,6 +38,12 @@ export const BootSequence: React.FC = () => {
 
     // Progress animation: fast to 60%, pause 1.2s, accelerate to 100%
     const startBoot = async () => {
+      if (isInfected && !recoveryTriggered.current) {
+        await new Promise((r) => setTimeout(r, 2000));
+        setIsDeadDrive(true);
+        return;
+      }
+
       console.log("🥾 Boot: startBoot() called");
       setProgress(60);
       await new Promise((r) => setTimeout(r, 1200));
@@ -62,26 +72,28 @@ export const BootSequence: React.FC = () => {
       }
     };
 
-    // Safety timeout: if boot doesn't complete in 15s, force transition
-    const safetyTimeout = setTimeout(() => {
-      console.warn("Boot sequence timeout, forcing transition");
-      if (recoveryTriggered.current) {
-        setBootState('recovery');
-      } else if (!systemState.setup_complete) {
-        setBootState('setup');
-      } else {
-        setBootState('login');
-      }
-    }, 15000);
-
     startBoot();
 
     return () => {
       clearTimeout(chimeTimeout);
-      clearTimeout(safetyTimeout);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [systemState.setup_complete, setBootState]);
+  }, [systemState.setup_complete, systemState.isSystemInfected, setBootState]);
+
+  if (isDeadDrive) {
+    return (
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
+        <motion.div
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          className="flex flex-col items-center gap-8"
+        >
+          <img src="/icons/folder icons/grey/folder.png" className="w-32 h-32 grayscale brightness-200" alt="Dead Drive" />
+          <span className="text-white text-4xl font-bold">?</span>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 

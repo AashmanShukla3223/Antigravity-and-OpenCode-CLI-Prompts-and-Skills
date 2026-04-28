@@ -124,9 +124,11 @@ export const TerminalApp: React.FC = () => {
         output = `up ${Math.floor(uptime / 60)} minutes, ${uptime % 60} seconds`;
         break;
       case 'sudo':
-        if (args.join(' ') === 'rm -rf /localStorage') {
-          localStorage.clear();
-          output = "System storage cleared. Recovery complete. Restarting...";
+        const fullArgs = args.join(' ');
+        if (fullArgs === 'rm -rf /localStorage' || fullArgs === 'system_reset') {
+          localStorage.removeItem('tahoe_infected');
+          localStorage.removeItem('tahoe_v3_state');
+          output = "System reset initiated. Clearing neural infection... Recovery complete. Restarting...";
           setTimeout(() => {
             window.location.reload();
           }, 2000);
