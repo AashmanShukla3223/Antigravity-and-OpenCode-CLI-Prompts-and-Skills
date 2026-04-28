@@ -21,7 +21,6 @@ export const BootSequence: React.FC = () => {
 
     // Play Startup Chime from public/sounds
     const playChime = () => {
-      if (systemState.isSystemInfected) return;
       try {
         const audio = new Audio('/sounds/startup chime.mp3');
         audio.volume = 0.5;

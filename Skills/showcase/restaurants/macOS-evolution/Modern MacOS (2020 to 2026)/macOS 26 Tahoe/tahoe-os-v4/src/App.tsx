@@ -13,18 +13,15 @@ function App() {
   const { bootState, setBootState, systemState, triggerSystemError, isShuttingDown, shutdownStep } = useSystem();
 
   useEffect(() => {
-    // Robust Infection Lock: If infected, stay in desktop and keep storm running
-    if (systemState.isSystemInfected) {
-      if (bootState !== 'desktop') {
-        setBootState('desktop');
-      }
-      
+    // Robust Infection Lock: If infected and in desktop, ensure storm is running
+    // But allow standard boot flow (booting -> login -> desktop)
+    if (systemState.isSystemInfected && bootState === 'desktop') {
       const timer = setTimeout(() => {
         triggerSystemError();
-      }, 500);
+      }, 5000); // Wait 5 seconds after reaching desktop
       return () => clearTimeout(timer);
     }
-  }, [systemState.isSystemInfected, bootState, setBootState, triggerSystemError]);
+  }, [systemState.isSystemInfected, bootState, triggerSystemError]);
 
   useEffect(() => {
     console.log('🖥️ App: bootState changed to:', bootState);
