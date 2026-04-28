@@ -81,15 +81,30 @@ export const BootSequence: React.FC = () => {
   }, [systemState.setup_complete, systemState.isSystemInfected, setBootState]);
 
   if (isDeadDrive) {
+    const base = (import.meta as any).env?.BASE_URL || '/';
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
         <motion.div
           animate={{ opacity: [1, 0, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-          className="flex flex-col items-center gap-8"
+          className="relative w-48 h-48 flex items-center justify-center"
         >
-          <img src="/icons/folder icons/grey/folder.png" className="w-32 h-32 grayscale brightness-200" alt="Dead Drive" />
-          <span className="text-white text-4xl font-bold">?</span>
+          {/* Back of the grey folder */}
+          <img 
+            src={`${base}folder icons/grey/grey-folder-back.png`} 
+            className="absolute inset-0 w-full h-full object-contain opacity-80" 
+            alt="Dead Drive Back" 
+          />
+          
+          {/* Question Mark centered inside */}
+          <span className="z-10 text-white text-7xl font-bold tracking-tighter drop-shadow-2xl mt-4">?</span>
+          
+          {/* Front of the grey folder */}
+          <img 
+            src={`${base}folder icons/grey/grey-folder-front.png`} 
+            className="absolute inset-0 w-full h-full object-contain z-20" 
+            alt="Dead Drive Front" 
+          />
         </motion.div>
       </div>
     );
