@@ -10,7 +10,7 @@ import { DeviceRecovery } from './components/DeviceRecovery';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function App() {
-  const { bootState, setBootState, systemState, triggerSystemError, isShuttingDown, shutdownStep } = useSystem();
+  const { bootState, systemState, triggerSystemError, isShuttingDown, shutdownStep } = useSystem();
 
   useEffect(() => {
     // Robust Infection Lock: If infected and in desktop, ensure storm is running
