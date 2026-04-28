@@ -429,7 +429,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"
     ];
 
-    const AVAILABLE_BUTTONS = ["Send to Apple", "OK", "Learn More", "Try Again", "Cancel"];
+    const AVAILABLE_BUTTONS = ["Send to Apple", "OK", "Learn More", "Try Again", "Cancel", "Ignore"];
 
     const base = (import.meta as any).env?.BASE_URL || '/';
     

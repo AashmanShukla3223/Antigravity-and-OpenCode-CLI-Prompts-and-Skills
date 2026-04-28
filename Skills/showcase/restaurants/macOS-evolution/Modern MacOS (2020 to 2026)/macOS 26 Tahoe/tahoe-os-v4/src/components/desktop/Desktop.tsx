@@ -699,28 +699,46 @@ export const Desktop: React.FC = () => {
                 top: err.y,
                 zIndex: 10000 + i
               }}
-              className={`${err.orientation === 'vertical' ? 'w-[240px]' : 'w-[400px]'} bg-white/10 border border-white/20 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 pointer-events-auto backdrop-blur-2xl ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
+              className={`${err.orientation === 'vertical' ? 'w-[320px] h-[550px]' : 'w-[700px] h-[240px]'} bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl flex ${err.orientation === 'vertical' ? 'flex-col' : 'flex-row'} gap-6 pointer-events-auto backdrop-blur-3xl ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
             >
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 flex-shrink-0">
-                  <img src={err.icon} className="w-full h-full object-contain drop-shadow-lg" alt="Error Icon" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">System Failure</h4>
-                  <p className="text-[13px] text-white font-semibold leading-tight tracking-tight">{err.message}</p>
-                </div>
+              <div className={`${err.orientation === 'vertical' ? 'w-full h-32 flex justify-center' : 'w-24 h-24'} flex-shrink-0`}>
+                <img 
+                  src={err.icon} 
+                  className="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)]" 
+                  alt="Error Icon" 
+                />
               </div>
 
-              {/* Dynamic Buttons */}
-              <div className={`flex ${err.orientation === 'vertical' ? 'flex-col' : 'flex-row justify-end'} gap-2 w-full`}>
-                {err.buttons?.map((btn, idx) => (
-                  <button 
-                    key={idx}
-                    className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all border ${idx === 0 && err.orientation === 'horizontal' ? 'bg-white text-black border-white shadow-lg' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'} whitespace-nowrap`}
-                  >
-                    {btn}
-                  </button>
-                ))}
+              <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                <div className="flex flex-col">
+                  <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.25em] mb-2">Kernel Protocol Exception</h4>
+                  <p className="text-[15px] text-white font-bold leading-tight tracking-tight mb-4">{err.message}</p>
+                  
+                  {err.orientation === 'vertical' && (
+                    <div className="text-[12px] text-white/50 leading-relaxed overflow-y-auto pr-2 custom-scrollbar max-h-[220px]">
+                      The system has encountered a critical memory access violation at 0x00FF2A01. This may be caused by outdated drivers or malicious interference from the Tahoe V3 VFS engine. 
+                      <br /><br />
+                      Technical details:
+                      Error Code: 0x2281_LIQUID_GLASS
+                      Stack Trace:
+                      - System.UI.FramerMotion.Physics
+                      - System.Kernel.Memory.Heap
+                      - System.App.Installer.Chaos
+                    </div>
+                  )}
+                </div>
+
+                {/* Dynamic Buttons Array - Aligned Bottom Right */}
+                <div className="flex justify-end gap-2 mt-auto">
+                  {err.buttons?.map((btn, idx) => (
+                    <button 
+                      key={idx}
+                      className={`px-5 py-2 rounded-xl text-[12px] font-bold transition-all border ${idx === 0 ? 'bg-white text-black border-white shadow-xl hover:bg-white/90' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'} whitespace-nowrap active:scale-95`}
+                    >
+                      {btn}
+                    </button>
+                  ))}
+                </div>
               </div>
             </motion.div>
           ))}
