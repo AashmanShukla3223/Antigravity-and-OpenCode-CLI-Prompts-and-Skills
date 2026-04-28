@@ -93,6 +93,42 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
 
   const AppContent = AppMap[appId];
 
+  const appNames: Record<string, string> = {
+    finder: 'Finder',
+    safari: 'Safari',
+    settings: 'System Settings',
+    terminal: 'Terminal',
+    activitymonitor: 'Activity Monitor',
+    messages: 'Messages',
+    photos: 'Photos',
+    phone: 'Phone',
+    maps: 'Maps',
+    mail: 'Mail',
+    appstore: 'App Store',
+    books: 'Books',
+    wallet: 'Wallet',
+    reminders: 'Reminders',
+    stickies: 'Stickies',
+    launchpad: 'Launchpad',
+    facetime: 'FaceTime',
+    contacts: 'Contacts',
+    music: 'Music',
+    itunes: 'iTunes Store',
+    soundtest: 'Sound Test',
+    installer: 'Installer',
+    timemachine: 'Time Machine',
+    diskutility: 'Disk Utility',
+    iphonemirroring: 'iPhone Mirroring',
+    weather: 'Weather',
+    notes: 'Notes',
+    calendar: 'Calendar',
+    crazyerrors: 'Crazy Errors',
+    githubnavigator: 'GitHub Navigator',
+    codeviewer: 'Code Viewer',
+  };
+
+  const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
+
   // CPU resistance formula: higher cpu pressure = stiffer drag
   const dragElastic = Math.max(0.1, 0.5 - (telemetry.cpuPressure * 0.4));
 
@@ -212,7 +248,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
 
         {/* Title */}
         <div className={`text-sm font-medium flex-1 text-center truncate pointer-events-none transition-opacity ${isActive ? 'text-white' : 'text-white/50'} ${isEndurance ? 'text-amber-100' : ''}`}>
-          {appId.charAt(0).toUpperCase() + appId.slice(1)}
+          {displayName}
         </div>
 
         {/* Placeholder for right side to balance flex */}

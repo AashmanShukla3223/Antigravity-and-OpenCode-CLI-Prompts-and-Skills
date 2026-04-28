@@ -17,7 +17,7 @@ const ALL_APPS = [
   { id: 'phone', name: 'Phone' },
   { id: 'facetime', name: 'FaceTime' },
   { id: 'appstore', name: 'App Store' },
-  { id: 'githubnavigator', name: 'GitHub' },
+  { id: 'githubnavigator', name: 'GitHub Navigator' },
   { id: 'itunes', name: 'iTunes' },
   { id: 'installer', name: 'Installer' },
   { id: 'books', name: 'Books' },
