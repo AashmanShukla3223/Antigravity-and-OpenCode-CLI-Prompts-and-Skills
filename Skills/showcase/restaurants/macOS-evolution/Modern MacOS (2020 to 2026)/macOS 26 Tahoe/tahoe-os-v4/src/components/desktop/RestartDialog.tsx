@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Alert01Icon } from 'hugeicons-react';
+import { Alert01Icon, Restart01Icon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
-import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const RestartDialog: React.FC = () => {
   const { showRestartDialog, setShowRestartDialog, initiateRestart, setBootState, systemState } = useSystem();
   const [countdown, setCountdown] = useState(60);
-  const base = (import.meta as any).env?.BASE_URL || '/';
 
   const handleRestart = () => {
     initiateRestart();
@@ -49,10 +47,9 @@ export const RestartDialog: React.FC = () => {
           style={{ backdropFilter: 'blur(40px)' }}
         >
           <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-8 border border-white/10 shadow-inner">
-            <img 
-              src={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system-startup-item')}`} 
-              className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
-              alt="Restart" 
+            <Restart01Icon 
+              size={40} 
+              className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" 
             />
           </div>
           
