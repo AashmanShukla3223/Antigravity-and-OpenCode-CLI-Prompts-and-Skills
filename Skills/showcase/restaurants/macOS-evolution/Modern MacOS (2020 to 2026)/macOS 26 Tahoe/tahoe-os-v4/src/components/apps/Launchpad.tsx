@@ -21,6 +21,7 @@ const apps: AppItem[] = [
   { id: 'itunes', name: 'iTunes Store' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },
+  { id: 'githubnavigator', name: 'GitHub' },
   { id: 'music', name: 'Music' },
   { id: 'calendar', name: 'Calendar' },
   { id: 'crazyerrors', name: 'Crazy Errors' },

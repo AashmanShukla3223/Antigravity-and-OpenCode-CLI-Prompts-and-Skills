@@ -35,6 +35,8 @@ import { Weather } from '../apps/Weather';
 import { Notes } from '../apps/Notes';
 import { Calendar } from '../apps/Calendar';
 import { CrazyErrors } from '../apps/CrazyErrors';
+import { GitHubNavigator } from '../apps/GitHubNavigator';
+import { CodeViewer } from '../apps/CodeViewer';
 
 interface WindowProps {
   appId: string;
@@ -70,6 +72,8 @@ const AppMap: Record<string, React.FC<any>> = {
   notes: Notes,
   calendar: Calendar,
   crazyerrors: CrazyErrors,
+  githubnavigator: GitHubNavigator,
+  codeviewer: CodeViewer,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
