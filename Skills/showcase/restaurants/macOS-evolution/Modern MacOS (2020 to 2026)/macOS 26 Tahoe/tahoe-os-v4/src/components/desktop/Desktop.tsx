@@ -699,15 +699,28 @@ export const Desktop: React.FC = () => {
                 top: err.y,
                 zIndex: 10000 + i
               }}
-              className={`w-[280px] bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl flex items-start gap-4 pointer-events-auto ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
+              className={`${err.orientation === 'vertical' ? 'w-[240px]' : 'w-[400px]'} bg-white/10 border border-white/20 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 pointer-events-auto backdrop-blur-2xl ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
             >
-              <div className="absolute inset-0 rounded-2xl" style={{ backdropFilter: 'blur(15px)' }} />
-              <div className="relative z-10 w-10 h-10 flex-shrink-0">
-                <img src={err.icon} className="w-full h-full object-contain" alt="Error Icon" />
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 flex-shrink-0">
+                  <img src={err.icon} className="w-full h-full object-contain drop-shadow-lg" alt="Error Icon" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">System Failure</h4>
+                  <p className="text-[13px] text-white font-semibold leading-tight tracking-tight">{err.message}</p>
+                </div>
               </div>
-              <div className="relative z-10 flex-1">
-                <h4 className="text-[11px] font-black text-white/40 uppercase tracking-wider mb-1">System Error</h4>
-                <p className="text-xs text-white font-medium leading-tight">{err.message}</p>
+
+              {/* Dynamic Buttons */}
+              <div className={`flex ${err.orientation === 'vertical' ? 'flex-col' : 'flex-row justify-end'} gap-2 w-full`}>
+                {err.buttons?.map((btn, idx) => (
+                  <button 
+                    key={idx}
+                    className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all border ${idx === 0 && err.orientation === 'horizontal' ? 'bg-white text-black border-white shadow-lg' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'} whitespace-nowrap`}
+                  >
+                    {btn}
+                  </button>
+                ))}
               </div>
             </motion.div>
           ))}

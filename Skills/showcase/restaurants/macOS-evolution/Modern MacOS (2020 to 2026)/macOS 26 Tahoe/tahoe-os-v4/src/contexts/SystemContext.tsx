@@ -39,6 +39,8 @@ export interface ActiveError {
   message: string;
   icon: string;
   type?: 'standard' | 'vertical_stretch' | 'horizontal_glitch';
+  orientation?: 'vertical' | 'horizontal';
+  buttons?: string[];
 }
 
 export interface SystemDialogConfig {
@@ -195,9 +197,16 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [systemState, setSystemState] = useState<TahoeV3State>(() => {
     try {
       const saved = localStorage.getItem('tahoe_v3_state');
-      if (saved) {
-        return { ...defaultState, ...JSON.parse(saved) };
+      const isInfected = localStorage.getItem('tahoe_infected') === 'true';
+      let state = saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
+      
+      if (isInfected) {
+        state.isSystemInfected = true;
+        if (!state.pinnedApps.includes('installer')) {
+          state.pinnedApps = ['installer', ...state.pinnedApps];
+        }
       }
+      return state;
     } catch (e) {
       console.error('Failed to parse tahoe_v3_state', e);
     }
@@ -420,6 +429,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"
     ];
 
+    const AVAILABLE_BUTTONS = ["Send to Apple", "OK", "Learn More", "Try Again", "Cancel"];
+
     const base = (import.meta as any).env?.BASE_URL || '/';
     
     const playSound = (name: string) => {
@@ -450,9 +461,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = ['standard', 'vertical_stretch', 'horizontal_glitch'];
       const type = types[Math.floor(Math.random() * types.length)];
+      
+      const orientation = Math.random() > 0.5 ? 'vertical' : 'horizontal';
+      const buttons = [...AVAILABLE_BUTTONS].sort(() => 0.5 - Math.random()).slice(0, 3);
 
       const newError: ActiveError = {
-        id, x, y, message, icon: iconPath, type
+        id, x, y, message, icon: iconPath, type, orientation, buttons
       };
 
       setSystemErrors(prev => {
@@ -466,10 +480,11 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       playSound(randomSound);
 
       count++;
-      if (count === 10) {
+      if (count >= 10) {
+        clearInterval(interval);
+        stormIntervalRef.current = null;
         initiateRestart();
       }
-      if (count > 1000) clearSystemErrors();
     }, 2000); // 2 seconds as requested
     
     stormIntervalRef.current = interval as any;

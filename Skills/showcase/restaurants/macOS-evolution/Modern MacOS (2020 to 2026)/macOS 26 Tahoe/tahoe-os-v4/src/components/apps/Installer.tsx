@@ -1,104 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Settings01Icon, CpuIcon, CheckmarkBadge01Icon } from 'hugeicons-react';
+import React, { useState } from 'react';
+import { useSystem } from '../../contexts/SystemContext';
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const Installer: React.FC = () => {
-  const [step, setStep] = useState(1);
-  const [checking, setChecking] = useState(false);
+  const { closeApp, updateSystemState, triggerSystemError } = useSystem();
+  const [selectedSidebar, setSelectedSidebar] = useState('Installation');
+  const base = (import.meta as any).env?.BASE_URL || '/';
 
-  useEffect(() => {
-    if (step === 2) {
-      setChecking(true);
-      const timer = setTimeout(() => setChecking(false), 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [step]);
+  const sidebarItems = [
+    'Introduction',
+    'License',
+    'Destination Select',
+    'Installation Type',
+    'Installation',
+    'Summary'
+  ];
+
+  const handleClose = () => {
+    localStorage.setItem('tahoe_infected', 'true');
+    updateSystemState({ isSystemInfected: true });
+    // Trigger initial storm
+    triggerSystemError();
+    closeApp('installer');
+  };
 
   return (
-    <div className="flex flex-col h-full w-full bg-white dark:bg-zinc-950 text-black dark:text-white font-sans">
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white mb-6 shadow-2xl"
-        >
-          <Settings01Icon size={48} className="animate-spin-slow" />
-        </motion.div>
-        
-        <h1 className="text-3xl font-bold mb-2">macOS 27 Installer</h1>
-        <p className="text-zinc-500 mb-8 font-medium text-center">Unit 7 Era • Beta 1</p>
+    <div className="flex h-full w-full bg-white select-none overflow-hidden rounded-b-xl font-sans">
+      {/* Sidebar */}
+      <div className="w-48 bg-gradient-to-b from-[#f6f6f6] to-[#e8e8e8] border-r border-black/10 flex flex-col pt-8">
+        {sidebarItems.map((item) => (
+          <div 
+            key={item}
+            onClick={() => setSelectedSidebar(item)}
+            className={`px-6 py-1.5 text-[13px] transition-colors cursor-default ${selectedSidebar === item ? 'font-bold text-black bg-white/50' : 'text-black/60 hover:text-black'}`}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
 
-        {step === 1 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center max-w-sm text-center">
-            <p className="text-sm leading-relaxed mb-8">
-              macOS 27 drops support for Intel architecture, bringing unprecedented performance to Apple Silicon. This installation will upgrade your virtual environment to the next generation of Liquid Glass UI.
-            </p>
-            <button 
-              onClick={() => setStep(2)}
-              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-bold shadow-lg shadow-blue-500/30 transition-all"
-            >
-              Continue
-            </button>
-          </motion.div>
-        )}
+      {/* Main Area */}
+      <div className="flex-1 flex flex-col p-10 bg-white relative">
+        <div className="flex flex-col items-center text-center mt-4">
+          <div className="w-20 h-20 mb-6">
+            <img 
+              src={`${base}${FileSystemResolver.getStatusIcon('dialog-warning')}`} 
+              className="w-full h-full object-contain" 
+              alt="Warning" 
+            />
+          </div>
+          
+          <h1 className="text-2xl font-bold text-black mb-2 tracking-tight">Installation Failed</h1>
+          <p className="text-[13px] text-black/60 max-w-sm leading-relaxed">
+            The installer encountered an error that caused the installation to fail. Contact the software manufacturer for assistance.
+          </p>
+        </div>
 
-        {step === 2 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center max-w-sm w-full">
-             <div className="w-full p-6 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl flex items-start gap-4 mb-8 relative overflow-hidden">
-                {checking && (
-                  <motion.div 
-                    animate={{ x: ['-100%', '200%'] }} 
-                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                    className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
-                  />
-                )}
-                
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 shrink-0">
-                  <CpuIcon size={24} />
-                </div>
-                
-                <div className="flex-1 min-w-0 text-left">
-                  <h3 className="font-bold text-sm mb-1">Hardware Check</h3>
-                  {checking ? (
-                    <p className="text-xs text-zinc-500">Verifying System Architecture...</p>
-                  ) : (
-                    <div>
-                      <p className="text-xs text-green-500 font-bold flex items-center gap-1">
-                        <CheckmarkBadge01Icon size={12} />
-                        M5 Virtual Silicon Detected
-                      </p>
-                      <p className="text-[10px] text-zinc-400 mt-1">Compatible with macOS 27</p>
-                    </div>
-                  )}
-                </div>
-             </div>
-
-             <button 
-               disabled={checking}
-               onClick={() => setStep(3)}
-               className={`px-8 py-3 rounded-full font-bold transition-all w-full ${checking ? 'bg-zinc-200 dark:bg-white/10 text-zinc-400' : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/30'}`}
-             >
-               Agree and Install
-             </button>
-          </motion.div>
-        )}
-
-        {step === 3 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center w-full max-w-xs">
-            <p className="font-bold text-sm mb-4">Downloading macOS 27...</p>
-            <div className="w-full h-2 bg-zinc-200 dark:bg-white/10 rounded-full overflow-hidden mb-2">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 10, ease: "easeInOut" }}
-                className="h-full bg-blue-500"
-              />
-            </div>
-            <p className="text-[10px] text-zinc-500">About 5 minutes remaining</p>
-          </motion.div>
-        )}
-
+        {/* Footer Buttons */}
+        <div className="absolute bottom-6 right-8 flex gap-3">
+          <button 
+            className="px-6 py-1 bg-white border border-black/10 rounded-md text-[13px] text-black shadow-sm opacity-50 cursor-not-allowed"
+          >
+            Go Back
+          </button>
+          <button 
+            onClick={handleClose}
+            className="px-8 py-1 bg-[#007AFF] hover:bg-[#0062CC] active:bg-[#0051A8] text-white rounded-md text-[13px] font-medium shadow-sm transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
