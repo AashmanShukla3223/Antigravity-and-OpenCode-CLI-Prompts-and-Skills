@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Alert01Icon, Restart01Icon } from 'hugeicons-react';
+import { Alert01Icon, ReloadIcon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 
 export const RestartDialog: React.FC = () => {
@@ -47,7 +47,7 @@ export const RestartDialog: React.FC = () => {
           style={{ backdropFilter: 'blur(40px)' }}
         >
           <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-8 border border-white/10 shadow-inner">
-            <Restart01Icon 
+            <ReloadIcon 
               size={40} 
               className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" 
             />
