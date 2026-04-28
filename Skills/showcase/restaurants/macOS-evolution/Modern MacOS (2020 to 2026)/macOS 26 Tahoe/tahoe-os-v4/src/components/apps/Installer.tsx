@@ -25,13 +25,13 @@ export const Installer: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full bg-white select-none overflow-hidden rounded-b-xl font-sans text-black">
+    <div className="flex h-full w-full bg-white select-none overflow-hidden rounded-b-xl font-sans text-black installer-window-content">
       {/* Sidebar */}
-      <div className="w-56 bg-[#F6F6F6] border-r border-black/10 flex flex-col pt-8">
+      <div className="w-[220px] bg-[#F6F6F6] border-r border-black/10 flex flex-col pt-8 flex-shrink-0">
         {sidebarItems.map((item) => (
           <div 
             key={item.name}
-            className={`px-4 py-1.5 flex items-center gap-2 text-[13px] transition-colors cursor-default ${item.name === 'Installation' ? 'bg-black/5 font-medium' : 'text-black/60'}`}
+            className={`px-6 py-1.5 flex items-center gap-3 text-[13px] transition-colors cursor-default ${item.name === 'Installation' ? 'bg-black/5 font-bold text-black' : 'text-black/60'}`}
           >
             <div className="w-4 h-4 flex items-center justify-center">
               {item.status === 'completed' && <Tick01Icon size={14} className="text-green-600 font-bold" />}
@@ -45,10 +45,10 @@ export const Installer: React.FC = () => {
       {/* Main Area */}
       <div className="flex-1 flex flex-col p-12 bg-white relative">
         <div className="flex flex-col items-center text-center mt-6">
-          <div className="w-24 h-24 mb-8">
+          <div className="w-16 h-16 mb-8">
             <img 
               src={`${base}${FileSystemResolver.getStatusIcon('dialog-warning')}`} 
-              className="w-full h-full object-contain" 
+              className="warning-icon-installer w-16 h-16 object-contain" 
               alt="Warning" 
             />
           </div>

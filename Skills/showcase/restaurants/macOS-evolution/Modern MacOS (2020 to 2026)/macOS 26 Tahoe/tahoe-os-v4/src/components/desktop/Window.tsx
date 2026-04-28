@@ -85,7 +85,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
   const isActive = activeApp === appId;
   const isMinimized = minimizedApps.includes(appId);
   const isMaximized = maximizedApps.includes(appId);
-  const zIndex = isActive ? 50 : openApps.indexOf(appId) + 10;
+  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openApps.indexOf(appId) + 10);
 
   const AppContent = AppMap[appId];
 

@@ -699,23 +699,21 @@ export const Desktop: React.FC = () => {
                 top: err.y,
                 zIndex: 10000 + i
               }}
-              className={`${err.orientation === 'vertical' ? 'w-[320px] h-[550px]' : 'w-[700px] h-[240px]'} bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl flex ${err.orientation === 'vertical' ? 'flex-col' : 'flex-row'} gap-6 pointer-events-auto backdrop-blur-3xl ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
+              className={`crazy-error-box ${err.orientation === 'vertical' ? 'vertical-error' : 'horizontal-error'} pointer-events-auto ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
             >
-              <div className={`${err.orientation === 'vertical' ? 'w-full h-32 flex justify-center' : 'w-24 h-24'} flex-shrink-0`}>
-                <img 
-                  src={err.icon} 
-                  className="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)]" 
-                  alt="Error Icon" 
-                />
-              </div>
+              <img 
+                src={err.icon} 
+                className="warning-icon" 
+                alt="Error Icon" 
+              />
 
-              <div className="flex-1 flex flex-col justify-between overflow-hidden">
+              <div className="flex-1 flex flex-col justify-between overflow-hidden text-black">
                 <div className="flex flex-col">
-                  <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.25em] mb-2">Kernel Protocol Exception</h4>
-                  <p className="text-[15px] text-white font-bold leading-tight tracking-tight mb-4">{err.message}</p>
+                  <h4 className="text-[10px] font-black opacity-30 uppercase tracking-[0.25em] mb-2">Kernel Protocol Exception</h4>
+                  <p className="text-[14px] font-bold leading-tight tracking-tight mb-4">{err.message}</p>
                   
                   {err.orientation === 'vertical' && (
-                    <div className="text-[12px] text-white/50 leading-relaxed overflow-y-auto pr-2 custom-scrollbar max-h-[220px]">
+                    <div className="text-[11px] opacity-60 leading-relaxed overflow-y-auto pr-2 custom-scrollbar max-h-[220px] text-left">
                       The system has encountered a critical memory access violation at 0x00FF2A01. This may be caused by outdated drivers or malicious interference from the Tahoe V3 VFS engine. 
                       <br /><br />
                       Technical details:
@@ -733,7 +731,7 @@ export const Desktop: React.FC = () => {
                   {err.buttons?.map((btn, idx) => (
                     <button 
                       key={idx}
-                      className={`px-5 py-2 rounded-xl text-[12px] font-bold transition-all border ${idx === 0 ? 'bg-white text-black border-white shadow-xl hover:bg-white/90' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'} whitespace-nowrap active:scale-95`}
+                      className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all border ${idx === 0 ? 'bg-blue-500 text-white border-blue-600 shadow-lg hover:bg-blue-600' : 'bg-black/5 text-black border-black/10 hover:bg-black/10'} whitespace-nowrap active:scale-95`}
                     >
                       {btn}
                     </button>
