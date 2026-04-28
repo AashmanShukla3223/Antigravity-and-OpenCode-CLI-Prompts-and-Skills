@@ -62,13 +62,13 @@ export const CrazyErrors: React.FC = () => {
             <div className="flex gap-3 w-full">
               <button 
                 onClick={() => closeApp('crazyerrors')}
-                className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs font-bold transition-all border border-white/10"
+                className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs font-normal transition-all border border-white/10"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleStage1Confirm}
-                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-xs font-bold transition-all shadow-lg shadow-red-500/20"
+                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-xs font-normal transition-all shadow-lg shadow-red-500/20"
               >
                 Yes
               </button>
@@ -107,13 +107,13 @@ export const CrazyErrors: React.FC = () => {
                  <button 
                    type="button"
                    onClick={() => closeApp('crazyerrors')}
-                   className="flex-1 h-11 text-white/40 text-xs font-bold hover:text-white transition-colors"
+                   className="flex-1 h-11 text-white/40 text-xs font-normal hover:text-white transition-colors"
                  >
                    Cancel
                  </button>
                  <button 
                    type="submit"
-                   className="flex-1 h-11 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-bold transition-all border border-white/10"
+                   className="flex-1 h-11 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-normal transition-all border border-white/10"
                  >
                    OK
                  </button>

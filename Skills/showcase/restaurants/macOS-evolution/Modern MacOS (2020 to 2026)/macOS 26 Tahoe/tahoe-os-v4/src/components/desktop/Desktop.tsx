@@ -12,7 +12,6 @@ import { SystemDialog } from './SystemDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
 import { 
-  Folder01Icon, 
   File01Icon, 
   Sun01Icon, 
   PlayIcon, 
@@ -21,6 +20,7 @@ import {
   ArrowLeft01Icon, 
   Tick01Icon
 } from 'hugeicons-react';
+import { AppIcon } from '../common/AppIcon';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { NotificationBanner } from './NotificationBanner';
@@ -435,13 +435,13 @@ export const Desktop: React.FC = () => {
              }}
              className="w-20 flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/10 border border-transparent hover:border-white/10 pointer-events-auto cursor-default group"
            >
-              <div className="relative">
+              <div className="relative w-12 h-12 flex items-center justify-center">
                 {item.customIcon ? (
-                  <img src={item.customIcon} alt={item.name} className="w-12 h-12 object-contain drop-shadow-lg" />
+                  <img src={item.customIcon} alt={item.name} className="w-full h-full object-contain drop-shadow-lg" />
                 ) : item.type === 'folder' ? (
-                  <Folder01Icon size={48} className="text-blue-400 fill-blue-500/20 drop-shadow-lg hugeicon-tahoe" />
+                  <AppIcon id={`folder-${item.id}`} size={48} folderColor={item.color} />
                 ) : (
-                  <File01Icon size={48} className="text-white/80 drop-shadow-lg hugeicon-tahoe" />
+                  <File01Icon size={40} className="text-white/80 drop-shadow-lg hugeicon-tahoe" />
                 )}
                 {/* Tags */}
                 <div className="absolute -top-1 -right-1 flex flex-col gap-0.5">
@@ -731,7 +731,7 @@ export const Desktop: React.FC = () => {
                   {err.buttons?.map((btn, idx) => (
                     <button 
                       key={idx}
-                      className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all border ${idx === 0 ? 'bg-blue-500 text-white border-blue-600 shadow-lg hover:bg-blue-600' : 'bg-black/5 text-black border-black/10 hover:bg-black/10'} whitespace-nowrap active:scale-95`}
+                      className={`px-4 py-1.5 rounded-lg text-[12px] font-normal transition-all border ${idx === 0 ? 'bg-blue-500 text-white border-blue-600 shadow-lg hover:bg-blue-600' : 'bg-black/5 text-black border-black/10 hover:bg-black/10'} whitespace-nowrap active:scale-95`}
                     >
                       {btn}
                     </button>
