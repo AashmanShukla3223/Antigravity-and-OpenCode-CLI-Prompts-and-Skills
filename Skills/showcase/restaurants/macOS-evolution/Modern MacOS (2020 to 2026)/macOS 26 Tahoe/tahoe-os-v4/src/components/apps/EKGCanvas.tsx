@@ -5,10 +5,11 @@ export const EKGCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const telemetry = useTelemetry();
   const pathRef = useRef<{ x: number; y: number }[]>([]);
-  const lastDrawRef = useRef<number>(performance.now());
+  const lastDrawRef = useRef<number>(0);
   const xOffsetRef = useRef<number>(0);
 
   useEffect(() => {
+    lastDrawRef.current = performance.now();
     const canvas = canvasRef.current;
     if (!canvas) return;
 

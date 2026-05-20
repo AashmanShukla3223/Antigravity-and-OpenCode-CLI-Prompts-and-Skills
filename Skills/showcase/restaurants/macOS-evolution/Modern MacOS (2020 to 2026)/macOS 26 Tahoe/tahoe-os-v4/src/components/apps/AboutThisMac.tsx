@@ -18,7 +18,7 @@ export const AboutThisMac: React.FC = () => {
           return renderer.replace(/ANGLE \(|\)|Direct3D.*|vs_.*|ps_.*/g, '').trim();
         }
       }
-    } catch (e) {
+    } catch {
       console.warn('WebGL not supported for GPU info');
     }
     return 'Apple M-Series GPU';

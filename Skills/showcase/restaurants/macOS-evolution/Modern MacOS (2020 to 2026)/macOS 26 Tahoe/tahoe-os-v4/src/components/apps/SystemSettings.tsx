@@ -16,6 +16,36 @@ import { useSystem } from '../../contexts/SystemContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
+const BatteryGraph = () => {
+  const points = "0,80 20,70 40,85 60,60 80,75 100,40 120,55 140,30 160,45 180,20 200,35";
+  return (
+    <svg viewBox="0 0 200 100" className="w-full h-24 mt-4 overflow-visible">
+      <defs>
+        <linearGradient id="graphGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polyline
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points}
+        className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+      />
+      <path
+        d={`M ${points} V 100 H 0 Z`}
+        fill="url(#graphGradient)"
+      />
+      <line x1="0" y1="20" x2="200" y2="20" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+      <line x1="0" y1="50" x2="200" y2="50" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+      <line x1="0" y1="80" x2="200" y2="80" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
+    </svg>
+  );
+};
+
 export const SystemSettings: React.FC = () => {
   const { 
     systemState, 
@@ -62,35 +92,7 @@ export const SystemSettings: React.FC = () => {
   };
   const checkUpdates = () => { setIsCheckingUpdate(true); setTimeout(() => setIsCheckingUpdate(false), 2500); };
 
-  const BatteryGraph = () => {
-    const points = "0,80 20,70 40,85 60,60 80,75 100,40 120,55 140,30 160,45 180,20 200,35";
-    return (
-      <svg viewBox="0 0 200 100" className="w-full h-24 mt-4 overflow-visible">
-        <defs>
-          <linearGradient id="graphGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <polyline
-          fill="none"
-          stroke="#3b82f6"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points={points}
-          className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-        />
-        <path
-          d={`M ${points} V 100 H 0 Z`}
-          fill="url(#graphGradient)"
-        />
-        <line x1="0" y1="20" x2="200" y2="20" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
-        <line x1="0" y1="50" x2="200" y2="50" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
-        <line x1="0" y1="80" x2="200" y2="80" stroke="white" strokeOpacity="0.05" strokeDasharray="4" />
-      </svg>
-    );
-  };
+
 
   const [latestCommit, setLatestCommit] = useState<string | null>(null);
 
@@ -115,11 +117,6 @@ export const SystemSettings: React.FC = () => {
     const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua) || 
                     (!isMobile && navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
 
-    if (isMobile) setDeviceType('Smartphone');
-    else if (isTablet) setDeviceType('Tablet');
-    else if (battery && (battery.level < 1 || !battery.isCharging)) setDeviceType('Laptop');
-    else setDeviceType('Desktop');
-
     // 4. Real-Time Flex: GPU Info
     const getGPU = () => {
       try {
@@ -132,10 +129,22 @@ export const SystemSettings: React.FC = () => {
             return renderer.replace(/ANGLE \(|\)|Direct3D.*|vs_.*|ps_.*/g, '').trim();
           }
         }
-      } catch (e) {}
+      } catch {
+        // webgl not supported or blocked
+      }
       return 'Apple M-Series GPU';
     };
-    setGpuInfo(getGPU());
+
+    const timer = setTimeout(() => {
+      if (isMobile) setDeviceType('Smartphone');
+      else if (isTablet) setDeviceType('Tablet');
+      else if (battery && (battery.level < 1 || !battery.isCharging)) setDeviceType('Laptop');
+      else setDeviceType('Desktop');
+
+      setGpuInfo(getGPU());
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [battery]);
 
   const renderDeviceImage = () => {

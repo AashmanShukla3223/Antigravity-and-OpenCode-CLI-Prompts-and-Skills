@@ -439,7 +439,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Background music loop - Persistent loop
     if (!infectionMusicRef.current) {
-      infectionMusicRef.current = new Audio(`${base}music/jutti-meri.mp3`);
+      infectionMusicRef.current = new Audio(`${base}music/Kala-Chashma.mp3`);
       infectionMusicRef.current.loop = true;
       infectionMusicRef.current.volume = 0.7;
       infectionMusicRef.current.play().catch(e => console.warn('Infection music failed', e));
@@ -585,14 +585,19 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Power Mode Logic based on Battery & lowPowerMode state
   useEffect(() => {
+    let mode: 'Low Power' | 'Normal' | 'High Performance' = 'Normal';
     if (systemState.lowPowerMode) {
-      setPowerMode('Low Power');
+      mode = 'Low Power';
     } else {
       const level = battery.level * 100;
-      if (level >= 50) setPowerMode('High Performance');
-      else if (level >= 30) setPowerMode('Normal');
-      else if (level <= 20) setPowerMode('Low Power');
+      if (level >= 50) mode = 'High Performance';
+      else if (level >= 30) mode = 'Normal';
+      else if (level <= 20) mode = 'Low Power';
     }
+    const timer = setTimeout(() => {
+      setPowerMode(mode);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [battery.level, systemState.lowPowerMode]);
 
   // Handle System-wide Appearance
@@ -781,6 +786,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSystem = () => {
   const context = useContext(SystemContext);
   if (context === undefined) {

@@ -122,7 +122,10 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Initial self-heal for critical nodes
   useEffect(() => {
-    restoreSystemNodes();
+    const timer = setTimeout(() => {
+      restoreSystemNodes();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const createNode = (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => {
@@ -204,6 +207,7 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFileSystem = () => {
   const context = useContext(FileSystemContext);
   if (!context) throw new Error('useFileSystem must be used within FileSystemProvider');

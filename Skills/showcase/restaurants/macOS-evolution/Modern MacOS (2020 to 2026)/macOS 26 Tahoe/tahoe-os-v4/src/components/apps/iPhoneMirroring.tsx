@@ -24,15 +24,13 @@ const AUTHORIZED_ASSETS = [
 ];
 
 export const IPhoneMirroring: React.FC = () => {
-  const [stage, setStage] = useState<'idle' | 'authorizing' | 'scanning' | 'booting' | 'active'>('idle');
+  const [stage, setStage] = useState<'idle' | 'authorizing' | 'scanning' | 'booting' | 'active'>('authorizing');
   const [bootProgress, setBootProgress] = useState(0);
   const [time, setTime] = useState(new Date());
   const base = (import.meta as any).env?.BASE_URL || '/';
 
   useEffect(() => {
     // Initial stage: Authorize the hardcoded path
-    setStage('authorizing');
-    
     const authTimer = setTimeout(() => setStage('scanning'), 2000);
     const scanTimer = setTimeout(() => setStage('booting'), 5000);
     const interval = setInterval(() => setTime(new Date()), 1000);

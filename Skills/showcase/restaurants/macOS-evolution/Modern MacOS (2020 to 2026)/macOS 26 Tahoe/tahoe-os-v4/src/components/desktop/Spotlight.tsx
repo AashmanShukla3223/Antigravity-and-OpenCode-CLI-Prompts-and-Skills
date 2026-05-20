@@ -63,8 +63,10 @@ export const Spotlight: React.FC = () => {
 
   useEffect(() => {
     if (showSpotlight) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-      setSelectedIndex(0);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        setSelectedIndex(0);
+      }, 100);
       // Simulate fetching clipboard history
       if (navigator.clipboard && navigator.clipboard.readText) {
         navigator.clipboard.readText().then(text => {
@@ -72,76 +74,86 @@ export const Spotlight: React.FC = () => {
           else setClipboardHistory(['https://github.com/AashmanShukla3223', 'npm run dev', 'Hello Tahoe']);
         }).catch(() => setClipboardHistory(['https://github.com/AashmanShukla3223', 'npm run dev', 'Hello Tahoe']));
       } else {
-        setClipboardHistory(['https://github.com/AashmanShukla3223', 'npm run dev', 'Hello Tahoe']);
+        const timer = setTimeout(() => {
+          setClipboardHistory(['https://github.com/AashmanShukla3223', 'npm run dev', 'Hello Tahoe']);
+        }, 0);
+        return () => clearTimeout(timer);
       }
     } else {
-      setInput('');
-      setActionMessage(null);
+      const resetTimer = setTimeout(() => {
+        setInput('');
+        setActionMessage(null);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
   }, [showSpotlight]);
 
   useEffect(() => {
-    if (!query) {
-      setResults([]);
-      setActionMessage(null);
-      return;
-    }
+    const timer = setTimeout(() => {
+      if (!query) {
+        setResults([]);
+        setActionMessage(null);
+        return;
+      }
 
-    const cmd = query.toUpperCase().trim();
-    
-    // AI Command detection (e.g. starting with "AI " or "HEY APPLE ")
-    if (cmd.startsWith('AI ') || cmd.startsWith('HEY APPLE ')) {
-      const prompt = query.replace(/^(ai |hey apple )/i, '');
-      setResults([{
-        id: 'ai-prompt',
-        name: `Ask Apple Intelligence: "${prompt}"`,
-        type: 'ai',
-        icon: MagicWand01Icon,
-        aiResponse: 'Press Enter to execute.'
-      }]);
-      setSelectedIndex(0);
-      return;
-    }
+      const cmd = query.toUpperCase().trim();
+      
+      // AI Command detection (e.g. starting with "AI " or "HEY APPLE ")
+      if (cmd.startsWith('AI ') || cmd.startsWith('HEY APPLE ')) {
+        const prompt = query.replace(/^(ai |hey apple )/i, '');
+        setResults([{
+          id: 'ai-prompt',
+          name: `Ask Apple Intelligence: "${prompt}"`,
+          type: 'ai',
+          icon: MagicWand01Icon,
+          aiResponse: 'Press Enter to execute.'
+        }]);
+        setSelectedIndex(0);
+        return;
+      }
 
-    if (cmd.startsWith('MESSAGE ') || cmd.startsWith('MSG ')) {
-       const parts = query.split(' ');
-       if (parts.length > 2) {
-         setActionMessage({ contact: parts[1], text: parts.slice(2).join(' ') });
-         setResults([]);
-         return;
+      if (cmd.startsWith('MESSAGE ') || cmd.startsWith('MSG ')) {
+         const parts = query.split(' ');
+         if (parts.length > 2) {
+           setActionMessage({ contact: parts[1], text: parts.slice(2).join(' ') });
+           setResults([]);
+           return;
+         }
+      } else {
+         setActionMessage(null);
        }
-    } else {
-       setActionMessage(null);
-    }
 
-    // Command Shortcuts Logic
-    if (cmd === 'GH') {
-       window.open('https://github.com/AashmanShukla3223/', '_blank');
-       setShowSpotlight(false);
-       return;
-    }
-    if (cmd === 'SM') {
-       launchApp('messages');
-       setShowSpotlight(false);
-       return;
-    }
-    if (cmd === 'ADD' || cmd === 'REMINDER') {
-       launchApp('reminders');
-       setShowSpotlight(false);
-       return;
-    }
-    if (cmd === 'STICKY') {
-       launchApp('stickies');
-       setShowSpotlight(false);
-       return;
-    }
+      // Command Shortcuts Logic
+      if (cmd === 'GH') {
+         window.open('https://github.com/AashmanShukla3223/', '_blank');
+         setShowSpotlight(false);
+         return;
+      }
+      if (cmd === 'SM') {
+         launchApp('messages');
+         setShowSpotlight(false);
+         return;
+      }
+      if (cmd === 'ADD' || cmd === 'REMINDER') {
+         launchApp('reminders');
+         setShowSpotlight(false);
+         return;
+      }
+      if (cmd === 'STICKY') {
+         launchApp('stickies');
+         setShowSpotlight(false);
+         return;
+      }
 
-    const filtered = mockResults.filter(r => 
-      r.name.toLowerCase().includes(query.toLowerCase()) || 
-      r.type.toLowerCase().includes(query.toLowerCase())
-    );
-    setResults(filtered);
-    setSelectedIndex(0);
+      const filtered = mockResults.filter(r => 
+        r.name.toLowerCase().includes(query.toLowerCase()) || 
+        r.type.toLowerCase().includes(query.toLowerCase())
+      );
+      setResults(filtered);
+      setSelectedIndex(0);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [query, launchApp, setShowSpotlight]);
 
   const handleAction = async (result?: SearchResult) => {

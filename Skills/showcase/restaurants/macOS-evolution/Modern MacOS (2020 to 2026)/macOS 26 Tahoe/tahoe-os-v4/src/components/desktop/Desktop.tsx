@@ -296,7 +296,7 @@ export const Desktop: React.FC = () => {
                              <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
                                 <ArrowLeft01Icon size={14} className="text-white" />
                              </button>
-                             <button onClick={(e) => { e.stopPropagation(); systemState.music.isPlaying ? pauseSong() : playSong(); }} className="w-10 h-10 rounded-full bg-white text-black hover:bg-white/90 flex items-center justify-center transition-transform hover:scale-110 shadow-xl shadow-white/10">
+                             <button onClick={(e) => { e.stopPropagation(); if (systemState.music.isPlaying) { pauseSong(); } else { playSong(); } }} className="w-10 h-10 rounded-full bg-white text-black hover:bg-white/90 flex items-center justify-center transition-transform hover:scale-110 shadow-xl shadow-white/10">
                                 {systemState.music.isPlaying ? <PauseIcon size={20} fill="currentColor" /> : <PlayIcon size={20} fill="currentColor" className="ml-0.5" />}
                              </button>
                              <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">

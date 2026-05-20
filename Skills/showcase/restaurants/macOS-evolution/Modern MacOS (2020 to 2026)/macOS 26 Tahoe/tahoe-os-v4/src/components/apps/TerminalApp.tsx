@@ -57,13 +57,14 @@ export const TerminalApp: React.FC = () => {
   clear     - Clear terminal screen
   echo      - Output text`;
         break;
-      case 'ls':
+      case 'ls': {
         const contents = getDirectoryContents(currentDirId);
         output = contents.length > 0 
           ? contents.map(n => `${n.type === 'folder' ? 'd' : '-'} ${n.name}`).join('\n')
           : 'total 0';
         break;
-      case 'cd':
+      }
+      case 'cd': {
         const targetDir = args[0];
         if (!targetDir || targetDir === '~' || (isRecovery && targetDir === '/')) {
           setCurrentDirId(isRecovery ? 'root' : 'user-home');
@@ -80,7 +81,8 @@ export const TerminalApp: React.FC = () => {
           }
         }
         break;
-      case 'open':
+      }
+      case 'open': {
         const appName = args[0]?.toLowerCase();
         if (appName) {
           const appMap: Record<string, string> = {
@@ -108,6 +110,7 @@ export const TerminalApp: React.FC = () => {
           output = 'usage: open [application]';
         }
         break;
+      }
       case 'neofetch':
         output = `        .       ${username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
        .:.      ---------------------------
@@ -123,7 +126,7 @@ export const TerminalApp: React.FC = () => {
       case 'uptime':
         output = `up ${Math.floor(uptime / 60)} minutes, ${uptime % 60} seconds`;
         break;
-      case 'sudo':
+      case 'sudo': {
         const fullArgs = args.join(' ');
         if (fullArgs === 'rm -rf /localStorage' || fullArgs === 'system_reset') {
           localStorage.removeItem('tahoe_infected');
@@ -136,6 +139,7 @@ export const TerminalApp: React.FC = () => {
           output = `[sudo] password for ${username.toLowerCase()}: \nPassword accepted. Superuser privileges granted for Tahoe Session.`;
         }
         break;
+      }
       case 'reboot':
         setBootState('booting');
         return;

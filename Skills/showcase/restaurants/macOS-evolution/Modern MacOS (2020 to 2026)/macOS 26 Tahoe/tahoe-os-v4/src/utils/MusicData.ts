@@ -49,7 +49,7 @@ export const songs: Song[] = [
   { id: '40', title: 'Saiyaara', artist: 'Tanishk Bagchi', url: '/music/saiyaara.mp3', cover: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '41', title: 'Sahiba', artist: 'Aditya Rikhari', url: '/music/sahiba.mp3', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '42', title: 'Ice Cream', artist: 'Himesh Reshammiya', url: '/music/ice-cream.mp3', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=200&h=200&auto=format&fit=crop' },
-  { id: '43', title: 'Jutti Meri', artist: 'Neha Bhasin', url: '/music/jutti-meri.mp3', cover: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=200&h=200&auto=format&fit=crop' },
+  { id: '43', title: 'Kala Chashma', artist: 'Badshah, Neha Kakkar', url: '/music/Kala-Chashma.mp3', cover: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '44', title: 'Kissik', artist: 'Lothika', url: '/music/kissik.mp3', cover: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '45', title: 'Over the Horizon', artist: 'Samsung', url: '/music/over-horizon.mp3', cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '46', title: 'Aaj Ki Party', artist: 'Pritam', url: '/music/aaj-ki-party.mp3', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200&h=200&auto=format&fit=crop' },

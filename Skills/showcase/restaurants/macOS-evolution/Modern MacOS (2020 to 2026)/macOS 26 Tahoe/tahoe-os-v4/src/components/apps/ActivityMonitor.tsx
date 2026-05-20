@@ -3,19 +3,21 @@ import { Activity01Icon } from 'hugeicons-react';
 import { EKGCanvas } from './EKGCanvas';
 import { useTelemetry } from '../../hooks/useTelemetry';
 
+const generateInitialProcesses = () => {
+  return Array.from({ length: 15 }).map((_, i) => ({
+    id: 1000 + i,
+    name: ['WindowServer', 'kernel_task', 'Google Chrome', 'React', 'Framer Motion', 'Terminal'][i % 6] + (i > 5 ? ` Helper ${i}` : ''),
+    cpu: (Math.random() * 15).toFixed(1),
+    memory: (Math.random() * 500 + 10).toFixed(0),
+    threads: Math.floor(Math.random() * 50 + 5),
+  }));
+};
+
 export const ActivityMonitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CPU' | 'Memory' | 'Network'>('CPU');
   const telemetry = useTelemetry();
   
-  const [processes, setProcesses] = useState(
-    Array.from({ length: 15 }).map((_, i) => ({
-      id: 1000 + i,
-      name: ['WindowServer', 'kernel_task', 'Google Chrome', 'React', 'Framer Motion', 'Terminal'][i % 6] + (i > 5 ? ` Helper ${i}` : ''),
-      cpu: (Math.random() * 15).toFixed(1),
-      memory: (Math.random() * 500 + 10).toFixed(0),
-      threads: Math.floor(Math.random() * 50 + 5),
-    }))
-  );
+  const [processes, setProcesses] = useState(generateInitialProcesses);
 
   // Simulate updating stats, but scale cpu load with our telemetry
   useEffect(() => {
@@ -65,7 +67,7 @@ export const ActivityMonitor: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {processes.sort((a, b) => parseFloat(b.cpu) - parseFloat(a.cpu)).map((p, i) => (
+            {[...processes].sort((a, b) => parseFloat(b.cpu) - parseFloat(a.cpu)).map((p, i) => (
               <tr key={i} className="border-b border-gray-100 hover:bg-blue-50">
                 <td className="px-4 py-1 flex items-center gap-2">
                   <Activity01Icon size={14} className="text-gray-500 hugeicon-tahoe" />

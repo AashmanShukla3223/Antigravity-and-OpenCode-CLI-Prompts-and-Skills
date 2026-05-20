@@ -75,7 +75,7 @@ export const GitHubNavigator: React.FC = () => {
             currentFileName: file.name
           } as any);
           launchApp('codeviewer');
-        } catch (err) {
+        } catch {
           showAlert("Could not fetch file content", "Error");
         } finally {
           setLoading(false);

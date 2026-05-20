@@ -11,8 +11,12 @@ export const SystemDialog: React.FC = () => {
 
   useEffect(() => {
     if (systemDialog && systemDialog.type === 'prompt') {
-      setInputValue(systemDialog.defaultValue || '');
-      setTimeout(() => inputRef.current?.focus(), 100);
+      const defaultValue = systemDialog.defaultValue || '';
+      const timer = setTimeout(() => {
+        setInputValue(defaultValue);
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [systemDialog]);
 

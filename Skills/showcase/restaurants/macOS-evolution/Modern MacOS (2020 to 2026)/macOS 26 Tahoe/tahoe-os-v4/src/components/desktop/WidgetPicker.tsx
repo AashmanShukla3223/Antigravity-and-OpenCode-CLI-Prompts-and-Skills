@@ -20,6 +20,10 @@ const WIDGET_TEMPLATES = [
   { type: 'connected-devices', name: 'Devices', customIconUrl: FileSystemResolver.getDeviceIcon('phone-apple-iphone'), color: 'bg-zinc-800' },
 ] as const;
 
+const generateWidgetId = () => {
+  return Math.random().toString(36).substring(2, 11);
+};
+
 export const WidgetPicker: React.FC = () => {
   const { showWidgetPicker, setShowWidgetPicker, updateSystemState, systemState } = useSystem();
 
@@ -39,7 +43,7 @@ export const WidgetPicker: React.FC = () => {
     }
 
     const newWidget: Widget = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateWidgetId(),
       type,
       x: 0, // Extreme left
       y: nextY > 2 ? 0 : nextY, // Basic stack or wrap if full

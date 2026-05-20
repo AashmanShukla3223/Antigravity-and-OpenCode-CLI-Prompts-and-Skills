@@ -9,6 +9,11 @@ export const BootSequence: React.FC = () => {
   const [fadeOut, setFadeOut] = useState(false);
   const [isDeadDrive, setIsDeadDrive] = useState(false);
   const recoveryTriggered = useRef(false);
+  const isDeadDriveRef = useRef(false);
+
+  useEffect(() => {
+    isDeadDriveRef.current = isDeadDrive;
+  }, [isDeadDrive]);
 
   useEffect(() => {
     const isInfected = localStorage.getItem('tahoe_infected') === 'true' && systemState.isSystemInfected;
@@ -18,7 +23,12 @@ export const BootSequence: React.FC = () => {
       if (e.ctrlKey && e.key.toLowerCase() === 'm') {
         recoveryTriggered.current = true;
         console.log("Recovery Mode Triggered via Keyboard Shortcut");
-        setIsDeadDrive(false); // Recovery overrides dead drive
+        if (isDeadDriveRef.current) {
+          setIsDeadDrive(false);
+          startBoot();
+        } else {
+          setIsDeadDrive(false); // Recovery overrides dead drive
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);

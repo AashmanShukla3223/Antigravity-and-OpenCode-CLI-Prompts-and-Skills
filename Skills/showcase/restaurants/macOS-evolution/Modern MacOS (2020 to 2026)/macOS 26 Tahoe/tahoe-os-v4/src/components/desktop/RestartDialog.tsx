@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert01Icon, ReloadIcon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
@@ -7,9 +7,9 @@ export const RestartDialog: React.FC = () => {
   const { showRestartDialog, setShowRestartDialog, initiateRestart, setBootState, systemState } = useSystem();
   const [countdown, setCountdown] = useState(60);
 
-  const handleRestart = () => {
+  const handleRestart = useCallback(() => {
     initiateRestart();
-  };
+  }, [initiateRestart]);
 
   useEffect(() => {
     let timer: any;
@@ -24,10 +24,13 @@ export const RestartDialog: React.FC = () => {
         });
       }, 1000);
     } else {
-      setCountdown(60);
+      const resetTimer = setTimeout(() => {
+        setCountdown(60);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
     return () => timer && clearInterval(timer);
-  }, [showRestartDialog]);
+  }, [showRestartDialog, handleRestart]);
 
   const handleRecovery = () => {
     setShowRestartDialog(false);
