@@ -91,31 +91,31 @@ export const BootSequence: React.FC = () => {
   }, [systemState.setup_complete, systemState.isSystemInfected, setBootState]);
 
   if (isDeadDrive) {
-    const base = (import.meta as any).env?.BASE_URL || '/';
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-between z-50 py-16">
+        {/* Empty top spacer to keep the question mark centered */}
+        <div className="h-8"></div>
+
         <motion.div
           animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-          className="relative w-48 h-48 flex items-center justify-center"
+          transition={{ duration: 2.0, repeat: Infinity, ease: "easeInOut" }}
+          className="flex items-center justify-center"
         >
-          {/* Back of the grey folder */}
-          <img 
-            src={`${base}folder icons/grey/grey-folder-back.png`} 
-            className="absolute inset-0 w-full h-full object-contain opacity-80" 
-            alt="Dead Drive Back" 
-          />
-          
-          {/* Question Mark centered inside */}
-          <span className="z-10 text-white text-7xl font-bold tracking-tighter drop-shadow-2xl mt-4">?</span>
-          
-          {/* Front of the grey folder */}
-          <img 
-            src={`${base}folder icons/grey/grey-folder-front.png`} 
-            className="absolute inset-0 w-full h-full object-contain z-20" 
-            alt="Dead Drive Front" 
-          />
+          {/* Flashing Question Mark */}
+          <span className="text-white text-8xl font-normal select-none">?</span>
         </motion.div>
+
+        {/* Support restore link at the bottom */}
+        <div className="text-center">
+          <a
+            href="https://support.apple.com/mac/restore"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/40 hover:text-white/70 transition-colors text-xs tracking-wider font-light"
+          >
+            support.apple.com/mac/restore
+          </a>
+        </div>
       </div>
     );
   }
