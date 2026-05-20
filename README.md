@@ -2,7 +2,7 @@
 ### **Where zero-token waste meets high-fidelity execution. Optimized for developer velocity.**
 
 [![Hall of Fame: macOS Tahoe 26](https://img.shields.io/badge/Flagship-macOS%20Tahoe%2026-blue?style=for-the-badge&logo=apple)](https://github.com/AashmanShukla3223)
-[![Engine: Antigravity CLI Optimized](https://img.shields.io/badge/Engine-Gemini%20CLI%20Optimized-purple?style=for-the-badge)](https://github.com/AashmanShukla3223)
+[![Engine: Antigravity CLI Optimized](https://img.shields.io/badge/Engine-Antigravity%20CLI%20Optimized-purple?style=for-the-badge)](https://github.com/AashmanShukla3223)
 
 ---
 
