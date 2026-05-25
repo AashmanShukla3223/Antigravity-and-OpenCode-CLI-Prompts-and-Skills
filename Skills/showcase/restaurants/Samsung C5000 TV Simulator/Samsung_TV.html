@@ -300,7 +300,7 @@
                         <div id="dishNoSignal" class="absolute inset-0 flex items-center justify-center text-sky-400/60 text-sm font-mono hidden">
                             No Signal
                         </div>
-                        <video id="dishVideo" class="w-full h-full object-cover" loop playsinline></video>
+                        <video id="dishVideo" class="w-full h-full object-cover" loop playsinline muted preload="auto"></video>
                         <div id="dishContent" class="absolute bottom-4 left-4 text-white p-2 bg-black/50 rounded z-20 watermark">
                              <div class="text-sm font-bold">DishTV DTH</div>
                              <div id="dishChannelInfo" class="text-xs">Channel 125: AajTak: 2020 e-Agenda Edition</div>
@@ -868,9 +868,9 @@
 
     <script>
         // High Quality Audio Tracks embedded from direct local uploads
-        const audioStartup = new Audio('startup.mp3');
-        const audioShutdown = new Audio('shutdown.mp3');
-        const audioSoundTest = new Audio('soundtest.mp3');
+        const audioStartup = new Audio('./audio/startup.mp3');
+        const audioShutdown = new Audio('./audio/shutdown.mp3');
+        const audioSoundTest = new Audio('./audio/soundtest.mp3');
         audioSoundTest.loop = true; 
 
         // Dynamic audio volume synchronization
@@ -1045,12 +1045,12 @@
         let dishChannel = 4;
         let watermarkEnabled = true;
         const dishChannels = [
-            { name: "Channel 121: AajTak", src: "dishtv_source.mp4" },
-            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: "dishtv_source2.mp4" },
-            { name: "Channel 123: AajTak: Special Report 8:30PM Edition", src: "dishtv_source3.mp4" },
-            { name: "Channel 124: AajTak: Aaj Subah 10AM Edition", src: "dishtv_source4.mp4" },
-            { name: "Channel 125: AajTak: 2020 e-Agenda Edition", src: "dishtv_source5.mp4" },
-            { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: "dishtv_source6.mp4" }
+            { name: "Channel 121: AajTak", src: "videos/dishtv_source.mp4" },
+            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: "videos/dishtv_source2.mp4" },
+            { name: "Channel 123: AajTak: Special Report 8:30PM Edition", src: "videos/dishtv_source3.mp4" },
+            { name: "Channel 124: AajTak: Aaj Subah 10AM Edition", src: "videos/dishtv_source4.mp4" },
+            { name: "Channel 125: AajTak: 2020 e-Agenda Edition", src: "videos/dishtv_source5.mp4" },
+            { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: "videos/dishtv_source6.mp4" }
         ];
         let volume = 15;
         let dishVolume = 50;
@@ -1242,8 +1242,14 @@
                 dishChannel = (dishChannel - 1 + max) % max;
             }
             const video = document.getElementById('dishVideo');
-            video.src = dishChannels[dishChannel].src;
-            video.play();
+            // Use explicit relative path and start muted to satisfy autoplay policies
+            video.src = './' + dishChannels[dishChannel].src;
+            video.muted = true;
+            video.load();
+            video.play().catch(e => {
+                console.log('Dish video play prevented:', e);
+                showToast('Video playback blocked — interact to start', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
+            });
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             saveSettings();
         }
@@ -1392,10 +1398,16 @@
                         document.getElementById('dishNoSignal').classList.add('hidden');
                         document.getElementById('dishVideo').classList.remove('hidden');
                         const video = document.getElementById('dishVideo');
+                        // Ensure explicit relative path and attempt autoplay muted (modern browsers block unmuted autoplay)
                         if (!video.src) {
-                            video.src = dishChannels[dishChannel].src;
+                            video.src = './' + dishChannels[dishChannel].src;
                         }
-                        video.play();
+                        video.muted = true;
+                        video.load();
+                        video.play().catch(e => {
+                            console.log('Dish video autoplay prevented:', e);
+                            showToast('Video playback blocked — press any key or click to start', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
+                        });
                     } else {
                         document.getElementById('dishNoSignal').classList.remove('hidden');
                         document.getElementById('dishVideo').classList.add('hidden');
@@ -1735,6 +1747,13 @@
             }, 1500);
 
             updateAudioVolumes();
+
+            // Unmute and resume DishTV video when user adjusts dish volume
+            const dishVideoEl = document.getElementById('dishVideo');
+            if (dishVideoEl) {
+                dishVideoEl.muted = false;
+                if (dishVideoEl.paused) dishVideoEl.play().catch(e => console.log('dish play after unmute failed:', e));
+            }
 
             if (tvSynth.audioCtx) {
                 tvSynth.playFMNote(554.37, 0.2, 0.15 * (dishVolume / 100));
@@ -2223,7 +2242,7 @@
             loadSettings();
             applyWatermarkVisibility();
             const v = document.getElementById('dishVideo');
-            v.src = dishChannels[dishChannel].src;
+            v.src = './' + dishChannels[dishChannel].src;
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             const fill = document.getElementById('volumeBarFill');
             const text = document.getElementById('volumeValText');
@@ -2235,6 +2254,39 @@
             dtext.innerText = dishVolume;
             spawnScreenBubbles();
             showToast("Welcome! Press Power to start.", '<i class="fa-solid fa-plug"></i>');
+            // Unlock media playback on first user interaction (unmute and play if needed)
+            function unlockMedia() {
+                try {
+                    if (v) {
+                        v.muted = false;
+                        if (v.paused && !v.ended) v.play().catch(e => console.log('play after user gesture failed:', e));
+                    }
+                } catch(e) {}
+            }
+            document.addEventListener('click', unlockMedia, { once: true });
+            document.addEventListener('keydown', unlockMedia, { once: true });
+
+            // Diagnostic: check that each DishTV asset URL resolves on the server
+            async function checkVideoAssets() {
+                for (const ch of dishChannels) {
+                    try {
+                        const rel = './' + ch.src;
+                        const resolved = new URL(rel, location.href).href;
+                        console.log('Checking asset URL:', resolved);
+                        const resp = await fetch(resolved, { method: 'HEAD' });
+                        if (!resp.ok) {
+                            console.warn('Asset check failed:', resolved, resp.status);
+                            showToast(`Missing asset: ${ch.src} (${resp.status})`, '<i class="fa-solid fa-triangle-exclamation"></i>', 'error');
+                        } else {
+                            console.log('Asset OK:', resolved);
+                        }
+                    } catch (err) {
+                        console.error('Asset check error for', ch.src, err);
+                        showToast(`Asset check error: ${ch.src}`, '<i class="fa-solid fa-bug"></i>', 'error');
+                    }
+                }
+            }
+            checkVideoAssets();
         };
 
     </script>
