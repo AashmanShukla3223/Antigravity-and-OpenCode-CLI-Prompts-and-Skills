@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung LCD TV Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Exo for Frutiger Aero, Share Tech Mono for CRT, Inter, and sans-serif elements) -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #111a2e 0%, #030712 100%);
+            background-attachment: fixed;
+        }
+        .aero-font {
+            font-family: 'Exo', sans-serif;
+        }
+        .digital-font {
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .futuristic-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Frutiger Aero Glass Panel styling */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 10px 30px -10px rgba(0, 0, 0, 0.7),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        .glossy-shine {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0) 50.1%, rgba(0, 0, 0, 0.08) 100%);
+        }
+
+        /* Glossy shine effect for panels */
+        .glossy-shine {
+        .glass-stand-neck {
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.2) 30%, rgba(0, 0, 0, 0.4) 70%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-stand-base {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 2px 2px rgba(255,255,255,0.2);
+        }
+
+        /* CRT/LCD Scanlines overlay to give realistic retro screen texture */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.15) 50%
+            );
+            background-size: 100% 3px;
+        }
+
+        /* Bouncing No Signal animation */
+        #noSignalWidget {
+            transition: transform 0.016s linear;
+        }
+
+        /* Samsung 2010 OSD styling (The classic glassy blue menu look) */
+        .samsung-osd-bg {
+            background: linear-gradient(145deg, rgba(11, 27, 58, 0.95) 0%, rgba(5, 12, 31, 0.98) 100%);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.8),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(56, 189, 248, 0.3);
+        }
+        .samsung-osd-sidebar {
+            background: rgba(3, 7, 18, 0.45);
+            border-right: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        .samsung-osd-highlight {
+            background: linear-gradient(to right, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+            color: #ffffff !important;
+        }
+        .samsung-osd-unselected-glow {
+            transition: background-color 0.15s ease;
+        }
+        .samsung-osd-unselected-glow:hover {
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        /* Classic TV Remote keys */
+        .remote-btn {
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.4);
+            transition: all 0.1s ease;
+        }
+        .remote-btn:active {
+            transform: scale(0.92);
+            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Floating Bubble Animation for Frutiger Aero */
+        @keyframes bubbleFloat {
+            0% { transform: translateY(110%) scale(0.4); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20%) scale(1.1); opacity: 0; }
+        }
+        .ambient-bubble {
+            position: absolute;
+            background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.35) 0%, rgba(56, 189, 248, 0.1) 60%, rgba(0, 0, 0, 0) 100%);
+            border: 0.5px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: inset -1px -1px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Wii Channels grid system styling */
+        .wii-grid {
+            background-color: #e0e0e0;
+            background-image: radial-gradient(#d4d4d4 15%, transparent 16%);
+            background-size: 16px 16px;
+        }
+        .wii-channel-btn {
+            background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+            border: 2px solid #b5b5b5;
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .wii-channel-btn.wii-selected {
+            border-color: #4da6ff;
+            box-shadow: 0 0 12px #3399ff, inset 0 0 8px rgba(77, 166, 255, 0.3);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* PS3 XMB background wave effect */
+        .ps3-bg {
+            background: linear-gradient(220deg, #111e38 0%, #050b18 100%);
+            overflow: hidden;
+        }
+        .ps3-wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            top: 0;
+            left: -50%;
+            opacity: 0.15;
+            transform-origin: 50% 50%;
+            animation: ps3WaveMotion 15s infinite linear;
+        }
+        @keyframes ps3WaveMotion {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* tvOS 26 cyberpunk bento style */
+        .tvos-app-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tvos-app-card.tvos-selected {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.1);
+        }
+        .siri-sphere {
+            background: radial-gradient(circle, #ff2d55 0%, #5856d6 50%, #007aff 100%);
+            filter: blur(8px);
+            animation: siriPulse 3s infinite ease-in-out;
+        }
+        @keyframes siriPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.25); opacity: 0.95; filter: blur(4px); }
+        }
+
+        /* Wiimote Skeuomorphic Style */
+        .wii-remote-body {
+            background: linear-gradient(135deg, #ffffff 0%, #eaeaea 100%);
+            border: 3px solid #d2d2d2;
+            box-shadow: 
+                inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+                inset -2px -2px 5px rgba(0, 0, 0, 0.1),
+                0 10px 25px rgba(0,0,0,0.3);
+        }
+        /* PS3 Controller Skeuomorphic Style */
+        .ps3-controller-body {
+            background: linear-gradient(145deg, #222222 0%, #0d0d0d 100%);
+            border: 2px solid #333333;
+            box-shadow: 
+                inset 1px 1px 1px rgba(255,255,255,0.1),
+                inset -3px -3px 8px rgba(0,0,0,0.6),
+                0 15px 30px rgba(0,0,0,0.45);
+        }
+        .ps3-dpad-center {
+            background-color: #1a1a1a;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .ps3-stick {
+            background: radial-gradient(circle at 35% 35%, #2a2a2a 0%, #0f0f0f 70%, #000 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+        }
+        /* Siri Remote Style */
+        .siri-remote-body {
+            background: linear-gradient(to bottom, #d6d6d6 0%, #b8b8b8 100%);
+            border: 1.5px solid #a3a3a3;
+            box-shadow: 
+                inset 0 1px 2px rgba(255,255,255,0.7),
+                0 10px 20px rgba(0,0,0,0.25);
+        }
+        .siri-clickpad-ring {
+            background: linear-gradient(135deg, #2a2a2c 0%, #151516 100%);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.2);
+        }
+        .siri-clickpad-center {
+            background: linear-gradient(135deg, #444446 0%, #2c2c2e 100%);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between overflow-x-hidden text-slate-200">
+
+    <!-- Header Section -->
+    <header class="w-full text-center py-2 px-4 shrink-0 z-10 relative">
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-sky-400 via-cyan-200 to-teal-300 bg-clip-text text-transparent aero-font">
+            Samsung LCD TV SIMULATOR
+        </h1>
+        <p class="text-xs md:text-sm text-sky-300/80 mt-1 max-w-2xl mx-auto">
+            Interactive 2010 TV Simulator. Change inputs to watch the console remote slot automatically swap out for an authentic Wii, PS3, or Apple TV controller!
+        </p>
+    </header>
+
+        <!-- Main Workspace (TV on Left, Multi-Remote Bay & Guides on Right) -->
+    <main class="flex-grow flex items-center justify-center p-4 w-full max-w-7xl mx-auto z-10 gap-6 flex-col lg:flex-row">
+        
+        <!-- Left Side: Dynamic TV Cabinet Assembly -->
+        <div class="flex-grow flex flex-col items-center justify-center w-full lg:w-3/5 max-w-5xl">
+            <!-- The Cabinet Bezel Frame -->
+            <div class="w-full rounded-2xl flex flex-col relative overflow-hidden select-none" style="background: linear-gradient(135deg, #2a0510 0%, #4a0a1a 40%, #5c0f20 75%, #2a0510 100%); border: 4px solid #030712; border-radius: 16px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), inset 0 0 25px rgba(239, 68, 68, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);">
+                <!-- Glossy diagonal screen swipe -->
+                <div class="absolute inset-0 pointer-events-none z-30 opacity-40" style="background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0) 50.1%, rgba(0, 0, 0, 0.08) 100%);"></div>
+                
+                <!-- Screen Area Wrapper (Aspect Ratio 16:9) with uniform bezel spacing -->
+                <div class="m-5 md:m-6 relative bg-black overflow-hidden shadow-2xl aspect-video" style="border: 1px solid #1a0a0a; border-radius: 4px;">
+
+                    
+                    <!-- Scanlines overlay for CRT/LCD display grids -->
+                    <div class="absolute inset-0 scanlines opacity-20 pointer-events-none z-40"></div>
+                    
+                    <!-- LCD Screen Glass Reflection overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-40"></div>
+
+                    <!-- Ambient Floating Bubble Container (Frutiger Aero Background effect) -->
+                    <div id="screenBubbleContainer" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+                    <!-- SCREEN STATE 1: POWER OFF -->
+                    <div id="screenOff" class="absolute inset-0 bg-zinc-950 flex flex-col justify-center items-center z-30 transition-opacity duration-300">
+                    </div>
+
+                    <!-- SCREEN STATE 2: BOOTING UP / BLACK SCREEN -->
+                    <div id="screenBoot" class="absolute inset-0 bg-black flex flex-col justify-center items-center z-30 opacity-0 pointer-events-none transition-opacity duration-300">
+                    </div>
+
+                    <!-- SCREEN STATE 3: SHUTTING DOWN SCREEN -->
+                    <div id="screenShutdown" class="absolute inset-0 bg-black flex flex-col justify-center items-center z-30 opacity-0 pointer-events-none transition-opacity duration-150">
+                    </div>
+
+                    <!-- INPUT 1: TV / NO SIGNAL (Standard TV Environment) -->
+                    <div id="inputTV" class="absolute inset-0 bg-gradient-to-b from-[#0b1b36] to-[#040914] z-10 hidden">
+                        <!-- Top Input Info -->
+                        <div class="absolute top-4 left-4 text-[10px] text-white font-mono bg-black/50 px-2 py-1 rounded watermark">
+                            HDMI 1 | 1920x1080 @ 60Hz
+                        </div>
+                        <!-- Floating bouncing widget container -->
+                        <div id="noSignalWidget" class="absolute w-44 md:w-56 p-3 bg-[#111d33]/90 border border-sky-400/40 rounded-xl shadow-2xl flex flex-col items-center gap-1.5 select-none text-center">
+                            <div class="w-full pb-1 border-b border-sky-900/50 flex justify-between items-center">
+                                <span id="noSignalLabel" class="text-[9px] font-bold text-sky-400 uppercase tracking-widest">TV/RF</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                            </div>
+                            <div class="text-xs font-bold text-slate-100 tracking-wider">No Signal</div>
+                            <div class="text-[9px] text-slate-400 tracking-wide mt-0.5 font-medium leading-tight">
+                                (Check Signal Cable Connection)
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-sky-400/40 text-[10px] font-mono watermark">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400/60 animate-ping"></span>
+                            TV Input Engine Running
+                        </div>
+                    </div>
+                    
+                    <!-- INPUT 5: DISHTV DTH -->
+                    <div id="inputDishTV" class="absolute inset-0 bg-black z-10 hidden">
+                        <div id="dishNoSignal" class="absolute inset-0 flex items-center justify-center text-sky-400/60 text-sm font-mono hidden">
+                            No Signal
+                        </div>
+                        <video id="dishVideo" class="w-full h-full object-cover" loop playsinline></video>
+                        <div id="dishContent" class="absolute bottom-4 left-4 text-white p-2 bg-black/50 rounded z-20 watermark">
+                             <div class="text-sm font-bold">DishTV DTH</div>
+                             <div id="dishChannelInfo" class="text-xs">Channel 125: AajTak: 2020 e-Agenda Edition</div>
+                        </div>
+                    </div>
+                    
+                    <!-- INPUT 2: NINTENDO WII (AV / COMPONENT INPUT) -->
+                    <div id="inputWii" class="absolute inset-0 wii-grid z-10 hidden flex-col justify-between p-3 text-zinc-800">
+                        <!-- Wii Header: Channel Grid System -->
+                        <div class="grid grid-cols-4 gap-2.5 flex-grow overflow-hidden max-h-[75%] pt-1">
+                            <!-- Disc Channel -->
+                            <div id="wii-chan-0" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer wii-selected">
+                                <i class="fa-solid fa-compact-disc text-zinc-400 text-2xl animate-spin" style="animation-duration: 4s;"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Disc Channel</span>
+                            </div>
+                            <!-- Mii Channel -->
+                            <div id="wii-chan-1" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <div class="flex gap-1 animate-bounce">
+                                    <i class="fa-solid fa-user-ninja text-teal-600 text-lg"></i>
+                                    <i class="fa-solid fa-user-astronaut text-pink-600 text-lg"></i>
+                                </div>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Mii Channel</span>
+                            </div>
+                            <!-- Wii Shop Channel -->
+                            <div id="wii-chan-2" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-bag-shopping text-orange-500 text-2xl animate-pulse"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight text-orange-600">Wii Shop Channel</span>
+                            </div>
+                            <!-- Photo Channel -->
+                            <div id="wii-chan-3" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-images text-emerald-500 text-2xl"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Photo Channel</span>
+                            </div>
+                            <!-- Forecast Channel -->
+                            <div id="wii-chan-4" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-cloud-sun text-sky-500 text-2xl"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Forecast</span>
+                            </div>
+                            <!-- News Channel -->
+                            <div id="wii-chan-5" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-newspaper text-zinc-600 text-2xl"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">News Channel</span>
+                            </div>
+                            <!-- Wii Message Board -->
+                            <div id="wii-chan-6" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-envelope-open-text text-amber-500 text-2xl"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Message Board</span>
+                            </div>
+                            <!-- Wii System Settings -->
+                            <div id="wii-chan-7" class="wii-channel-btn rounded-lg flex flex-col items-center justify-center p-1 cursor-pointer">
+                                <i class="fa-solid fa-screwdriver-wrench text-zinc-500 text-2xl"></i>
+                                <span class="text-[9px] font-bold mt-1 text-center leading-tight">Wii Settings</span>
+                            </div>
+                        </div>
+
+                        <!-- Wii Footer System buttons -->
+                        <div class="flex justify-between items-center border-t border-zinc-300 pt-2 shrink-0">
+                            <div class="w-10 h-6 rounded bg-zinc-300 shadow flex items-center justify-center text-[10px] font-bold text-zinc-600">Wii</div>
+                            <div class="flex gap-4">
+                                <div class="px-5 py-1 rounded-full bg-zinc-100 shadow border border-zinc-300 text-[10px] font-bold text-zinc-500">Mii</div>
+                                <div class="px-5 py-1 rounded-full bg-zinc-100 shadow border border-zinc-300 text-[10px] font-bold text-zinc-500">Wii Options</div>
+                            </div>
+                            <div class="text-[9px] font-bold text-zinc-400 font-mono" id="wiiTime">12:00 PM</div>
+                        </div>
+
+                        <!-- Wii Dialog Popover -->
+                        <div id="wiiDialog" class="absolute inset-x-6 inset-y-12 bg-zinc-50 rounded-2xl border-4 border-zinc-300 shadow-2xl z-20 p-4 flex flex-col justify-between hidden">
+                            <div class="text-center">
+                                <h3 id="wiiDialogTitle" class="text-sm font-bold text-zinc-700 mt-2">Disc Channel</h3>
+                                <p class="text-[10px] text-zinc-500 mt-3">Would you like to start this channel program?</p>
+                            </div>
+                            <div class="flex gap-3 justify-center mb-1">
+                                <button onclick="closeWiiDialog()" class="px-6 py-1.5 bg-zinc-200 border border-zinc-400 rounded-full font-bold text-xs text-zinc-600 shadow hover:bg-zinc-300 active:scale-95 transition-transform">Close</button>
+                                <button onclick="startWiiApp()" class="px-6 py-1.5 bg-sky-400 border border-sky-500 text-white rounded-full font-bold text-xs shadow hover:bg-sky-500 active:scale-95 transition-transform">Start</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INPUT 3: PLAYSTATION 3 (HDMI 2 INPUT) -->
+                    <div id="inputPS3" class="absolute inset-0 ps3-bg z-10 hidden text-zinc-200 p-4">
+                        <!-- Wave dynamic backgrounds -->
+                        <svg class="ps3-wave" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.08)"></path>
+                        </svg>
+                        <svg class="ps3-wave" style="animation-duration: 25s; opacity: 0.05;" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M0,45 Q30,60 65,45 T100,45 L100,100 L0,100 Z" fill="rgba(255,255,255,0.06)"></path>
+                        </svg>
+
+                        <!-- XMB Menu Structure -->
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <!-- Horizontal Main Menu Line -->
+                            <div class="flex gap-8 items-center mt-4">
+                                <div id="ps3-cat-0" class="flex flex-col items-center gap-1 opacity-40 transition-all">
+                                    <i class="fa-solid fa-gear text-lg"></i>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider">Settings</span>
+                                </div>
+                                <div id="ps3-cat-1" class="flex flex-col items-center gap-1 opacity-40 transition-all">
+                                    <i class="fa-solid fa-image text-lg"></i>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider">Photo</span>
+                                </div>
+                                <div id="ps3-cat-2" class="flex flex-col items-center gap-1 opacity-40 transition-all">
+                                    <i class="fa-solid fa-music text-lg"></i>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider">Music</span>
+                                </div>
+                                <div id="ps3-cat-3" class="flex flex-col items-center gap-1 opacity-40 transition-all">
+                                    <i class="fa-solid fa-gamepad text-lg"></i>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider">Game</span>
+                                </div>
+                                <div id="ps3-cat-4" class="flex flex-col items-center gap-1 opacity-40 transition-all">
+                                    <i class="fa-solid fa-globe text-lg"></i>
+                                    <span class="text-[8px] font-bold uppercase tracking-wider">Network</span>
+                                </div>
+                            </div>
+
+                            <!-- Vertical Selection Bar (Positioned under selected category) -->
+                            <div class="flex-grow flex flex-col gap-2.5 mt-6 ml-4" id="ps3VerticalList">
+                                <!-- Filled dynamically by JavaScript -->
+                            </div>
+
+                            <!-- Footer Status bar -->
+                            <div class="flex justify-between text-[9px] text-zinc-500 font-mono">
+                                <span>PlayStation®3 System</span>
+                                <span id="ps3Time">12:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INPUT 4: APPLE TV HD (HDMI 1 INPUT - tvOS 26 EDITION) -->
+                    <div id="inputAppleTV" class="absolute inset-0 bg-[#060814] z-10 hidden text-white p-4 futuristic-font">
+                        <!-- Holographic futuristic grids and top blur lights -->
+                        <div class="absolute top-0 right-0 w-44 h-44 bg-cyan-500/10 rounded-full filter blur-2xl"></div>
+                        <div class="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full filter blur-2xl"></div>
+
+                        <!-- Main Screen Layout -->
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <!-- Upper dynamic information cards -->
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-cyan-400">tvOS 26 Insider</h4>
+                                    <h3 class="text-base font-bold text-slate-100">Futuristic Apple TV HD</h3>
+                                </div>
+                                <div class="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[9px] text-zinc-300 flex items-center gap-1.5 backdrop-blur">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    5G Ultra-Stream Connected
+                                </div>
+                            </div>
+
+                            <!-- Bento style grid of cards -->
+                            <div class="grid grid-cols-3 gap-3 my-2">
+                                <div id="tvos-card-0" class="tvos-app-card rounded-xl p-3 flex flex-col justify-between h-20 cursor-pointer tvos-selected">
+                                    <i class="fa-solid fa-tv text-cyan-400 text-lg"></i>
+                                    <span class="text-[10px] font-semibold text-slate-200">Apple TV+</span>
+                                </div>
+                                <div id="tvos-card-1" class="tvos-app-card rounded-xl p-3 flex flex-col justify-between h-20 cursor-pointer">
+                                    <i class="fa-solid fa-play text-red-500 text-lg"></i>
+                                    <span class="text-[10px] font-semibold text-slate-200">YouTube</span>
+                                </div>
+                                <div id="tvos-card-2" class="tvos-app-card rounded-xl p-3 flex flex-col justify-between h-20 cursor-pointer">
+                                    <i class="fa-solid fa-cubes-notch text-amber-400 text-lg"></i>
+                                    <span class="text-[10px] font-semibold text-slate-200">Apple Arcade</span>
+                                </div>
+                            </div>
+
+                            <!-- Siri Interactive Bubble area -->
+                            <div class="flex justify-between items-center bg-white/5 border border-white/10 p-2 rounded-xl backdrop-blur">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded-full siri-sphere"></div>
+                                    <div class="text-left">
+                                        <p class="text-[9px] font-bold text-zinc-400 uppercase leading-none">Siri 2026</p>
+                                        <p id="siriDialogText" class="text-[10px] text-zinc-200 mt-1 leading-tight">"Welcome! I can handle anything you ask."</p>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] text-zinc-400 font-mono">Press ENTER for Siri</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THE SAMSUNG SOURCE LIST OVERLAY MENU -->
+                    <div id="samsungSourceOverlay" class="absolute top-4 right-4 bg-slate-950/95 border border-sky-400/40 rounded-xl p-3 z-30 w-44 shadow-2xl select-none hidden">
+                        <div class="border-b border-sky-950 pb-1.5 mb-1.5 flex justify-between items-center">
+                            <span class="text-[9px] font-bold text-sky-400 uppercase tracking-widest">Source Select</span>
+                            <i class="fa-solid fa-circle-nodes text-sky-400 text-xs"></i>
+                        </div>
+                        <div class="flex flex-col gap-1 text-[10px]">
+                            <div id="source-item-0" class="p-1.5 rounded flex justify-between items-center transition-all">
+                                <span>TV / RF</span>
+                                <span class="text-[8px] opacity-60">No Signal</span>
+                            </div>
+                            <div id="source-item-1" class="p-1.5 rounded flex justify-between items-center transition-all">
+                                <span>AV / Component</span>
+                                <span class="text-[8px] opacity-60">Wii Menu</span>
+                            </div>
+                            <div id="source-item-2" class="p-1.5 rounded flex justify-between items-center transition-all">
+                                <span>HDMI 1</span>
+                                <span class="text-[8px] opacity-60">Apple TV HD</span>
+                            </div>
+                            <div id="source-item-3" class="p-1.5 rounded flex justify-between items-center transition-all">
+                                <span>HDMI 2</span>
+                                <span class="text-[8px] opacity-60">PS3 XMB</span>
+                            </div>
+                            <div id="source-item-4" class="p-1.5 rounded flex justify-between items-center transition-all">
+                                <span>HDMI 3</span>
+                                <span class="text-[8px] opacity-60">DishTV DTH</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THE CLASSIC SAMSUNG OSD MENU -->
+                    <div id="samsungOSD" class="absolute inset-x-4 inset-y-6 md:inset-x-8 md:inset-y-10 rounded-lg samsung-osd-bg z-30 hidden flex-col overflow-hidden text-xs text-slate-200 select-none border border-sky-400/20">
+                        <!-- OSD Header -->
+                        <div class="bg-[#030a1c] px-4 py-2 flex justify-between items-center border-b border-sky-900/50">
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-400 font-extrabold tracking-wide text-[10px] uppercase">Menu</span>
+                                <span class="text-zinc-500 font-bold">•</span>
+                                <span id="menuPathDisplay" class="text-sky-300 font-medium">Sound</span>
+                            </div>
+                            <div class="text-[9px] text-zinc-500 font-mono">Use Remote D-Pad to Navigate</div>
+                        </div>
+
+                        <!-- OSD Content Area -->
+                        <div class="flex-grow flex overflow-hidden">
+                            <!-- Left Sidebar: Menu Categories -->
+                            <div class="w-1/3 samsung-osd-sidebar py-2 flex flex-col">
+                                <div id="cat-0" class="px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer">
+                                    <i class="fa-solid fa-sliders text-sky-400 w-4"></i> Picture
+                                </div>
+                                <div id="cat-1" class="px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer">
+                                    <i class="fa-solid fa-volume-high text-sky-400 w-4"></i> Sound
+                                </div>
+                                <div id="cat-2" class="px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer">
+                                    <i class="fa-solid fa-arrow-right-to-bracket text-sky-400 w-4"></i> Input
+                                </div>
+                                <div id="cat-3" class="px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer">
+                                    <i class="fa-solid fa-gear text-sky-400 w-4"></i> Setup
+                                </div>
+                                <div id="cat-4" class="px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer">
+                                    <i class="fa-solid fa-circle-info text-sky-400 w-4"></i> Support
+                                </div>
+                            </div>
+
+                            <!-- Right Options Panel: Dynamically Rendered based on Category -->
+                            <div id="osdOptionsPanel" class="w-2/3 p-4 flex flex-col gap-2.5 overflow-y-auto">
+                                <!-- Dynamic Options filled by Javascript -->
+                            </div>
+                        </div>
+
+                        <!-- OSD Footer -->
+                        <div class="bg-[#030a1c]/80 px-4 py-2 border-t border-sky-900/50 flex justify-between items-center text-[10px] text-zinc-400">
+                            <span class="flex items-center gap-1"><kbd class="bg-zinc-800 px-1 rounded font-mono">▲▼</kbd> Move</span>
+                            <span class="flex items-center gap-1"><kbd class="bg-zinc-800 px-1 rounded font-mono">◀▶</kbd> Adjust / Enter</span>
+                            <span class="flex items-center gap-1"><kbd class="bg-zinc-800 px-1.5 rounded font-mono">Return</kbd> Back</span>
+                        </div>
+                    </div>
+
+                    <!-- SOUND TEST POPUP MODAL -->
+                    <div id="soundTestModal" class="absolute inset-x-8 inset-y-12 bg-slate-950/95 border border-sky-400/30 rounded-xl z-40 hidden flex-col p-4 shadow-2xl justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 border-b border-sky-950 pb-2">
+                                <i class="fa-solid fa-circle-play text-amber-400 text-sm animate-ping"></i>
+                                <h3 class="font-bold text-amber-400 uppercase tracking-widest text-xs">Self Diagnosis - Sound Test</h3>
+                            </div>
+                            <p class="text-[10px] text-zinc-300 mt-2 leading-relaxed">
+                                Playing authentic high-fidelity soundtest track. Verify if the dual speakers reproduce the test chimes cleanly and without distortion.
+                            </p>
+                            
+                            <!-- Visual Audio Bars -->
+                            <div class="grid grid-cols-2 gap-4 mt-4 bg-[#081226] p-3 rounded-lg border border-sky-950">
+                                <div>
+                                    <div class="text-[8px] font-bold text-sky-300 uppercase mb-1">Left Channel</div>
+                                    <div class="h-2 bg-zinc-900 rounded overflow-hidden">
+                                        <div id="soundBarLeft" class="h-full bg-gradient-to-r from-sky-400 to-cyan-300 w-0 transition-all duration-75"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-[8px] font-bold text-sky-300 uppercase mb-1">Right Channel</div>
+                                    <div class="h-2 bg-zinc-900 rounded overflow-hidden">
+                                        <div id="soundBarRight" class="h-full bg-gradient-to-r from-sky-400 to-cyan-300 w-0 transition-all duration-75"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Controls inside popup -->
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] text-sky-400/80 font-mono italic animate-pulse">Now Playing: Authentic 2010 Soundtest</span>
+                            <button id="closeSoundTestBtn" class="bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-3 py-1 rounded text-[10px] transition-all">
+                                OK (Close)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VOLUME OSD INDICATOR -->
+                    <div id="volumeOsd" class="absolute bottom-6 left-6 bg-[#030917]/90 border border-sky-400/30 p-2.5 rounded-lg z-30 flex flex-col items-center gap-1.5 opacity-0 transition-opacity duration-200 shadow-xl">
+                        <i class="fa-solid fa-volume-high text-sky-400 text-xs"></i>
+                        <div class="h-16 w-3 bg-zinc-950 rounded relative overflow-hidden flex flex-col justify-end">
+                            <div id="volumeBarFill" class="w-full bg-sky-400 transition-all" style="height: 60%"></div>
+                        </div>
+                        <span id="volumeValText" class="text-[9px] font-mono font-bold text-sky-300">15</span>
+                    </div>
+
+                    <!-- DTH VOLUME OSD INDICATOR (top-left) -->
+                    <div id="dishVolumeOsd" class="absolute top-4 left-4 bg-[#030917]/90 border border-amber-400/30 p-2 rounded-lg z-30 flex items-center gap-2 opacity-0 transition-opacity duration-200 shadow-xl">
+                        <i class="fa-solid fa-satellite-dish text-amber-400 text-xs"></i>
+                        <div class="flex items-center gap-1.5">
+                            <div class="h-2 w-20 bg-zinc-950 rounded overflow-hidden">
+                                <div id="dishVolumeBarFill" class="h-full bg-amber-400 transition-all" style="width: 50%"></div>
+                            </div>
+                            <span id="dishVolumeValText" class="text-[9px] font-mono font-bold text-amber-300">50</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SAMSUNG logo on bezel with power indicator beneath -->
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center z-50">
+                    <div class="text-white/90 font-semibold text-[9px] md:text-[10px] tracking-[0.2em] select-none leading-none">SAMSUNG</div>
+                    <div id="bezelLED" class="w-1 h-1 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.85)] animate-pulse transition-all duration-500 mt-[2px]"></div>
+                </div>
+            </div>
+
+            <!-- Sleek Glass Stand base below TV cabinet -->
+        <div class="w-12 h-6 glass-stand-neck -mt-1 shadow-md"></div>
+        <div class="w-48 h-2.5 glass-stand-base rounded-full -mt-0.5"></div>
+        </div>
+
+        <!-- Right Side: Multi-Remote Bay -->
+        <div class="w-full lg:w-2/5 flex flex-col gap-4">
+            
+            <!-- MULTI-REMOTE CONTROL DECK BAY -->
+            <div class="grid grid-cols-2 gap-2">
+                
+                <!-- COLUMN 1: SAMSUNG TV REMOTE (BN59-00996A - Narrow) -->
+                <div class="glass-panel rounded-2xl p-2 flex flex-col items-center gap-2 relative overflow-hidden border border-zinc-700/40 max-w-[200px] mx-auto">
+                    <div class="absolute inset-x-0 top-0 h-1/2 glossy-shine pointer-events-none opacity-20"></div>
+                    <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full">Samsung TV BN59</div>
+
+                    <!-- Power & Source Row -->
+                    <div class="flex justify-between w-full px-1">
+                        <button id="remotePower" class="remote-btn w-10 h-10 rounded-full bg-red-700 hover:bg-red-600 border border-red-500/40 text-white flex flex-col items-center justify-center font-bold text-[8px]">
+                            <i class="fa-solid fa-power-off text-sm pointer-events-none"></i>
+                        </button>
+                        <button id="remoteSource" class="remote-btn w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700/30 text-zinc-300 flex flex-col items-center justify-center font-semibold text-[8px] uppercase tracking-wider">
+                            <i class="fa-solid fa-circle-nodes text-xs text-sky-400 mb-0.5"></i>
+                            Source
+                        </button>
+                    </div>
+
+                    <!-- Vol / Ch rockers -->
+                    <div class="grid grid-cols-2 gap-2 w-full px-1">
+                        <div class="bg-zinc-900/80 rounded-lg p-1 flex flex-col items-center justify-between border border-zinc-800 h-20">
+                            <button id="remoteVolUp" class="remote-btn w-8 py-0.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded text-[10px]">+</button>
+                            <span class="text-[7px] font-bold text-zinc-500 font-mono">VOL</span>
+                            <button id="remoteVolDown" class="remote-btn w-8 py-0.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded text-[10px]">-</button>
+                        </div>
+                        <div class="bg-zinc-900/80 rounded-lg p-1 flex flex-col items-center justify-between border border-zinc-800 h-20">
+                            <button class="remote-btn w-8 py-0.5 bg-zinc-800 text-zinc-500 font-bold rounded text-[10px] cursor-not-allowed">+</button>
+                            <span class="text-[7px] font-bold text-zinc-500 font-mono">CH</span>
+                            <button class="remote-btn w-8 py-0.5 bg-zinc-800 text-zinc-500 font-bold rounded text-[10px] cursor-not-allowed">-</button>
+                        </div>
+                    </div>
+
+                    <!-- Central D-Pad for TV Menu navigation -->
+                    <div class="relative w-28 h-28 rounded-full bg-zinc-900 border border-zinc-800 shadow-inner flex items-center justify-center">
+                        <button id="remoteUp" class="remote-btn absolute top-1 w-8 h-6 bg-zinc-800 hover:bg-zinc-700 rounded-t-md text-zinc-200 flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-up text-[10px]"></i>
+                        </button>
+                        <button id="remoteLeft" class="remote-btn absolute left-1 w-6 h-8 bg-zinc-800 hover:bg-zinc-700 rounded-l-md text-zinc-200 flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
+                        <button id="remoteEnter" class="remote-btn w-10 h-10 rounded-full bg-zinc-700 hover:bg-zinc-600 border border-zinc-500/30 text-white flex items-center justify-center font-bold text-[8px] uppercase tracking-wider">
+                            Enter
+                        </button>
+                        <button id="remoteRight" class="remote-btn absolute right-1 w-6 h-8 bg-zinc-800 hover:bg-zinc-700 rounded-r-md text-zinc-200 flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                        <button id="remoteDown" class="remote-btn absolute bottom-1 w-8 h-6 bg-zinc-800 hover:bg-zinc-700 rounded-b-md text-zinc-200 flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <!-- Menu and Return buttons -->
+                    <div class="flex justify-between w-full px-2">
+                        <button id="remoteMenu" class="remote-btn px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-semibold text-[8px] rounded border border-zinc-700/30 uppercase tracking-wide">
+                            Menu
+                        </button>
+                        <button id="remoteReturn" class="remote-btn px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-semibold text-[8px] rounded border border-zinc-700/30 uppercase tracking-wide flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> Back
+                        </button>
+                    </div>
+                </div>
+
+                <!-- COLUMN 2: DYNAMIC CONSOLE REMOTE BAY SLOT -->
+                <div class="glass-panel rounded-2xl p-3 flex flex-col items-center justify-center relative overflow-hidden border border-zinc-700/40 min-h-[340px]">
+                    <div class="absolute inset-x-0 top-0 h-1/2 glossy-shine pointer-events-none opacity-20"></div>
+                    
+                    <!-- BOX STATE A: NO CONSOLE ACTIVE -->
+                    <div id="deckOffState" class="flex flex-col items-center justify-center text-center p-3">
+                        <i class="fa-solid fa-ban text-zinc-600 text-2xl mb-2 animate-pulse"></i>
+                        <h4 class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">No Active Device</h4>
+                        <p class="text-[9px] text-zinc-500 mt-1">Please select an HDMI or AV input source using the TV Remote to boot up a controller deck.</p>
+                    </div>
+
+                    <!-- BOX STATE B: WII REMOTE (Wiimote) -->
+                    <div id="deckWiiRemote" class="hidden w-full h-full flex-col items-center">
+                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">Wii Remote (RVL-003)</div>
+                        <div class="wii-remote-body w-24 rounded-2xl py-4 px-2 flex flex-col items-center justify-between gap-3 text-zinc-700">
+                            <!-- Power Button -->
+                            <div class="w-full flex justify-end px-1">
+                                <button onclick="toggleDevicePower('wii')" class="remote-btn w-4 h-4 rounded-full bg-red-600 border border-red-500 shadow flex items-center justify-center text-[7px] text-white font-bold">
+                                    <i class="fa-solid fa-power-off pointer-events-none"></i>
+                                </button>
+                            </div>
+                            <!-- Wiimote D-Pad -->
+                            <div class="relative w-14 h-14 bg-zinc-300 rounded-full flex items-center justify-center shadow-inner border border-zinc-400/50">
+                                <button id="wiiRemoteUp" class="remote-btn absolute top-1 w-4 h-4 bg-zinc-700 text-white rounded flex items-center justify-center shadow active:bg-zinc-600">
+                                    <i class="fa-solid fa-caret-up text-[9px]"></i>
+                                </button>
+                                <button id="wiiRemoteLeft" class="remote-btn absolute left-1 w-4 h-4 bg-zinc-700 text-white rounded flex items-center justify-center shadow active:bg-zinc-600">
+                                    <i class="fa-solid fa-caret-left text-[9px]"></i>
+                                </button>
+                                <div class="w-3 h-3 bg-zinc-700 z-10"></div>
+                                <button id="wiiRemoteRight" class="remote-btn absolute right-1 w-4 h-4 bg-zinc-700 text-white rounded flex items-center justify-center shadow active:bg-zinc-600">
+                                    <i class="fa-solid fa-caret-right text-[9px]"></i>
+                                </button>
+                                <button id="wiiRemoteDown" class="remote-btn absolute bottom-1 w-4 h-4 bg-zinc-700 text-white rounded flex items-center justify-center shadow active:bg-zinc-600">
+                                    <i class="fa-solid fa-caret-down text-[9px]"></i>
+                                </button>
+                            </div>
+                            <!-- Oversized A Button -->
+                            <button id="wiiRemoteA" class="remote-btn w-9 h-9 rounded-full bg-slate-100 border border-zinc-300 flex items-center justify-center text-zinc-600 text-sm font-extrabold shadow active:scale-95 transition-transform">A</button>
+                            <!-- Minus, Home, Plus Row -->
+                            <div class="flex items-center justify-center gap-1.5 w-full mt-1">
+                                <button id="wiiRemoteMinus" class="remote-btn w-4 h-4 rounded-full bg-zinc-300 text-zinc-700 text-[8px] flex items-center justify-center font-black shadow">-</button>
+                                <button id="wiiRemoteHome" class="remote-btn w-5 h-5 rounded-full bg-sky-100 text-sky-600 text-[8px] flex items-center justify-center shadow active:scale-90"><i class="fa-solid fa-house"></i></button>
+                                <button id="wiiRemotePlus" class="remote-btn w-4 h-4 rounded-full bg-zinc-300 text-zinc-700 text-[8px] flex items-center justify-center font-black shadow">+</button>
+                            </div>
+                            <!-- Player LED lights indicators -->
+                            <div class="flex justify-center gap-1.5 w-full mt-2">
+                                <div class="w-1 h-1 rounded-full bg-cyan-400 shadow-[0_0_4px_#22d3ee]"></div>
+                                <div class="w-1 h-1 rounded-full bg-zinc-400"></div>
+                                <div class="w-1 h-1 rounded-full bg-zinc-400"></div>
+                                <div class="w-1 h-1 rounded-full bg-zinc-400"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOX STATE C: PS3 CONTROLLER (DualShock 3) -->
+                    <div id="deckPS3Controller" class="hidden w-full h-full flex-col items-center">
+                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">DualShock®3 Wireless Controller</div>
+                        <div class="ps3-controller-body w-full max-w-[200px] rounded-2xl p-3 flex flex-col gap-2.5 text-zinc-400">
+                            <!-- Shoulder Buttons Mock -->
+                            <div class="flex justify-between px-2 text-[9px] font-bold tracking-widest opacity-80 text-zinc-600">
+                                <button class="bg-zinc-800 px-1 rounded hover:bg-zinc-700 active:scale-95">L1</button>
+                                <button class="bg-zinc-800 px-1 rounded hover:bg-zinc-700 active:scale-95">R1</button>
+                            </div>
+                            
+                            <!-- Left: D-Pad, Right: Face buttons -->
+                            <div class="grid grid-cols-2 gap-2 mt-1">
+                                <!-- D-Pad -->
+                                <div class="relative w-14 h-14 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800">
+                                    <button id="ps3DpadUp" class="remote-btn absolute top-1 w-4 h-4 bg-zinc-800 text-zinc-400 active:text-white rounded flex items-center justify-center shadow">
+                                        <i class="fa-solid fa-caret-up text-[9px]"></i>
+                                    </button>
+                                    <button id="ps3DpadLeft" class="remote-btn absolute left-1 w-4 h-4 bg-zinc-800 text-zinc-400 active:text-white rounded flex items-center justify-center shadow">
+                                        <i class="fa-solid fa-caret-left text-[9px]"></i>
+                                    </button>
+                                    <div class="w-3.5 h-3.5 ps3-dpad-center rounded-sm"></div>
+                                    <button id="ps3DpadRight" class="remote-btn absolute right-1 w-4 h-4 bg-zinc-800 text-zinc-400 active:text-white rounded flex items-center justify-center shadow">
+                                        <i class="fa-solid fa-caret-right text-[9px]"></i>
+                                    </button>
+                                    <button id="ps3DpadDown" class="remote-btn absolute bottom-1 w-4 h-4 bg-zinc-800 text-zinc-400 active:text-white rounded flex items-center justify-center shadow">
+                                        <i class="fa-solid fa-caret-down text-[9px]"></i>
+                                    </button>
+                                </div>
+                                <!-- Face Buttons -->
+                                <div class="relative w-14 h-14 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800">
+                                    <!-- Triangle -->
+                                    <button id="ps3FaceTriangle" class="remote-btn absolute top-1 w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700/50 text-emerald-400 text-[6px] font-bold flex items-center justify-center shadow">▲</button>
+                                    <!-- Square -->
+                                    <button id="ps3FaceSquare" class="remote-btn absolute left-1 w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700/50 text-pink-400 text-[6px] font-bold flex items-center justify-center shadow">■</button>
+                                    <!-- Circle -->
+                                    <button id="ps3FaceCircle" class="remote-btn absolute right-1 w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700/50 text-red-500 text-[7px] font-black flex items-center justify-center shadow">○</button>
+                                    <!-- Cross -->
+                                    <button id="ps3FaceCross" class="remote-btn absolute bottom-1 w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700/50 text-sky-400 text-[8px] font-black flex items-center justify-center shadow">×</button>
+                                </div>
+                            </div>
+
+                            <!-- Central Panel: Select, Start, PS Button -->
+                            <div class="flex items-center justify-between px-2 mt-1">
+                                <button id="ps3BtnSelect" class="text-[6px] font-bold text-zinc-500 uppercase tracking-wider bg-zinc-900 px-1 py-0.5 rounded border border-zinc-800">Select</button>
+                                <button id="ps3BtnPS" onclick="toggleDevicePower('ps3')" class="remote-btn w-6 h-6 rounded-full bg-zinc-800 hover:bg-zinc-700 text-[8px] text-zinc-300 flex items-center justify-center shadow border border-zinc-700/30">PS</button>
+                                <button id="ps3BtnStart" class="text-[6px] font-bold text-zinc-500 uppercase tracking-wider bg-zinc-900 px-1 py-0.5 rounded border border-zinc-800">Start</button>
+                            </div>
+
+                            <!-- Thumbstick mock representations -->
+                            <div class="flex justify-around mt-1">
+                                <div class="w-8 h-8 rounded-full ps3-stick"></div>
+                                <div class="w-8 h-8 rounded-full ps3-stick"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOX STATE D: APPLE TV SIRI REMOTE -->
+                    <div id="deckAppleRemote" class="hidden w-full h-full flex-col items-center">
+                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">Apple Siri Remote (A2854)</div>
+                        <div class="siri-remote-body w-20 rounded-2xl p-3 flex flex-col items-center gap-3 text-zinc-800">
+                            
+                            <button id="applePower" onclick="toggleDevicePower('apple')" class="remote-btn w-6 h-6 rounded-full bg-red-600 text-white text-[8px] font-bold">P</button>
+
+                            <!-- Circular Touchpad controller -->
+                            <div class="relative w-14 h-14 rounded-full siri-clickpad-ring flex items-center justify-center border border-zinc-400">
+                                <button id="siriClickUp" class="remote-btn absolute top-1.5 w-6 h-3 flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-chevron-up"></i></button>
+                                <button id="siriClickLeft" class="remote-btn absolute left-1.5 w-3 h-6 flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button id="siriClickCenter" class="remote-btn w-6 h-6 rounded-full siri-clickpad-center border border-zinc-600 flex items-center justify-center text-white text-[9px] font-black shadow"></button>
+                                <button id="siriClickRight" class="remote-btn absolute right-1.5 w-3 h-6 flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-chevron-right"></i></button>
+                                <button id="siriClickDown" class="remote-btn absolute bottom-1.5 w-6 h-3 flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-chevron-down"></i></button>
+                            </div>
+
+                            <!-- Double buttons row: Back and TV/Home -->
+                            <div class="grid grid-cols-2 gap-2 w-full px-1">
+                                <button id="siriBtnBack" class="remote-btn w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[8px] font-bold border border-zinc-700 shadow active:scale-95">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button id="siriBtnTV" class="remote-btn w-6 h-6 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[8px] border border-zinc-700 shadow active:scale-95">
+                                    <i class="fa-solid fa-tv"></i>
+                                </button>
+                            </div>
+
+                            <!-- Dedicated Siri Side Mic Button -->
+                            <button id="siriBtnMic" class="remote-btn w-full py-1 rounded bg-[#ff2d55]/90 hover:bg-[#ff2d55] text-white font-bold text-[8px] uppercase tracking-wider shadow flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-microphone"></i> Siri Mic
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- BOX STATE E: DISHTV REMOTE -->
+                    <div id="deckDishRemote" class="hidden w-full h-full flex-col items-center scale-[0.65] origin-top">
+                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">DishTV Remote</div>
+                        <div class="bg-zinc-800 w-20 rounded-2xl p-3 flex flex-col items-center gap-2.5">
+                             <button id="dishPower" onclick="toggleDevicePower('dish')" class="remote-btn w-10 h-10 rounded-full bg-red-700 hover:bg-red-600 border border-red-500/40 text-white text-xs font-bold">Power</button>
+                             <button id="dishChUp" onclick="dishChangeChannel('up')" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">CH+</button>
+                             <button onclick="adjustDishVolume(5)" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">VOL+</button>
+                             <button onclick="adjustDishVolume(-5)" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">VOL-</button>
+                             <button id="dishChDown" onclick="dishChangeChannel('down')" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">CH-</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Custom User Feedback Toast Panel -->
+    <div id="toast" class="opacity-0 pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 text-slate-100 border border-sky-500/40 px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 text-xs transition-all duration-300 z-50">
+        <span id="toastIcon" class="text-cyan-400"><i class="fa-solid fa-circle-info"></i></span>
+        <span id="toastMessage">TV Audio Engine activated!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-3 px-4 text-[11px] text-zinc-500 shrink-0 border-t border-zinc-950/60 z-10 relative">
+        2010 Samsung FM sound emulation coupled with authentic uploaded chimes. Use remotes or keyboard keys (<kbd class="px-1 rounded bg-slate-900 font-mono">Arrows</kbd>, <kbd class="px-1 rounded bg-slate-900 font-mono">Enter</kbd>, <kbd class="px-1 rounded bg-slate-900 font-mono">Backspace</kbd>).
+    </footer>
+
+    <script>
+        // High Quality Audio Tracks embedded from direct local uploads
+        const audioStartup = new Audio('startup.mp3');
+        const audioShutdown = new Audio('shutdown.mp3');
+        const audioSoundTest = new Audio('soundtest.mp3');
+        audioSoundTest.loop = true; 
+
+        // Dynamic audio volume synchronization
+        function updateAudioVolumes() {
+            const tv = volume / 100;
+            const dth = dishVolume / 100;
+            audioStartup.volume = tv;
+            audioShutdown.volume = tv;
+            audioSoundTest.volume = tv;
+            const dishVid = document.getElementById('dishVideo');
+            if (dishVid) dishVid.volume = Math.min(1, tv + dth);
+            if (tvSynth.synthGain) {
+                const baseGain = 0.5 + dth * 0.5;
+                tvSynth.synthGain.gain.setValueAtTime(baseGain, tvSynth.audioCtx.currentTime);
+            }
+        }
+
+        // FM Synthesizer Class for physical relay sound clicks and auxiliary sounds
+        class SamsungTVSynth {
+            constructor() {
+                this.audioCtx = null;
+                this.mainAnalyser = null;
+                this.synthGain = null;
+                this.activeHum = null;
+                this.activeWhine = null;
+            }
+
+            initAudio() {
+                if (this.audioCtx) return;
+                
+                try {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Master compressor
+                    const comp = this.audioCtx.createDynamicsCompressor();
+                    comp.threshold.setValueAtTime(-12, this.audioCtx.currentTime);
+                    comp.knee.setValueAtTime(20, this.audioCtx.currentTime);
+                    comp.ratio.setValueAtTime(8, this.audioCtx.currentTime);
+                    comp.attack.setValueAtTime(0.005, this.audioCtx.currentTime);
+                    comp.release.setValueAtTime(0.15, this.audioCtx.currentTime);
+
+                    // Spectrum Analyser
+                    this.mainAnalyser = this.audioCtx.createAnalyser();
+                    this.mainAnalyser.fftSize = 256;
+
+                    // Main Inputs
+                    this.synthGain = this.audioCtx.createGain();
+                    this.synthGain.gain.setValueAtTime(0.85, this.audioCtx.currentTime);
+
+                    this.synthGain.connect(comp);
+                    comp.connect(this.mainAnalyser);
+                    this.mainAnalyser.connect(this.audioCtx.destination);
+
+                    this.startCRTWhine();
+                } catch(e) {
+                    console.error("Audio initialization failed:", e);
+                }
+            }
+
+            // Simulated power relay thump and mechanical coil "clack"
+            playRelayClick() {
+                if (!this.audioCtx) return;
+                const now = this.audioCtx.currentTime;
+
+                // Sharp coil metallic snap
+                const snapOsc = this.audioCtx.createOscillator();
+                snapOsc.type = 'triangle';
+                snapOsc.frequency.setValueAtTime(1200, now);
+                snapOsc.frequency.exponentialRampToValueAtTime(100, now + 0.02);
+
+                const snapGain = this.audioCtx.createGain();
+                snapGain.gain.setValueAtTime(0.3, now);
+                snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+                // Magnetic transformer power thump
+                const thumpOsc = this.audioCtx.createOscillator();
+                thumpOsc.type = 'sine';
+                thumpOsc.frequency.setValueAtTime(65, now);
+                thumpOsc.frequency.linearRampToValueAtTime(20, now + 0.04);
+
+                const thumpGain = this.audioCtx.createGain();
+                thumpGain.gain.setValueAtTime(0.8, now);
+                thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+                snapOsc.connect(snapGain);
+                snapGain.connect(this.synthGain);
+
+                thumpOsc.connect(thumpGain);
+                thumpGain.connect(this.synthGain);
+
+                snapOsc.start(now);
+                snapOsc.stop(now + 0.03);
+
+                thumpOsc.start(now);
+                thumpOsc.stop(now + 0.06);
+            }
+
+            // Authentic 14kHz flyback whistle and 60Hz ambient hum
+            startCRTWhine() {
+                if (!this.audioCtx) return;
+                const now = this.audioCtx.currentTime;
+                this.stopCRTWhine();
+
+                this.activeWhine = this.audioCtx.createOscillator();
+                this.activeWhine.type = 'sine';
+                this.activeWhine.frequency.setValueAtTime(14500, now);
+
+                const whineGain = this.audioCtx.createGain();
+                whineGain.gain.setValueAtTime(0, now);
+                whineGain.gain.linearRampToValueAtTime(0.002, now + 1.5);
+
+                this.activeHum = this.audioCtx.createOscillator();
+                this.activeHum.type = 'sine';
+                this.activeHum.frequency.setValueAtTime(60, now);
+
+                const humGain = this.audioCtx.createGain();
+                humGain.gain.setValueAtTime(0, now);
+                humGain.gain.linearRampToValueAtTime(0.008, now + 1.0);
+
+                this.activeWhine.connect(whineGain);
+                whineGain.connect(this.synthGain);
+
+                this.activeHum.connect(humGain);
+                humGain.connect(this.synthGain);
+
+                this.activeWhine.start(now);
+                this.activeHum.start(now);
+            }
+
+            stopCRTWhine() {
+                if (this.activeWhine) {
+                    try { this.activeWhine.stop(); } catch(e){}
+                    this.activeWhine = null;
+                }
+                if (this.activeHum) {
+                    try { this.activeHum.stop(); } catch(e){}
+                    this.activeHum = null;
+                }
+            }
+
+            // Simple synthesizer beep/chirp for menu clicks and console audio feedback
+            playFMNote(freq, duration = 1.5, volume = 0.35) {
+                if (!this.audioCtx) return;
+                const now = this.audioCtx.currentTime;
+
+                const carrier = this.audioCtx.createOscillator();
+                carrier.type = 'sine';
+                carrier.frequency.setValueAtTime(freq, now);
+
+                const ampGain = this.audioCtx.createGain();
+                ampGain.gain.setValueAtTime(0, now);
+                ampGain.gain.linearRampToValueAtTime(volume, now + 0.005);
+                ampGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                carrier.connect(ampGain);
+                ampGain.connect(this.synthGain);
+
+                carrier.start(now);
+                carrier.stop(now + duration + 0.1);
+            }
+        }
+
+        // Initialize Synth
+        const tvSynth = new SamsungTVSynth();
+
+        // Simulator State Variables
+        let powerState = "off"; // "off", "booting", "active"
+        let wiiPower = false;
+        let ps3Power = false;
+        let applePower = false;
+        let dishPower = false;
+        let dishChannel = 4;
+        let watermarkEnabled = true;
+        const dishChannels = [
+            { name: "Channel 121: AajTak", src: "dishtv_source.mp4" },
+            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: "dishtv_source2.mp4" },
+            { name: "Channel 123: AajTak: Special Report 8:30PM Edition", src: "dishtv_source3.mp4" },
+            { name: "Channel 124: AajTak: Aaj Subah 10AM Edition", src: "dishtv_source4.mp4" },
+            { name: "Channel 125: AajTak: 2020 e-Agenda Edition", src: "dishtv_source5.mp4" },
+            { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: "dishtv_source6.mp4" }
+        ];
+        let volume = 15;
+        let dishVolume = 50;
+        let menuOpen = false;
+        let sourceMenuOpen = false;
+        
+        // Input Channels Definition
+        // 0: TV (No Signal), 1: AV (Wii), 2: HDMI 1 (Apple TV), 3: HDMI 2 (PlayStation 3), 4: HDMI 3 (DishTV)
+        let activeInputSource = 4; 
+        let activeSourceSelectIndex = 4;
+
+        let currentMenuCategory = 1; // Default to Sound
+        let currentMenuOptionIndex = 0;
+        let menuStage = "categories"; // "categories", "options"
+        let activeSoundTestTimer = null;
+
+        // Menu structures matching genuine 2010 TV
+        const menuConfig = [
+            {
+                name: "Picture",
+                icon: "fa-sliders",
+                options: [
+                    { name: "Picture Mode", type: "select", values: ["Dynamic", "Standard", "Movie"], current: 1 },
+                    { name: "Backlight", type: "range", min: 0, max: 20, current: 15 },
+                    { name: "Contrast", type: "range", min: 0, max: 100, current: 95 },
+                    { name: "Brightness", type: "range", min: 0, max: 100, current: 45 },
+                    { name: "Watermark", type: "toggle", current: true }
+                ]
+            },
+            {
+                name: "Sound",
+                icon: "fa-volume-high",
+                options: [
+                    { name: "Sound Mode", type: "select", values: ["Standard", "Music", "Movie", "Clear Voice"], current: 0 },
+                    { name: "SRS TheaterSound", type: "toggle", current: true },
+                    { name: "Melody Level", type: "select", values: ["Off", "Low", "Medium", "High"], current: 3 },
+                    { name: "Execute Sound Test", type: "action", action: triggerSoundTest }
+                ]
+            },
+            {
+                name: "Input",
+                icon: "fa-arrow-right-to-bracket",
+                options: [
+                    { name: "Input List", type: "select", values: ["HDMI 3", "TV", "AV", "HDMI 1", "HDMI 2"], current: 0 },
+                    { name: "Anynet+ (HDMI-CEC)", type: "toggle", current: true }
+                ]
+            },
+            {
+                name: "Setup",
+                icon: "fa-gear",
+                options: [
+                    { name: "Language", type: "select", values: ["English", "Español", "Français"], current: 0 },
+                    { name: "Energy Saving", type: "select", values: ["Off", "Low", "Medium", "High"], current: 0 },
+                    { name: "On/Off Timer", type: "toggle", current: false }
+                ]
+            },
+            {
+                name: "Support",
+                icon: "fa-circle-info",
+                options: [
+                    { name: "Self Diagnosis: Audio Test", type: "action", action: triggerSoundTest },
+                    { name: "Software Upgrade", type: "toggle", current: false },
+                    { name: "Contact Samsung", type: "action", action: () => showToast("Samsung Support: 1-800-SAMSUNG", '<i class="fa-solid fa-phone"></i>', "info") }
+                ]
+            }
+        ];
+
+        const SETTINGS_KEY = 'samsung_tv_settings';
+
+        function saveSettings() {
+            const data = {
+                volume,
+                dishVolume,
+                activeInputSource,
+                watermarkEnabled,
+                dishChannel,
+                wiiPower,
+                ps3Power,
+                applePower,
+                dishPower,
+                menuConfig: menuConfig.map(cat =>
+                    cat.options.map(opt =>
+                        opt.current !== undefined ? opt.current : null
+                    )
+                )
+            };
+            try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(data)); } catch(e) {}
+        }
+
+        function loadSettings() {
+            try {
+                const raw = localStorage.getItem(SETTINGS_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data.volume !== undefined) volume = data.volume;
+                if (data.dishVolume !== undefined) dishVolume = data.dishVolume;
+                if (data.activeInputSource !== undefined) activeInputSource = data.activeInputSource;
+                if (data.watermarkEnabled !== undefined) watermarkEnabled = data.watermarkEnabled;
+                if (data.dishChannel !== undefined) dishChannel = data.dishChannel;
+                if (data.wiiPower !== undefined) wiiPower = data.wiiPower;
+                if (data.ps3Power !== undefined) ps3Power = data.ps3Power;
+                if (data.applePower !== undefined) applePower = data.applePower;
+                if (data.dishPower !== undefined) dishPower = data.dishPower;
+                if (data.menuConfig) {
+                    data.menuConfig.forEach((cat, ci) => {
+                        if (!menuConfig[ci]) return;
+                        cat.forEach((val, oi) => {
+                            if (val !== null && menuConfig[ci].options[oi]) {
+                                menuConfig[ci].options[oi].current = val;
+                            }
+                        });
+                    });
+                }
+            } catch(e) {}
+        }
+
+        // --- CONSOLE SIMULATOR SUB-STATES ---
+        // Wii variables
+        let wiiActiveIndex = 0;
+        let wiiDialogOpen = false;
+        const wiiChannels = [
+            { name: "Disc Channel", icon: "fa-compact-disc" },
+            { name: "Mii Channel", icon: "fa-user-ninja" },
+            { name: "Wii Shop Channel", icon: "fa-bag-shopping" },
+            { name: "Photo Channel", icon: "fa-images" },
+            { name: "Forecast Channel", icon: "fa-cloud-sun" },
+            { name: "News Channel", icon: "fa-newspaper" },
+            { name: "Wii Message Board", icon: "fa-envelope-open-text" },
+            { name: "Wii Settings", icon: "fa-screwdriver-wrench" }
+        ];
+
+        // PS3 XMB variables
+        let ps3SelectedCategory = 3; // Start on Game (Index 3)
+        let ps3SelectedVerticalIndex = 0;
+        const ps3Content = {
+            0: [ // Settings
+                { label: "System Update", desc: "Update PS3 system software" },
+                { label: "Display Settings", desc: "Adjust output resolution" },
+                { label: "Sound Settings", desc: "Configure optical/stereo parameters" },
+                { label: "System Information", desc: "Firmware version 4.80" }
+            ],
+            1: [ // Photo
+                { label: "USB Device (Memory Stick)", desc: "No images found" },
+                { label: "Wallpapers Folder", desc: "Classic blue theme wave files" }
+            ],
+            2: [ // Music
+                { label: "Playlists", desc: "Create retro music collection folders" },
+                { label: "Frutiger Aero Soundtrack", desc: "9 dynamic ambient loops" }
+            ],
+            3: [ // Game
+                { label: "Metal Gear Solid 4", desc: "Insert Disc to run" },
+                { label: "LittleBigPlanet", desc: "Digital game pre-installed" },
+                { label: "MotorStorm Demo", desc: "Play intense mud racing demo" },
+                { label: "Gran Turismo 5 Prologue", desc: "The real driving simulator" }
+            ],
+            4: [ // Network
+                { label: "PlayStation®Store", desc: "Access premium digital downloads" },
+                { label: "Internet Browser", desc: "Surf the worldwide web" }
+            ]
+        };
+
+        // tvOS Apple TV variables
+        let tvosSelectedCard = 0;
+        const tvosSiriResponses = [
+            "tvOS 26 Siri here! I've calculated that physical TVs are still extremely trendy in 2026.",
+            "Searching the Apple Arcade database... Gran Turismo 11 or Tetris 3D are ready to stream.",
+            "Opening Apple TV+. Frutiger Aero documentaries are currently ranking #1 globally.",
+            "Setting Siri response output module... System state is nominal. 5G latency is under 1.2ms."
+        ];
+
+
+        function toggleDevicePower(device) {
+            switch(device) {
+                case 'wii': wiiPower = !wiiPower; break;
+                case 'ps3': ps3Power = !ps3Power; break;
+                case 'apple': applePower = !applePower; break;
+                case 'dish': dishPower = !dishPower; break;
+            }
+            renderActiveScreen();
+            saveSettings();
+        }
+
+        function dishChangeChannel(direction) {
+            if (!dishPower) return;
+            const max = dishChannels.length;
+            if (direction === "up") {
+                dishChannel = (dishChannel + 1) % max;
+            } else {
+                dishChannel = (dishChannel - 1 + max) % max;
+            }
+            const video = document.getElementById('dishVideo');
+            video.src = dishChannels[dishChannel].src;
+            video.play();
+            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
+            saveSettings();
+        }
+
+        /* Power Sequence Logic */
+
+        async function togglePower() {
+            console.log("togglePower called");
+            tvSynth.initAudio();
+
+            if (powerState === "off") {
+                // Turn On sequence
+                powerState = "booting";
+                
+                // LED blinks blue/cyan 5 times representing original LCD relay startup
+                const bezelLED = document.getElementById('bezelLED');
+                bezelLED.classList.remove('bg-red-600', 'shadow-[0_0_8px_rgba(220,38,38,0.85)]');
+                
+                for (let i = 0; i < 5; i++) {
+                    bezelLED.className = "w-1 h-1 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.9)]";
+                    await delay(150);
+                    bezelLED.className = "w-1 h-1 rounded-full bg-zinc-950";
+                    await delay(150);
+                }
+                
+                bezelLED.className = "w-1 h-1 rounded-full bg-zinc-950";
+
+                // Play physical relay click
+                tvSynth.playRelayClick();
+                
+                // Stop any previous playing chimes/tests
+                audioShutdown.pause();
+                audioSoundTest.pause();
+
+                // Play real high-fidelity startup sound
+                audioStartup.currentTime = 0;
+                updateAudioVolumes();
+                audioStartup.play().catch(e => console.log("Startup audio block:", e));
+
+                // Show Samsung OSD boot screen
+                const screenBoot = document.getElementById('screenBoot');
+                screenBoot.classList.remove('opacity-0', 'pointer-events-none');
+
+                await delay(4200);
+                screenBoot.classList.add('opacity-0', 'pointer-events-none');
+
+                // Transition to active screen
+                powerState = "active";
+                renderActiveScreen();
+
+            } else {
+                // Power Off sequence
+                powerState = "off";
+                closeMenu();
+                closeSourceMenu();
+                stopSoundTest();
+
+                hideAllScreens();
+                
+                // Show brief blackout screen shutdown message
+                const screenShutdown = document.getElementById('screenShutdown');
+                screenShutdown.classList.remove('opacity-0', 'pointer-events-none');
+
+                // Play physical relay click
+                tvSynth.playRelayClick();
+
+                // Stop startup sound and play authentic high-fidelity shutdown chime
+                audioStartup.pause();
+                audioShutdown.currentTime = 0;
+                updateAudioVolumes();
+                audioShutdown.play().catch(e => console.log("Shutdown audio block:", e));
+
+                await delay(2500);
+                screenShutdown.classList.add('opacity-0', 'pointer-events-none');
+
+                // Restore flashing red standby bezel LED
+                const bezelLED = document.getElementById('bezelLED');
+                bezelLED.className = "w-1 h-1 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.85)] animate-pulse";
+                
+                // Keep screen physically off
+                document.getElementById('screenOff').style.opacity = "1";
+                saveSettings();
+            }
+        }
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        function hideAllScreens() {
+            document.getElementById('inputTV').classList.add('hidden');
+            document.getElementById('inputWii').classList.add('hidden');
+            document.getElementById('inputPS3').classList.add('hidden');
+            document.getElementById('inputAppleTV').classList.add('hidden');
+            document.getElementById('inputDishTV').classList.add('hidden');
+            const dishVid = document.getElementById('dishVideo');
+            if (dishVid) { dishVid.pause(); }
+            document.getElementById('screenOff').style.opacity = "1";
+            if (requestAnimId) {
+                cancelAnimationFrame(requestAnimId);
+                requestAnimId = null;
+            }
+        }
+
+        function renderActiveScreen() {
+            hideAllScreens();
+            document.getElementById('screenOff').style.opacity = "0";
+
+            document.getElementById('deckOffState').classList.add('hidden');
+            document.getElementById('deckWiiRemote').classList.add('hidden');
+            document.getElementById('deckPS3Controller').classList.add('hidden');
+            document.getElementById('deckAppleRemote').classList.add('hidden');
+            document.getElementById('deckDishRemote').classList.add('hidden');
+
+            switch(activeInputSource) {
+                case 0: // TV
+                    document.getElementById('inputTV').classList.remove('hidden');
+                    document.getElementById('deckOffState').classList.remove('hidden');
+                    startNoSignalBouncing();
+                    break;
+                case 1: // Wii
+                    document.getElementById('deckWiiRemote').classList.remove('hidden');
+                    if (wiiPower) {
+                        document.getElementById('inputWii').classList.remove('hidden');
+                        updateWiiTime();
+                        renderWiiGrid();
+                    }
+                    break;
+                case 2: // Apple TV
+                    document.getElementById('deckAppleRemote').classList.remove('hidden');
+                    if (applePower) {
+                        document.getElementById('inputAppleTV').classList.remove('hidden');
+                        renderAppleTVGrid();
+                    }
+                    break;
+                case 3: // PS3
+                    document.getElementById('deckPS3Controller').classList.remove('hidden');
+                    if (ps3Power) {
+                        document.getElementById('inputPS3').classList.remove('hidden');
+                        updatePS3Time();
+                        renderPS3XMB();
+                    }
+                    break;
+                case 4: // DishTV
+                    document.getElementById('deckDishRemote').classList.remove('hidden');
+                    document.getElementById('inputDishTV').classList.remove('hidden');
+                    if (dishPower) {
+                        document.getElementById('dishNoSignal').classList.add('hidden');
+                        document.getElementById('dishVideo').classList.remove('hidden');
+                        const video = document.getElementById('dishVideo');
+                        if (!video.src) {
+                            video.src = dishChannels[dishChannel].src;
+                        }
+                        video.play();
+                    } else {
+                        document.getElementById('dishNoSignal').classList.remove('hidden');
+                        document.getElementById('dishVideo').classList.add('hidden');
+                        document.getElementById('dishVideo').pause();
+                    }
+                    break;
+            }
+        }
+
+
+        /* Samsung Source Menu Overlay Selectors */
+
+        function toggleSourceMenu() {
+            if (powerState !== "active") return;
+            if (sourceMenuOpen) {
+                closeSourceMenu();
+            } else {
+                closeMenu();
+                sourceMenuOpen = true;
+                document.getElementById('samsungSourceOverlay').classList.remove('hidden');
+                activeSourceSelectIndex = activeInputSource;
+                renderSourceMenuOptions();
+            }
+        }
+
+        function closeSourceMenu() {
+            sourceMenuOpen = false;
+            document.getElementById('samsungSourceOverlay').classList.add('hidden');
+        }
+
+        function renderSourceMenuOptions() {
+            for (let i = 0; i < 5; i++) {
+                const el = document.getElementById(`source-item-${i}`);
+                if (i === activeSourceSelectIndex) {
+                    el.className = "p-1.5 rounded flex justify-between items-center transition-all samsung-osd-highlight text-white";
+                } else {
+                    el.className = "p-1.5 rounded flex justify-between items-center transition-all bg-sky-950/20 text-slate-300";
+                }
+            }
+        }
+
+        function sourceSelectUp() {
+            activeSourceSelectIndex = (activeSourceSelectIndex - 1 + 5) % 5;
+            renderSourceMenuOptions();
+            tvSynth.playFMNote(880, 0.08, 0.2); // Beep
+        }
+
+        function sourceSelectDown() {
+            activeSourceSelectIndex = (activeSourceSelectIndex + 1) % 5;
+            renderSourceMenuOptions();
+            tvSynth.playFMNote(880, 0.08, 0.2); // Beep
+        }
+
+        function sourceSelectConfirm() {
+            activeInputSource = activeSourceSelectIndex;
+            closeSourceMenu();
+            renderActiveScreen();
+            
+            showToast(`Input switched to: ${getAudioSourceName(activeInputSource)}`, '<i class="fa-solid fa-circle-nodes"></i>', 'success');
+            saveSettings();
+        }
+
+        function getAudioSourceName(srcId) {
+            switch(srcId) {
+                case 0: return "TV / RF";
+                case 1: return "AV (Nintendo Wii)";
+                case 2: return "HDMI 1 (Apple TV)";
+                case 3: return "HDMI 2 (PlayStation 3)";
+                case 4: return "HDMI 3 (DishTV)";
+            }
+        }
+
+
+        /* Samsung OSD Menu Navigation Engine */
+
+        function toggleMenu() {
+            if (powerState !== "active") return;
+
+            if (menuOpen) {
+                closeMenu();
+            } else {
+                closeSourceMenu();
+                menuOpen = true;
+                document.getElementById('samsungOSD').classList.remove('hidden');
+                menuStage = "categories";
+                currentMenuOptionIndex = 0;
+                renderCategories();
+                renderCategoryOptions();
+            }
+        }
+
+        function closeMenu() {
+            menuOpen = false;
+            document.getElementById('samsungOSD').classList.add('hidden');
+            stopSoundTest();
+        }
+
+        function renderCategories() {
+            for (let i = 0; i < 5; i++) {
+                const el = document.getElementById(`cat-${i}`);
+                el.className = "px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer";
+                if (menuStage === "categories" && i === currentMenuCategory) {
+                    el.classList.add('samsung-osd-highlight', 'border-l-4', 'border-amber-400');
+                    el.classList.remove('text-zinc-400');
+                } else if (i === currentMenuCategory) {
+                    el.classList.add('bg-sky-950/40', 'text-sky-300', 'border-l-4', 'border-sky-500');
+                    el.classList.remove('text-zinc-400');
+                }
+            }
+            document.getElementById('menuPathDisplay').innerText = menuConfig[currentMenuCategory].name;
+        }
+
+        function renderCategoryOptions() {
+            const panel = document.getElementById('osdOptionsPanel');
+            panel.innerHTML = '';
+
+            const currentOptions = menuConfig[currentMenuCategory].options;
+
+            currentOptions.forEach((opt, idx) => {
+                const container = document.createElement('div');
+                container.className = "p-2 rounded flex justify-between items-center transition-all";
+                
+                if (menuStage === "options" && idx === currentMenuOptionIndex) {
+                    container.classList.add('samsung-osd-highlight');
+                } else {
+                    container.classList.add('bg-sky-950/20', 'border', 'border-sky-900/10');
+                }
+
+                const label = document.createElement('div');
+                label.className = "font-semibold";
+                label.innerText = opt.name;
+                container.appendChild(label);
+
+                const valueContainer = document.createElement('div');
+                valueContainer.className = "font-mono font-bold text-sky-400 flex items-center gap-1";
+                if (menuStage === "options" && idx === currentMenuOptionIndex) {
+                    valueContainer.classList.remove('text-sky-400');
+                    valueContainer.classList.add('text-white');
+                }
+
+                if (opt.type === "toggle") {
+                    valueContainer.innerText = opt.current ? "On" : "Off";
+                } else if (opt.type === "select") {
+                    valueContainer.innerText = opt.values[opt.current];
+                } else if (opt.type === "range") {
+                    valueContainer.innerText = opt.current;
+                } else if (opt.type === "action") {
+                    valueContainer.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i> Play';
+                }
+
+                container.appendChild(valueContainer);
+                panel.appendChild(container);
+            });
+        }
+
+        function navigateUp() {
+            if (!menuOpen) return;
+            if (menuStage === "categories") {
+                currentMenuCategory = (currentMenuCategory - 1 + 5) % 5;
+                renderCategories();
+                renderCategoryOptions();
+            } else if (menuStage === "options") {
+                const max = menuConfig[currentMenuCategory].options.length;
+                currentMenuOptionIndex = (currentMenuOptionIndex - 1 + max) % max;
+                renderCategoryOptions();
+            }
+            tvSynth.playFMNote(880, 0.08, 0.15);
+        }
+
+        function navigateDown() {
+            if (!menuOpen) return;
+            if (menuStage === "categories") {
+                currentMenuCategory = (currentMenuCategory + 1) % 5;
+                renderCategories();
+                renderCategoryOptions();
+            } else if (menuStage === "options") {
+                const max = menuConfig[currentMenuCategory].options.length;
+                currentMenuOptionIndex = (currentMenuOptionIndex + 1) % max;
+                renderCategoryOptions();
+            }
+            tvSynth.playFMNote(880, 0.08, 0.15);
+        }
+
+        function navigateRightOrEnter() {
+            if (!menuOpen) return;
+            if (menuStage === "categories") {
+                menuStage = "options";
+                currentMenuOptionIndex = 0;
+                renderCategories();
+                renderCategoryOptions();
+            } else if (menuStage === "options") {
+                const opt = menuConfig[currentMenuCategory].options[currentMenuOptionIndex];
+                if (opt.type === "toggle") {
+                    opt.current = !opt.current;
+                    renderCategoryOptions();
+                    showToast(`${opt.name} toggled: ${opt.current ? 'On' : 'Off'}`, '<i class="fa-solid fa-toggle-on"></i>');
+                    if (opt.name === "Watermark") {
+                        watermarkEnabled = opt.current;
+                        applyWatermarkVisibility();
+                    }
+                } else if (opt.type === "select") {
+                    opt.current = (opt.current + 1) % opt.values.length;
+                    renderCategoryOptions();
+                    if (opt.name === "Melody Level") {
+                        tvSynth.playFMNote(659.25, 0.8, 0.35); 
+                    }
+                } else if (opt.type === "range") {
+                    opt.current = Math.min(opt.max, opt.current + 1);
+                    renderCategoryOptions();
+                } else if (opt.type === "action") {
+                    opt.action();
+                }
+                saveSettings();
+            }
+            tvSynth.playFMNote(1050, 0.08, 0.2);
+        }
+
+        function navigateLeftOrReturn() {
+            if (!menuOpen) return;
+            if (menuStage === "options") {
+                menuStage = "categories";
+                renderCategories();
+                renderCategoryOptions();
+            } else if (menuStage === "categories") {
+                closeMenu();
+            }
+            tvSynth.playFMNote(750, 0.08, 0.15);
+        }
+
+        function navigateLeftAdjustment() {
+            if (!menuOpen || menuStage !== "options") {
+                navigateLeftOrReturn();
+                return;
+            }
+            const opt = menuConfig[currentMenuCategory].options[currentMenuOptionIndex];
+            if (opt.type === "select") {
+                opt.current = (opt.current - 1 + opt.values.length) % opt.values.length;
+                renderCategoryOptions();
+            } else if (opt.type === "range") {
+                opt.current = Math.max(opt.min, opt.current - 1);
+                renderCategoryOptions();
+            } else {
+                navigateLeftOrReturn();
+            }
+            saveSettings();
+            tvSynth.playFMNote(750, 0.08, 0.15);
+        }
+
+
+        /* The Sound Test Procedure */
+
+        function triggerSoundTest() {
+            tvSynth.initAudio();
+            const modal = document.getElementById('soundTestModal');
+            modal.classList.remove('hidden');
+
+            tvSynth.playRelayClick();
+            
+            const barLeft = document.getElementById('soundBarLeft');
+            const barRight = document.getElementById('soundBarRight');
+
+            // Play the authentic uploaded soundtest.mp3
+            audioSoundTest.currentTime = 0;
+            updateAudioVolumes();
+            audioSoundTest.play().catch(e => console.log("Soundtest track play block:", e));
+
+            if (activeSoundTestTimer) clearInterval(activeSoundTestTimer);
+            activeSoundTestTimer = setInterval(() => {
+                const lVal = Math.floor(Math.random() * 80) + 20;
+                const rVal = Math.floor(Math.random() * 80) + 20;
+                barLeft.style.width = `${lVal}%`;
+                barRight.style.width = `${rVal}%`;
+            }, 80);
+
+            showToast("Self Diagnosis: Real stereo test melody playing.", '<i class="fa-solid fa-music"></i>', "success");
+        }
+
+        function stopSoundTest() {
+            const modal = document.getElementById('soundTestModal');
+            modal.classList.add('hidden');
+            
+            audioSoundTest.pause();
+            audioSoundTest.currentTime = 0;
+
+            if (activeSoundTestTimer) {
+                clearInterval(activeSoundTestTimer);
+                activeSoundTestTimer = null;
+            }
+        }
+
+        document.getElementById('closeSoundTestBtn').addEventListener('click', stopSoundTest);
+
+
+        /* Volume Adjustment */
+
+        function adjustVolume(amount) {
+            if (powerState !== "active") return;
+            volume = Math.max(0, Math.min(100, volume + amount));
+            saveSettings();
+            
+            const volumeOsd = document.getElementById('volumeOsd');
+            const fill = document.getElementById('volumeBarFill');
+            const text = document.getElementById('volumeValText');
+
+            fill.style.height = `${volume}%`;
+            text.innerText = volume;
+
+            volumeOsd.classList.remove('opacity-0');
+            clearTimeout(volumeOsd.timer);
+            volumeOsd.timer = setTimeout(() => {
+                volumeOsd.classList.add('opacity-0');
+            }, 1500);
+
+            updateAudioVolumes();
+
+            if (tvSynth.audioCtx) {
+                tvSynth.playFMNote(554.37, 0.2, 0.15 * (volume / 100));
+            }
+        }
+
+        function adjustDishVolume(amount) {
+            if (powerState !== "active") return;
+            dishVolume = Math.max(0, Math.min(100, dishVolume + amount));
+            saveSettings();
+
+            const osd = document.getElementById('dishVolumeOsd');
+            const fill = document.getElementById('dishVolumeBarFill');
+            const text = document.getElementById('dishVolumeValText');
+
+            fill.style.width = `${dishVolume}%`;
+            text.innerText = dishVolume;
+
+            osd.classList.remove('opacity-0');
+            clearTimeout(osd.timer);
+            osd.timer = setTimeout(() => {
+                osd.classList.add('opacity-0');
+            }, 1500);
+
+            updateAudioVolumes();
+
+            if (tvSynth.audioCtx) {
+                tvSynth.playFMNote(554.37, 0.2, 0.15 * (dishVolume / 100));
+            }
+        }
+
+
+        /* TV - Bouncing Widget Animation */
+
+        function applyWatermarkVisibility() {
+            const els = document.querySelectorAll('.watermark');
+            els.forEach(el => {
+                el.style.display = watermarkEnabled ? '' : 'none';
+            });
+        }
+
+        let widgetX = 50;
+        let widgetY = 50;
+        let dx = 1.2;
+        let dy = 0.9;
+        let requestAnimId = null;
+
+        function startNoSignalBouncing() {
+            const widget = document.getElementById('noSignalWidget');
+            const screen = widget.parentElement;
+            
+            if (requestAnimId) cancelAnimationFrame(requestAnimId);
+
+            function update() {
+                if (powerState !== "active" || activeInputSource !== 0) {
+                    cancelAnimationFrame(requestAnimId);
+                    requestAnimId = null;
+                    return;
+                }
+
+                const maxX = screen.clientWidth - widget.clientWidth;
+                const maxY = screen.clientHeight - widget.clientHeight;
+
+                widgetX += dx;
+                widgetY += dy;
+
+                if (widgetX <= 0) { widgetX = 0; dx = -dx; changeWidgetTheme(widget); }
+                if (widgetX >= maxX) { widgetX = maxX; dx = -dx; changeWidgetTheme(widget); }
+                if (widgetY <= 0) { widgetY = 0; dy = -dy; changeWidgetTheme(widget); }
+                if (widgetY >= maxY) { widgetY = maxY; dy = -dy; changeWidgetTheme(widget); }
+
+                widget.style.left = `${widgetX}px`;
+                widget.style.top = `${widgetY}px`;
+
+                requestAnimId = requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        function changeWidgetTheme(widget) {
+            widget.classList.add('border-cyan-400');
+            setTimeout(() => {
+                widget.classList.remove('border-cyan-400');
+            }, 150);
+        }
+
+
+        /* ----------------------------------------------------------------- */
+        /* --- CONSOLE EMULATION LOGIC --- */
+
+        // 1. Nintendo Wii
+        function renderWiiGrid() {
+            for (let i = 0; i < 8; i++) {
+                const el = document.getElementById(`wii-chan-${i}`);
+                if (i === wiiActiveIndex) {
+                    el.classList.add('wii-selected');
+                } else {
+                    el.classList.remove('wii-selected');
+                }
+            }
+        }
+
+        function wiiNavigate(direction) {
+            if (wiiDialogOpen) return;
+            const cols = 4;
+            let target = wiiActiveIndex;
+
+            if (direction === "left") {
+                if (target % cols !== 0) target--;
+            } else if (direction === "right") {
+                if (target % cols !== cols - 1) target++;
+            } else if (direction === "up") {
+                if (target >= cols) target -= cols;
+            } else if (direction === "down") {
+                if (target + cols < 8) target += cols;
+            }
+
+            if (target !== wiiActiveIndex) {
+                wiiActiveIndex = target;
+                renderWiiGrid();
+                tvSynth.playFMNote(1100, 0.05, 0.15); // Wii click chirp
+            }
+        }
+
+        function wiiClickEnter() {
+            if (wiiDialogOpen) return;
+            wiiDialogOpen = true;
+            tvSynth.playFMNote(1300, 0.1, 0.25); // Wii open chime
+            
+            const dialog = document.getElementById('wiiDialog');
+            const title = document.getElementById('wiiDialogTitle');
+            dialog.classList.remove('hidden');
+            title.innerText = wiiChannels[wiiActiveIndex].name;
+        }
+
+        function closeWiiDialog() {
+            wiiDialogOpen = false;
+            document.getElementById('wiiDialog').classList.add('hidden');
+            tvSynth.playFMNote(750, 0.1, 0.2); // Wii close pop
+        }
+
+        function startWiiApp() {
+            closeWiiDialog();
+            showToast(`Loading: ${wiiChannels[wiiActiveIndex].name}...`, '<i class="fa-solid fa-spinner animate-spin"></i>', 'success');
+        }
+
+        function updateWiiTime() {
+            const now = new Date();
+            const formatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const clock = document.getElementById('wiiTime');
+            if (clock) clock.innerText = formatted;
+        }
+
+
+        // 2. PlayStation 3 XMB
+        function renderPS3XMB() {
+            for (let i = 0; i < 5; i++) {
+                const el = document.getElementById(`ps3-cat-${i}`);
+                if (i === ps3SelectedCategory) {
+                    el.style.opacity = "1";
+                    el.style.transform = "scale(1.15)";
+                } else {
+                    el.style.opacity = "0.4";
+                    el.style.transform = "scale(1.0)";
+                }
+            }
+
+            const vList = document.getElementById('ps3VerticalList');
+            vList.innerHTML = '';
+            
+            const currentSubItems = ps3Content[ps3SelectedCategory];
+            currentSubItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "p-2 rounded-xl flex flex-col transition-all cursor-pointer select-none max-w-xs";
+                
+                if (index === ps3SelectedVerticalIndex) {
+                    card.className += " bg-white/10 border-l-4 border-cyan-400 pl-4 text-white";
+                } else {
+                    card.className += " text-zinc-400 pl-2";
+                }
+
+                const label = document.createElement('div');
+                label.className = "text-xs font-bold";
+                label.innerText = item.label;
+
+                const desc = document.createElement('div');
+                desc.className = "text-[9px] opacity-60 font-medium leading-none mt-0.5";
+                desc.innerText = item.desc;
+
+                card.appendChild(label);
+                card.appendChild(desc);
+                vList.appendChild(card);
+            });
+        }
+
+        function ps3Navigate(direction) {
+            if (direction === "left") {
+                if (ps3SelectedCategory > 0) {
+                    ps3SelectedCategory--;
+                    ps3SelectedVerticalIndex = 0;
+                    renderPS3XMB();
+                    tvSynth.playFMNote(900, 0.05, 0.15); // PS3 click
+                }
+            } else if (direction === "right") {
+                if (ps3SelectedCategory < 4) {
+                    ps3SelectedCategory++;
+                    ps3SelectedVerticalIndex = 0;
+                    renderPS3XMB();
+                    tvSynth.playFMNote(900, 0.05, 0.15); // PS3 click
+                }
+            } else if (direction === "up") {
+                if (ps3SelectedVerticalIndex > 0) {
+                    ps3SelectedVerticalIndex--;
+                    renderPS3XMB();
+                    tvSynth.playFMNote(900, 0.05, 0.15); // PS3 click
+                }
+            } else if (direction === "down") {
+                const limit = ps3Content[ps3SelectedCategory].length - 1;
+                if (ps3SelectedVerticalIndex < limit) {
+                    ps3SelectedVerticalIndex++;
+                    renderPS3XMB();
+                    tvSynth.playFMNote(900, 0.05, 0.15); // PS3 click
+                }
+            }
+        }
+
+        function ps3ClickEnter() {
+            const selectedItem = ps3Content[ps3SelectedCategory][ps3SelectedVerticalIndex];
+            showToast(`Booting Game/Action: ${selectedItem.label}`, '<i class="fa-solid fa-gamepad"></i>', 'info');
+            tvSynth.playFMNote(1200, 0.15, 0.2); // Success ding
+        }
+
+        function updatePS3Time() {
+            const now = new Date();
+            const formatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const clock = document.getElementById('ps3Time');
+            if (clock) clock.innerText = formatted;
+        }
+
+
+        // 3. Apple TV / tvOS 26
+        function renderAppleTVGrid() {
+            for (let i = 0; i < 3; i++) {
+                const el = document.getElementById(`tvos-card-${i}`);
+                if (i === tvosSelectedCard) {
+                    el.classList.add('tvos-selected');
+                } else {
+                    el.classList.remove('tvos-selected');
+                }
+            }
+        }
+
+        function tvosNavigate(direction) {
+            let target = tvosSelectedCard;
+            if (direction === "left") {
+                if (target > 0) target--;
+            } else if (direction === "right") {
+                if (target < 2) target++;
+            }
+
+            if (target !== tvosSelectedCard) {
+                tvosSelectedCard = target;
+                renderAppleTVGrid();
+                tvSynth.playFMNote(1000, 0.06, 0.12); // Swipe click
+            }
+        }
+
+        function tvosClickEnter() {
+            const siriBox = document.getElementById('siriDialogText');
+            const randomResponse = tvosSiriResponses[Math.floor(Math.random() * tvosSiriResponses.length)];
+            
+            siriBox.innerText = randomResponse;
+            siriBox.classList.add('animate-pulse');
+            setTimeout(() => siriBox.classList.remove('animate-pulse'), 1000);
+
+            tvSynth.playFMNote(1400, 0.25, 0.3); // Siri double chirp
+        }
+
+
+        /* Walkthrough checklist monitor updates */
+
+        /* Beautiful Organic Floating Bubble elements */
+
+        function spawnScreenBubbles() {
+            const container = document.getElementById('screenBubbleContainer');
+            if (!container) return;
+
+            setInterval(() => {
+                if (powerState === "active") {
+                    const bubble = document.createElement('div');
+                    bubble.className = "ambient-bubble";
+                    
+                    const size = Math.random() * 20 + 8;
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${Math.random() * 95}%`;
+                    bubble.style.bottom = "-10%";
+
+                    const duration = Math.random() * 3 + 2.5;
+                    bubble.style.animation = `bubbleFloat ${duration}s linear forwards`;
+                    
+                    container.appendChild(bubble);
+                    setTimeout(() => bubble.remove(), duration * 1000);
+                }
+            }, 1500);
+        }
+
+
+        /* Toast Notifications Utility */
+
+        function showToast(message, iconHtml = '<i class="fa-solid fa-info-circle"></i>', type = "info") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            if (!toast || !toastMsg || !toastIcon) return;
+
+            toastMsg.innerText = message;
+            toastIcon.innerHTML = iconHtml;
+            
+            if (type === "error") {
+                toastIcon.className = "text-red-500";
+                toast.style.borderColor = "rgba(239, 68, 68, 0.4)";
+            } else if (type === "success") {
+                toastIcon.className = "text-cyan-400";
+                toast.style.borderColor = "rgba(34, 211, 238, 0.4)";
+            } else {
+                toastIcon.className = "text-sky-300";
+                toast.style.borderColor = "rgba(56, 189, 248, 0.3)";
+            }
+
+            toast.style.opacity = "1";
+            toast.style.transform = "translate(-50%, -12px)";
+            
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translate(-50%, 0px)";
+            }, 3000);
+        }
+
+
+        /* Event Listeners mapping TV & dedicated console buttons */
+
+        // Safe Event Listener Attacher Helper
+        function addSafeListener(id, event, callback) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener(event, callback);
+            }
+        }
+
+        // Samsung TV Remote bindings
+        addSafeListener('remotePower', 'click', togglePower);
+        addSafeListener('remoteMenu', 'click', toggleMenu);
+        addSafeListener('remoteExit', 'click', () => {
+            closeMenu();
+            closeSourceMenu();
+        });
+        addSafeListener('remoteSource', 'click', toggleSourceMenu);
+
+        addSafeListener('remoteReturn', 'click', () => {
+            if (sourceMenuOpen) {
+                closeSourceMenu();
+            } else if (menuOpen) {
+                navigateLeftOrReturn();
+            } else if (activeInputSource === 1 && wiiDialogOpen) {
+                closeWiiDialog();
+            }
+        });
+        
+        addSafeListener('remoteUp', 'click', () => {
+            if (sourceMenuOpen) sourceSelectUp();
+            else if (menuOpen) navigateUp();
+        });
+
+        addSafeListener('remoteDown', 'click', () => {
+            if (sourceMenuOpen) sourceSelectDown();
+            else if (menuOpen) navigateDown();
+        });
+
+        addSafeListener('remoteLeft', 'click', () => {
+            if (menuOpen) navigateLeftAdjustment();
+        });
+
+        addSafeListener('remoteRight', 'click', () => {
+            if (menuOpen) navigateRightOrEnter();
+        });
+
+        addSafeListener('remoteEnter', 'click', () => {
+            if (sourceMenuOpen) sourceSelectConfirm();
+            else if (menuOpen) navigateRightOrEnter();
+        });
+
+        addSafeListener('remoteVolUp', 'click', () => adjustVolume(5));
+        addSafeListener('remoteVolDown', 'click', () => adjustVolume(-5));
+
+
+        // Nintendo Wii Controller click bindings
+        addSafeListener('wiiRemoteUp', 'click', () => wiiNavigate("up"));
+        addSafeListener('wiiRemoteDown', 'click', () => wiiNavigate("down"));
+        addSafeListener('wiiRemoteLeft', 'click', () => wiiNavigate("left"));
+        addSafeListener('wiiRemoteRight', 'click', () => wiiNavigate("right"));
+        addSafeListener('wiiRemoteA', 'click', wiiClickEnter);
+        addSafeListener('wiiRemoteHome', 'click', () => {
+            if (wiiDialogOpen) closeWiiDialog();
+        });
+
+
+        // PS3 Controller click bindings
+        addSafeListener('ps3DpadUp', 'click', () => ps3Navigate("up"));
+        addSafeListener('ps3DpadDown', 'click', () => ps3Navigate("down"));
+        addSafeListener('ps3DpadLeft', 'click', () => ps3Navigate("left"));
+        addSafeListener('ps3DpadRight', 'click', () => ps3Navigate("right"));
+        addSafeListener('ps3FaceCross', 'click', ps3ClickEnter);
+        addSafeListener('ps3FaceCircle', 'click', () => ps3Navigate("left"));
+
+
+        // Apple TV Siri Remote click bindings
+        addSafeListener('siriClickUp', 'click', () => tvosNavigate("up"));
+        addSafeListener('siriClickDown', 'click', () => tvosNavigate("down"));
+        addSafeListener('siriClickLeft', 'click', () => tvosNavigate("left"));
+        addSafeListener('siriClickRight', 'click', () => tvosNavigate("right"));
+        addSafeListener('siriClickCenter', 'click', tvosClickEnter);
+        addSafeListener('siriBtnBack', 'click', () => tvosNavigate("left"));
+        addSafeListener('siriBtnMic', 'click', tvosClickEnter);
+
+
+        /* Keyboard Controller Emulators (Shared D-Pad mapping) */
+
+        window.addEventListener('keydown', (e) => {
+            if (powerState === "off" || powerState === "booting") {
+                if (e.key === 'p' || e.key === 'P') {
+                    togglePower();
+                }
+                return;
+            }
+
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    if (sourceMenuOpen) sourceSelectUp();
+                    else if (menuOpen) navigateUp();
+                    else if (activeInputSource === 1) wiiNavigate("up");
+                    else if (activeInputSource === 3) ps3Navigate("up");
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    if (sourceMenuOpen) sourceSelectDown();
+                    else if (menuOpen) navigateDown();
+                    else if (activeInputSource === 1) wiiNavigate("down");
+                    else if (activeInputSource === 3) ps3Navigate("down");
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (menuOpen) navigateRightOrEnter();
+                    else if (activeInputSource === 1) wiiNavigate("right");
+                    else if (activeInputSource === 3) ps3Navigate("right");
+                    else if (activeInputSource === 2) tvosNavigate("right");
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (menuOpen) navigateLeftAdjustment();
+                    else if (activeInputSource === 1) wiiNavigate("left");
+                    else if (activeInputSource === 3) ps3Navigate("left");
+                    else if (activeInputSource === 2) tvosNavigate("left");
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (sourceMenuOpen) sourceSelectConfirm();
+                    else if (menuOpen) navigateRightOrEnter();
+                    else if (activeInputSource === 1) wiiClickEnter();
+                    else if (activeInputSource === 3) ps3ClickEnter();
+                    else if (activeInputSource === 2) tvosClickEnter();
+                    break;
+                case 'Backspace':
+                case 'Escape':
+                    e.preventDefault();
+                    if (sourceMenuOpen) closeSourceMenu();
+                    else if (menuOpen) navigateLeftOrReturn();
+                    else if (activeInputSource === 1 && wiiDialogOpen) closeWiiDialog();
+                    break;
+                case 'm':
+                case 'M':
+                    e.preventDefault();
+                    toggleMenu();
+                    break;
+                case 's':
+                case 'S':
+                    e.preventDefault();
+                    toggleSourceMenu();
+                    break;
+                case 'p':
+                case 'P':
+                    e.preventDefault();
+                    togglePower();
+                    break;
+                case '+':
+                case '=':
+                    adjustVolume(5);
+                    break;
+                case '-':
+                case '_':
+                    adjustVolume(-5);
+                    break;
+            }
+        });
+
+
+        /* Initial TV Settings configuration setup */
+        window.onload = function() {
+            loadSettings();
+            applyWatermarkVisibility();
+            const v = document.getElementById('dishVideo');
+            v.src = dishChannels[dishChannel].src;
+            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
+            const fill = document.getElementById('volumeBarFill');
+            const text = document.getElementById('volumeValText');
+            fill.style.height = `${volume}%`;
+            text.innerText = volume;
+            const dfill = document.getElementById('dishVolumeBarFill');
+            const dtext = document.getElementById('dishVolumeValText');
+            dfill.style.width = `${dishVolume}%`;
+            dtext.innerText = dishVolume;
+            spawnScreenBubbles();
+            showToast("Welcome! Press Power to start.", '<i class="fa-solid fa-plug"></i>');
+        };
+
+    </script>
+</body>
+</html>
