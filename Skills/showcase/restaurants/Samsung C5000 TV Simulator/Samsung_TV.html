@@ -1043,7 +1043,7 @@
         let wiiPower = false;
         let ps3Power = false;
         let applePower = false;
-        let dishPower = false;
+        let dishPower = true;
         let dishChannel = 4;
         let watermarkEnabled = true;
         const dishChannels = [
@@ -1403,12 +1403,9 @@
                         if (!video.src) {
                             video.src = dishChannels[dishChannel].src;
                         }
-                        video.muted = true;
+                        updateAudioVolumes();
                         video.load();
-                        video.play().catch(e => {
-                            console.log('Dish video autoplay prevented:', e);
-                            showToast('Video playback blocked — press any key or click to start', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
-                        });
+                        video.play().catch(() => {});
                     } else {
                         document.getElementById('dishNoSignal').classList.remove('hidden');
                         document.getElementById('dishVideo').classList.add('hidden');
