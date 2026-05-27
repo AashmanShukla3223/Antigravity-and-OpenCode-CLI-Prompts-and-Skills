@@ -868,9 +868,11 @@
 
     <script>
         // High Quality Audio Tracks embedded from direct local uploads
-        const audioStartup = new Audio('./audio/startup.mp3');
-        const audioShutdown = new Audio('./audio/shutdown.mp3');
-        const audioSoundTest = new Audio('./audio/soundtest.mp3');
+        const GH = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/';
+        const GH2 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.1/';
+        const audioStartup = new Audio(GH + 'startup.mp3');
+        const audioShutdown = new Audio(GH + 'shutdown.mp3');
+        const audioSoundTest = new Audio(GH + 'soundtest.mp3');
         audioSoundTest.loop = true; 
 
         // Dynamic audio volume synchronization
@@ -1045,12 +1047,13 @@
         let dishChannel = 4;
         let watermarkEnabled = true;
         const dishChannels = [
-            { name: "Channel 121: AajTak", src: "videos/dishtv_source-h264.mp4" },
-            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: "videos/dishtv_source2-h264.mp4" },
-            { name: "Channel 123: AajTak: Special Report 8:30PM Edition", src: "videos/dishtv_source.mp4" },
-            { name: "Channel 124: AajTak: Aaj Subah 10AM Edition", src: "videos/dishtv_source2.mp4" },
-            { name: "Channel 125: AajTak: 2020 e-Agenda Edition", src: "videos/dishtv_source.mp4" },
-            { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: "videos/dishtv_source2.mp4" }
+            { name: "Channel 121: AajTak", src: GH + "dishtv_source.mp4" },
+            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: GH + "dishtv_source2.mp4" },
+            { name: "Channel 123: AajTak: Special Report 8:30PM Edition", src: GH + "dishtv_source3.mp4" },
+            { name: "Channel 124: AajTak: Aaj Subah 10AM Edition", src: GH + "dishtv_source4.mp4" },
+            { name: "Channel 125: AajTak: 2020 e-Agenda Edition", src: GH + "dishtv_source5.mp4" },
+            { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: GH + "dishtv_source6.mp4" },
+            { name: "Channel 127: AajTak: Das Tak 10PM Edition", src: GH2 + "dishtv_source7.mp4" }
         ];
         let volume = 15;
         let dishVolume = 50;
@@ -1242,8 +1245,7 @@
                 dishChannel = (dishChannel - 1 + max) % max;
             }
             const video = document.getElementById('dishVideo');
-            // Use explicit relative path and start muted to satisfy autoplay policies
-            video.src = './' + dishChannels[dishChannel].src;
+            video.src = dishChannels[dishChannel].src;
             video.muted = true;
             video.load();
             video.play().catch(e => {
@@ -1398,9 +1400,8 @@
                         document.getElementById('dishNoSignal').classList.add('hidden');
                         document.getElementById('dishVideo').classList.remove('hidden');
                         const video = document.getElementById('dishVideo');
-                        // Ensure explicit relative path and attempt autoplay muted (modern browsers block unmuted autoplay)
                         if (!video.src) {
-                            video.src = './' + dishChannels[dishChannel].src;
+                            video.src = dishChannels[dishChannel].src;
                         }
                         video.muted = true;
                         video.load();
@@ -2242,7 +2243,7 @@
             loadSettings();
             applyWatermarkVisibility();
             const v = document.getElementById('dishVideo');
-            v.src = './' + dishChannels[dishChannel].src;
+            v.src = dishChannels[dishChannel].src;
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             const fill = document.getElementById('volumeBarFill');
             const text = document.getElementById('volumeValText');
