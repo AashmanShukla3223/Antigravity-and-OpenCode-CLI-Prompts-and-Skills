@@ -1060,6 +1060,7 @@
         ];
         let volume = 15;
         let dishVolume = 50;
+        let dishVideoTime = 0;
         let menuOpen = false;
         let sourceMenuOpen = false;
         
@@ -1349,7 +1350,7 @@
             document.getElementById('inputAppleTV').classList.add('hidden');
             document.getElementById('inputDishTV').classList.add('hidden');
             const dishVid = document.getElementById('dishVideo');
-            if (dishVid) { dishVid.pause(); }
+            if (dishVid) { dishVideoTime = dishVid.currentTime; dishVid.pause(); }
             document.getElementById('screenOff').style.opacity = "1";
             if (requestAnimId) {
                 cancelAnimationFrame(requestAnimId);
@@ -1407,7 +1408,7 @@
                             video.src = dishChannels[dishChannel].src;
                         }
                         updateAudioVolumes();
-                        video.load();
+                        video.currentTime = dishVideoTime;
                         video.play().catch(() => {});
                     } else {
                         document.getElementById('dishNoSignal').classList.remove('hidden');
