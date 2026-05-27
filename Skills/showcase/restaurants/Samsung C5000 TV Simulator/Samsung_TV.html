@@ -1246,7 +1246,7 @@
             }
             const video = document.getElementById('dishVideo');
             video.src = dishChannels[dishChannel].src;
-            video.muted = true;
+            updateAudioVolumes();
             video.load();
             video.play().catch(e => {
                 console.log('Dish video play prevented:', e);
@@ -2239,8 +2239,6 @@
         window.onload = function() {
             loadSettings();
             applyWatermarkVisibility();
-            const v = document.getElementById('dishVideo');
-            v.src = dishChannels[dishChannel].src;
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             const fill = document.getElementById('volumeBarFill');
             const text = document.getElementById('volumeValText');
