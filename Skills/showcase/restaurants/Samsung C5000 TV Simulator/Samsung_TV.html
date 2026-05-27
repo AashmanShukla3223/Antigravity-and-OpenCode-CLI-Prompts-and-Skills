@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- hls.js for HLS live stream playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
         body {
@@ -871,6 +873,7 @@
         const GH = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/';
         const GH2 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.1/';
         const GH3 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/';
+        const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
         const audioSoundTest = new Audio(GH + 'soundtest.mp3');
@@ -1056,8 +1059,27 @@
             { name: "Channel 126: AajTak: Halla Bol 6:30PM Edition", src: GH + "dishtv_source6.mp4" },
             { name: "Channel 127: AajTak: Das Tak 10PM Edition", src: GH2 + "dishtv_source7.mp4" },
             { name: "Channel 128: AajTak: Halla Bol 6PM Edition", src: GH3 + "dishtv_source8.mp4" },
-            { name: "Channel 129: AajTak: Delhi Exit Poll 2020", src: GH3 + "dishtv_source9.mp4" }
+            { name: "Channel 129: AajTak: Delhi Exit Poll 2020", src: GH3 + "dishtv_source9.mp4" },
+            { name: "Channel 130: AajTak Live", src: LIVE }
         ];
+        function loadDishVideo(video, src, seekTime) {
+            if (video._hls) { video._hls.destroy(); delete video._hls; }
+            if (src.endsWith('.m3u8') && Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(src);
+                hls.attachMedia(video);
+                video._hls = hls;
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    if (seekTime > 0) video.currentTime = seekTime;
+                    video.play().catch(() => {});
+                });
+            } else {
+                video.src = src;
+                if (seekTime > 0) video.currentTime = seekTime;
+                video.load();
+                video.play().catch(() => {});
+            }
+        }
         let volume = 15;
         let dishVolume = 50;
         let dishVideoTime = 0;
@@ -1249,13 +1271,9 @@
                 dishChannel = (dishChannel - 1 + max) % max;
             }
             const video = document.getElementById('dishVideo');
-            video.src = dishChannels[dishChannel].src;
+            dishVideoTime = 0;
+            loadDishVideo(video, dishChannels[dishChannel].src, 0);
             updateAudioVolumes();
-            video.load();
-            video.play().catch(e => {
-                console.log('Dish video play prevented:', e);
-                showToast('Video playback blocked — interact to start', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
-            });
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             saveSettings();
         }
@@ -1404,12 +1422,15 @@
                         document.getElementById('dishNoSignal').classList.add('hidden');
                         document.getElementById('dishVideo').classList.remove('hidden');
                         const video = document.getElementById('dishVideo');
-                        if (!video.src) {
-                            video.src = dishChannels[dishChannel].src;
+                        const expectedSrc = dishChannels[dishChannel].src;
+                        const hasCorrectSrc = video._hls ? video._hls.url === expectedSrc : video.src && video.src.includes(expectedSrc);
+                        if (!hasCorrectSrc) {
+                            loadDishVideo(video, expectedSrc, dishVideoTime);
+                        } else {
+                            video.currentTime = dishVideoTime;
+                            video.play().catch(() => {});
                         }
                         updateAudioVolumes();
-                        video.currentTime = dishVideoTime;
-                        video.play().catch(() => {});
                     } else {
                         document.getElementById('dishNoSignal').classList.remove('hidden');
                         document.getElementById('dishVideo').classList.add('hidden');
@@ -1750,11 +1771,10 @@
 
             updateAudioVolumes();
 
-            // Unmute and resume DishTV video when user adjusts dish volume
             const dishVideoEl = document.getElementById('dishVideo');
             if (dishVideoEl) {
                 dishVideoEl.muted = false;
-                if (dishVideoEl.paused) dishVideoEl.play().catch(e => console.log('dish play after unmute failed:', e));
+                if (dishVideoEl.paused) dishVideoEl.play().catch(() => {});
             }
 
             if (tvSynth.audioCtx) {
