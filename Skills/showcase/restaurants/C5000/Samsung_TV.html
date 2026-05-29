@@ -873,7 +873,9 @@
         const GH = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/';
         const GH2 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.1/';
         const GH3 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/';
+        const GH4 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
+        const DDSPORTS = 'https://d2lk5u59tns74c.cloudfront.net/out/v1/26e915d6d12b4a06822c5e33c088ed56/index.m3u8';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
         const audioSoundTest = new Audio(GH + 'soundtest.mp3');
@@ -1060,7 +1062,10 @@
             { name: "Channel 127: AajTak: Das Tak 10PM Edition", src: GH2 + "dishtv_source7.mp4" },
             { name: "Channel 128: AajTak: Halla Bol 6PM Edition", src: GH3 + "dishtv_source8.mp4" },
             { name: "Channel 129: AajTak: Delhi Exit Poll 2020", src: GH3 + "dishtv_source9.mp4" },
-            { name: "Channel 130: AajTak Live", src: LIVE }
+            { name: "Channel 130: AajTak: 2019 Special Report Edition", src: GH4 + "dishtv_source10.mp4" },
+            { name: "Channel 131: AajTak: 2017 Ek aur Ek Gyarah Edition", src: GH4 + "dishtv_source11.mp4" },
+            { name: "Channel 132: AajTak Live", src: LIVE },
+            { name: "Channel 133: DD Sports Live", src: DDSPORTS }
         ];
         function loadDishVideo(video, src, seekTime) {
             if (video._hls) { video._hls.destroy(); delete video._hls; }
