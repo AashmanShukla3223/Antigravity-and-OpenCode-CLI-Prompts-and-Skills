@@ -306,6 +306,7 @@
                                     Turn off all the devices to start updating
                                 </p>
                             </div>
+                            <p class="text-xs text-cyan-300/80 mt-2 font-mono">Target version: v<span id="updateTargetVersion">1.0.6</span></p>
                             <div class="flex justify-center gap-2 mt-2">
                                 <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></div>
                                 <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping" style="animation-delay: 0.3s"></div>
@@ -315,8 +316,38 @@
                         </div>
                     </div>
 
+                    <!-- KEYBOARD SHORTCUT OVERLAY -->
+                    <div id="shortcutOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-5">
+                            <h2 class="text-lg font-extrabold text-amber-400 uppercase tracking-widest mb-4 aero-font">Keyboard Shortcuts</h2>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] text-left">
+                                <div class="text-sky-300 font-bold">Arrows</div>
+                                <div class="text-zinc-300">Navigate menus / Wii / PS3</div>
+                                <div class="text-sky-300 font-bold">Enter</div>
+                                <div class="text-zinc-300">Confirm</div>
+                                <div class="text-sky-300 font-bold">Backspace / Esc</div>
+                                <div class="text-zinc-300">Back / Close</div>
+                                <div class="text-sky-300 font-bold">M</div>
+                                <div class="text-zinc-300">Menu</div>
+                                <div class="text-sky-300 font-bold">S</div>
+                                <div class="text-zinc-300">Source list</div>
+                                <div class="text-sky-300 font-bold">P</div>
+                                <div class="text-zinc-300">Power</div>
+                                <div class="text-sky-300 font-bold">0 / Shift+M</div>
+                                <div class="text-zinc-300">Mute</div>
+                                <div class="text-sky-300 font-bold">+ / -</div>
+                                <div class="text-zinc-300">Volume</div>
+                                <div class="text-sky-300 font-bold">F1</div>
+                                <div class="text-zinc-300">Toggle this help</div>
+                            </div>
+                            <button onclick="toggleShortcutOverlay()" class="mt-4 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-6 py-2 rounded-lg text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95">OK</button>
+                        </div>
+                    </div>
+
                     <!-- INPUT 1: TV / NO SIGNAL (Standard TV Environment) -->
                     <div id="inputTV" class="absolute inset-0 bg-gradient-to-b from-[#0b1b36] to-[#040914] z-10 hidden">
+                        <canvas id="tvStaticCanvas" class="absolute inset-0 w-full h-full z-0 opacity-20"></canvas>
+                        <div class="absolute top-4 right-4 z-10 text-amber-400/70 font-mono text-[10px] font-bold">CH 01</div>
                         <!-- Top Input Info -->
                         <div class="absolute top-4 left-4 text-[10px] text-white font-mono bg-black/50 px-2 py-1 rounded watermark">
                             HDMI 1 | 1920x1080 @ 60Hz
@@ -652,7 +683,7 @@
                         <div class="h-16 w-3 bg-zinc-950 rounded relative overflow-hidden flex flex-col justify-end">
                             <div id="volumeBarFill" class="w-full bg-sky-400 transition-all" style="height: 60%"></div>
                         </div>
-                        <span id="volumeValText" class="text-[9px] font-mono font-bold text-sky-300">15</span>
+                        <span id="volumeValText" class="text-[9px] font-mono font-bold text-sky-300">15%</span>
                     </div>
 
                     <!-- DTH VOLUME OSD INDICATOR (top-left) -->
@@ -665,6 +696,13 @@
                             <span id="dishVolumeValText" class="text-[9px] font-mono font-bold text-amber-300">50</span>
                         </div>
                     </div>
+
+                    <!-- PICTURE SETTINGS OVERLAYS (Backlight/Brightness/Contrast) -->
+                    <div id="pictureBacklight" class="absolute inset-0 bg-white pointer-events-none z-15 opacity-0" style="z-index:15"></div>
+                    <div id="pictureBrightness" class="absolute inset-0 bg-black pointer-events-none z-15 opacity-0" style="z-index:15"></div>
+                    
+                    <!-- ENERGY SAVING DIMMING OVERLAY -->
+                    <div id="energyOverlay" class="absolute inset-0 bg-black pointer-events-none z-15 opacity-0" style="z-index:15"></div>
 
                 </div>
 
@@ -891,7 +929,7 @@
                     </div>
                     
                     <!-- BOX STATE E: DISHTV REMOTE -->
-                    <div id="deckDishRemote" class="hidden w-full h-full flex-col items-center scale-[0.65] origin-top">
+                    <div id="deckDishRemote" class="hidden w-full h-full flex-col items-center scale-[0.85] origin-top">
                         <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">DishTV Remote</div>
                         <div class="bg-zinc-800 w-20 rounded-2xl p-3 flex flex-col items-center gap-2.5">
                              <button id="dishPower" onclick="toggleDevicePower('dish')" class="remote-btn w-10 h-10 rounded-full bg-red-700 hover:bg-red-600 border border-red-500/40 text-white text-xs font-bold">Power</button>
@@ -932,7 +970,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.1';
+        const APP_VERSION = '1.0.2';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -1158,6 +1196,11 @@
         let menuOpen = false;
         let sourceMenuOpen = false;
         let tvClockInterval = null;
+        let tvStaticAnimId = null;
+        let lastInteractionTime = Date.now();
+        let energySavingActive = false;
+        let energySavingInterval = null;
+        let cecEnabled = true;
         
         // Input Channels Definition
         // 0: TV (No Signal), 1: AV (Wii), 2: HDMI 1 (Apple TV), 3: HDMI 2 (PlayStation 3), 4: HDMI 3 (DishTV)
@@ -1437,6 +1480,10 @@
 
         function hideAllScreens() {
             stopTVClock();
+            stopWiiClock();
+            stopPS3Clock();
+            stopTVStatic();
+            if (energySavingInterval) { clearInterval(energySavingInterval); energySavingInterval = null; }
             document.getElementById('screenUpdate').classList.add('hidden');
             document.getElementById('screenUpToDate').classList.add('hidden');
             document.getElementById('inputTV').classList.add('hidden');
@@ -1456,6 +1503,9 @@
         function renderActiveScreen() {
             hideAllScreens();
             document.getElementById('screenOff').style.opacity = "0";
+            applyPictureSettings();
+            applySoundMode(menuConfig[1].options[0].current);
+            setupEnergySaving();
 
             document.getElementById('deckOffState').classList.add('hidden');
             document.getElementById('deckWiiRemote').classList.add('hidden');
@@ -1469,12 +1519,14 @@
                     document.getElementById('deckOffState').classList.remove('hidden');
                     startNoSignalBouncing();
                     startTVClock();
+                    startTVStatic();
                     break;
                 case 1: // Wii
                     document.getElementById('deckWiiRemote').classList.remove('hidden');
                     if (wiiPower) {
                         document.getElementById('inputWii').classList.remove('hidden');
                         updateWiiTime();
+                        startWiiClock();
                         renderWiiGrid();
                     }
                     break;
@@ -1490,6 +1542,7 @@
                     if (ps3Power) {
                         document.getElementById('inputPS3').classList.remove('hidden');
                         updatePS3Time();
+                        startPS3Clock();
                         renderPS3XMB();
                     }
                     break;
@@ -1569,10 +1622,11 @@
         }
 
         function sourceSelectConfirm() {
+            const oldSource = activeInputSource;
             activeInputSource = activeSourceSelectIndex;
             closeSourceMenu();
             renderActiveScreen();
-            
+            handleCEC(oldSource, activeInputSource);
             showToast(`Input switched to: ${getAudioSourceName(activeInputSource)}`, '<i class="fa-solid fa-circle-nodes"></i>', 'success');
             saveSettings();
         }
@@ -1729,9 +1783,15 @@
                     if (opt.name === "Melody Level") {
                         tvSynth.playFMNote(659.25, 0.8, 0.35); 
                     }
+                    if (opt.name === "Sound Mode") {
+                        applySoundMode(opt.current);
+                    }
                 } else if (opt.type === "range") {
                     opt.current = Math.min(opt.max, opt.current + 1);
                     renderCategoryOptions();
+                    if (currentMenuCategory === 0) {
+                        applyPictureSettings();
+                    }
                 } else if (opt.type === "action") {
                     opt.action();
                 }
@@ -1764,6 +1824,9 @@
             } else if (opt.type === "range") {
                 opt.current = Math.max(opt.min, opt.current - 1);
                 renderCategoryOptions();
+                if (currentMenuCategory === 0) {
+                    applyPictureSettings();
+                }
             } else {
                 navigateLeftOrReturn();
             }
@@ -1796,10 +1859,34 @@
             if (activeSoundTestTimer) clearInterval(activeSoundTestTimer);
             activeSoundTestTimer = setInterval(() => {
                 eqPhase += 0.15;
-                const baseL = 40 + 25 * Math.sin(eqPhase * 0.7);
-                const baseR = 40 + 25 * Math.sin(eqPhase * 0.9 + 1.2);
-                const lVal = Math.min(98, Math.max(5, baseL + (Math.random() - 0.5) * 30));
-                const rVal = Math.min(98, Math.max(5, baseR + (Math.random() - 0.5) * 30));
+                let lVal = 20, rVal = 20;
+                const analyser = tvSynth.mainAnalyser;
+                if (analyser) {
+                    try {
+                        const bufferLength = analyser.frequencyBinCount;
+                        const dataArray = new Uint8Array(bufferLength);
+                        analyser.getByteFrequencyData(dataArray);
+                        if (dataArray.length > 4) {
+                            const avgLow = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
+                            const avgMid = (dataArray[4] + dataArray[5] + dataArray[6] + dataArray[7]) / 4;
+                            const avgHigh = (dataArray[8] + dataArray[9] + dataArray[10] + dataArray[11]) / 4;
+                            const totalAvg = (avgLow + avgMid + avgHigh) / 3;
+                            lVal = Math.min(98, Math.max(5, totalAvg * 0.8));
+                            rVal = Math.min(98, Math.max(5, totalAvg * 0.9));
+                        }
+                    } catch(e) {
+                        // Fall back to wave-based if analyser read fails
+                        const baseL2 = 40 + 25 * Math.sin(eqPhase * 0.7);
+                        const baseR2 = 40 + 25 * Math.sin(eqPhase * 0.9 + 1.2);
+                        lVal = Math.min(98, Math.max(5, baseL2 + (Math.random() - 0.5) * 30));
+                        rVal = Math.min(98, Math.max(5, baseR2 + (Math.random() - 0.5) * 30));
+                    }
+                } else {
+                    const baseL2 = 40 + 25 * Math.sin(eqPhase * 0.7);
+                    const baseR2 = 40 + 25 * Math.sin(eqPhase * 0.9 + 1.2);
+                    lVal = Math.min(98, Math.max(5, baseL2 + (Math.random() - 0.5) * 30));
+                    rVal = Math.min(98, Math.max(5, baseR2 + (Math.random() - 0.5) * 30));
+                }
                 barLeft.style.width = `${lVal}%`;
                 barRight.style.width = `${rVal}%`;
             }, 80);
@@ -1870,7 +1957,7 @@
                 .then(data => {
                     if (data.version && isNewerVersion(data.version, APP_VERSION)) {
                         showToast("Update found: v" + data.version, '<i class="fa-solid fa-download"></i>', "success");
-                        showUpdateOverlay();
+                        showUpdateOverlay(data.version);
                     } else {
                         showUpToDateOverlay();
                     }
@@ -1883,6 +1970,16 @@
         function showUpToDateOverlay() {
             document.getElementById('upToDateVersion').innerText = APP_VERSION;
             document.getElementById('screenUpToDate').classList.remove('hidden');
+            const subtitle = document.querySelector('#screenUpToDate .max-w-sm .bg-emerald-950\\/40');
+            if (subtitle) {
+                const old = subtitle.querySelector('.version-subtitle');
+                if (!old) {
+                    const verEl = document.createElement('p');
+                    verEl.className = 'version-subtitle text-xs text-zinc-400 mt-1';
+                    verEl.innerText = 'App v' + APP_VERSION + ' (Samsung LCD Simulator)';
+                    subtitle.appendChild(verEl);
+                }
+            }
             tvSynth.playFMNote(880, 0.2, 0.25);
         }
 
@@ -1890,7 +1987,11 @@
             document.getElementById('screenUpToDate').classList.add('hidden');
         }
 
-        function showUpdateOverlay() {
+        let pendingUpdateVersion = null;
+        function showUpdateOverlay(version) {
+            pendingUpdateVersion = version || '1.0.6';
+            const targetEl = document.getElementById('updateTargetVersion');
+            if (targetEl) targetEl.innerText = pendingUpdateVersion;
             // Power off all HDMI/AV devices and switch to TV/RF
             wiiPower = false;
             ps3Power = false;
@@ -1979,7 +2080,7 @@
             const text = document.getElementById('volumeValText');
 
             fill.style.height = `${volume}%`;
-            text.innerText = volume;
+            text.innerText = volume + '%';
 
             volumeOsd.classList.remove('opacity-0');
             clearTimeout(volumeOsd.timer);
@@ -2088,13 +2189,179 @@
                 if (el) el.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
             updateClock();
-            tvClockInterval = setInterval(updateClock, 10000);
+            tvClockInterval = setInterval(updateClock, 1000);
         }
 
         function stopTVClock() {
             if (tvClockInterval) {
                 clearInterval(tvClockInterval);
                 tvClockInterval = null;
+            }
+        }
+
+        // --- TV STATIC NOISE GENERATOR ---
+        function startTVStatic() {
+            const canvas = document.getElementById('tvStaticCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            const w = canvas.width, h = canvas.height;
+            function drawStatic() {
+                if (!canvas || canvas.style.display === 'none') { tvStaticAnimId = null; return; }
+                const imageData = ctx.createImageData(w, h);
+                const data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    const v = Math.random() * 256;
+                    data[i] = v;
+                    data[i + 1] = v;
+                    data[i + 2] = v;
+                    data[i + 3] = 255;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                tvStaticAnimId = requestAnimationFrame(drawStatic);
+            }
+            drawStatic();
+        }
+        function stopTVStatic() {
+            if (tvStaticAnimId) {
+                cancelAnimationFrame(tvStaticAnimId);
+                tvStaticAnimId = null;
+            }
+            const canvas = document.getElementById('tvStaticCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // --- PICTURE SETTINGS APPLIER ---
+        function applyPictureSettings() {
+            const pic = menuConfig[0].options;
+            const backlight = pic[1].current;
+            const contrast = pic[2].current;
+            const brightness = pic[3].current;
+            const blEl = document.getElementById('pictureBacklight');
+            const brEl = document.getElementById('pictureBrightness');
+            if (blEl) blEl.style.opacity = backlight / 20;
+            if (brEl) brEl.style.opacity = 1 - (brightness / 100);
+            const saturateVal = (contrast / 100) * 1.5;
+            const screenArea = document.querySelector('.aspect-video');
+            if (screenArea) {
+                const existing = screenArea.style.filter || '';
+                if (existing.includes('saturate')) {
+                    screenArea.style.filter = existing.replace(/saturate\([^)]+\)/, `saturate(${saturateVal})`);
+                } else {
+                    screenArea.style.filter = `saturate(${saturateVal})`;
+                }
+            }
+        }
+
+        // --- SOUND MODE EQ FILTER ---
+        let soundModeFilterNode = null;
+        function applySoundMode(modeIndex) {
+            const synth = tvSynth;
+            if (!synth || !synth.audioCtx) return;
+            const ctx = synth.audioCtx;
+            if (soundModeFilterNode) {
+                try { soundModeFilterNode.disconnect(); } catch(e) {}
+                soundModeFilterNode = null;
+            }
+            if (modeIndex === 0) {
+                // Standard - bypass, reconnect synthGain directly
+                if (synth.synthGain && synth.mainAnalyser) {
+                    try {
+                        synth.synthGain.disconnect();
+                        synth.synthGain.connect(synth.mainAnalyser);
+                    } catch(e) {}
+                }
+                return;
+            }
+            soundModeFilterNode = ctx.createBiquadFilter();
+            switch(modeIndex) {
+                case 1: // Music - bandpass 500Hz, Q=0.8
+                    soundModeFilterNode.type = 'bandpass';
+                    soundModeFilterNode.frequency.setValueAtTime(500, ctx.currentTime);
+                    soundModeFilterNode.Q.setValueAtTime(0.8, ctx.currentTime);
+                    break;
+                case 2: // Movie - lowshelf 200Hz, gain=5dB
+                    soundModeFilterNode.type = 'lowshelf';
+                    soundModeFilterNode.frequency.setValueAtTime(200, ctx.currentTime);
+                    soundModeFilterNode.gain.setValueAtTime(5, ctx.currentTime);
+                    break;
+                case 3: // Clear Voice - highshelf 2000Hz, gain=5dB
+                    soundModeFilterNode.type = 'highshelf';
+                    soundModeFilterNode.frequency.setValueAtTime(2000, ctx.currentTime);
+                    soundModeFilterNode.gain.setValueAtTime(5, ctx.currentTime);
+                    break;
+            }
+            if (synth.synthGain && synth.mainAnalyser) {
+                try {
+                    synth.synthGain.disconnect();
+                    synth.synthGain.connect(soundModeFilterNode);
+                    soundModeFilterNode.connect(synth.mainAnalyser);
+                } catch(e) {}
+            }
+        }
+
+        // --- ENERGY SAVING AUTO-DIMMING ---
+        function setupEnergySaving() {
+            if (energySavingInterval) clearInterval(energySavingInterval);
+            lastInteractionTime = Date.now();
+            energySavingInterval = setInterval(() => {
+                const es = menuConfig[3].options[1].current;
+                if (es === 0) {
+                    document.getElementById('energyOverlay').style.opacity = '0';
+                    energySavingActive = false;
+                    return;
+                }
+                const elapsed = Date.now() - lastInteractionTime;
+                if (elapsed > 60000) {
+                    energySavingActive = true;
+                    const levels = [0, 0.2, 0.4, 0.6];
+                    document.getElementById('energyOverlay').style.opacity = levels[es];
+                } else {
+                    energySavingActive = false;
+                    document.getElementById('energyOverlay').style.opacity = '0';
+                }
+            }, 10000);
+        }
+        function resetEnergySaving() {
+            lastInteractionTime = Date.now();
+            if (energySavingActive) {
+                energySavingActive = false;
+                document.getElementById('energyOverlay').style.opacity = '0';
+            }
+        }
+
+        // --- HDMI-CEC SIMULATION ---
+        function handleCEC(oldSource, newSource) {
+            const cecSetting = menuConfig[2].options[1].current;
+            if (!cecSetting) return;
+            // Power off old device
+            switch(oldSource) {
+                case 1: if (wiiPower) { wiiPower = false; showToast("CEC: Wii powering off", '<i class="fa-solid fa-tv"></i>', "info"); } break;
+                case 2: if (applePower) { applePower = false; showToast("CEC: Apple TV powering off", '<i class="fa-solid fa-tv"></i>', "info"); } break;
+                case 3: if (ps3Power) { ps3Power = false; showToast("CEC: PS3 powering off", '<i class="fa-solid fa-tv"></i>', "info"); } break;
+                case 4: if (dishPower) { dishPower = false; showToast("CEC: DishTV powering off", '<i class="fa-solid fa-tv"></i>', "info"); } break;
+            }
+            // Power on new device
+            switch(newSource) {
+                case 1: if (!wiiPower) { wiiPower = true; showToast("CEC: Wii powering on", '<i class="fa-solid fa-tv"></i>', "success"); } break;
+                case 2: if (!applePower) { applePower = true; showToast("CEC: Apple TV powering on", '<i class="fa-solid fa-tv"></i>', "success"); } break;
+                case 3: if (!ps3Power) { ps3Power = true; showToast("CEC: PS3 powering on", '<i class="fa-solid fa-tv"></i>', "success"); } break;
+                case 4: if (!dishPower) { dishPower = true; showToast("CEC: DishTV powering on", '<i class="fa-solid fa-tv"></i>', "success"); } break;
+            }
+            saveSettings();
+        }
+
+        // --- KEYBOARD SHORTCUT OVERLAY TOGGLE ---
+        function toggleShortcutOverlay() {
+            const el = document.getElementById('shortcutOverlay');
+            if (el.style.display === 'flex') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'flex';
             }
         }
 
@@ -2194,9 +2461,29 @@
 
         function startWiiApp() {
             closeWiiDialog();
-            showToast(`Loading: ${wiiChannels[wiiActiveIndex].name}...`, '<i class="fa-solid fa-spinner animate-spin"></i>', 'success');
+            const channelIndex = wiiActiveIndex;
+            const messages = [
+                { msg: 'Insert Game Disc...', icon: 'fa-compact-disc fa-spin' },
+                { msg: 'Creating Mii...', icon: 'fa-user-ninja fa-bounce' },
+                { msg: 'Connecting to Shop Channel...', icon: 'fa-bag-shopping fa-pulse' },
+                { msg: 'Loading Photo Channel slideshow...', icon: 'fa-images' },
+                { msg: 'Weather: 22°C, Partly Cloudy, Humidity 65%', icon: 'fa-cloud-sun' },
+                { msg: 'News Ticker: Market rallies, sports scores update...', icon: 'fa-newspaper' },
+                { msg: 'No new messages', icon: 'fa-envelope-open-text' },
+                { msg: 'Wii Settings v1.2 - System Configuration', icon: 'fa-screwdriver-wrench' }
+            ];
+            const m = messages[channelIndex] || messages[0];
+            showToast(`${m.msg}`, `<i class="fa-solid ${m.icon}"></i>`, 'success');
         }
 
+        let wiiClockInterval = null;
+        function startWiiClock() {
+            if (wiiClockInterval) clearInterval(wiiClockInterval);
+            wiiClockInterval = setInterval(updateWiiTime, 1000);
+        }
+        function stopWiiClock() {
+            if (wiiClockInterval) { clearInterval(wiiClockInterval); wiiClockInterval = null; }
+        }
         function updateWiiTime() {
             const now = new Date();
             const formatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -2204,6 +2491,14 @@
             if (clock) clock.innerText = formatted;
         }
 
+        let ps3ClockInterval = null;
+        function startPS3Clock() {
+            if (ps3ClockInterval) clearInterval(ps3ClockInterval);
+            ps3ClockInterval = setInterval(updatePS3Time, 1000);
+        }
+        function stopPS3Clock() {
+            if (ps3ClockInterval) { clearInterval(ps3ClockInterval); ps3ClockInterval = null; }
+        }
 
         // 2. PlayStation 3 XMB
         function renderPS3XMB() {
@@ -2279,8 +2574,26 @@
 
         function ps3ClickEnter() {
             const selectedItem = ps3Content[ps3SelectedCategory][ps3SelectedVerticalIndex];
-            showToast(`Booting Game/Action: ${selectedItem.label}`, '<i class="fa-solid fa-gamepad"></i>', 'info');
-            tvSynth.playFMNote(1200, 0.15, 0.2); // Success ding
+            const label = selectedItem.label;
+            const category = ps3SelectedCategory;
+            let msg = `Booting: ${label}...`;
+            let icon = 'fa-solid fa-gamepad';
+            if (category === 0) {
+                if (label.includes('System Update')) { msg = 'Checking for system update... v4.80 is current'; icon = 'fa-solid fa-rotate fa-spin'; }
+                else if (label.includes('Display Settings')) { msg = 'Display: 1080p @ 60Hz via HDMI'; icon = 'fa-solid fa-display'; }
+                else if (label.includes('Sound Settings')) { msg = 'Audio: PCM 7.1ch / Optical Out'; icon = 'fa-solid fa-music'; }
+                else if (label.includes('System Information')) { msg = 'Firmware: 4.80, HDD: 120GB/250GB'; icon = 'fa-solid fa-circle-info'; }
+            } else if (category === 3) {
+                if (label.includes('Metal Gear')) { msg = 'Loading Metal Gear Solid 4... FOXHOUND...'; icon = 'fa-solid fa-skull'; }
+                else if (label.includes('LittleBigPlanet')) { msg = 'Loading LittleBigPlanet...'; icon = 'fa-solid fa-cubes'; }
+                else if (label.includes('MotorStorm')) { msg = 'Loading MotorStorm demo... Start your engines!'; icon = 'fa-solid fa-car'; }
+                else if (label.includes('Gran Turismo')) { msg = 'Gran Turismo 5 Prologue - Loading tracks...'; icon = 'fa-solid fa-flag-checkered'; }
+            } else if (category === 4) {
+                if (label.includes('Store')) { msg = 'Connecting to PlayStation Store...'; icon = 'fa-solid fa-store'; }
+                else if (label.includes('Internet Browser')) { msg = 'Starting web browser...'; icon = 'fa-solid fa-globe'; }
+            }
+            showToast(msg, `<i class="${icon}"></i>`, 'info');
+            tvSynth.playFMNote(1200, 0.15, 0.2);
         }
 
         function updatePS3Time() {
@@ -2320,13 +2633,25 @@
 
         function tvosClickEnter() {
             const siriBox = document.getElementById('siriDialogText');
-            const randomResponse = tvosSiriResponses[Math.floor(Math.random() * tvosSiriResponses.length)];
             
-            siriBox.innerText = randomResponse;
+            let msg = '';
+            let icon = 'fa-solid fa-sparkles';
+            switch(tvosSelectedCard) {
+                case 0: msg = 'Loading Apple TV+... Streaming high-quality content'; icon = 'fa-solid fa-tv'; break;
+                case 1: msg = 'YouTube: Type your search query...'; icon = 'fa-solid fa-play'; break;
+                case 2: msg = 'Loading Apple Arcade games...'; icon = 'fa-solid fa-cubes-notch'; break;
+                default: {
+                    const randomResponse = tvosSiriResponses[Math.floor(Math.random() * tvosSiriResponses.length)];
+                    msg = randomResponse;
+                }
+            }
+            
+            siriBox.innerText = msg;
             siriBox.classList.add('animate-pulse');
             setTimeout(() => siriBox.classList.remove('animate-pulse'), 1000);
+            showToast(msg, `<i class="${icon}"></i>`, 'info');
 
-            tvSynth.playFMNote(1400, 0.25, 0.3); // Siri double chirp
+            tvSynth.playFMNote(1400, 0.25, 0.3);
         }
 
 
@@ -2405,10 +2730,6 @@
         // Samsung TV Remote bindings
         addSafeListener('remotePower', 'click', togglePower);
         addSafeListener('remoteMenu', 'click', toggleMenu);
-        addSafeListener('remoteExit', 'click', () => {
-            closeMenu();
-            closeSourceMenu();
-        });
         addSafeListener('remoteSource', 'click', toggleSourceMenu);
 
         addSafeListener('remoteReturn', 'click', () => {
@@ -2480,11 +2801,20 @@
 
         /* Keyboard Controller Emulators (Shared D-Pad mapping) */
 
+        document.addEventListener('click', () => resetEnergySaving());
+
         window.addEventListener('keydown', (e) => {
+            resetEnergySaving();
             if (powerState === "off" || powerState === "booting") {
                 if (e.key === 'p' || e.key === 'P') {
                     togglePower();
                 }
+                return;
+            }
+
+            if (e.key === 'F1') {
+                e.preventDefault();
+                toggleShortcutOverlay();
                 return;
             }
 
@@ -2574,7 +2904,7 @@
             const fill = document.getElementById('volumeBarFill');
             const text = document.getElementById('volumeValText');
             fill.style.height = `${volume}%`;
-            text.innerText = volume;
+            text.innerText = volume + '%';
             const dfill = document.getElementById('dishVolumeBarFill');
             const dtext = document.getElementById('dishVolumeValText');
             dfill.style.width = `${dishVolume}%`;
