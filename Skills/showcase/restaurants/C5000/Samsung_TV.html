@@ -935,7 +935,6 @@
 
                     this.startCRTWhine();
                 } catch(e) {
-                    console.error("Audio initialization failed:", e);
                 }
             }
 
@@ -1288,7 +1287,6 @@
         /* Power Sequence Logic */
 
         async function togglePower() {
-            console.log("togglePower called");
             tvSynth.initAudio();
 
             if (powerState === "off") {
@@ -1318,7 +1316,7 @@
                 // Play real high-fidelity startup sound
                 audioStartup.currentTime = 0;
                 updateAudioVolumes();
-                audioStartup.play().catch(e => console.log("Startup audio block:", e));
+                audioStartup.play().catch(() => {});
 
                 // Show Samsung OSD boot screen
                 const screenBoot = document.getElementById('screenBoot');
@@ -1351,7 +1349,7 @@
                 audioStartup.pause();
                 audioShutdown.currentTime = 0;
                 updateAudioVolumes();
-                audioShutdown.play().catch(e => console.log("Shutdown audio block:", e));
+                audioShutdown.play().catch(() => {});
 
                 await delay(2500);
                 screenShutdown.classList.add('opacity-0', 'pointer-events-none');
@@ -1702,7 +1700,7 @@
             // Play the authentic uploaded soundtest.mp3
             audioSoundTest.currentTime = 0;
             updateAudioVolumes();
-            audioSoundTest.play().catch(e => console.log("Soundtest track play block:", e));
+            audioSoundTest.play().catch(() => {});
 
             if (activeSoundTestTimer) clearInterval(activeSoundTestTimer);
             activeSoundTestTimer = setInterval(() => {
@@ -2284,36 +2282,17 @@
             // Unlock media playback on first user interaction (unmute and play if needed)
             function unlockMedia() {
                 try {
+                    const v = document.getElementById('dishVideo');
                     if (v) {
                         v.muted = false;
-                        if (v.paused && !v.ended) v.play().catch(e => console.log('play after user gesture failed:', e));
+                        if (v.paused && !v.ended) v.play().catch(() => {});
                     }
                 } catch(e) {}
             }
             document.addEventListener('click', unlockMedia, { once: true });
             document.addEventListener('keydown', unlockMedia, { once: true });
 
-            // Diagnostic: check that each DishTV asset URL resolves on the server
-            async function checkVideoAssets() {
-                for (const ch of dishChannels) {
-                    try {
-                        const rel = './' + ch.src;
-                        const resolved = new URL(rel, location.href).href;
-                        console.log('Checking asset URL:', resolved);
-                        const resp = await fetch(resolved, { method: 'HEAD' });
-                        if (!resp.ok) {
-                            console.warn('Asset check failed:', resolved, resp.status);
-                            showToast(`Missing asset: ${ch.src} (${resp.status})`, '<i class="fa-solid fa-triangle-exclamation"></i>', 'error');
-                        } else {
-                            console.log('Asset OK:', resolved);
-                        }
-                    } catch (err) {
-                        console.error('Asset check error for', ch.src, err);
-                        showToast(`Asset check error: ${ch.src}`, '<i class="fa-solid fa-bug"></i>', 'error');
-                    }
-                }
-            }
-            checkVideoAssets();
+
         };
 
     </script>
