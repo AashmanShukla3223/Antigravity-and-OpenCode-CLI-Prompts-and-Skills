@@ -782,6 +782,28 @@
                             <i class="fa-solid fa-rotate-left"></i> Back
                         </button>
                     </div>
+
+                    <!-- Colored buttons row (R/G/B/Y) -->
+                    <div class="flex justify-center gap-1 w-full px-1 mt-1">
+                        <button class="remote-btn w-5 h-5 rounded-full bg-red-500 border border-red-400 shadow-sm" title="Red"></button>
+                        <button class="remote-btn w-5 h-5 rounded-full bg-green-600 border border-green-500 shadow-sm" title="Green"></button>
+                        <button class="remote-btn w-5 h-5 rounded-full bg-blue-600 border border-blue-500 shadow-sm" title="Blue"></button>
+                        <button class="remote-btn w-5 h-5 rounded-full bg-yellow-500 border border-yellow-400 shadow-sm" title="Yellow"></button>
+                    </div>
+
+                    <!-- Number pad (0-9) -->
+                    <div class="grid grid-cols-3 gap-0.5 w-full px-1 mt-1">
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">1</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">2</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">3</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">4</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">5</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">6</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">7</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">8</button>
+                        <button class="remote-btn py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">9</button>
+                        <button class="remote-btn col-span-3 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded text-[9px] font-bold text-zinc-200">0</button>
+                    </div>
                 </div>
 
                 <!-- COLUMN 2: DYNAMIC CONSOLE REMOTE BAY SLOT -->
@@ -929,15 +951,39 @@
                     </div>
                     
                     <!-- BOX STATE E: DISHTV REMOTE -->
-                    <div id="deckDishRemote" class="hidden w-full h-full flex-col items-center scale-[0.85] origin-top">
-                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-3">DishTV Remote</div>
-                        <div class="bg-zinc-800 w-20 rounded-2xl p-3 flex flex-col items-center gap-2.5">
-                             <button id="dishPower" onclick="toggleDevicePower('dish')" class="remote-btn w-10 h-10 rounded-full bg-red-700 hover:bg-red-600 border border-red-500/40 text-white text-xs font-bold">Power</button>
-                             <button id="dishChUp" onclick="dishChangeChannel('up')" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">CH+</button>
-                             <button onclick="toggleDishMute()" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">MUTE</button>
-                             <button onclick="adjustDishVolume(5)" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">VOL+</button>
-                             <button onclick="adjustDishVolume(-5)" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">VOL-</button>
-                             <button id="dishChDown" onclick="dishChangeChannel('down')" class="remote-btn w-full py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-[9px] font-semibold border border-zinc-600/30">CH-</button>
+                    <div id="deckDishRemote" class="hidden w-full h-full flex-col items-center">
+                        <div class="text-[8px] font-bold text-zinc-400 tracking-wider font-mono uppercase text-center pb-1 border-b border-zinc-800 w-full mb-2">DishTV Remote</div>
+                        <div class="bg-zinc-800 w-28 rounded-2xl p-2 flex flex-col items-center gap-1">
+                             <button id="dishPower" onclick="toggleDevicePower('dish')" class="remote-btn w-8 h-8 rounded-full bg-red-700 hover:bg-red-600 border border-red-500/40 text-white text-[9px] font-bold">Power</button>
+                             <!-- Colored buttons row -->
+                             <div class="flex justify-center gap-1 w-full">
+                                 <button class="remote-btn w-4 h-4 rounded-full bg-red-500 border border-red-400" title="Red"></button>
+                                 <button class="remote-btn w-4 h-4 rounded-full bg-green-600 border border-green-500" title="Green"></button>
+                                 <button class="remote-btn w-4 h-4 rounded-full bg-blue-600 border border-blue-500" title="Blue"></button>
+                                 <button class="remote-btn w-4 h-4 rounded-full bg-yellow-500 border border-yellow-400" title="Yellow"></button>
+                             </div>
+                             <!-- Number pad -->
+                             <div class="grid grid-cols-3 gap-0.5 w-full">
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="1">1</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="2">2</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="3">3</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="4">4</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="5">5</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="6">6</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="7">7</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="8">8</button>
+                                 <button class="dish-num-btn remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="9">9</button>
+                                 <button class="dish-num-btn remote-btn col-span-3 py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[9px] font-bold text-zinc-200" data-digit="0">0</button>
+                             </div>
+                             <!-- Channel/Volume controls -->
+                             <div class="grid grid-cols-3 gap-0.5 w-full">
+                                 <button id="dishChUp" onclick="dishChangeChannel('up')" class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30">CH+</button>
+                                 <button onclick="toggleDishMute()" class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30">MUTE</button>
+                                 <button id="dishChDown" onclick="dishChangeChannel('down')" class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30">CH-</button>
+                                 <button onclick="adjustDishVolume(5)" class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30">VOL+</button>
+                                 <button onclick="adjustDishVolume(-5)" class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30">VOL-</button>
+                                 <button class="remote-btn py-0.5 bg-zinc-700 hover:bg-zinc-600 rounded text-[8px] font-bold text-zinc-300 border border-zinc-600/30" onclick="dishClearInput()">CLR</button>
+                             </div>
                         </div>
                     </div>
 
@@ -1153,6 +1199,7 @@
         let applePower = false;
         let dishPower = true;
         let dishChannel = 4;
+        let dishInputBuffer = '';
         let watermarkEnabled = true;
         const dishChannels = [
             { name: "Channel 121: AajTak", src: GH + "dishtv_source.mp4" },
@@ -1394,6 +1441,40 @@
             updateAudioVolumes();
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             saveSettings();
+        }
+
+        function dishNumInput(digit) {
+            if (!dishPower) return;
+            dishInputBuffer += String(digit);
+            if (dishInputBuffer.length > 3) dishInputBuffer = dishInputBuffer.slice(-3);
+            const targetNum = parseInt(dishInputBuffer, 10);
+            // Find channel by matching leading digits in channel names
+            const max = dishChannels.length;
+            for (let i = 0; i < max; i++) {
+                const name = dishChannels[i].name;
+                const match = name.match(/(\d+)/);
+                if (match) {
+                    const chNum = parseInt(match[1], 10);
+                    if (chNum === targetNum) {
+                        dishChannel = i;
+                        const video = document.getElementById('dishVideo');
+                        dishVideoTime = 0;
+                        loadDishVideo(video, dishChannels[dishChannel].src, 0);
+                        updateAudioVolumes();
+                        document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
+                        saveSettings();
+                        dishInputBuffer = '';
+                        showToast("Channel " + targetNum, '<i class="fa-solid fa-satellite-dish"></i>', "success");
+                        return;
+                    }
+                }
+            }
+            showToast("Typing: " + dishInputBuffer, '<i class="fa-solid fa-keyboard"></i>', "info");
+        }
+
+        function dishClearInput() {
+            dishInputBuffer = '';
+            showToast("Input cleared", '<i class="fa-solid fa-eraser"></i>', "info");
         }
 
         /* Power Sequence Logic */
@@ -2062,6 +2143,11 @@
 
         document.getElementById('upToDateOkBtn').addEventListener('click', hideUpToDateOverlay);
 
+        document.querySelectorAll('.dish-num-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                dishNumInput(parseInt(btn.dataset.digit));
+            });
+        });
 
         /* Volume Adjustment */
 
@@ -2812,6 +2898,12 @@
                 }
                 return;
             }
+            // Route digit keys to DishTV number input when Dish input is active
+            if (activeInputSource === 4 && /^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                dishNumInput(parseInt(e.key, 10));
+                return;
+            }
 
             if (e.key === 'F1') {
                 e.preventDefault();
@@ -2863,6 +2955,7 @@
                     else if (menuOpen) navigateLeftOrReturn();
                     else if (activeInputSource === 1 && wiiDialogOpen) closeWiiDialog();
                     break;
+
                 case 'm':
                     e.preventDefault();
                     toggleMenu();
