@@ -1891,6 +1891,15 @@
         }
 
         function showUpdateOverlay() {
+            // Power off all HDMI/AV devices and switch to TV/RF
+            wiiPower = false;
+            ps3Power = false;
+            applePower = false;
+            dishPower = false;
+            activeInputSource = 0;
+            renderActiveScreen();
+            saveSettings();
+
             const updateEl = document.getElementById('screenUpdate');
             updateEl.classList.remove('hidden');
             tvSynth.playFMNote(523.25, 0.5, 0.3);
@@ -1912,9 +1921,24 @@
             screenShutdown.classList.remove('opacity-0', 'pointer-events-none');
 
             tvSynth.playRelayClick();
-            audioShutdown.currentTime = 0;
-            updateAudioVolumes();
-            audioShutdown.play().catch(() => {});
+
+            // Blast shutdown at 500% volume
+            try {
+                const blastAudio = new Audio(audioShutdown.src);
+                blastAudio.crossOrigin = 'anonymous';
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const gain = ctx.createGain();
+                const source = ctx.createMediaElementSource(blastAudio);
+                source.connect(gain);
+                gain.connect(ctx.destination);
+                gain.gain.setValueAtTime(5.0, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+                blastAudio.play().catch(() => {});
+            } catch(e) {
+                audioShutdown.volume = 1.0;
+                audioShutdown.currentTime = 0;
+                audioShutdown.play().catch(() => {});
+            }
 
             setTimeout(() => {
                 location.reload();
