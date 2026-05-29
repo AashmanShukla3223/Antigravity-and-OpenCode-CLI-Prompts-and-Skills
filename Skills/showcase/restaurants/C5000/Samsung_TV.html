@@ -1016,7 +1016,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.4';
+        const APP_VERSION = '1.0.5';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -1448,28 +1448,33 @@
             dishInputBuffer += String(digit);
             if (dishInputBuffer.length > 3) dishInputBuffer = dishInputBuffer.slice(-3);
             const targetNum = parseInt(dishInputBuffer, 10);
-            // Find channel by matching leading digits in channel names
-            const max = dishChannels.length;
-            for (let i = 0; i < max; i++) {
-                const name = dishChannels[i].name;
-                const match = name.match(/(\d+)/);
-                if (match) {
-                    const chNum = parseInt(match[1], 10);
-                    if (chNum === targetNum) {
-                        dishChannel = i;
-                        const video = document.getElementById('dishVideo');
-                        dishVideoTime = 0;
-                        loadDishVideo(video, dishChannels[dishChannel].src, 0);
-                        updateAudioVolumes();
-                        document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
-                        saveSettings();
-                        dishInputBuffer = '';
-                        showToast("Channel " + targetNum, '<i class="fa-solid fa-satellite-dish"></i>', "success");
-                        return;
+            // Auto-search when buffer reaches 3 digits
+            if (dishInputBuffer.length === 3) {
+                const max = dishChannels.length;
+                for (let i = 0; i < max; i++) {
+                    const name = dishChannels[i].name;
+                    const match = name.match(/(\d+)/);
+                    if (match) {
+                        const chNum = parseInt(match[1], 10);
+                        if (chNum === targetNum) {
+                            dishChannel = i;
+                            const video = document.getElementById('dishVideo');
+                            dishVideoTime = 0;
+                            loadDishVideo(video, dishChannels[dishChannel].src, 0);
+                            updateAudioVolumes();
+                            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
+                            saveSettings();
+                            dishInputBuffer = '';
+                            showToast("Channel " + targetNum, '<i class="fa-solid fa-satellite-dish"></i>', "success");
+                            return;
+                        }
                     }
                 }
+                dishInputBuffer = '';
+                showToast("Channel " + targetNum + " not found", '<i class="fa-solid fa-circle-exclamation"></i>', "error");
+            } else {
+                showToast("Typing: " + dishInputBuffer, '<i class="fa-solid fa-keyboard"></i>', "info");
             }
-            showToast("Typing: " + dishInputBuffer, '<i class="fa-solid fa-keyboard"></i>', "info");
         }
 
         function dishClearInput() {
