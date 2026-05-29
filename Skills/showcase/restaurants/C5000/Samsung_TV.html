@@ -970,7 +970,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.2';
+        const APP_VERSION = '1.0.3';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -1992,7 +1992,8 @@
             pendingUpdateVersion = version || '1.0.6';
             const targetEl = document.getElementById('updateTargetVersion');
             if (targetEl) targetEl.innerText = pendingUpdateVersion;
-            // Power off all HDMI/AV devices and switch to TV/RF
+            // Save current input to restore after update, then switch to TV/RF
+            try { localStorage.setItem('postUpdateSource', activeInputSource); } catch(e) {}
             wiiPower = false;
             ps3Power = false;
             applePower = false;
@@ -2899,6 +2900,16 @@
         /* Initial TV Settings configuration setup */
         window.onload = function() {
             loadSettings();
+            // Restore input source after software update
+            try {
+                const postSrc = localStorage.getItem('postUpdateSource');
+                if (postSrc !== null) {
+                    activeInputSource = parseInt(postSrc, 10);
+                    localStorage.removeItem('postUpdateSource');
+                    // Re-save so activeInputSource sticks
+                    saveSettings();
+                }
+            } catch(e) {}
             applyWatermarkVisibility();
             document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             const fill = document.getElementById('volumeBarFill');
