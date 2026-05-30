@@ -284,7 +284,7 @@
                                     Your TV software is currently up to date.
                                 </p>
                                 <p class="text-xs text-zinc-400 mt-2">
-                                    Current version: <span class="text-emerald-400 font-bold font-mono">v<span id="upToDateVersion">1.0.6</span></span>
+                                    Current version: <span class="text-emerald-400 font-bold font-mono">v<span id="upToDateVersion">1.0.7</span></span>
                                 </p>
                             </div>
                             <button id="upToDateOkBtn" class="bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold px-6 py-2 rounded-lg text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95">
@@ -306,7 +306,7 @@
                                     Turn off all the devices to start updating
                                 </p>
                             </div>
-                            <p class="text-xs text-cyan-300/80 mt-2 font-mono">Target version: v<span id="updateTargetVersion">1.0.6</span></p>
+                            <p class="text-xs text-cyan-300/80 mt-2 font-mono">Target version: v<span id="updateTargetVersion">1.0.7</span></p>
                             <div class="flex justify-center gap-2 mt-2">
                                 <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></div>
                                 <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping" style="animation-delay: 0.3s"></div>
@@ -1109,10 +1109,10 @@
         const GH4 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/';
         const GH5 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.4/';
         const GH6 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/';
-        const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
+        const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.7/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.6';
+        const APP_VERSION = '1.0.7';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -2242,9 +2242,17 @@
         // ========== VIRTUAL USB PERSISTENT FILE SYSTEM ==========
         function usbGetDefaultData() {
             return {
-                'firmware.bin': 'Samsung firmware v2.0.0 emulated binary content\nModel: Samsung BN59\nDate: 2026-05-29',
-                'readme.txt': 'Samsung TV Simulator - USB Pendrive\n===============================\nInsert this drive into your TV USB port.\nPlace firmware files in root directory.\n'
+                'version.json': JSON.stringify({ version: APP_VERSION, release: 'Samsung BN59 firmware', date: new Date().toISOString().split('T')[0] }, null, 2),
+                'Samsung_TV.html': 'Samsung BN59 Firmware Package\n============================\nVersion: ' + APP_VERSION + '\nModel: Samsung BN59 / UE32C5000\nCompatible: DishTV, USB OTA, Internet OTA\nFeatures: Multi-path firmware update system\nGenerated: ' + new Date().toISOString()
             };
+        }
+
+        function usbSyncCurrentState() {
+            if (!virtualUSB.files) return;
+            virtualUSB.files['version.json'] = JSON.stringify({ version: APP_VERSION, release: 'Samsung BN59 firmware', date: new Date().toISOString().split('T')[0] }, null, 2);
+            virtualUSB.files['Samsung_TV.html'] = 'Samsung BN59 Firmware Package\n============================\nVersion: ' + APP_VERSION + '\nModel: Samsung BN59 / UE32C5000\nCompatible: DishTV, USB OTA, Internet OTA\nFeatures: Multi-path firmware update system\nGenerated: ' + new Date().toISOString();
+            usbSaveState();
+            usbUpdateMenuStatus();
         }
 
         function usbSaveState() {
@@ -2734,12 +2742,13 @@
                 closeUpdateMethodMenu();
                 return;
             }
-            if (broadcastAutoUpdateEnabled) {
-                startBroadcastScanner();
-                showToast('Broadcast OTA scan started...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
-            } else {
-                showToast('Enable "Auto Broadcast Update" in Support menu first.', '<i class="fa-solid fa-exclamation-triangle"></i>', 'error');
+            if (broadcastState.notificationActive || broadcastState.manifestAvailable) {
+                showToast('Broadcast update already found. Check the notification.', '<i class="fa-solid fa-satellite-dish"></i>', 'info');
+                closeUpdateMethodMenu();
+                return;
             }
+            startBroadcastScanner();
+            showToast('Broadcast OTA scan started...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
             closeUpdateMethodMenu();
         }
 
@@ -2799,7 +2808,7 @@
 
         let pendingUpdateVersion = null;
         function showUpdateOverlay(version) {
-            pendingUpdateVersion = version || '1.0.6';
+            pendingUpdateVersion = version || '1.0.7';
             const targetEl = document.getElementById('updateTargetVersion');
             if (targetEl) targetEl.innerText = pendingUpdateVersion;
             // Save current input to restore after update, then switch to TV/RF
@@ -3807,6 +3816,7 @@
         window.onload = function() {
             loadSettings();
             usbLoadState();
+            usbSyncCurrentState();
             usbUpdatePortUI();
             usbUpdateMenuStatus();
             // Restore input source after software update
