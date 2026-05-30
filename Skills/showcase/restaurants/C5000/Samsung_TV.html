@@ -316,6 +316,87 @@
                         </div>
                     </div>
 
+                    <!-- SOFTWARE UPDATE METHOD SUB-MENU -->
+                    <div id="screenUpdateMethod" class="absolute inset-0 bg-black/95 flex flex-col justify-center items-center z-50 hidden px-6 text-center">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-4 w-full">
+                            <h2 class="text-sm font-extrabold text-sky-400 uppercase tracking-widest mb-3 aero-font text-left">Software Update</h2>
+                            <div class="divide-y divide-sky-900/30">
+                                <div class="update-method-option py-2 px-2 rounded cursor-pointer flex items-start gap-2 samsung-osd-highlight" data-method="internet">
+                                    <span class="method-indicator text-amber-400 text-xs mt-0.5">▶</span>
+                                    <div class="text-left flex-1">
+                                        <div class="method-title text-[11px] font-bold text-white">Update via Internet</div>
+                                        <div class="text-[9px] text-zinc-400">Check for updates online</div>
+                                        <div class="text-[8px] font-mono text-zinc-500 mt-0.5" id="updateStatusInternet">... Not checked yet</div>
+                                    </div>
+                                </div>
+                                <div class="update-method-option py-2 px-2 rounded cursor-pointer flex items-start gap-2" data-method="usb">
+                                    <span class="method-indicator text-zinc-600 text-xs mt-0.5">→</span>
+                                    <div class="text-left flex-1">
+                                        <div class="method-title text-[11px] font-bold text-zinc-400">Update via USB</div>
+                                        <div class="text-[9px] text-zinc-500">Read update file from USB drive</div>
+                                        <div class="text-[8px] font-mono text-zinc-600 mt-0.5" id="updateStatusUSB">No USB connected</div>
+                                    </div>
+                                </div>
+                                <div class="update-method-option py-2 px-2 rounded cursor-pointer flex items-start gap-2" data-method="broadcast">
+                                    <span class="method-indicator text-zinc-600 text-xs mt-0.5">→</span>
+                                    <div class="text-left flex-1">
+                                        <div class="method-title text-[11px] font-bold text-zinc-400">Update via Channel (Broadcast)</div>
+                                        <div class="text-[9px] text-zinc-500">Receive updates from DishTV</div>
+                                        <div class="text-[8px] font-mono text-zinc-600 mt-0.5" id="updateStatusBroadcast">○ Switch to DishTV to enable</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="updateMethodBackBtn" class="mt-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- USB FILE BROWSER OVERLAY -->
+                    <div id="usbFileBrowser" class="absolute inset-0 bg-black/95 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
+                        <div class="max-w-md samsung-osd-bg rounded-xl p-4 w-full">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-sm font-extrabold text-sky-400 uppercase tracking-widest aero-font">USB File Browser</h2>
+                                <span id="usbBrowserPath" class="text-[9px] font-mono text-zinc-400">/</span>
+                            </div>
+                            <div class="flex gap-1 mb-2">
+                                <button id="usbBrowserBackBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider">Back</button>
+                                <button id="usbNewFileBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider">+ File</button>
+                                <button id="usbNewFolderBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider">+ Folder</button>
+                            </div>
+                            <div id="usbBrowserList" class="max-h-48 overflow-y-auto text-left text-[10px] divide-y divide-sky-900/20 border border-sky-900/30 rounded mb-2"></div>
+                            <button id="usbBrowserCloseBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Close</button>
+                        </div>
+                    </div>
+
+                    <!-- USB FILE EDIT MODAL -->
+                    <div id="usbFileEditModal" class="absolute inset-0 bg-black/95 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
+                        <div class="max-w-md samsung-osd-bg rounded-xl p-4 w-full">
+                            <h2 class="text-sm font-extrabold text-sky-400 uppercase tracking-widest mb-2 aero-font text-left" id="usbEditTitle">Edit File</h2>
+                            <textarea id="usbEditTextArea" class="w-full h-32 bg-zinc-900 text-zinc-200 text-[10px] font-mono p-2 rounded border border-sky-900/50 resize-none mb-2"></textarea>
+                            <div class="flex gap-1 justify-end">
+                                <button id="usbEditSaveBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Save</button>
+                                <button id="usbEditCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Cancel</button>
+                                <button id="usbEditDeleteBtn" class="bg-red-700 hover:bg-red-800 text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BROADCAST OTA READY NOTIFICATION OVERLAY -->
+                    <div id="broadcastReadyOverlay" class="absolute inset-0 bg-black/95 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-4 w-full">
+                            <h2 class="text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-3 aero-font">Broadcast Update Ready</h2>
+                            <div class="bg-amber-950/40 border border-amber-500/30 rounded-xl p-3 mb-3">
+                                <p class="text-xs text-slate-200 font-semibold leading-relaxed" id="broadcastReadyMessage">
+                                    A new software update is available via DishTV broadcast.
+                                </p>
+                                <p class="text-[10px] text-zinc-400 mt-2">Target version: <span id="broadcastTargetVersion" class="text-amber-400 font-bold font-mono">v2.0.0</span></p>
+                            </div>
+                            <div class="flex gap-2 justify-center">
+                                <button id="broadcastInstallBtn" class="bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Install Now</button>
+                                <button id="broadcastLaterBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Later</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- KEYBOARD SHORTCUT OVERLAY -->
                     <div id="shortcutOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
                         <div class="max-w-sm samsung-osd-bg rounded-xl p-5">
@@ -377,10 +458,17 @@
                         </div>
                         <video id="dishVideo" class="w-full h-full object-cover" loop playsinline muted preload="auto"></video>
                            <div id="dishContent" class="absolute bottom-4 left-4 text-white p-2 bg-black/50 rounded z-20 watermark">
-                               <div class="text-sm font-bold">DishTV DTH</div>
-                               <div id="dishChannelInfo" class="text-xs">Channel 125: AajTak: 2020 e-Agenda Edition</div>
-                           </div>
-                    </div>
+                                <div class="text-sm font-bold">DishTV DTH</div>
+                                <div id="dishChannelInfo" class="text-xs">Channel 125: AajTak: 2020 e-Agenda Edition</div>
+                            </div>
+                           <div id="broadcastReceptionBar" class="absolute bottom-4 right-4 bg-black/70 border border-amber-500/40 rounded-lg p-2 z-20 hidden flex-col items-center watermark">
+                                <div class="text-[9px] font-bold text-amber-400 uppercase tracking-widest mb-1">Broadcast OTA</div>
+                                <div class="w-24 h-1.5 bg-zinc-900 rounded overflow-hidden">
+                                    <div id="broadcastProgressFill" class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300" style="width:0%"></div>
+                                </div>
+                                <span id="broadcastProgressText" class="text-[8px] font-mono text-zinc-400 mt-0.5">Receiving 0%</span>
+                            </div>
+                     </div>
                     
                     <!-- INPUT 2: NINTENDO WII (AV / COMPONENT INPUT) -->
                     <div id="inputWii" class="absolute inset-0 wii-grid z-10 hidden flex-col justify-between p-3 text-zinc-800">
@@ -711,6 +799,14 @@
                     <div class="text-white/90 font-semibold text-[9px] md:text-[10px] tracking-[0.2em] select-none leading-none">SAMSUNG</div>
                     <div id="bezelLED" class="w-1 h-1 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.85)] animate-pulse transition-all duration-500 mt-[2px]"></div>
                 </div>
+
+                <!-- USB Port on chassis -->
+                <div class="absolute bottom-2 right-4 z-50 flex items-center gap-1">
+                    <button id="usbPortBtn" class="text-[8px] px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold uppercase tracking-wider border border-zinc-700/30 transition-all">
+                        <i class="fa-solid fa-usb mr-1"></i>USB: None
+                    </button>
+                    <div id="usbDropdown" class="absolute bottom-full right-0 mb-1 bg-zinc-900 border border-zinc-700 rounded-lg p-1 min-w-[140px] hidden shadow-xl"></div>
+                </div>
             </div>
 
             <!-- Sleek Glass Stand base below TV cabinet -->
@@ -1016,7 +1112,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.5';
+        const APP_VERSION = '1.0.6';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -1258,6 +1354,32 @@
         let currentMenuOptionIndex = 0;
         let menuStage = "categories"; // "categories", "options"
         let activeSoundTestTimer = null;
+        // Auto broadcast update
+        let broadcastAutoUpdateEnabled = false;
+
+        // Virtual USB Pendrive
+        let virtualUSB = { connected: false, label: 'SANDISK_USB', files: {} };
+        let usbFileBrowserOpen = false;
+        let usbFileBrowserPath = '/';
+        let usbFileBrowserSelectedIndex = 0;
+        let usbFileEditOpen = false;
+        let usbFileEditPath = '';
+
+        // Broadcast OTA
+        let broadcastState = {
+            scanning: false,
+            manifestAvailable: null,
+            receptionProgress: 0,
+            receptionStartedAt: null,
+            scannerInterval: null,
+            progressInterval: null,
+            notificationActive: false,
+            notificationDismissed: false
+        };
+        const TV_MODEL_CODE = 'Samsung BN59';
+        const BROADCAST_LOOP_MS = 4 * 60 * 1000;
+        const BROADCAST_POLL_MS = 90000;
+        const BROADCAST_START_DELAY = 5000;
 
         // Menu structures matching genuine 2010 TV
         const menuConfig = [
@@ -1304,8 +1426,9 @@
                 icon: "fa-circle-info",
                 options: [
                     { name: "Self Diagnosis: Audio Test", type: "action", action: triggerSoundTest },
-                    { name: "Software Upgrade", type: "toggle", current: true },
-                    { name: "Contact Samsung", type: "action", action: () => showToast("Samsung Support: 1-800-SAMSUNG", '<i class="fa-solid fa-phone"></i>', "info") }
+                    { name: "Software Upgrade", type: "action", action: openUpdateMethodMenu },
+                    { name: "Contact Samsung", type: "action", action: () => showToast("Samsung Support: 1-800-SAMSUNG", '<i class="fa-solid fa-phone"></i>', "info") },
+                    { name: "Auto Broadcast Update", type: "toggle", current: false }
                 ]
             }
         ];
@@ -1324,6 +1447,7 @@
                 ps3Power,
                 applePower,
                 dishPower,
+                broadcastAutoUpdateEnabled,
                 menuConfig: menuConfig.map(cat =>
                     cat.options.map(opt =>
                         opt.current !== undefined ? opt.current : null
@@ -1348,6 +1472,7 @@
                 if (data.ps3Power !== undefined) ps3Power = data.ps3Power;
                 if (data.applePower !== undefined) applePower = data.applePower;
                 if (data.dishPower !== undefined) dishPower = data.dishPower;
+                if (data.broadcastAutoUpdateEnabled !== undefined) broadcastAutoUpdateEnabled = data.broadcastAutoUpdateEnabled;
                 if (data.menuConfig) {
                     data.menuConfig.forEach((cat, ci) => {
                         if (!menuConfig[ci]) return;
@@ -1715,6 +1840,11 @@
             handleCEC(oldSource, activeInputSource);
             showToast(`Input switched to: ${getAudioSourceName(activeInputSource)}`, '<i class="fa-solid fa-circle-nodes"></i>', 'success');
             saveSettings();
+            if (activeInputSource === 4 && broadcastAutoUpdateEnabled && !broadcastState.scanning) {
+                startBroadcastScanner();
+            } else if (activeInputSource !== 4) {
+                stopBroadcastScanner();
+            }
         }
 
         function getAudioSourceName(srcId) {
@@ -1796,11 +1926,7 @@
                 }
 
                 if (opt.type === "toggle") {
-                    if (opt.name === "Software Upgrade" && opt.current) {
-                        valueContainer.innerHTML = '<i class="fa-solid fa-rotate text-[10px]"></i> Check for Updates';
-                    } else {
-                        valueContainer.innerText = opt.current ? "On" : "Off";
-                    }
+                    valueContainer.innerText = opt.current ? "On" : "Off";
                 } else if (opt.type === "select") {
                     valueContainer.innerText = opt.values[opt.current];
                 } else if (opt.type === "range") {
@@ -1852,16 +1978,20 @@
             } else if (menuStage === "options") {
                 const opt = menuConfig[currentMenuCategory].options[currentMenuOptionIndex];
                 if (opt.type === "toggle") {
-                    if (opt.name === "Software Upgrade" && opt.current) {
-                        checkForUpdates();
-                        return;
-                    }
                     opt.current = !opt.current;
                     renderCategoryOptions();
                     showToast(`${opt.name} toggled: ${opt.current ? 'On' : 'Off'}`, '<i class="fa-solid fa-toggle-on"></i>');
                     if (opt.name === "Watermark") {
                         watermarkEnabled = opt.current;
                         applyWatermarkVisibility();
+                    }
+                    if (opt.name === "Auto Broadcast Update") {
+                        broadcastAutoUpdateEnabled = opt.current;
+                        if (opt.current && activeInputSource === 4) {
+                            startBroadcastScanner();
+                        } else if (!opt.current) {
+                            stopBroadcastScanner();
+                        }
                     }
                 } else if (opt.type === "select") {
                     opt.current = (opt.current + 1) % opt.values.length;
@@ -2030,6 +2160,600 @@
             return false;
         }
 
+        let updateMethodMenuOpen = false;
+        let updateMethodSelectedIndex = 0;
+
+        function openUpdateMethodMenu() {
+            closeMenu();
+            updateMethodMenuOpen = true;
+            updateMethodSelectedIndex = 0;
+            document.getElementById('screenUpdateMethod').classList.remove('hidden');
+            renderUpdateMethodMenu();
+            updateAllUpdateStatuses();
+            tvSynth.playFMNote(880, 0.12, 0.2);
+        }
+
+        function closeUpdateMethodMenu() {
+            updateMethodMenuOpen = false;
+            document.getElementById('screenUpdateMethod').classList.add('hidden');
+        }
+
+        function renderUpdateMethodMenu() {
+            const options = document.querySelectorAll('.update-method-option');
+            options.forEach((el, i) => {
+                const indicator = el.querySelector('.method-indicator');
+                const title = el.querySelector('.method-title');
+                if (i === updateMethodSelectedIndex) {
+                    el.classList.add('samsung-osd-highlight');
+                    indicator.innerHTML = '▶';
+                    indicator.className = 'method-indicator text-amber-400 text-xs mt-0.5';
+                    if (title) title.className = 'method-title text-[11px] font-bold text-white';
+                } else {
+                    el.classList.remove('samsung-osd-highlight');
+                    indicator.innerHTML = '→';
+                    indicator.className = 'method-indicator text-zinc-600 text-xs mt-0.5';
+                    if (title) title.className = 'method-title text-[11px] font-bold text-zinc-400';
+                }
+            });
+        }
+
+        function navigateUpdateMethod(direction) {
+            if (!updateMethodMenuOpen) return;
+            const max = 3;
+            if (direction === "up") {
+                updateMethodSelectedIndex = (updateMethodSelectedIndex - 1 + max) % max;
+            } else if (direction === "down") {
+                updateMethodSelectedIndex = (updateMethodSelectedIndex + 1) % max;
+            }
+            renderUpdateMethodMenu();
+            tvSynth.playFMNote(880, 0.08, 0.15);
+        }
+
+        function activateUpdateMethod() {
+            if (!updateMethodMenuOpen) return;
+            switch(updateMethodSelectedIndex) {
+                case 0:
+                    checkForUpdates();
+                    closeUpdateMethodMenu();
+                    break;
+                case 1:
+                    usbOpenBrowser();
+                    closeUpdateMethodMenu();
+                    break;
+                case 2:
+                    activateBroadcastCheck();
+                    break;
+            }
+        }
+
+        function updateAllUpdateStatuses() {
+            const internetEl = document.getElementById('updateStatusInternet');
+            const usbEl = document.getElementById('updateStatusUSB');
+            const broadcastEl = document.getElementById('updateStatusBroadcast');
+            if (internetEl) internetEl.innerText = '... Not checked yet';
+            if (usbEl) usbEl.innerText = 'No USB connected';
+            if (broadcastEl) {
+                broadcastEl.innerText = activeInputSource === 4 ? '● Listening on HDMI 3 (DishTV)' : '○ Switch to DishTV to enable';
+            }
+            usbUpdateMenuStatus();
+            updateBroadcastMenuStatus();
+        }
+
+        // ========== VIRTUAL USB PERSISTENT FILE SYSTEM ==========
+        function usbGetDefaultData() {
+            return {
+                'firmware.bin': 'Samsung firmware v2.0.0 emulated binary content\nModel: Samsung BN59\nDate: 2026-05-29',
+                'readme.txt': 'Samsung TV Simulator - USB Pendrive\n===============================\nInsert this drive into your TV USB port.\nPlace firmware files in root directory.\n'
+            };
+        }
+
+        function usbSaveState() {
+            try {
+                localStorage.setItem('samsung_usb_data', JSON.stringify(virtualUSB));
+            } catch(e) {}
+        }
+
+        function usbLoadState() {
+            try {
+                const raw = localStorage.getItem('samsung_usb_data');
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    if (data && typeof data === 'object') {
+                        virtualUSB = data;
+                        return;
+                    }
+                }
+            } catch(e) {}
+            virtualUSB.files = usbGetDefaultData();
+            usbSaveState();
+        }
+
+        function usbConnect() {
+            if (virtualUSB.connected) return;
+            virtualUSB.connected = true;
+            virtualUSB.label = 'SANDISK_USB';
+            if (!virtualUSB.files || Object.keys(virtualUSB.files).length === 0) {
+                virtualUSB.files = usbGetDefaultData();
+            }
+            usbSaveState();
+            usbUpdatePortUI();
+            usbUpdateMenuStatus();
+            showToast('USB drive connected: ' + virtualUSB.label, '<i class="fa-solid fa-usb"></i>', 'success');
+        }
+
+        function usbDisconnect() {
+            if (!virtualUSB.connected) return;
+            virtualUSB.connected = false;
+            usbSaveState();
+            usbUpdatePortUI();
+            usbUpdateMenuStatus();
+            if (usbFileBrowserOpen) usbCloseBrowser();
+            showToast('USB drive disconnected', '<i class="fa-solid fa-usb"></i>', 'error');
+        }
+
+        function usbUpdatePortUI() {
+            const btn = document.getElementById('usbPortBtn');
+            if (!btn) return;
+            if (virtualUSB.connected) {
+                btn.className = 'text-[8px] px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-bold uppercase tracking-wider border border-emerald-500/50 transition-all';
+                btn.innerHTML = '<i class="fa-solid fa-usb mr-1"></i>USB: ' + virtualUSB.label;
+            } else {
+                btn.className = 'text-[8px] px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold uppercase tracking-wider border border-zinc-700/30 transition-all';
+                btn.innerHTML = '<i class="fa-solid fa-usb mr-1"></i>USB: None';
+            }
+        }
+
+        function usbUpdateMenuStatus() {
+            const usbEl = document.getElementById('updateStatusUSB');
+            if (!usbEl) return;
+            usbEl.innerText = virtualUSB.connected ? '● USB connected: ' + virtualUSB.label : 'No USB connected';
+        }
+
+        function usbGetDirContents(dirPath) {
+            const cleaned = dirPath.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+            const prefix = cleaned === '/' ? '' : cleaned + '/';
+            const entries = { dirs: [], files: [] };
+            const seen = new Set();
+            Object.keys(virtualUSB.files).forEach(key => {
+                if (key.startsWith(prefix) && key !== prefix) {
+                    const remainder = key.substring(prefix.length);
+                    const slashIdx = remainder.indexOf('/');
+                    if (slashIdx >= 0) {
+                        const dirName = remainder.substring(0, slashIdx);
+                        if (!seen.has(dirName)) {
+                            seen.add(dirName);
+                            entries.dirs.push(dirName);
+                        }
+                    } else {
+                        entries.files.push(remainder);
+                    }
+                }
+            });
+            entries.dirs.sort();
+            entries.files.sort();
+            return entries;
+        }
+
+        function usbReadFile(filePath) {
+            const key = filePath.replace(/^\//, '');
+            return virtualUSB.files[key] || null;
+        }
+
+        function usbWriteFile(filePath, content) {
+            const key = filePath.replace(/^\//, '');
+            virtualUSB.files[key] = content;
+            usbSaveState();
+        }
+
+        function usbDeleteFile(filePath) {
+            const key = filePath.replace(/^\//, '');
+            delete virtualUSB.files[key];
+            Object.keys(virtualUSB.files).forEach(k => {
+                if (k.startsWith(key + '/')) delete virtualUSB.files[k];
+            });
+            usbSaveState();
+        }
+
+        function usbMkdir(dirPath) {
+            const key = dirPath.replace(/^\//, '') + '/.folder';
+            virtualUSB.files[key] = '';
+            usbSaveState();
+        }
+
+        function usbGetParentPath(dirPath) {
+            const cleaned = dirPath.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+            if (cleaned === '/' || cleaned === '') return '/';
+            const parts = cleaned.split('/');
+            parts.pop();
+            return parts.join('/') || '/';
+        }
+
+        function usbOpenBrowser() {
+            if (!virtualUSB.connected) {
+                showToast('No USB drive connected. Please insert a USB drive first.', '<i class="fa-solid fa-exclamation-triangle"></i>', 'error');
+                return;
+            }
+            usbFileBrowserOpen = true;
+            usbFileBrowserPath = '/';
+            usbFileBrowserSelectedIndex = 0;
+            document.getElementById('usbFileBrowser').style.display = 'flex';
+            usbRenderBrowser();
+        }
+
+        function usbCloseBrowser() {
+            usbFileBrowserOpen = false;
+            document.getElementById('usbFileBrowser').style.display = 'none';
+        }
+
+        function usbRenderBrowser() {
+            const listEl = document.getElementById('usbBrowserList');
+            const pathEl = document.getElementById('usbBrowserPath');
+            if (!listEl || !pathEl) return;
+            pathEl.innerText = usbFileBrowserPath;
+            const entries = usbGetDirContents(usbFileBrowserPath);
+            listEl.innerHTML = '';
+            if (usbFileBrowserPath !== '/') {
+                const parentItem = document.createElement('div');
+                parentItem.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-zinc-400 hover:text-zinc-200 text-[10px]';
+                parentItem.dataset.type = 'parent';
+                parentItem.innerHTML = '<i class="fa-solid fa-level-up-alt text-[8px]"></i> ..';
+                listEl.appendChild(parentItem);
+            }
+            entries.dirs.forEach((dir, idx) => {
+                const item = document.createElement('div');
+                const selected = idx === usbFileBrowserSelectedIndex && usbFileBrowserPath === '/' ? false : (idx === usbFileBrowserSelectedIndex && usbFileBrowserPath !== '/');
+                item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px] ' + (idx === usbFileBrowserSelectedIndex ? 'bg-sky-800/40 text-sky-200' : 'text-zinc-400 hover:text-zinc-200 hover:bg-sky-900/20');
+                if (usbFileBrowserPath !== '/' && idx === usbFileBrowserSelectedIndex) {
+                    item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px] bg-sky-800/40 text-sky-200';
+                }
+                item.dataset.type = 'dir';
+                item.dataset.name = dir;
+                item.innerHTML = '<i class="fa-solid fa-folder text-amber-400 text-[8px]"></i> ' + dir;
+                listEl.appendChild(item);
+            });
+            entries.files.forEach((file, idx) => {
+                const adjustedIdx = idx;
+                const item = document.createElement('div');
+                const isSelected = adjustedIdx === usbFileBrowserSelectedIndex;
+                item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px] ' + (isSelected ? 'bg-sky-800/40 text-sky-200' : 'text-zinc-400 hover:text-zinc-200 hover:bg-sky-900/20');
+                if (!isSelected && usbFileBrowserPath !== '/') {
+                    item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px]' + (isSelected ? ' bg-sky-800/40 text-sky-200' : ' text-zinc-400 hover:text-zinc-200 hover:bg-sky-900/20');
+                }
+                item.dataset.type = 'file';
+                item.dataset.name = file;
+                item.innerHTML = '<i class="fa-solid fa-file text-sky-400 text-[8px]"></i> ' + file;
+                listEl.appendChild(item);
+            });
+        }
+
+        function usbNavigateBrowser(direction) {
+            const entries = usbGetDirContents(usbFileBrowserPath);
+            const total = entries.dirs.length + entries.files.length + (usbFileBrowserPath !== '/' ? 1 : 0);
+            if (direction === 'up') {
+                usbFileBrowserSelectedIndex = (usbFileBrowserSelectedIndex - 1 + total) % total;
+            } else if (direction === 'down') {
+                usbFileBrowserSelectedIndex = (usbFileBrowserSelectedIndex + 1) % total;
+            }
+            usbRenderBrowser();
+        }
+
+        function usbActivateBrowserItem() {
+            const listEl = document.getElementById('usbBrowserList');
+            if (!listEl) return;
+            const children = listEl.children;
+            if (children.length === 0) return;
+            const targetIdx = Math.min(usbFileBrowserSelectedIndex, children.length - 1);
+            const child = children[targetIdx];
+            if (!child) return;
+            const type = child.dataset.type;
+            const name = child.dataset.name;
+            if (type === 'parent') {
+                usbFileBrowserPath = usbGetParentPath(usbFileBrowserPath);
+                usbFileBrowserSelectedIndex = 0;
+                usbRenderBrowser();
+            } else if (type === 'dir') {
+                usbFileBrowserPath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name;
+                usbFileBrowserSelectedIndex = 0;
+                usbRenderBrowser();
+            } else if (type === 'file') {
+                const filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name;
+                const content = usbReadFile(filePath);
+                if (name === 'version.json') {
+                    if (content) {
+                        try {
+                            const verData = JSON.parse(content);
+                            if (verData.version && isNewerVersion(verData.version, APP_VERSION)) {
+                                if (confirm('Update found on USB: v' + verData.version + '\n\nCurrent: v' + APP_VERSION + '\n\nInstall this update?')) {
+                                    usbCloseBrowser();
+                                    showToast('Installing USB update v' + verData.version + '...', '<i class="fa-solid fa-usb"></i>', 'success');
+                                    showUpdateOverlay(verData.version);
+                                }
+                            } else {
+                                alert('This version (' + (verData.version || 'unknown') + ') is not newer than the current firmware (v' + APP_VERSION + ').');
+                            }
+                        } catch(e) {
+                            alert('Invalid version.json file. Please check the JSON format.');
+                        }
+                    }
+                } else {
+                    usbOpenFileEditor(filePath, content || '');
+                }
+            }
+        }
+
+        function usbOpenFileEditor(filePath, content) {
+            usbFileEditOpen = true;
+            usbFileEditPath = filePath;
+            document.getElementById('usbEditTitle').innerText = 'Editing: ' + filePath;
+            document.getElementById('usbEditTextArea').value = content || '';
+            document.getElementById('usbFileEditModal').style.display = 'flex';
+        }
+
+        function usbCloseFileEditor() {
+            usbFileEditOpen = false;
+            document.getElementById('usbFileEditModal').style.display = 'none';
+        }
+
+        function usbSaveEditedFile() {
+            const content = document.getElementById('usbEditTextArea').value;
+            usbWriteFile(usbFileEditPath, content);
+            usbCloseFileEditor();
+            usbRenderBrowser();
+            showToast('File saved: ' + usbFileEditPath, '<i class="fa-solid fa-floppy-disk"></i>', 'success');
+        }
+
+        function usbDeleteEditedFile() {
+            if (!confirm('Delete ' + usbFileEditPath + '?')) return;
+            usbDeleteFile(usbFileEditPath);
+            usbCloseFileEditor();
+            usbRenderBrowser();
+            showToast('File deleted: ' + usbFileEditPath, '<i class="fa-solid fa-trash"></i>', 'info');
+        }
+
+        function usbNewFile() {
+            const name = prompt('Enter file name:');
+            if (!name || name.trim() === '') return;
+            const filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
+            usbWriteFile(filePath, '');
+            usbRenderBrowser();
+            showToast('File created: ' + name.trim(), '<i class="fa-solid fa-file-circle-plus"></i>', 'success');
+        }
+
+        function usbNewFolder() {
+            const name = prompt('Enter folder name:');
+            if (!name || name.trim() === '') return;
+            const dirPath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
+            usbMkdir(dirPath);
+            usbRenderBrowser();
+            showToast('Folder created: ' + name.trim(), '<i class="fa-solid fa-folder-plus"></i>', 'success');
+        }
+
+        function usbCheckFirmwareFile() {
+            if (!virtualUSB.connected) return false;
+            const possibleNames = ['firmware.bin', 'firmware.img', 'update.bin', 'T-INFOLINK.bin'];
+            for (const name of possibleNames) {
+                if (virtualUSB.files[name]) {
+                    return 'Found firmware file: ' + name;
+                }
+            }
+            return false;
+        }
+
+        // ========== USB DROPDOWN ==========
+        function usbRenderDropdown() {
+            const dropdown = document.getElementById('usbDropdown');
+            if (!dropdown) return;
+            if (!virtualUSB.connected) {
+                dropdown.innerHTML = '<div class="py-1 px-2 text-[9px] text-zinc-500">No USB connected</div>';
+                return;
+            }
+            const entries = usbGetDirContents('/');
+            let html = '<div class="py-1 px-2 text-[9px] text-zinc-400 font-bold border-b border-zinc-700">' + virtualUSB.label + '</div>';
+            entries.files.forEach(f => {
+                html += '<div class="py-0.5 px-2 text-[9px] text-zinc-300 hover:bg-zinc-700 cursor-pointer usb-dropdown-item" data-path="/' + f + '">' + f + '</div>';
+            });
+            dropdown.innerHTML = html;
+        }
+
+        // ========== BROADCAST OTA FUNCTIONS ==========
+
+        function startBroadcastScanner() {
+            if (broadcastState.scanning) return;
+            if (activeInputSource !== 4) return;
+            broadcastState.scanning = true;
+            broadcastState.manifestAvailable = null;
+            broadcastState.receptionProgress = 0;
+            broadcastState.receptionStartedAt = Date.now();
+            broadcastState.notificationDismissed = false;
+            showReceptionProgressBar();
+            showToast('Broadcast OTA scan started on DishTV...', '<i class="fa-solid fa-satellite-dish"></i>', 'info');
+
+            broadcastState.progressInterval = setInterval(() => {
+                if (broadcastState.notificationActive || broadcastState.manifestAvailable) return;
+                const elapsed = Date.now() - broadcastState.receptionStartedAt;
+                const progress = Math.min(98, (elapsed / BROADCAST_POLL_MS) * 100);
+                broadcastState.receptionProgress = progress;
+                updateReceptionProgress();
+            }, 500);
+
+            broadcastState.scannerInterval = setInterval(() => {
+                if (broadcastState.notificationActive || broadcastState.manifestAvailable) return;
+                checkBroadcastManifest();
+            }, BROADCAST_POLL_MS);
+
+            setTimeout(() => {
+                checkBroadcastManifest();
+            }, BROADCAST_START_DELAY);
+        }
+
+        function stopBroadcastScanner() {
+            if (!broadcastState.scanning) return;
+            broadcastState.scanning = false;
+            if (broadcastState.scannerInterval) {
+                clearInterval(broadcastState.scannerInterval);
+                broadcastState.scannerInterval = null;
+            }
+            if (broadcastState.progressInterval) {
+                clearInterval(broadcastState.progressInterval);
+                broadcastState.progressInterval = null;
+            }
+            hideReceptionProgressBar();
+            broadcastState.receptionProgress = 0;
+            broadcastState.manifestAvailable = null;
+            broadcastState.notificationActive = false;
+            broadcastState.notificationDismissed = false;
+            updateBroadcastMenuStatus();
+        }
+
+        function checkBroadcastManifest() {
+            if (!broadcastState.scanning) return;
+            if (broadcastState.notificationActive || broadcastState.manifestAvailable) return;
+            if (activeInputSource !== 4) return;
+
+            fetch(VERCEL_URL + '/dishtv/firmware.json', { cache: 'no-store' })
+                .then(res => {
+                    if (!res.ok) throw new Error('Could not fetch firmware manifest');
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data || !data.firmware) throw new Error('Invalid manifest');
+                    if (!isCompatible(data)) {
+                        // Silent failure — authentic broadcast OTA behavior
+                        return;
+                    }
+                    if (data.firmware.required_min_version && isNewerVersion(data.firmware.required_min_version, APP_VERSION)) {
+                        // TV firmware too old for this broadcast update
+                        return;
+                    }
+                    if (!isNewerVersion(data.firmware.version, APP_VERSION)) {
+                        // No update needed — broadcast already up to date
+                        broadcastState.manifestAvailable = null;
+                        broadcastState.receptionProgress = 0;
+                        hideReceptionProgressBar();
+                        return;
+                    }
+                    broadcastState.manifestAvailable = data;
+                    broadcastState.receptionProgress = 100;
+                    updateReceptionProgress();
+                    clearInterval(broadcastState.scannerInterval);
+                    broadcastState.scannerInterval = null;
+                    clearInterval(broadcastState.progressInterval);
+                    broadcastState.progressInterval = null;
+                    showToast('Broadcast update found! Check the notification.', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
+                    onBroadcastUpdateReady(data);
+                })
+                .catch(() => {
+                    // No manifest yet - keep scanning
+                });
+        }
+
+        function updateReceptionProgress() {
+            const fill = document.getElementById('broadcastProgressFill');
+            const text = document.getElementById('broadcastProgressText');
+            if (fill && text) {
+                fill.style.width = broadcastState.receptionProgress + '%';
+                text.innerText = 'Receiving ' + Math.round(broadcastState.receptionProgress) + '%';
+            }
+        }
+
+        function showReceptionProgressBar() {
+            const bar = document.getElementById('broadcastReceptionBar');
+            if (bar) bar.classList.remove('hidden');
+        }
+
+        function hideReceptionProgressBar() {
+            const bar = document.getElementById('broadcastReceptionBar');
+            if (bar) bar.classList.add('hidden');
+        }
+
+        function onBroadcastUpdateReady(data) {
+            broadcastState.notificationActive = true;
+            broadcastState.notificationDismissed = false;
+            const overlay = document.getElementById('broadcastReadyOverlay');
+            if (overlay) {
+                const msgEl = document.getElementById('broadcastReadyMessage');
+                const verEl = document.getElementById('broadcastTargetVersion');
+                if (msgEl) msgEl.innerText = 'A new software update (v' + data.firmware.version + ') is available via DishTV broadcast.';
+                if (verEl) verEl.innerText = 'v' + data.firmware.version;
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function installBroadcastUpdate() {
+            broadcastState.notificationActive = false;
+            broadcastState.notificationDismissed = false;
+            document.getElementById('broadcastReadyOverlay').style.display = 'none';
+            stopBroadcastScanner();
+            const data = broadcastState.manifestAvailable;
+            if (data && data.firmware && data.firmware.version) {
+                showToast('Installing broadcast update v' + data.firmware.version + '...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
+                showUpdateOverlay(data.firmware.version);
+            } else {
+                showToast('Update data unavailable.', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
+            }
+            broadcastState.manifestAvailable = null;
+        }
+
+        function dismissBroadcastUpdate() {
+            broadcastState.notificationActive = false;
+            broadcastState.notificationDismissed = true;
+            document.getElementById('broadcastReadyOverlay').style.display = 'none';
+            stopBroadcastScanner();
+            showToast('Broadcast update dismissed.', '<i class="fa-solid fa-ban"></i>', 'info');
+        }
+
+        function updateBroadcastMenuStatus() {
+            const broadcastEl = document.getElementById('updateStatusBroadcast');
+            if (!broadcastEl) return;
+            if (activeInputSource === 4) {
+                if (broadcastState.scanning) {
+                    broadcastEl.innerText = '● Scanning for broadcast OTA... (' + Math.round(broadcastState.receptionProgress) + '%)';
+                } else if (broadcastState.manifestAvailable) {
+                    broadcastEl.innerText = '● Update v' + broadcastState.manifestAvailable.firmware.version + ' available!';
+                } else {
+                    broadcastEl.innerText = '● Listening on HDMI 3 (DishTV)';
+                }
+            } else {
+                broadcastEl.innerText = '○ Switch to DishTV to enable';
+            }
+        }
+
+        function isCompatible(manifest) {
+            if (!manifest.target_models || !Array.isArray(manifest.target_models)) return false;
+            return manifest.target_models.includes(TV_MODEL_CODE);
+        }
+
+        function activateBroadcastCheck() {
+            if (activeInputSource !== 4) {
+                showToast('Switch to DishTV (HDMI 3) to check for broadcast updates.', '<i class="fa-solid fa-satellite-dish"></i>', 'error');
+                closeUpdateMethodMenu();
+                return;
+            }
+            if (broadcastState.scanning) {
+                showToast('Broadcast scan already in progress.', '<i class="fa-solid fa-satellite-dish"></i>', 'info');
+                closeUpdateMethodMenu();
+                return;
+            }
+            if (broadcastAutoUpdateEnabled) {
+                startBroadcastScanner();
+                showToast('Broadcast OTA scan started...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
+            } else {
+                showToast('Enable "Auto Broadcast Update" in Support menu first.', '<i class="fa-solid fa-exclamation-triangle"></i>', 'error');
+            }
+            closeUpdateMethodMenu();
+        }
+
+        // Update broadcast status when input changes
+        const origRenderActiveScreen = renderActiveScreen;
+        renderActiveScreen = function() {
+            origRenderActiveScreen.call(this);
+            if (document.getElementById('updateStatusBroadcast')) {
+                document.getElementById('updateStatusBroadcast').innerText =
+                    activeInputSource === 4 ? '● Listening on HDMI 3 (DishTV)' : '○ Switch to DishTV to enable';
+            }
+            updateBroadcastMenuStatus();
+        };
+
         function checkForUpdates() {
             closeMenu();
             showToast("Checking for software updates...", '<i class="fa-solid fa-rotate fa-spin"></i>', "info");
@@ -2147,6 +2871,16 @@
         document.getElementById('closeSoundTestBtn').addEventListener('click', stopSoundTest);
 
         document.getElementById('upToDateOkBtn').addEventListener('click', hideUpToDateOverlay);
+
+        document.getElementById('updateMethodBackBtn').addEventListener('click', closeUpdateMethodMenu);
+        document.querySelectorAll('.update-method-option').forEach((el, i) => {
+            el.dataset.index = i;
+            el.addEventListener('click', () => {
+                updateMethodSelectedIndex = i;
+                renderUpdateMethodMenu();
+                activateUpdateMethod();
+            });
+        });
 
         document.querySelectorAll('.dish-num-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -2890,6 +3624,74 @@
         addSafeListener('siriBtnBack', 'click', () => tvosNavigate("left"));
         addSafeListener('siriBtnMic', 'click', tvosClickEnter);
 
+        // USB Port button
+        addSafeListener('usbPortBtn', 'click', () => {
+            if (virtualUSB.connected) {
+                usbDisconnect();
+            } else {
+                usbConnect();
+            }
+            usbUpdatePortUI();
+        });
+
+        // USB File Browser buttons
+        addSafeListener('usbNewFileBtn', 'click', usbNewFile);
+        addSafeListener('usbNewFolderBtn', 'click', usbNewFolder);
+        addSafeListener('usbBrowserBackBtn', 'click', () => {
+            usbFileBrowserPath = usbGetParentPath(usbFileBrowserPath);
+            usbFileBrowserSelectedIndex = 0;
+            usbRenderBrowser();
+        });
+        addSafeListener('usbBrowserCloseBtn', 'click', usbCloseBrowser);
+
+        // USB File Edit buttons
+        addSafeListener('usbEditSaveBtn', 'click', usbSaveEditedFile);
+        addSafeListener('usbEditCancelBtn', 'click', usbCloseFileEditor);
+        addSafeListener('usbEditDeleteBtn', 'click', usbDeleteEditedFile);
+
+        // Click delegation on usbBrowserList
+        document.getElementById('usbBrowserList')?.addEventListener('click', (e) => {
+            const item = e.target.closest('[data-type]');
+            if (!item) return;
+            const children = Array.from(item.parentElement.children);
+            const idx = children.indexOf(item);
+            if (idx >= 0) {
+                usbFileBrowserSelectedIndex = idx;
+                usbActivateBrowserItem();
+            }
+        });
+
+        // Broadcast notification buttons
+        addSafeListener('broadcastInstallBtn', 'click', installBroadcastUpdate);
+        addSafeListener('broadcastLaterBtn', 'click', dismissBroadcastUpdate);
+
+        // Keyboard navigation for USB browser
+        document.addEventListener('keydown', (e) => {
+            if (usbFileBrowserOpen) {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    usbNavigateBrowser(e.key === 'ArrowUp' ? 'up' : 'down');
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    usbActivateBrowserItem();
+                } else if (e.key === 'Backspace' || e.key === 'Escape') {
+                    e.preventDefault();
+                    if (usbFileEditOpen) {
+                        usbCloseFileEditor();
+                    } else {
+                        usbCloseBrowser();
+                    }
+                }
+                return;
+            }
+            if (usbFileEditOpen) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    usbCloseFileEditor();
+                }
+                return;
+            }
+        });
 
         /* Keyboard Controller Emulators (Shared D-Pad mapping) */
 
@@ -2919,35 +3721,40 @@
             switch(e.key) {
                 case 'ArrowUp':
                     e.preventDefault();
-                    if (sourceMenuOpen) sourceSelectUp();
+                    if (updateMethodMenuOpen) navigateUpdateMethod("up");
+                    else if (sourceMenuOpen) sourceSelectUp();
                     else if (menuOpen) navigateUp();
                     else if (activeInputSource === 1) wiiNavigate("up");
                     else if (activeInputSource === 3) ps3Navigate("up");
                     break;
                 case 'ArrowDown':
                     e.preventDefault();
-                    if (sourceMenuOpen) sourceSelectDown();
+                    if (updateMethodMenuOpen) navigateUpdateMethod("down");
+                    else if (sourceMenuOpen) sourceSelectDown();
                     else if (menuOpen) navigateDown();
                     else if (activeInputSource === 1) wiiNavigate("down");
                     else if (activeInputSource === 3) ps3Navigate("down");
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    if (menuOpen) navigateRightOrEnter();
+                    if (updateMethodMenuOpen) activateUpdateMethod();
+                    else if (menuOpen) navigateRightOrEnter();
                     else if (activeInputSource === 1) wiiNavigate("right");
                     else if (activeInputSource === 3) ps3Navigate("right");
                     else if (activeInputSource === 2) tvosNavigate("right");
                     break;
                 case 'ArrowLeft':
                     e.preventDefault();
-                    if (menuOpen) navigateLeftAdjustment();
+                    if (updateMethodMenuOpen) closeUpdateMethodMenu();
+                    else if (menuOpen) navigateLeftAdjustment();
                     else if (activeInputSource === 1) wiiNavigate("left");
                     else if (activeInputSource === 3) ps3Navigate("left");
                     else if (activeInputSource === 2) tvosNavigate("left");
                     break;
                 case 'Enter':
                     e.preventDefault();
-                    if (sourceMenuOpen) sourceSelectConfirm();
+                    if (updateMethodMenuOpen) activateUpdateMethod();
+                    else if (sourceMenuOpen) sourceSelectConfirm();
                     else if (menuOpen) navigateRightOrEnter();
                     else if (activeInputSource === 1) wiiClickEnter();
                     else if (activeInputSource === 3) ps3ClickEnter();
@@ -2956,14 +3763,15 @@
                 case 'Backspace':
                 case 'Escape':
                     e.preventDefault();
-                    if (sourceMenuOpen) closeSourceMenu();
+                    if (updateMethodMenuOpen) closeUpdateMethodMenu();
+                    else if (sourceMenuOpen) closeSourceMenu();
                     else if (menuOpen) navigateLeftOrReturn();
                     else if (activeInputSource === 1 && wiiDialogOpen) closeWiiDialog();
                     break;
 
                 case 'm':
                     e.preventDefault();
-                    toggleMenu();
+                    if (!updateMethodMenuOpen) toggleMenu();
                     break;
                 case 'M':
                     e.preventDefault();
@@ -2972,7 +3780,7 @@
                 case 's':
                 case 'S':
                     e.preventDefault();
-                    toggleSourceMenu();
+                    if (!updateMethodMenuOpen) toggleSourceMenu();
                     break;
                 case 'p':
                 case 'P':
@@ -2998,6 +3806,9 @@
         /* Initial TV Settings configuration setup */
         window.onload = function() {
             loadSettings();
+            usbLoadState();
+            usbUpdatePortUI();
+            usbUpdateMenuStatus();
             // Restore input source after software update
             try {
                 const postSrc = localStorage.getItem('postUpdateSource');
