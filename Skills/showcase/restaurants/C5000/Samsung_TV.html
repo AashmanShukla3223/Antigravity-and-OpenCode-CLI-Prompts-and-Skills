@@ -2638,6 +2638,7 @@
                         broadcastState.manifestAvailable = null;
                         broadcastState.receptionProgress = 0;
                         hideReceptionProgressBar();
+                        showToast('Firmware is up to date. No update available.', '<i class="fa-solid fa-check-circle"></i>', 'info');
                         return;
                     }
                     broadcastState.manifestAvailable = data;
