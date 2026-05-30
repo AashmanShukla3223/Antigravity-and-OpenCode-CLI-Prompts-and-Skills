@@ -155,7 +155,7 @@ export const AboutThisMac: React.FC = () => {
 
           <div className="flex flex-col text-black dark:text-white items-center w-full">
              <h1 className="text-2xl font-black tracking-tight mb-1">macOS <span className="font-light">Tahoe</span></h1>
-             <p className="text-[10px] text-black/40 dark:text-white/40 mb-8 font-black uppercase tracking-[0.2em]">Version 26.0</p>
+             <p className="text-[10px] text-black/40 dark:text-white/40 mb-8 font-black uppercase tracking-[0.2em]">Version 5.0.0</p>
              
              <div className="space-y-4 font-mono text-[10px] text-black/60 dark:text-white/60 w-full px-2">
                <div className="flex flex-col gap-1 border-b border-black/5 dark:border-white/5 pb-3">

@@ -15,6 +15,7 @@ import {
 import { useSystem } from '../../contexts/SystemContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
+import { App_Version } from '../../hooks/useSoftwareUpdate';
 
 const BatteryGraph = () => {
   const points = "0,80 20,70 40,85 60,60 80,75 100,40 120,55 140,30 160,45 180,20 200,35";
@@ -53,7 +54,10 @@ export const SystemSettings: React.FC = () => {
     resetSystem, 
     hardware, 
     setShowAboutWindow,
-    battery
+    battery,
+    showConfirm,
+    showAlert,
+    initiateRestart
   } = useSystem();
   
   const [currentTab, setCurrentTab] = useState('Appearance');
@@ -90,7 +94,31 @@ export const SystemSettings: React.FC = () => {
     if (password === systemState.user.password || !systemState.user.password) setResetStep(4);
     else { setError(true); setTimeout(() => setError(false), 500); setPassword(''); }
   };
-  const checkUpdates = () => { setIsCheckingUpdate(true); setTimeout(() => setIsCheckingUpdate(false), 2500); };
+  const checkUpdates = async () => { 
+    setIsCheckingUpdate(true); 
+    try {
+      const response = await fetch('/version.json?t=' + Date.now());
+      const data = await response.json();
+      setTimeout(async () => {
+        setIsCheckingUpdate(false);
+        if (data.version !== App_Version) {
+          const confirmed = await showConfirm(
+            `A new software update (macOS Tahoe ${data.version}) is available. Would you like to update and restart now?`,
+            "Software Update"
+          );
+          if (confirmed) {
+            await showAlert("Downloading update and preparing system restart...", "macOS Updater");
+            initiateRestart();
+          }
+        } else {
+          await showAlert("Your Mac is up to date.", "Software Update");
+        }
+      }, 2000);
+    } catch (e) {
+      console.error('Update check failed', e);
+      setIsCheckingUpdate(false);
+    }
+  };
 
 
 
@@ -286,7 +314,7 @@ export const SystemSettings: React.FC = () => {
             {isCheckingUpdate ? (
               <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"/><h3 className="text-xl font-medium">Checking for updates...</h3></>
             ) : (
-              <><div className="w-20 h-20 rounded-3xl bg-blue-500/20 flex items-center justify-center text-blue-500 mb-6"><Settings01Icon size={40} /></div><h3 className="text-2xl font-bold mb-2">macOS Tahoe {systemState.betaUpdates && latestCommit ? `(Build ${latestCommit})` : '26.4'}</h3><p className="text-white/50 mb-8">Your Mac is up to date.</p><button onClick={checkUpdates} className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Check for Updates</button></>
+              <><div className="w-20 h-20 rounded-3xl bg-blue-500/20 flex items-center justify-center text-blue-500 mb-6"><Settings01Icon size={40} /></div><h3 className="text-2xl font-bold mb-2">macOS Tahoe {App_Version}</h3><p className="text-white/50 mb-8">{systemState.betaUpdates && latestCommit ? `Beta Build ${latestCommit}` : 'Your Mac is up to date.'}</p><button onClick={checkUpdates} className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Check for Updates</button></>
             )}
           </div>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
