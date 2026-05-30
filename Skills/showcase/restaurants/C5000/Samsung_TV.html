@@ -350,6 +350,16 @@
                         </div>
                     </div>
 
+                    <!-- CONFLICT PICKER OVERLAY (Phase 4) -->
+                    <div id="screenConflictPicker" class="absolute inset-0 bg-black/95 flex flex-col justify-center items-center z-50 hidden px-6 text-center">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-4 w-full">
+                            <h2 class="text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-3 aero-font text-left">Multiple Updates Found</h2>
+                            <p class="text-[10px] text-zinc-400 text-left mb-3">Several update methods have found different versions. Choose one:</p>
+                            <div id="conflictMethodList" class="flex flex-col gap-2 mb-3"></div>
+                            <button id="conflictCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Cancel All</button>
+                        </div>
+                    </div>
+
                     <!-- USB FILE BROWSER OVERLAY -->
                     <div id="usbFileBrowser" class="absolute inset-0 bg-black/95 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
                         <div class="max-w-md samsung-osd-bg rounded-xl p-4 w-full">
@@ -397,6 +407,16 @@
                         </div>
                     </div>
 
+                    <!-- AAJTAK :55 EXHALE WINDOW -->
+                    <div id="aajtakExhaleOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
+                        <div class="max-w-sm text-center">
+                            <i class="fa-solid fa-wind text-5xl text-cyan-400 mb-4 animate-pulse"></i>
+                            <h2 class="text-lg font-extrabold text-cyan-300 uppercase tracking-widest mb-2 aero-font">AajTak: Exhale</h2>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Take a deep breath. The news can wait.</p>
+                            <p class="text-[9px] text-zinc-600 mt-3 font-mono" id="exhaleCountdown">Auto-dismiss in 60s</p>
+                        </div>
+                    </div>
+
                     <!-- KEYBOARD SHORTCUT OVERLAY -->
                     <div id="shortcutOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
                         <div class="max-w-sm samsung-osd-bg rounded-xl p-5">
@@ -420,6 +440,8 @@
                                 <div class="text-zinc-300">Volume</div>
                                 <div class="text-sky-300 font-bold">F1</div>
                                 <div class="text-zinc-300">Toggle this help</div>
+                                <div class="text-sky-300 font-bold">USB ↔</div>
+                                <div class="text-zinc-300">Cycle USB profiles (chassis)</div>
                             </div>
                             <button onclick="toggleShortcutOverlay()" class="mt-4 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-6 py-2 rounded-lg text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95">OK</button>
                         </div>
@@ -805,7 +827,10 @@
                     <button id="usbPortBtn" class="text-[8px] px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold uppercase tracking-wider border border-zinc-700/30 transition-all">
                         <i class="fa-solid fa-usb mr-1"></i>USB: None
                     </button>
-                    <div id="usbDropdown" class="absolute bottom-full right-0 mb-1 bg-zinc-900 border border-zinc-700 rounded-lg p-1 min-w-[140px] hidden shadow-xl"></div>
+                    <div id="usbProfileDropdown" class="absolute bottom-full right-0 mb-1 bg-zinc-900 border border-zinc-700 rounded-lg p-1 min-w-[170px] hidden shadow-xl max-h-48 overflow-y-auto"></div>
+                    <button id="usbProfileBtn" class="text-[8px] px-1.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 font-bold uppercase tracking-wider border border-zinc-700/30 transition-all hidden" title="Insert Different USB">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
                 </div>
             </div>
 
@@ -1112,7 +1137,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        let APP_VERSION = '1.0.10';
+        let APP_VERSION = '1.0.11';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -2471,6 +2496,13 @@
                         try {
                             const verData = JSON.parse(content);
                             if (verData.version && isNewerVersion(verData.version, APP_VERSION)) {
+                                recordPendingUpdate('usb', verData.version, 'USB v' + verData.version);
+                                if (hasConflicts()) {
+                                    usbCloseBrowser();
+                                    showConflictPicker();
+                                    return;
+                                }
+                                clearAllPendingUpdates();
                                 if (confirm('Update found on USB: v' + verData.version + '\n\nCurrent: v' + APP_VERSION + '\n\nInstall this update?')) {
                                     usbCloseBrowser();
                                     showToast('Installing USB update v' + verData.version + '...', '<i class="fa-solid fa-usb"></i>', 'success');
@@ -2480,7 +2512,7 @@
                                 alert('This version (' + (verData.version || 'unknown') + ') is not newer than the current firmware (v' + APP_VERSION + ').');
                             }
                         } catch(e) {
-                            alert('Invalid version.json file. Please check the JSON format.');
+                            showToast('Invalid version.json on USB.', '<i class="fa-solid fa-file-excel"></i>', 'error');
                         }
                     }
                 } else {
@@ -2561,6 +2593,238 @@
                 html += '<div class="py-0.5 px-2 text-[9px] text-zinc-300 hover:bg-zinc-700 cursor-pointer usb-dropdown-item" data-path="/' + f + '">' + f + '</div>';
             });
             dropdown.innerHTML = html;
+        }
+
+        // ========== USB PROFILE SYSTEM ==========
+        let usbProfiles = [];
+        let usbProfileDropdownOpen = false;
+
+        function usbFetchProfiles() {
+            const profileNames = ['normal', 'empty', 'corrupted', 'multi-firmware'];
+            const base = VERCEL_URL + '/usb-images/';
+            usbProfiles = [];
+            profileNames.forEach(name => {
+                fetch(base + name + '.json', { cache: 'no-store' })
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => {
+                        if (data && data.label) {
+                            data.id = name;
+                            if (!usbProfiles.find(p => p.id === name)) {
+                                usbProfiles.push(data);
+                                usbRenderProfileButton();
+                            }
+                        }
+                    })
+                    .catch(() => {});
+            });
+        }
+
+        function usbRenderProfileButton() {
+            const btn = document.getElementById('usbProfileBtn');
+            if (!btn) return;
+            if (virtualUSB.connected && usbProfiles.length > 0) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function usbToggleProfileDropdown() {
+            usbProfileDropdownOpen = !usbProfileDropdownOpen;
+            const dd = document.getElementById('usbProfileDropdown');
+            if (!dd) return;
+            if (usbProfileDropdownOpen) {
+                let html = '<div class="py-1 px-2 text-[8px] text-zinc-500 font-bold border-b border-zinc-700">INSERT DIFFERENT USB</div>';
+                usbProfiles.forEach(p => {
+                    const isCurrent = virtualUSB.label === p.label;
+                    html += '<div class="py-1 px-2 text-[9px] cursor-pointer hover:bg-zinc-700 flex items-center gap-1.5 ' + (isCurrent ? 'text-sky-400' : 'text-zinc-300') + ' usb-profile-item" data-profile="' + p.id + '">';
+                    html += isCurrent ? '<i class="fa-solid fa-check text-[8px]"></i>' : '<i class="fa-solid fa-usb text-[8px] text-zinc-500"></i>';
+                    html += '<span>' + p.label + '</span>';
+                    html += '<span class="text-zinc-600 text-[7px] ml-auto">' + p.description + '</span>';
+                    html += '</div>';
+                });
+                dd.innerHTML = html;
+                dd.classList.remove('hidden');
+            } else {
+                dd.classList.add('hidden');
+            }
+        }
+
+        function usbLoadProfile(profileId) {
+            const profile = usbProfiles.find(p => p.id === profileId);
+            if (!profile) return;
+            virtualUSB.connected = true;
+            virtualUSB.label = profile.label;
+            virtualUSB.files = {};
+            if (profile.files) {
+                Object.keys(profile.files).forEach(key => {
+                    virtualUSB.files[key] = profile.files[key];
+                });
+            }
+            usbSaveState();
+            usbUpdatePortUI();
+            usbUpdateMenuStatus();
+            usbProfileDropdownOpen = false;
+            document.getElementById('usbProfileDropdown').classList.add('hidden');
+            showToast('USB profile loaded: ' + profile.label, '<i class="fa-solid fa-usb"></i>', 'success');
+        }
+
+        // ========== CROSS-METHOD CONFLICT SYSTEM (Phase 4) ==========
+        let pendingUpdates = { internet: null, usb: null, broadcast: null };
+
+        function recordPendingUpdate(method, version, label, data) {
+            pendingUpdates[method] = { version, label, data };
+        }
+
+        function clearPendingUpdate(method) {
+            pendingUpdates[method] = null;
+        }
+
+        function clearAllPendingUpdates() {
+            pendingUpdates = { internet: null, usb: null, broadcast: null };
+        }
+
+        function hasConflicts() {
+            const found = Object.values(pendingUpdates).filter(v => v !== null);
+            return found.length >= 2;
+        }
+
+        function getConflictSources() {
+            const sources = [];
+            if (pendingUpdates.internet) sources.push({ method: 'internet', label: 'Internet', ...pendingUpdates.internet });
+            if (pendingUpdates.usb) sources.push({ method: 'usb', label: 'USB', ...pendingUpdates.usb });
+            if (pendingUpdates.broadcast) sources.push({ method: 'broadcast', label: 'Broadcast', ...pendingUpdates.broadcast });
+            return sources;
+        }
+
+        function showConflictPicker() {
+            const sources = getConflictSources();
+            if (sources.length < 2) return;
+            const listEl = document.getElementById('conflictMethodList');
+            if (!listEl) return;
+            let html = '';
+            sources.forEach((s, i) => {
+                const isActive = i === 0;
+                html += '<div class="conflict-method-item py-2 px-3 rounded cursor-pointer flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border ' + (isActive ? 'border-sky-400 bg-sky-900/20' : 'border-zinc-700/50') + ' transition-all" data-method="' + s.method + '" data-version="' + s.version + '">';
+                html += '<span class="text-amber-400 text-[10px] font-bold">' + (i + 1) + '.</span>';
+                html += '<div class="flex-1 text-left">';
+                html += '<div class="text-[10px] font-bold text-white">' + s.label + '</div>';
+                html += '<div class="text-[9px] text-zinc-400">Version ' + s.version + '</div>';
+                html += '</div>';
+                html += '<i class="fa-solid fa-chevron-right text-[8px] text-zinc-600"></i>';
+                html += '</div>';
+            });
+            listEl.innerHTML = html;
+            conflictSelectedIndex = 0;
+            document.getElementById('screenConflictPicker').classList.remove('hidden');
+        }
+
+        function hideConflictPicker() {
+            document.getElementById('screenConflictPicker').classList.add('hidden');
+        }
+
+        let conflictSelectedIndex = 0;
+
+        function conflictNavigate(dir) {
+            const items = document.querySelectorAll('#conflictMethodList .conflict-method-item');
+            if (!items.length) return;
+            items.forEach(el => {
+                el.classList.remove('border-sky-400', 'bg-sky-900/20');
+                el.classList.add('border-zinc-700/50');
+            });
+            if (dir === 'up') conflictSelectedIndex = (conflictSelectedIndex - 1 + items.length) % items.length;
+            else if (dir === 'down') conflictSelectedIndex = (conflictSelectedIndex + 1) % items.length;
+            const active = items[conflictSelectedIndex];
+            if (active) {
+                active.classList.remove('border-zinc-700/50');
+                active.classList.add('border-sky-400', 'bg-sky-900/20');
+            }
+        }
+
+        function conflictActivate() {
+            const items = document.querySelectorAll('#conflictMethodList .conflict-method-item');
+            const active = items[conflictSelectedIndex];
+            if (!active) return;
+            const method = active.dataset.method;
+            const version = active.dataset.version;
+            if (method && version) resolveConflict(method, version);
+        }
+
+        function resolveConflict(method, version) {
+            hideConflictPicker();
+            // Apply channel packs if broadcast was chosen
+            if (method === 'broadcast' && pendingUpdates.broadcast && pendingUpdates.broadcast.data) {
+                const data = pendingUpdates.broadcast.data;
+                if (data.channels && Array.isArray(data.channels)) {
+                    applyChannelPack(data.channels);
+                }
+            }
+            clearAllPendingUpdates();
+            showToast('Installing ' + method + ' update v' + version + '...', '<i class="fa-solid fa-download"></i>', 'success');
+            showUpdateOverlay(version);
+        }
+
+        // ========== AAJTAK :55 EXHALE WINDOW ==========
+        let exhaleTimerActive = false;
+        let exhaleInterval = null;
+
+        function startExhaleTimer() {
+            if (exhaleInterval) return;
+            exhaleInterval = setInterval(() => {
+                const now = new Date();
+                if (now.getMinutes() === 55 && now.getSeconds() < 5) {
+                    if (!exhaleTimerActive && powerState === 'active') {
+                        exhaleTimerActive = true;
+                        showExhaleOverlay();
+                    }
+                } else {
+                    if (exhaleTimerActive) {
+                        exhaleTimerActive = false;
+                        hideExhaleOverlay();
+                    }
+                }
+            }, 5000);
+        }
+
+        function showExhaleOverlay() {
+            const el = document.getElementById('aajtakExhaleOverlay');
+            if (!el) return;
+            el.classList.remove('hidden');
+            el.style.display = 'flex';
+            tvSynth.playFMNote(220, 0.8, 0.15);
+            let count = 60;
+            const cd = document.getElementById('exhaleCountdown');
+            const counter = setInterval(() => {
+                count--;
+                if (cd) cd.innerText = 'Auto-dismiss in ' + count + 's';
+                if (count <= 0) {
+                    clearInterval(counter);
+                    hideExhaleOverlay();
+                }
+            }, 1000);
+        }
+
+        function hideExhaleOverlay() {
+            const el = document.getElementById('aajtakExhaleOverlay');
+            if (el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+        }
+
+        // ========== CHANNEL PACK DELIVERY ==========
+        function applyChannelPack(channels) {
+            if (!Array.isArray(channels) || channels.length === 0) return;
+            let added = 0;
+            channels.forEach(ch => {
+                if (ch.name && ch.src && !dishChannels.find(d => d.name === ch.name)) {
+                    dishChannels.push(ch);
+                    added++;
+                }
+            });
+            if (added > 0) {
+                showToast(added + ' new channel(s) added via update!', '<i class="fa-solid fa-tower-broadcast"></i>', 'success');
+            }
         }
 
         // ========== BROADCAST OTA FUNCTIONS ==========
@@ -2678,6 +2942,7 @@
         function onBroadcastUpdateReady(data) {
             broadcastState.notificationActive = true;
             broadcastState.notificationDismissed = false;
+            recordPendingUpdate('broadcast', data.firmware.version, 'Broadcast v' + data.firmware.version, data);
             const overlay = document.getElementById('broadcastReadyOverlay');
             if (overlay) {
                 const msgEl = document.getElementById('broadcastReadyMessage');
@@ -2696,8 +2961,19 @@
             broadcastState.manifestAvailable = null;
             stopBroadcastScanner();
             if (data && data.firmware && data.firmware.version) {
-                showToast('Installing broadcast update v' + data.firmware.version + '...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
-                showUpdateOverlay(data.firmware.version);
+                const ver = data.firmware.version;
+                recordPendingUpdate('broadcast', ver, 'Broadcast v' + ver, data);
+                if (hasConflicts()) {
+                    showConflictPicker();
+                    return;
+                }
+                // Apply channel packs if manifest includes them
+                if (data.channels && Array.isArray(data.channels)) {
+                    applyChannelPack(data.channels);
+                }
+                clearAllPendingUpdates();
+                showToast('Installing broadcast update v' + ver + '...', '<i class="fa-solid fa-satellite-dish"></i>', 'success');
+                showUpdateOverlay(ver);
             } else {
                 showToast('Update data unavailable.', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
             }
@@ -2708,6 +2984,7 @@
             broadcastState.notificationDismissed = true;
             document.getElementById('broadcastReadyOverlay').style.display = 'none';
             stopBroadcastScanner();
+            clearPendingUpdate('broadcast');
             showToast('Broadcast update dismissed.', '<i class="fa-solid fa-ban"></i>', 'info');
         }
 
@@ -2776,6 +3053,12 @@
                 })
                 .then(data => {
                     if (data.version && isNewerVersion(data.version, APP_VERSION)) {
+                        recordPendingUpdate('internet', data.version, 'Internet v' + data.version);
+                        if (hasConflicts()) {
+                            showConflictPicker();
+                            return;
+                        }
+                        clearAllPendingUpdates();
                         showToast("Update found: v" + data.version, '<i class="fa-solid fa-download"></i>', "success");
                         showUpdateOverlay(data.version);
                     } else {
@@ -3643,6 +3926,19 @@
                 usbConnect();
             }
             usbUpdatePortUI();
+            usbRenderProfileButton();
+        });
+
+        // USB Profile button & dropdown
+        addSafeListener('usbProfileBtn', 'click', usbToggleProfileDropdown);
+        document.getElementById('usbProfileDropdown')?.addEventListener('click', (e) => {
+            const item = e.target.closest('.usb-profile-item');
+            if (!item) return;
+            const profileId = item.dataset.profile;
+            if (profileId) {
+                usbLoadProfile(profileId);
+                usbRenderProfileButton();
+            }
         });
 
         // USB File Browser buttons
@@ -3675,6 +3971,29 @@
         // Broadcast notification buttons
         addSafeListener('broadcastInstallBtn', 'click', installBroadcastUpdate);
         addSafeListener('broadcastLaterBtn', 'click', dismissBroadcastUpdate);
+
+        // Conflict picker buttons
+        addSafeListener('conflictCancelBtn', 'click', () => {
+            hideConflictPicker();
+            clearAllPendingUpdates();
+        });
+        document.getElementById('conflictMethodList')?.addEventListener('click', (e) => {
+            const item = e.target.closest('.conflict-method-item');
+            if (!item) return;
+            const method = item.dataset.method;
+            const version = item.dataset.version;
+            if (method && version) {
+                resolveConflict(method, version);
+            }
+        });
+
+        // Close conflict picker on click outside (on the overlay background)
+        document.getElementById('screenConflictPicker')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('screenConflictPicker')) {
+                hideConflictPicker();
+                clearAllPendingUpdates();
+            }
+        });
 
         // Keyboard navigation for USB browser
         document.addEventListener('keydown', (e) => {
@@ -3733,7 +4052,9 @@
             switch(e.key) {
                 case 'ArrowUp':
                     e.preventDefault();
-                    if (updateMethodMenuOpen) navigateUpdateMethod("up");
+                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                        conflictNavigate('up');
+                    } else if (updateMethodMenuOpen) navigateUpdateMethod("up");
                     else if (sourceMenuOpen) sourceSelectUp();
                     else if (menuOpen) navigateUp();
                     else if (activeInputSource === 1) wiiNavigate("up");
@@ -3741,7 +4062,9 @@
                     break;
                 case 'ArrowDown':
                     e.preventDefault();
-                    if (updateMethodMenuOpen) navigateUpdateMethod("down");
+                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                        conflictNavigate('down');
+                    } else if (updateMethodMenuOpen) navigateUpdateMethod("down");
                     else if (sourceMenuOpen) sourceSelectDown();
                     else if (menuOpen) navigateDown();
                     else if (activeInputSource === 1) wiiNavigate("down");
@@ -3765,7 +4088,9 @@
                     break;
                 case 'Enter':
                     e.preventDefault();
-                    if (updateMethodMenuOpen) activateUpdateMethod();
+                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                        conflictActivate();
+                    } else if (updateMethodMenuOpen) activateUpdateMethod();
                     else if (sourceMenuOpen) sourceSelectConfirm();
                     else if (menuOpen) navigateRightOrEnter();
                     else if (activeInputSource === 1) wiiClickEnter();
@@ -3776,7 +4101,10 @@
                 case 'Escape':
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
                     e.preventDefault();
-                    if (updateMethodMenuOpen) closeUpdateMethodMenu();
+                    if (document.getElementById('screenConflictPicker') && !document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                        hideConflictPicker();
+                        clearAllPendingUpdates();
+                    } else if (updateMethodMenuOpen) closeUpdateMethodMenu();
                     else if (sourceMenuOpen) closeSourceMenu();
                     else if (menuOpen) navigateLeftOrReturn();
                     else if (activeInputSource === 1 && wiiDialogOpen) closeWiiDialog();
@@ -3785,6 +4113,9 @@
                 case 'm':
                     e.preventDefault();
                     // Close all overlays before toggling menu
+                    hideConflictPicker();
+                    clearAllPendingUpdates();
+                    hideExhaleOverlay();
                     if (usbFileEditOpen) { usbCloseFileEditor(); }
                     if (usbFileBrowserOpen) { usbCloseBrowser(); }
                     if (updateMethodMenuOpen) { closeUpdateMethodMenu(); }
@@ -3874,6 +4205,12 @@
             }
             document.addEventListener('click', unlockMedia, { once: true });
             document.addEventListener('keydown', unlockMedia, { once: true });
+
+            // Fetch USB profiles from /usb-images/
+            usbFetchProfiles();
+            usbRenderProfileButton();
+            // Start the AajTak :55 exhale timer
+            startExhaleTimer();
 
 
         };
