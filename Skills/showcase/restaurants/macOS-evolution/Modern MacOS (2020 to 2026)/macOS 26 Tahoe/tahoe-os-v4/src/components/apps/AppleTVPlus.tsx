@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Tv, 
   Play, 
-  Pause, 
-  Volume2, 
   Lock, 
   ShieldCheck,
   Zap,
@@ -12,7 +10,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useSystem } from '../../contexts/SystemContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // External HLS.js CDN
 const HLS_CDN = "https://cdn.jsdelivr.net/npm/hls.js@latest";
