@@ -1112,7 +1112,7 @@
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        const APP_VERSION = '1.0.9';
+        let APP_VERSION = '1.0.9';
         const VERCEL_URL = 'https://project-78d0r.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -2813,6 +2813,7 @@
             if (targetEl) targetEl.innerText = pendingUpdateVersion;
             // Save current input to restore after update, then switch to TV/RF
             try { localStorage.setItem('postUpdateSource', activeInputSource); } catch(e) {}
+            try { localStorage.setItem('postUpdateVersion', pendingUpdateVersion); } catch(e) {}
             wiiPower = false;
             ps3Power = false;
             applePower = false;
@@ -3835,8 +3836,15 @@
                 if (postSrc !== null) {
                     activeInputSource = parseInt(postSrc, 10);
                     localStorage.removeItem('postUpdateSource');
-                    // Re-save so activeInputSource sticks
                     saveSettings();
+                }
+            } catch(e) {}
+            // Adopt the version that was just installed (saved before reload)
+            try {
+                const postVer = localStorage.getItem('postUpdateVersion');
+                if (postVer !== null) {
+                    APP_VERSION = postVer;
+                    localStorage.removeItem('postUpdateVersion');
                 }
             } catch(e) {}
             applyWatermarkVisibility();
