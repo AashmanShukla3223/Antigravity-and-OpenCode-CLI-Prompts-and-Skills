@@ -108,7 +108,7 @@ const defaultState: TahoeV3State = {
     volume: 0.8
   },
   runningApps: ['installer'],
-  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings'],
+  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings'],
   notes: [
     { 
       id: '1', 

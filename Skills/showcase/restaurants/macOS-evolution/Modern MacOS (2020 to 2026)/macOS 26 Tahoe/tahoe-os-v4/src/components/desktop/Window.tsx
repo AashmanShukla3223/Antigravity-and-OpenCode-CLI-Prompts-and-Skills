@@ -24,6 +24,7 @@ import { FaceTime } from '../apps/FaceTime';
 import { Contacts } from '../apps/Contacts';
 
 import { AppleMusic } from '../apps/AppleMusic';
+import { AppleTVPlus } from '../apps/AppleTVPlus';
 import { ITunesStore } from '../apps/iTunesStore';
 import { SoundTest } from '../apps/SoundTest';
 import { Installer } from '../apps/Installer';
@@ -62,6 +63,7 @@ const AppMap: Record<string, React.FC<any>> = {
   facetime: FaceTime,
   contacts: Contacts,
   music: AppleMusic,
+  tv: AppleTVPlus,
   itunes: ITunesStore,
   soundtest: SoundTest,
   installer: Installer,
@@ -113,6 +115,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     facetime: 'FaceTime',
     contacts: 'Contacts',
     music: 'Music',
+    tv: 'Apple TV+',
     itunes: 'iTunes Store',
     soundtest: 'Sound Test',
     installer: 'Installer',

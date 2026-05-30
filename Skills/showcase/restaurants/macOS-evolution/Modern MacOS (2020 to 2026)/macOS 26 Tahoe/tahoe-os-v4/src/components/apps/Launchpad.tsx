@@ -23,6 +23,7 @@ const apps: AppItem[] = [
   { id: 'wallet', name: 'Wallet' },
   { id: 'githubnavigator', name: 'GitHub Navigator' },
   { id: 'music', name: 'Music' },
+  { id: 'tv', name: 'Apple TV+' },
   { id: 'calendar', name: 'Calendar' },
   { id: 'crazyerrors', name: 'Crazy Errors' },
   { id: 'soundtest', name: 'Sound Test' },
