@@ -10,6 +10,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { ApplePayFramework } from './AppleWallet';
 
 interface SoundItem {
   name: string;
@@ -22,8 +23,9 @@ interface SoundItem {
 }
 
 export const SoundTest: React.FC = () => {
-  const { showAlert, showConfirm } = useSystem();
+  const { showAlert } = useSystem();
   const [isPremiumUnlocked, setIsPremiumUnlocked] = useState(() => localStorage.getItem('tahoe_sound_premium') === 'true');
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const sounds: SoundItem[] = [
     { name: 'Basso', label: 'Basso', desc: 'Deep bass error sound', icon: AlertTriangle, color: 'bg-red-500' },
@@ -79,21 +81,16 @@ export const SoundTest: React.FC = () => {
     },
   ];
 
-  const handleUnlockPremium = async () => {
-    const confirmed = await showConfirm(
-      "Unlock Premium Sound Test tracks for a one-time fee of $5?",
-      "Unlock Premium"
-    );
-    if (confirmed) {
-      localStorage.setItem('tahoe_sound_premium', 'true');
-      setIsPremiumUnlocked(true);
-      showAlert("Premium tracks unlocked! Enjoy the high-fidelity sound.", "Success");
-    }
+  const handleUnlockSuccess = () => {
+    localStorage.setItem('tahoe_sound_premium', 'true');
+    setIsPremiumUnlocked(true);
+    setShowPaywall(false);
+    showAlert("Premium tracks unlocked! Enjoy the high-fidelity sound.", "Success");
   };
 
   const playSound = (sound: SoundItem) => {
     if (sound.isPremium && !isPremiumUnlocked) {
-      handleUnlockPremium();
+      setShowPaywall(true);
       return;
     }
 
@@ -114,7 +111,15 @@ export const SoundTest: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-zinc-900 text-white p-8 overflow-y-auto custom-scrollbar">
+    <div className="flex flex-col h-full bg-zinc-900 text-white p-8 overflow-y-auto custom-scrollbar relative">
+      {showPaywall && (
+        <ApplePayFramework 
+          amount="$5.00" 
+          itemName="Sound Test Premium" 
+          onSuccess={handleUnlockSuccess} 
+          onCancel={() => setShowPaywall(false)} 
+        />
+      )}
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-pink-500 flex items-center justify-center shadow-lg shadow-pink-500/20">
@@ -127,7 +132,7 @@ export const SoundTest: React.FC = () => {
         </div>
         {!isPremiumUnlocked && (
           <button 
-            onClick={handleUnlockPremium}
+            onClick={() => setShowPaywall(true)}
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-black text-sm font-bold rounded-xl hover:scale-105 transition-transform shadow-lg shadow-orange-500/20"
           >
             <ShieldCheck size={18} />

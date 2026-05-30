@@ -15,6 +15,8 @@ import { motion } from 'framer-motion';
 // External HLS.js CDN
 const HLS_CDN = "https://cdn.jsdelivr.net/npm/hls.js@latest";
 
+import { ApplePayFramework } from './AppleWallet';
+
 interface VideoItem {
   id: string;
   title: string;
@@ -26,7 +28,7 @@ interface VideoItem {
 
 const VIDEOS: VideoItem[] = [
   { id: 'live-aajtak', title: 'AajTak Live', url: 'https://feeds.intoday.in/aajtak/api/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://feeds.intoday.in/aajtak/api/master.m3u8' },
-  { id: 'live-ndtv', title: 'NDTV India Live', url: 'https://ndtvstream-lh.akamaihd.net/i/ndtv_india_1@300634/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://ndtvstream-lh.akamaihd.net/i/ndtv_india_1@300634/master.m3u8' },
+  { id: 'live-ndtv', title: 'NDTV India Live', url: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8' },
   { id: 'v1', title: 'AajTak Source 1', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
   { id: 'v2', title: 'AajTak Source 2', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source2.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
   { id: 'v3', title: 'AajTak Source 3', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source3.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
@@ -42,8 +44,9 @@ const VIDEOS: VideoItem[] = [
 ];
 
 export const AppleTVPlus: React.FC = () => {
-  const { showAlert, showConfirm } = useSystem();
+  const { showAlert } = useSystem();
   const [isSubscribed, setIsSubscribed] = useState(() => localStorage.getItem('tahoe_tv_plus_subscribed') === 'true');
+  const [showPaywall, setShowPaywall] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<VideoItem | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<any>(null);
@@ -62,21 +65,16 @@ export const AppleTVPlus: React.FC = () => {
     };
   }, []);
 
-  const handleSubscribe = async () => {
-    const confirmed = await showConfirm(
-      "Subscribe to Apple TV+ Tahoe Edition for $20/month?",
-      "Apple TV+ Subscription"
-    );
-    if (confirmed) {
-      localStorage.setItem('tahoe_tv_plus_subscribed', 'true');
-      setIsSubscribed(true);
-      showAlert("Welcome to Apple TV+! All content is now unlocked.", "Success");
-    }
+  const handleSubscribeSuccess = () => {
+    localStorage.setItem('tahoe_tv_plus_subscribed', 'true');
+    setIsSubscribed(true);
+    setShowPaywall(false);
+    showAlert("Welcome to Apple TV+! All content is now unlocked.", "Success");
   };
 
   const playVideo = (video: VideoItem) => {
     if (!isSubscribed) {
-      handleSubscribe();
+      setShowPaywall(true);
       return;
     }
     setCurrentVideo(video);
@@ -103,7 +101,16 @@ export const AppleTVPlus: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-black text-white overflow-hidden relative">
+      {showPaywall && (
+        <ApplePayFramework 
+          amount="$20.00 / month" 
+          itemName="Apple TV+ Tahoe" 
+          onSuccess={handleSubscribeSuccess} 
+          onCancel={() => setShowPaywall(false)} 
+        />
+      )}
       {/* Header */}
+
       <div className="flex items-center justify-between p-6 bg-gradient-to-b from-zinc-900 to-transparent z-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-lg">
@@ -113,7 +120,7 @@ export const AppleTVPlus: React.FC = () => {
         </div>
         {!isSubscribed && (
           <button 
-            onClick={handleSubscribe}
+            onClick={() => setShowPaywall(true)}
             className="px-4 py-1.5 bg-white text-black text-sm font-semibold rounded-full hover:bg-zinc-200 transition-colors"
           >
             Subscribe
