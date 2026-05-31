@@ -1,2 +1,7 @@
+# NEVER commit real secrets — only the .example template above.
+.env
+.env.local
+.env.*.local
+
+# Vercel CLI scratch
 .vercel
-.env*

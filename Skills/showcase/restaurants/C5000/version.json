@@ -1,1 +1,1 @@
-{"version":"1.0.12","release":"bump to 1.0.12, deploy USB profile files"}
+{"version":"1.0.13","release":"bump to 1.0.13 — adds RAG-powered AI Channel Picker (TF-IDF retrieval + Gemini 1.5 Flash) accessible via floating AI button or the I hotkey"}
