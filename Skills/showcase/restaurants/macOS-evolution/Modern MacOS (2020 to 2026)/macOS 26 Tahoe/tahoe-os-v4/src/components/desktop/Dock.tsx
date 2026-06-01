@@ -33,6 +33,7 @@ const ALL_APPS = [
   { id: 'stickies', name: 'Stickies' },
   { id: 'contacts', name: 'Contacts' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
+  { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
 ];
 
 export const Dock: React.FC = () => {

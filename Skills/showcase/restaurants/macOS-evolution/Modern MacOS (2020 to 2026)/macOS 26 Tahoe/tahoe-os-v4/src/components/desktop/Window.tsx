@@ -38,6 +38,7 @@ import { Calendar } from '../apps/Calendar';
 import { CrazyErrors } from '../apps/CrazyErrors';
 import { GitHubNavigator } from '../apps/GitHubNavigator';
 import { CodeViewer } from '../apps/CodeViewer';
+import { SamsungLCDApp } from '../apps/SamsungLCDApp';
 
 interface WindowProps {
   appId: string;
@@ -76,6 +77,7 @@ const AppMap: Record<string, React.FC<any>> = {
   crazyerrors: CrazyErrors,
   githubnavigator: GitHubNavigator,
   codeviewer: CodeViewer,
+  samsunglcdtv: SamsungLCDApp,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -128,6 +130,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     crazyerrors: 'Crazy Errors',
     githubnavigator: 'GitHub Navigator',
     codeviewer: 'Code Viewer',
+    samsunglcdtv: 'Samsung LCD TV Simulator',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
