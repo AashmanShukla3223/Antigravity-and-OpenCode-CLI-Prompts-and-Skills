@@ -27,6 +27,7 @@ const apps: AppItem[] = [
   { id: 'calendar', name: 'Calendar' },
   { id: 'crazyerrors', name: 'Crazy Errors' },
   { id: 'soundtest', name: 'Sound Test' },
+  { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },

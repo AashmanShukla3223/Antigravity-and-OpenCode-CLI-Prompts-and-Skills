@@ -583,6 +583,13 @@ export const Desktop: React.FC = () => {
                 }}>
                   Edit Widgets
                 </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
+                  updateSystemState({ dockHidden: !systemState.dockHidden });
+                  setContextMenu(null);
+                }}>
+                  {systemState.dockHidden ? 'Show Dock' : 'Hide Dock'}
+                </div>
               </>
             ) : contextMenu.type === 'writing' ? (
               <>

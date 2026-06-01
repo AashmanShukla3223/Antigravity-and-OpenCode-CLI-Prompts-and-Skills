@@ -208,6 +208,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           state.pinnedApps = ['installer', ...state.pinnedApps];
         }
       }
+      if (!state.pinnedApps.includes('samsunglcdtv')) {
+        state.pinnedApps = [...state.pinnedApps, 'samsunglcdtv'];
+      }
       return state;
     } catch (e) {
       console.error('Failed to parse tahoe_v3_state', e);
