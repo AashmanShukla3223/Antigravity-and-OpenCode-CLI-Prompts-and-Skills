@@ -1,9 +1,5 @@
 {
-  "functions": {
-    "api/ai-pick.js": {
-      "regions": ["bom1"]
-    }
-  },
+  "rootDirectory": "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 26 Tahoe/tahoe-os-v4",
   "headers": [
     {
       "source": "/version.json",
@@ -16,7 +12,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/version.json", "destination": "/version.json" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
