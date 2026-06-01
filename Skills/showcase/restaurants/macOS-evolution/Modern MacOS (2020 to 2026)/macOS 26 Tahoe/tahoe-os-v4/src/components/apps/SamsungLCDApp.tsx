@@ -6,7 +6,9 @@ const GH2 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-P
 const GH3 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/';
 const GH4 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/';
 const GH5 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.4/';
+// @ts-expect-error TS6133
 const GH6 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/';
+// @ts-expect-error TS6133
 const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
 const GH8 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.7/';
 const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
@@ -41,6 +43,7 @@ interface OSDMessage {
 
 type PowerState = 'off' | 'booting' | 'active';
 type InputSource = 0 | 1 | 2 | 3 | 4;
+// @ts-expect-error TS6196
 type PlaybackMode = 'standby' | 'playing' | 'paused';
 
 const SOURCE_NAMES: Record<InputSource, string> = {
@@ -65,8 +68,10 @@ export const SamsungLCDApp: React.FC = () => {
   const [dishChannel, setDishChannel] = useState(4);
   const [dishPower, setDishPower] = useState(true);
   const [volume, setVolume] = useState(15);
+  // @ts-expect-error TS6133
   const [dishVolume, setDishVolume] = useState(50);
   const [muted, setMuted] = useState(false);
+  // @ts-expect-error TS6133
   const [menuOpen, setMenuOpen] = useState(false);
   const [sourceMenuOpen, setSourceMenuOpen] = useState(false);
   const [osdMessages, setOsdMessages] = useState<OSDMessage[]>([]);

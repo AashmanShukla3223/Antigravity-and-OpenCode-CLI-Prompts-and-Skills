@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { motion, useDragControls, AnimatePresence } from 'framer-motion';
+import { motion, useDragControls } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 
@@ -57,12 +57,23 @@ export const TahoeWindow: React.FC<TahoeWindowProps> = ({
     setIsMinimized(true);
   }, []);
 
-  const handleMaximize = useCallback(() => {
-    setWindowState(prev => prev === 'normal' ? 'maximized' : 'normal');
-  }, []);
-
   const isFullscreen = windowState === 'fullscreen';
   const isMaximized = windowState === 'maximized';
+
+  const greenDotIcon: Record<WindowState, React.ReactNode> = {
+    normal: null,
+    maximized: (
+      <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
+        <rect x="0.5" y="0.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" strokeWidth="0.8" />
+      </svg>
+    ),
+    fullscreen: (
+      <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
+        <path d="M1 1h4v4H1z" fill="none" stroke="currentColor" strokeWidth="0.8" />
+        <path d="M0 0h2v2H0zM4 0h2v2H4zM0 4h2v2H0zM4 4h2v2H4z" fill="currentColor" />
+      </svg>
+    ),
+  };
 
   const isEndurance = powerMode === 'Low Power';
   const isProMotion = powerMode === 'High Performance';
@@ -168,17 +179,7 @@ export const TahoeWindow: React.FC<TahoeWindowProps> = ({
               className="w-3.5 h-3.5 rounded-full bg-[#28C840] hover:bg-[#28C840]/80 flex items-center justify-center border border-black/10 relative group"
               title={windowState === 'normal' ? 'Maximize' : windowState === 'maximized' ? 'Enter Fullscreen' : 'Exit Fullscreen'}
             >
-              {windowState === 'fullscreen' && (
-                <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
-                  <path d="M1 1h4v4H1z" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                  <path d="M0 0h2v2H0zM4 0h2v2H4zM0 4h2v2H0zM4 4h2v2H4z" fill="currentColor" />
-                </svg>
-              )}
-              {windowState === 'maximized' && (
-                <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
-                  <rect x="0.5" y="0.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                </svg>
-              )}
+              {greenDotIcon[windowState]}
             </button>
           </div>
 
