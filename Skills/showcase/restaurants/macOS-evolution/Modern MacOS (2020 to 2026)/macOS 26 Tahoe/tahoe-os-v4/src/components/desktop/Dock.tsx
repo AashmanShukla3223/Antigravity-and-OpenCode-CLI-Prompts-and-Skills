@@ -66,7 +66,7 @@ export const Dock: React.FC = () => {
   
   const handleAppClick = (appId: string) => {
     if (appId === 'github') {
-      window.open('https://github.com/AashmanShukla3223', '_blank');
+      window.location.href = 'https://github.com/AashmanShukla3223';
       return;
     }
     if (appId === 'finder') {
@@ -114,6 +114,26 @@ export const Dock: React.FC = () => {
         onMouseLeave={() => mouseX.set(Infinity)}
       >
         {finalApps.map((app) => (
+          app.id === 'github' ? (
+            <a
+              key={app.id}
+              href="https://github.com/AashmanShukla3223"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto"
+            >
+              <DockIcon
+                app={app}
+                mouseX={mouseX}
+                isRunning={false}
+                isMinimized={false}
+                isActive={false}
+                isLaunching={false}
+                onClick={() => {}}
+                onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
+              />
+            </a>
+          ) : (
           <DockIcon 
             key={app.id} 
             app={app} 
@@ -125,6 +145,7 @@ export const Dock: React.FC = () => {
             onClick={() => handleAppClick(app.id)}
             onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
           />
+          )
         ))}
         
         {/* Divider */}
