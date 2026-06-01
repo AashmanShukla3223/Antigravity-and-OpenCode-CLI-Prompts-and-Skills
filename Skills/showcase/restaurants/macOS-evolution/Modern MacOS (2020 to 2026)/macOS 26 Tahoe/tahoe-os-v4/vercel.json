@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "api/ai-pick.js": {
+      "regions": ["bom1"]
+    }
+  },
+  "headers": [
+    {
+      "source": "/version.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
