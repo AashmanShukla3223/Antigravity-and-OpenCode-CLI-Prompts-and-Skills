@@ -66,7 +66,7 @@ export const Dock: React.FC = () => {
   
   const handleAppClick = (appId: string) => {
     if (appId === 'github') {
-      window.open('https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/', '_blank');
+      window.open('https://github.com/AashmanShukla3223', '_blank');
       return;
     }
     if (appId === 'finder') {
