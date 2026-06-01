@@ -33,11 +33,13 @@ const ALL_APPS = [
   { id: 'stickies', name: 'Stickies' },
   { id: 'contacts', name: 'Contacts' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
+  { id: 'tv', name: 'Apple TV+' },
   { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
 ];
 
 export const Dock: React.FC = () => {
   const { launchApp, activeApp, unminimizeApp, minimizedApps, launchingApp, systemState, setContextMenu } = useSystem();
+  const [reveal, setReveal] = useState(false);
   const { getDirectoryContents } = useFileSystem();
   
   const trashContents = getDirectoryContents('trash');
@@ -95,10 +97,19 @@ export const Dock: React.FC = () => {
     setContextMenu({ x: e.pageX, y: e.pageY, type: 'dock', targetId: appId });
   };
 
+  const isHidden = systemState.dockHidden && !reveal;
+
   return (
-    <div className="absolute bottom-4 w-full flex justify-center z-40 pointer-events-none">
+    <div
+      className="absolute bottom-0 w-full flex justify-center z-40 pointer-events-none"
+      onMouseEnter={() => { if (systemState.dockHidden) setReveal(true); }}
+      onMouseLeave={() => { if (systemState.dockHidden) setReveal(false); }}
+    >
+      {isHidden ? (
+        <div className="w-full h-1.5 pointer-events-auto cursor-default" />
+      ) : (
       <div 
-        className="flex items-end gap-2 px-3 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[50px] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
+        className="mb-4 flex items-end gap-2 px-3 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[50px] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
@@ -168,6 +179,7 @@ export const Dock: React.FC = () => {
           onClick={() => handleAppClick('trash')}
         />
       </div>
+      )}
     </div>
   );
 };

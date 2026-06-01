@@ -653,6 +653,14 @@ export const Desktop: React.FC = () => {
               <>
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => setContextMenu(null)}>Show All Windows</div>
                 
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
+                  updateSystemState({ dockHidden: !systemState.dockHidden });
+                  setContextMenu(null);
+                }}>
+                  {systemState.dockHidden ? 'Show Dock' : 'Hide Dock'}
+                </div>
+
                 {/* Pin/Unpin - Hidden for system apps */}
                 {contextMenu.targetId !== 'finder' && contextMenu.targetId !== 'apps' && contextMenu.targetId !== 'github' && (
                   <>

@@ -71,6 +71,7 @@ export interface TahoeV3State {
   notchVisible: boolean;
   glassBlurIntensity: number;
   lowPowerMode: boolean;
+  dockHidden: boolean;
   apiKey?: string;
   widgets: Widget[];
   reminders: Reminder[];
@@ -94,6 +95,7 @@ const defaultState: TahoeV3State = {
   notchVisible: true,
   glassBlurIntensity: 50,
   lowPowerMode: false,
+  dockHidden: false,
   apiKey: (import.meta as any).env?.VITE_GEMINI_API_KEY || '',
   widgets: [],
   reminders: [
@@ -108,7 +110,7 @@ const defaultState: TahoeV3State = {
     volume: 0.8
   },
   runningApps: ['installer'],
-  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings'],
+  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv'],
   notes: [
     { 
       id: '1', 
