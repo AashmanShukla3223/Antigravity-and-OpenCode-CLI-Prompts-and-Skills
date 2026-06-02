@@ -8,6 +8,7 @@ import { MacOSRecovery } from './components/MacOSRecovery';
 import { MacOSActivation } from './components/MacOSActivation';
 import { DeviceRecovery } from './components/DeviceRecovery';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const { bootState, systemState, triggerSystemError, isShuttingDown, shutdownStep } = useSystem();
@@ -43,6 +44,7 @@ function App() {
       {isShuttingDown && shutdownStep >= 4 && (
         <ShutdownCursor />
       )}
+      <Analytics />
     </div>
   );
 }
