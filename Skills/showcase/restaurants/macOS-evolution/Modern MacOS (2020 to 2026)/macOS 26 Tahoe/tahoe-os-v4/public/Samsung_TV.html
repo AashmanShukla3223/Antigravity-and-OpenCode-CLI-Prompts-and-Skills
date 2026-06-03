@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samsung LCD TV Simulator</title>
     <!-- Tailwind CSS CDN -->
+    <script>
+        const _twOrigWarn = console.warn.bind(console);
+        console.warn = function(...args) {
+            if (args.length && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) return;
+            _twOrigWarn(...args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts (Exo for Frutiger Aero, Share Tech Mono for CRT, Inter, and sans-serif elements) -->
     <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +19,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- hls.js for HLS live stream playback -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     
     <style>
         body {
@@ -92,12 +104,21 @@
 
         /* Classic TV Remote keys */
         .remote-btn {
+            cursor: pointer;
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.4);
             transition: all 0.1s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .remote-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
         }
         .remote-btn:active {
-            transform: scale(0.92);
+            transform: scale(0.88);
             box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.6);
+            filter: brightness(0.9);
         }
 
         /* Floating Bubble Animation for Frutiger Aero */
@@ -177,6 +198,16 @@
             0%, 100% { transform: scale(1); opacity: 0.7; }
             50% { transform: scale(1.25); opacity: 0.95; filter: blur(4px); }
         }
+        @keyframes motion-test {
+            from { background-position: 0 0; }
+            to { background-position: 60px 60px; }
+        }
+        @keyframes fade-in-out {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
 
         /* Wiimote Skeuomorphic Style */
         .wii-remote-body {
@@ -220,6 +251,35 @@
             background: linear-gradient(135deg, #444446 0%, #2c2c2e 100%);
             box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
         }
+        .usb-file-row {
+            display: grid;
+            grid-template-columns: 24px 1fr 80px 100px;
+            gap: 8px;
+            align-items: center;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .usb-file-row:hover { background: rgba(255,255,255,0.05); }
+        .usb-file-row-selected { background: rgba(14, 165, 233, 0.2) !important; color: #7dd3fc; }
+        .usb-file-row .icon { text-align: center; }
+        .usb-file-row .name { font-family: 'Share Tech Mono', monospace; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .usb-file-row .size, .usb-file-row .date { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #94a3b8; text-align: right; }
+        .usb-file-header {
+            display: grid;
+            grid-template-columns: 24px 1fr 80px 100px;
+            gap: 8px;
+            align-items: center;
+            padding: 4px 8px;
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(14, 165, 233, 0.15);
+            margin-bottom: 2px;
+        }
+        .usb-file-header .name, .usb-file-header .size, .usb-file-header .date { font-family: 'Share Tech Mono', monospace; font-weight: bold; }
+        .usb-file-header .size, .usb-file-header .date { text-align: right; }
     </style>
 </head>
 <body class="h-full flex flex-col justify-between overflow-x-hidden text-slate-200">
@@ -230,7 +290,7 @@
             Samsung LCD TV SIMULATOR
         </h1>
         <p class="text-xs md:text-sm text-sky-300/80 mt-1 max-w-2xl mx-auto">
-            Interactive 2010 TV Simulator. Change inputs to watch the console remote slot automatically swap out for an authentic Wii, PS3, or Apple TV controller!
+            Interactive 2010 TV Simulator. Change inputs to watch the console remote slot automatically swap out for an authentic Wii, PS3, Apple TV or DishTV controller!
         </p>
     </header>
 
@@ -345,6 +405,32 @@
                         </div>
                     </div>
 
+                    <!-- ABOUT THIS TV PANEL -->
+                    <div id="screenAboutTV" class="absolute inset-0 bg-black/95 flex flex-col justify-center items-center z-50 hidden px-6 text-center">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-4 w-full">
+                            <h2 class="text-sm font-extrabold text-sky-400 uppercase tracking-widest mb-4 aero-font">About This TV</h2>
+                            <div class="text-left text-xs space-y-2 font-mono">
+                                <div class="flex justify-between"><span class="text-zinc-400">Model:</span> <span class="text-white" id="aboutTVModel">Samsung BN59-C5000</span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Firmware:</span> <span class="text-emerald-400" id="aboutTVFirmware">v1.0.25.1</span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Asset CDN:</span> <span class="text-white">GitHub Releases</span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Region:</span> <span class="text-white">IN (India)</span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Network:</span> <span class="text-emerald-400">● Connected</span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Last update:</span> <span class="text-white" id="aboutTVDate"></span></div>
+                                <div class="flex justify-between"><span class="text-zinc-400">Manufacturer:</span> <span class="text-zinc-500 italic">Samsung Electronics (simulated)</span></div>
+                            </div>
+                            <button id="aboutTVCloseBtn" class="mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- PICTURE TEST OVERLAY -->
+                    <div id="screenPictureTest" class="absolute inset-0 z-50 hidden">
+                        <div id="pictureTestPattern" class="w-full h-full"></div>
+                        <div class="absolute top-4 left-4 right-4 bg-black/70 p-2 rounded text-[10px] text-white font-mono text-center">
+                            <span id="pictureTestLabel">Picture Test 1/4: SMPTE Color Bars</span>
+                            <span class="text-zinc-400 ml-4">[◀▶] Cycle • [Back] Exit</span>
+                        </div>
+                    </div>
+
                     <!-- CONFLICT PICKER OVERLAY (Phase 4) -->
                     <div id="screenConflictPicker" class="absolute inset-0 bg-black/95 flex flex-col justify-center items-center z-50 hidden px-6 text-center">
                         <div class="max-w-sm samsung-osd-bg rounded-xl p-4 w-full">
@@ -367,8 +453,12 @@
                                 <button id="usbNewFileBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider">+ File</button>
                                 <button id="usbNewFolderBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider">+ Folder</button>
                             </div>
+                            <div class="usb-file-header"><span class="icon"></span><span class="name">Name</span><span class="size">Size</span><span class="date">Date</span></div>
                             <div id="usbBrowserList" class="max-h-48 overflow-y-auto text-left text-[10px] divide-y divide-sky-900/20 border border-sky-900/30 rounded mb-2"></div>
-                            <button id="usbBrowserCloseBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Close</button>
+                            <div class="flex gap-1 mt-2">
+                                <button id="usbResetBtn" class="bg-red-800 hover:bg-red-700 text-white px-3 py-1 rounded text-[9px] font-bold uppercase tracking-wider" title="Restore profile to original content">Reset USB</button>
+                                <button id="usbBrowserCloseBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all ml-auto">Close</button>
+                            </div>
                         </div>
                     </div>
 
@@ -382,6 +472,30 @@
                                 <button id="usbEditCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Cancel</button>
                                 <button id="usbEditDeleteBtn" class="bg-red-700 hover:bg-red-800 text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Delete</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- USB MEDIA PLAYER -->
+                    <div id="usbMediaPlayer" class="absolute inset-0 bg-black/90 z-60 hidden flex-col items-center justify-center">
+                        <div class="bg-zinc-900 border border-sky-400/30 rounded-xl p-6 max-w-md w-full">
+                            <div class="text-center mb-4">
+                                <div class="text-xs text-zinc-400 mb-1">Now Playing</div>
+                                <div id="mediaPlayerTitle" class="text-sm text-white font-bold"></div>
+                            </div>
+                            <audio id="mediaPlayerAudio" controls class="w-full mb-2"></audio>
+                            <div id="mediaPlayerTime" class="text-[10px] text-zinc-500 font-mono text-center mb-3"></div>
+                            <button id="mediaPlayerClose" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded text-[10px] uppercase tracking-wider">Close</button>
+                        </div>
+                    </div>
+
+                    <!-- USB PHOTO VIEWER -->
+                    <div id="usbPhotoViewer" class="absolute inset-0 bg-black z-60 hidden flex-col items-center justify-center">
+                        <img id="photoViewerImg" class="max-w-full max-h-[80%] object-contain" />
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-4">
+                            <button id="photoViewerPrev" class="bg-zinc-800 text-white px-4 py-2 rounded">← Previous</button>
+                            <span id="photoViewerCounter" class="text-white text-xs">Photo 1 of 5</span>
+                            <button id="photoViewerNext" class="bg-zinc-800 text-white px-4 py-2 rounded">Next →</button>
+                            <button id="photoViewerClose" class="bg-red-700 text-white px-4 py-2 rounded">Close</button>
                         </div>
                     </div>
 
@@ -412,6 +526,37 @@
                         </div>
                     </div>
 
+                    <!-- EPG (Electronic Program Guide) -->
+                    <div id="epgOverlay" class="absolute inset-0 bg-black/90 z-50 hidden p-6 overflow-auto" style="display:none;">
+                      <div class="max-w-2xl mx-auto bg-zinc-900 border border-amber-400/40 rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-3">
+                          <h2 class="text-sm font-extrabold text-amber-400 uppercase tracking-widest aero-font">DishTV Program Guide</h2>
+                          <span class="text-[10px] text-zinc-400 font-mono" id="epgDateNow"></span>
+                        </div>
+                        <table class="w-full text-[11px] font-mono">
+                          <thead>
+                            <tr class="text-zinc-500 border-b border-zinc-700">
+                              <th class="text-left py-1">Time</th>
+                              <th class="text-left py-1">Channel</th>
+                              <th class="text-left py-1">Now Playing</th>
+                            </tr>
+                          </thead>
+                          <tbody id="epgRows"></tbody>
+                        </table>
+                        <button id="epgCloseBtn" class="mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all">Close (Back)</button>
+                      </div>
+                    </div>
+
+                    <!-- TV DIALOG (replaces browser confirm/alert) -->
+                    <div id="tvDialog" class="absolute inset-0 bg-black/80 z-50 hidden flex items-center justify-center" style="display:none;">
+                        <div class="samsung-osd-bg rounded-xl p-5 max-w-sm w-full mx-4">
+                            <h3 id="tvDialogTitle" class="text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-3 aero-font">Confirm</h3>
+                            <div id="tvDialogMessage" class="text-xs text-zinc-300 mb-5 leading-relaxed whitespace-pre-line"></div>
+                            <input id="tvDialogInput" class="w-full bg-zinc-800 border border-zinc-600 rounded px-3 py-2 text-xs text-white mb-4 hidden" type="text" placeholder="" autocomplete="off">
+                            <div id="tvDialogButtons" class="flex justify-end gap-3"></div>
+                        </div>
+                    </div>
+
                     <!-- KEYBOARD SHORTCUT OVERLAY -->
                     <div id="shortcutOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6 text-center" style="display:none;">
                         <div class="max-w-sm samsung-osd-bg rounded-xl p-5">
@@ -439,6 +584,15 @@
                                 <div class="text-zinc-300">Cycle USB profiles (chassis)</div>
                             </div>
                             <button onclick="toggleShortcutOverlay()" class="mt-4 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-6 py-2 rounded-lg text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95">OK</button>
+                        </div>
+                    </div>
+
+                    <!-- CLOSED CAPTIONS SETTINGS -->
+                    <div id="ccSettingsOverlay" class="absolute inset-0 bg-black/90 flex-col justify-center items-center z-50 hidden px-6" style="display:none;">
+                        <div class="max-w-sm samsung-osd-bg rounded-xl p-5 w-full">
+                            <h2 class="text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-4 aero-font text-center">Closed Captions</h2>
+                            <div id="ccSettingsList" class="max-h-64 overflow-y-auto text-[11px] font-mono"></div>
+                            <button id="ccSettingsBackBtn" class="mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-1.5 rounded text-[10px] uppercase tracking-wider transition-all w-full">Back</button>
                         </div>
                     </div>
 
@@ -475,9 +629,9 @@
                         </div>
                         <video id="dishVideo" class="w-full h-full object-cover" loop playsinline muted preload="auto"></video>
                            <div id="dishContent" class="absolute bottom-4 left-4 text-white p-2 bg-black/50 rounded z-20 watermark">
-                                <div class="text-sm font-bold">DishTV DTH</div>
-                                <div id="dishChannelInfo" class="text-xs">Channel 125: AajTak: 2020 e-Agenda Edition</div>
-                            </div>
+                                <div class="text-sm font-bold">DishTV</div>
+                             </div>
+                           <div id="channelBug" class="absolute top-4 right-4 z-20 transition-opacity duration-300"></div>
                            <div id="broadcastReceptionBar" class="absolute bottom-4 right-4 bg-black/70 border border-amber-500/40 rounded-lg p-2 z-20 hidden flex-col items-center watermark">
                                 <div class="text-[9px] font-bold text-amber-400 uppercase tracking-widest mb-1">Broadcast OTA</div>
                                 <div class="w-24 h-1.5 bg-zinc-900 rounded overflow-hidden">
@@ -722,7 +876,7 @@
                             </div>
 
                             <!-- Right Options Panel: Dynamically Rendered based on Category -->
-                            <div id="osdOptionsPanel" class="w-2/3 p-4 flex flex-col gap-2.5 overflow-y-auto">
+                            <div id="osdOptionsPanel" class="w-2/3 p-4 flex flex-col gap-2.5 overflow-y-auto" style="max-height:360px;">
                                 <!-- Dynamic Options filled by Javascript -->
                             </div>
                         </div>
@@ -771,6 +925,7 @@
                                 <button data-track="1" class="soundtest-track-btn flex-1 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-all bg-sky-950 text-sky-300 border border-sky-800">AajTak</button>
                                 <button data-track="2" class="soundtest-track-btn flex-1 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-all bg-sky-950 text-sky-300 border border-sky-800">Batidao</button>
                                 <button data-track="3" class="soundtest-track-btn flex-1 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-all bg-sky-950 text-sky-300 border border-sky-800">Halla Bol</button>
+                                <button data-track="4" class="soundtest-track-btn flex-1 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-all bg-sky-950 text-sky-300 border border-sky-800">Luz Roja</button>
                             </div>
                         </div>
                         <!-- Controls inside popup -->
@@ -903,7 +1058,7 @@
                     <div class="flex justify-center gap-1 w-full px-1 mt-1">
                         <button class="remote-btn w-5 h-5 rounded-full bg-red-500 border border-red-400 shadow-sm" title="Red"></button>
                         <button class="remote-btn w-5 h-5 rounded-full bg-green-600 border border-green-500 shadow-sm" title="Green"></button>
-                        <button class="remote-btn w-5 h-5 rounded-full bg-blue-600 border border-blue-500 shadow-sm" title="Blue"></button>
+                        <button class="remote-btn w-5 h-5 rounded-full bg-blue-600 border border-blue-500 shadow-sm" title="Blue" onclick="cycleSubtitleMode()"></button>
                         <button class="remote-btn w-5 h-5 rounded-full bg-yellow-500 border border-yellow-400 shadow-sm" title="Yellow"></button>
                     </div>
 
@@ -1075,7 +1230,7 @@
                              <div class="flex justify-center gap-1 w-full">
                                  <button class="remote-btn w-4 h-4 rounded-full bg-red-500 border border-red-400" title="Red"></button>
                                  <button class="remote-btn w-4 h-4 rounded-full bg-green-600 border border-green-500" title="Green"></button>
-                                 <button class="remote-btn w-4 h-4 rounded-full bg-blue-600 border border-blue-500" title="Blue"></button>
+                                 <button class="remote-btn w-4 h-4 rounded-full bg-blue-600 border border-blue-500" title="Blue" onclick="cycleSubtitleMode()"></button>
                                  <button class="remote-btn w-4 h-4 rounded-full bg-yellow-500 border border-yellow-400" title="Yellow"></button>
                              </div>
                              <!-- Number pad -->
@@ -1131,9 +1286,10 @@
         const GH6 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/';
         const GH7 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/';
         const GH8 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.7/';
+        const GH9 = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.8/';
         const LIVE = 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8';
         const NDTV = 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8';
-        let APP_VERSION = '1.0.24';
+        let APP_VERSION = '1.0.27.1';
         const VERCEL_URL = 'https://samsung-lcd-tv.vercel.app';
         const audioStartup = new Audio(GH + 'startup.mp3');
         const audioShutdown = new Audio(GH + 'shutdown.mp3');
@@ -1141,11 +1297,18 @@
             { name: "2010 Soundtest", src: GH + "soundtest.mp3" },
             { name: "AajTak", src: GH6 + "aajtak.sound.test.mp3" },
             { name: "Batidao", src: GH6 + "Batidao.da.Madrugada.Speed.mp3" },
-            { name: "Halla Bol", src: GH7 + "halla.bol.mp3" }
+            { name: "Halla Bol", src: GH7 + "halla.bol.mp3" },
+            { name: "Luz Roja", src: GH9 + "LUZ.ROJA.-.Sped.Up.-.bxkq.mp3" },
         ];
         let currentSoundTestTrack = 0;
         const soundTestAudio = new Audio();
         soundTestAudio.loop = true;
+
+        // Phase 6 — Bonus feature globals
+        let demoModeTimer = null;
+        const DEMO_INPUTS = [0, 1, 2, 3, 4];
+        let demoInputIdx = 0;
+        let subtitleMode = localStorage.getItem('samsung_subtitle_mode') || 'off';
 
         // Dynamic audio volume synchronization
         function updateAudioVolumes() {
@@ -1315,28 +1478,29 @@
         let ps3Power = false;
         let applePower = false;
         let dishPower = true;
-        let dishChannel = 4;
+        let dishChannel = 12;
         let dishInputBuffer = '';
         let watermarkEnabled = true;
         const dishChannels = [
-            { name: "Channel 121: AajTak Main Bulletin", src: GH + "dishtv_source.mp4" },
-            { name: "Channel 122: AajTak Saas Bahu aur Betiyaan", src: GH + "dishtv_source2.mp4" },
-            { name: "Channel 123: AajTak Special Report (2014)", src: GH + "dishtv_source3.mp4" },
-            { name: "Channel 124: AajTak Aaj Subah", src: GH + "dishtv_source4.mp4" },
-            { name: "Channel 125: AajTak e-Agenda 2020", src: GH + "dishtv_source5.mp4" },
-            { name: "Channel 126: AajTak Halla Bol Prime (2014)", src: GH + "dishtv_source6.mp4" },
-            { name: "Channel 127: AajTak Das Tak (2019)", src: GH2 + "dishtv_source7.mp4" },
-            { name: "Channel 128: AajTak Halla Bol Evening (2014)", src: GH3 + "dishtv_source8.mp4" },
-            { name: "Channel 129: AajTak Delhi Exit Poll 2020", src: GH3 + "dishtv_source9.mp4" },
-            { name: "Channel 130: AajTak Special Report 2019", src: GH4 + "dishtv_source10.mp4" },
-            { name: "Channel 131: AajTak Ek aur Ek Gyarah Edition", src: GH4 + "dishtv_source11.mp4" },
-            { name: "Channel 132: AajTak Halla Bol 2019", src: GH5 + "dishtv_source12.mp4" },
-            { name: "Channel 133: AajTak Khabardar Prime", src: GH8 + "dishtv_source13.mp4" },
+            { name: "Channel 121: AajTak — Main Bulletin", src: GH + "dishtv_source.mp4" },
+            { name: "Channel 122: AajTak — Saas Bahu aur Betiyaan", src: GH + "dishtv_source2.mp4" },
+            { name: "Channel 123: AajTak — Special Report (8:30 PM) (Early)", src: GH + "dishtv_source3.mp4" },
+            { name: "Channel 124: AajTak — Aaj Subah (10 AM)", src: GH + "dishtv_source4.mp4" },
+            { name: "Channel 125: AajTak — e-Agenda", src: GH + "dishtv_source5.mp4" },
+            { name: "Channel 126: AajTak — Halla Bol [Evening Debate Edition]", src: GH + "dishtv_source6.mp4" },
+            { name: "Channel 127: AajTak — Das Tak (10 PM)", src: GH2 + "dishtv_source7.mp4" },
+            { name: "Channel 128: AajTak — Halla Bol [Evening Edition]", src: GH3 + "dishtv_source8.mp4" },
+            { name: "Channel 129: AajTak — Delhi Exit Poll", src: GH3 + "dishtv_source9.mp4" },
+            { name: "Channel 130: AajTak — Special Report (8:30 PM) (Late)", src: GH4 + "dishtv_source10.mp4" },
+            { name: "Channel 131: AajTak — Ek aur Ek Gyarah", src: GH4 + "dishtv_source11.mp4" },
+            { name: "Channel 132: AajTak — Halla Bol [Late Edition] 2019", src: GH5 + "dishtv_source12.mp4" },
+            { name: "Channel 133: AajTak — Khabardar (9 PM)", src: GH8 + "dishtv_source13.mp4" },
             { name: "Channel 134: AajTak Live", src: LIVE },
-            { name: "Channel 135: NDTV India Live", src: NDTV }
+            { name: "Channel 135: NDTV India [24x7 Live Stream]", src: NDTV }
         ];
         function loadDishVideo(video, src, seekTime) {
             if (video._hls) { video._hls.destroy(); delete video._hls; }
+            if (typeof updateChannelBug === 'function') updateChannelBug();
             if (src.endsWith('.m3u8') && Hls.isSupported()) {
                 const hls = new Hls();
                 hls.loadSource(src);
@@ -1352,6 +1516,7 @@
                 video.load();
                 video.play().catch(() => {});
             }
+            if (pipState !== 'off') setTimeout(applyPiP, 100);
         }
         let volume = 15;
         let dishVolume = 50;
@@ -1387,6 +1552,23 @@
         let usbFileEditOpen = false;
         let usbFileEditPath = '';
 
+        // About TV / Picture Test state
+        let aboutTVOpen = false;
+        let pictureTestOpen = false;
+        let pictureTestIndex = 0;
+        let tvDialogResolve = null;
+        // USB media/photo state
+        let usbMediaPlayerOpen = false;
+        let usbPhotoViewerOpen = false;
+        let usbPhotoList = [];
+        let usbPhotoIndex = 0;
+
+        // Picture filter state (v1.0.26)
+        let currentBrightnessFilter = 1;
+        let currentColorFilter = 1;
+        let currentContrastFilter = 1;
+        let currentEnergyMultiplier = 1;
+
         // Broadcast OTA
         let broadcastState = {
             scanning: false,
@@ -1413,7 +1595,10 @@
                     { name: "Backlight", type: "range", min: 0, max: 20, current: 15 },
                     { name: "Contrast", type: "range", min: 0, max: 100, current: 95 },
                     { name: "Brightness", type: "range", min: 0, max: 100, current: 45 },
-                    { name: "Watermark", type: "toggle", current: true }
+                    { name: "Color", type: "range", min: 0, max: 100, current: 50 },
+                    { name: "Sharpness", type: "range", min: 0, max: 100, current: 50 },
+                    { name: "Watermark", type: "toggle", current: true },
+                    { name: "Energy Saving", type: "select", values: ["Off", "Low", "Medium", "High", "Auto"], current: 0 }
                 ]
             },
             {
@@ -1439,10 +1624,13 @@
                 icon: "fa-gear",
                 options: [
                     { name: "Language", type: "select", values: ["English", "Español", "Français"], current: 0 },
-                    { name: "Energy Saving", type: "select", values: ["Off", "Low", "Medium", "High"], current: 0 },
                     { name: "On/Off Timer", type: "toggle", current: false },
                     { name: "AI Tune Channel Shortcuts", type: "toggle", current: true },
-                    { name: "Lock Keyboard Shortcuts", type: "toggle", current: false }
+                    { name: "Lock Keyboard Shortcuts", type: "toggle", current: false },
+                    { name: "Closed Captions", type: "action", action: openCCSettings },
+                    { name: "Retail Demo Mode", type: "action", action: toggleDemoMode },
+                    { name: "AajTak Exhale Schedule", type: "select", values: ["Every Hour", "Once Daily", "Off"], current: 0 },
+                    { name: "Sleep Timer", type: "action", action: openSleepTimerSettings }
                 ]
             },
             {
@@ -1450,9 +1638,11 @@
                 icon: "fa-circle-info",
                 options: [
                     { name: "Self Diagnosis: Audio Test", type: "action", action: triggerSoundTest },
+                    { name: "Self Diagnosis: Picture Test", type: "action", action: triggerPictureTest },
                     { name: "Software Upgrade", type: "action", action: openUpdateMethodMenu },
                     { name: "Contact Samsung", type: "action", action: () => showToast("Samsung Support: 1-800-SAMSUNG", '<i class="fa-solid fa-phone"></i>', "info") },
-                    { name: "Auto Broadcast Update", type: "toggle", current: false }
+                    { name: "Auto Broadcast Update", type: "toggle", current: false },
+                    { name: "About This TV", type: "action", action: openAboutTV }
                 ]
             }
         ];
@@ -1509,10 +1699,17 @@
                     // Sync AI picker localStorage keys after restoring menuConfig
                     const setupOpts = menuConfig[3]?.options;
                     if (setupOpts) {
-                        const tuneVal = setupOpts[3]?.current;
-                        const lockVal = setupOpts[4]?.current;
+                        const tuneVal = setupOpts[2]?.current;
+                        const lockVal = setupOpts[3]?.current;
+                        const exhaleVal = setupOpts[4]?.current;
                         if (tuneVal !== undefined) localStorage.setItem('samsung_tv_ai_tune_shortcuts_v1', tuneVal ? 'true' : 'false');
                         if (lockVal !== undefined) localStorage.setItem('samsung_tv_kb_lock_v1', lockVal ? 'true' : 'false');
+                        if (exhaleVal !== undefined) {
+                            var exhaleOpt = setupOpts[4].values[exhaleVal];
+                            if (exhaleOpt === 'Every Hour') setExhaleMode('hourly');
+                            else if (exhaleOpt === 'Once Daily') setExhaleMode('daily');
+                            else setExhaleMode('off');
+                        }
                     }
                 }
             } catch(e) {}
@@ -1596,7 +1793,6 @@
             dishVideoTime = 0;
             loadDishVideo(video, dishChannels[dishChannel].src, 0);
             updateAudioVolumes();
-            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             saveSettings();
         }
 
@@ -1619,7 +1815,6 @@
                             dishVideoTime = 0;
                             loadDishVideo(video, dishChannels[dishChannel].src, 0);
                             updateAudioVolumes();
-                            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
                             saveSettings();
                             dishInputBuffer = '';
                             showToast("Channel " + targetNum, '<i class="fa-solid fa-satellite-dish"></i>', "success");
@@ -1642,6 +1837,7 @@
         /* Power Sequence Logic */
 
         async function togglePower() {
+            try {
             tvSynth.initAudio();
 
             if (powerState === "off") {
@@ -1690,6 +1886,10 @@
                 closeMenu();
                 closeSourceMenu();
                 stopSoundTest();
+                if (sleepTimerInterval) {
+                    clearInterval(sleepTimerInterval);
+                    sleepTimerInterval = null;
+                }
 
                 hideAllScreens();
                 
@@ -1716,6 +1916,10 @@
                 // Keep screen physically off
                 document.getElementById('screenOff').style.opacity = "1";
                 saveSettings();
+            }
+            } catch(e) {
+                console.error('togglePower error:', e);
+                showToast('Power error: ' + e.message, '⚠️', 'error');
             }
         }
 
@@ -1749,6 +1953,8 @@
             applyPictureSettings();
             applySoundMode(menuConfig[1].options[0].current);
             setupEnergySaving();
+            restorePiP();
+            restoreSleepTimer();
 
             document.getElementById('deckOffState').classList.add('hidden');
             document.getElementById('deckWiiRemote').classList.add('hidden');
@@ -1915,7 +2121,7 @@
         }
 
         function renderCategories() {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < menuConfig.length; i++) {
                 const el = document.getElementById(`cat-${i}`);
                 el.className = "px-4 py-2 flex items-center gap-3 samsung-osd-unselected-glow border-l-4 border-transparent text-zinc-400 font-medium transition-all cursor-pointer";
                 if (menuStage === "categories" && i === currentMenuCategory) {
@@ -1970,12 +2176,16 @@
                 container.appendChild(valueContainer);
                 panel.appendChild(container);
             });
+            if (menuStage === "options") {
+                var selected = panel.children[currentMenuOptionIndex];
+                if (selected) selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
         }
 
         function navigateUp() {
             if (!menuOpen) return;
             if (menuStage === "categories") {
-                currentMenuCategory = (currentMenuCategory - 1 + 5) % 5;
+                currentMenuCategory = (currentMenuCategory - 1 + menuConfig.length) % menuConfig.length;
                 renderCategories();
                 renderCategoryOptions();
             } else if (menuStage === "options") {
@@ -1989,7 +2199,7 @@
         function navigateDown() {
             if (!menuOpen) return;
             if (menuStage === "categories") {
-                currentMenuCategory = (currentMenuCategory + 1) % 5;
+                currentMenuCategory = (currentMenuCategory + 1) % menuConfig.length;
                 renderCategories();
                 renderCategoryOptions();
             } else if (menuStage === "options") {
@@ -2039,8 +2249,18 @@
                     if (opt.name === "Melody Level") {
                         tvSynth.playFMNote(659.25, 0.8, 0.35); 
                     }
-                    if (opt.name === "Sound Mode") {
+                if (opt.name === "Sound Mode") {
                         applySoundMode(opt.current);
+                    }
+                    if (opt.name === "Energy Saving") {
+                        var mode = opt.values[opt.current].toLowerCase();
+                        applyEnergySaving(mode);
+                    }
+                    if (opt.name === "AajTak Exhale Schedule") {
+                        var exhaleVal = opt.values[opt.current];
+                        if (exhaleVal === "Every Hour") setExhaleMode('hourly');
+                        else if (exhaleVal === "Once Daily") setExhaleMode('daily');
+                        else setExhaleMode('off');
                     }
                 } else if (opt.type === "range") {
                     opt.current = Math.min(opt.max, opt.current + 1);
@@ -2050,22 +2270,22 @@
                     }
                 } else if (opt.type === "action") {
                     opt.action();
-                }
-                saveSettings();
+                } else {
+                navigateLeftOrReturn();
             }
-            tvSynth.playFMNote(1050, 0.08, 0.2);
+            saveSettings();
+            tvSynth.playFMNote(750, 0.08, 0.15);
         }
-
+        }
         function navigateLeftOrReturn() {
             if (!menuOpen) return;
             if (menuStage === "options") {
                 menuStage = "categories";
                 renderCategories();
                 renderCategoryOptions();
-            } else if (menuStage === "categories") {
+            } else {
                 closeMenu();
             }
-            tvSynth.playFMNote(750, 0.08, 0.15);
         }
 
         function navigateLeftAdjustment() {
@@ -2077,6 +2297,19 @@
             if (opt.type === "select") {
                 opt.current = (opt.current - 1 + opt.values.length) % opt.values.length;
                 renderCategoryOptions();
+                if (opt.name === "Sound Mode") {
+                    applySoundMode(opt.current);
+                }
+                if (opt.name === "Energy Saving") {
+                    var mode = opt.values[opt.current].toLowerCase();
+                    applyEnergySaving(mode);
+                }
+                if (opt.name === "AajTak Exhale Schedule") {
+                    var exhaleVal = opt.values[opt.current];
+                    if (exhaleVal === "Every Hour") setExhaleMode('hourly');
+                    else if (exhaleVal === "Once Daily") setExhaleMode('daily');
+                    else setExhaleMode('off');
+                }
             } else if (opt.type === "range") {
                 opt.current = Math.max(opt.min, opt.current - 1);
                 renderCategoryOptions();
@@ -2089,7 +2322,6 @@
             saveSettings();
             tvSynth.playFMNote(750, 0.08, 0.15);
         }
-
 
         /* The Sound Test Procedure */
 
@@ -2218,6 +2450,254 @@
             document.getElementById('screenUpdateMethod').classList.add('hidden');
         }
 
+        function openAboutTV() {
+            closeMenu();
+            aboutTVOpen = true;
+            document.getElementById('aboutTVFirmware').innerText = 'v' + APP_VERSION;
+            document.getElementById('aboutTVDate').innerText = new Date().toISOString().split('T')[0];
+            document.getElementById('screenAboutTV').classList.remove('hidden');
+            tvSynth.playFMNote(880, 0.12, 0.2);
+            showToast('About This TV', '<i class="fa-solid fa-circle-info"></i>', 'info');
+        }
+
+        function closeAboutTV() {
+            aboutTVOpen = false;
+            document.getElementById('screenAboutTV').classList.add('hidden');
+        }
+
+        function triggerPictureTest() {
+            closeMenu();
+            pictureTestOpen = true;
+            pictureTestIndex = 0;
+            document.getElementById('screenPictureTest').classList.remove('hidden');
+            renderPictureTestPattern();
+            tvSynth.playFMNote(880, 0.12, 0.2);
+            showToast('Self Diagnosis: Picture Test', '<i class="fa-solid fa-image"></i>', 'info');
+        }
+
+        function renderPictureTestPattern() {
+            const container = document.getElementById('pictureTestPattern');
+            const label = document.getElementById('pictureTestLabel');
+            const patterns = [
+                {
+                    name: 'Picture Test 1/4: SMPTE Color Bars',
+                    html: () => {
+                        const colors = ['#fff','#ff0','#0ff','#0f0','#f0f','#f00','#00f'];
+                        return '<div style="display:flex;width:100%;height:100%;">' +
+                            colors.map(c => `<div style="width:14.28%;height:100%;background:${c};"></div>`).join('') + '</div>';
+                    }
+                },
+                {
+                    name: 'Picture Test 2/4: Grayscale Gradient',
+                    html: () => {
+                        let bars = '';
+                        for (let i = 0; i < 11; i++) {
+                            const g = Math.round(i * 25.5);
+                            const hex = g.toString(16).padStart(2, '0');
+                            bars += `<div style="width:9.09%;height:100%;background:#${hex}${hex}${hex};"></div>`;
+                        }
+                        return '<div style="display:flex;width:100%;height:100%;">' + bars + '</div>';
+                    }
+                },
+                {
+                    name: 'Picture Test 3/4: Solid Color Test',
+                    html: () => {
+                        const solids = ['#ff0000', '#00ff00', '#0000ff'];
+                        return '<div style="display:flex;width:100%;height:100%;">' +
+                            solids.map(c => `<div style="width:33.33%;height:100%;background:${c};"></div>`).join('') + '</div>';
+                    }
+                },
+                {
+                    name: 'Picture Test 4/4: Motion Pattern',
+                    html: () => {
+                        return '<div style="width:100%;height:100%;background:repeating-linear-gradient(45deg,#000 0 30px,#fff 30px 60px);animation:motion-test 3s linear infinite;"></div>';
+                    }
+                }
+            ];
+            const pattern = patterns[pictureTestIndex];
+            if (pattern) {
+                container.innerHTML = pattern.html();
+                label.innerText = pattern.name;
+            }
+        }
+
+        function cyclePictureTest(direction) {
+            if (!pictureTestOpen) return;
+            const max = 4;
+            if (direction === 'next') {
+                pictureTestIndex = (pictureTestIndex + 1) % max;
+            } else {
+                pictureTestIndex = (pictureTestIndex - 1 + max) % max;
+            }
+            renderPictureTestPattern();
+            tvSynth.playFMNote(660, 0.06, 0.15);
+        }
+
+        function closePictureTest() {
+            pictureTestOpen = false;
+            document.getElementById('screenPictureTest').classList.add('hidden');
+        }
+
+        // ── TV-style dialog (replaces browser confirm/alert) ────────
+        function showTVConfirm(title, message) {
+            return new Promise(function(resolve) {
+                tvDialogResolve = resolve;
+                var modal = document.getElementById('tvDialog');
+                document.getElementById('tvDialogInput').classList.add('hidden');
+                document.getElementById('tvDialogTitle').textContent = title;
+                document.getElementById('tvDialogTitle').className = 'text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-3 aero-font';
+                document.getElementById('tvDialogMessage').textContent = message;
+                document.getElementById('tvDialogButtons').innerHTML =
+                    '<button id="tvDialogCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">Cancel</button>' +
+                    '<button id="tvDialogOkBtn" class="bg-sky-700 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">OK</button>';
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                document.getElementById('tvDialogOkBtn').onclick = function() { tvDialogResolve = null; modal.style.display = 'none'; modal.classList.add('hidden'); resolve(true); };
+                document.getElementById('tvDialogCancelBtn').onclick = function() { tvDialogResolve = null; modal.style.display = 'none'; modal.classList.add('hidden'); resolve(false); };
+            });
+        }
+        function showTVAlert(title, message) {
+            return new Promise(function(resolve) {
+                tvDialogResolve = resolve;
+                var modal = document.getElementById('tvDialog');
+                document.getElementById('tvDialogInput').classList.add('hidden');
+                document.getElementById('tvDialogTitle').textContent = title;
+                document.getElementById('tvDialogTitle').className = 'text-sm font-extrabold text-sky-400 uppercase tracking-widest mb-3 aero-font';
+                document.getElementById('tvDialogMessage').textContent = message;
+                document.getElementById('tvDialogButtons').innerHTML =
+                    '<button id="tvDialogOkBtn" class="bg-sky-700 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">OK</button>';
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                document.getElementById('tvDialogOkBtn').onclick = function() { tvDialogResolve = null; modal.style.display = 'none'; modal.classList.add('hidden'); resolve(); };
+            });
+        }
+        function showTVPrompt(title, message, defaultValue) {
+            return new Promise(function(resolve) {
+                tvDialogResolve = resolve;
+                var modal = document.getElementById('tvDialog');
+                var input = document.getElementById('tvDialogInput');
+                input.value = defaultValue || '';
+                input.classList.remove('hidden');
+                input.placeholder = message;
+                document.getElementById('tvDialogTitle').textContent = title;
+                document.getElementById('tvDialogTitle').className = 'text-sm font-extrabold text-amber-400 uppercase tracking-widest mb-3 aero-font';
+                document.getElementById('tvDialogMessage').textContent = '';
+                document.getElementById('tvDialogButtons').innerHTML =
+                    '<button id="tvDialogCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">Cancel</button>' +
+                    '<button id="tvDialogOkBtn" class="bg-sky-700 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">OK</button>';
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                input.focus();
+                input.select();
+                document.getElementById('tvDialogOkBtn').onclick = function() {
+                    var val = input.value;
+                    tvDialogResolve = null;
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    input.classList.add('hidden');
+                    resolve(val);
+                };
+                document.getElementById('tvDialogCancelBtn').onclick = function() {
+                    tvDialogResolve = null;
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                    input.classList.add('hidden');
+                    resolve(null);
+                };
+                input.onkeydown = function(e) {
+                    if (e.key === 'Enter') {
+                        document.getElementById('tvDialogOkBtn').click();
+                    } else if (e.key === 'Escape') {
+                        document.getElementById('tvDialogCancelBtn').click();
+                    }
+                };
+            });
+        }
+        function closeTVDialog() {
+            var modal = document.getElementById('tvDialog');
+            if (tvDialogResolve) {
+                tvDialogResolve(false);
+                tvDialogResolve = null;
+            }
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+
+        // ── Closed Captions Settings ──────────────────────────────
+        var ccSettings = {
+            options: [
+                { name: 'Caption Mode', values: ['Off', 'On', 'Mute On'], current: 0 },
+                { name: 'Default Mode', values: ['CC1', 'CC2', 'CC3', 'CC4', 'Text1', 'Text2', 'Text3', 'Text4'], current: 0 },
+                { name: 'Size', values: ['Default', 'Small', 'Standard', 'Large'], current: 0 },
+                { name: 'Font Style', values: ['Default', 'Style 0', 'Style 1', 'Style 2', 'Style 3', 'Style 4', 'Style 5', 'Style 6', 'Style 7'], current: 0 },
+                { name: 'Foreground Color', values: ['Default', 'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'], current: 0 },
+                { name: 'Foreground Opacity', values: ['Default', 'Transparent', 'Translucent', 'Solid', 'Flashing'], current: 0 },
+                { name: 'Background Color', values: ['Default', 'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'], current: 0 },
+                { name: 'Background Opacity', values: ['Default', 'Transparent', 'Translucent', 'Solid', 'Flashing'], current: 0 },
+                { name: 'Edge Type', values: ['Default', 'None', 'Raised', 'Depressed', 'Uniform', 'Left Shadow', 'Right Shadow'], current: 0 },
+                { name: 'Edge Color', values: ['Default', 'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'], current: 0 }
+            ],
+            selectedIndex: 0
+        };
+
+        function loadCCSettings() {
+            try {
+                var saved = JSON.parse(localStorage.getItem('cc_settings_v1'));
+                if (saved && Array.isArray(saved)) {
+                    ccSettings.options.forEach(function(opt, i) {
+                        if (i < saved.length && typeof saved[i] === 'number') opt.current = saved[i];
+                    });
+                }
+            } catch(e) {}
+        }
+        function saveCCSettings() {
+            try {
+                localStorage.setItem('cc_settings_v1', JSON.stringify(ccSettings.options.map(function(o) { return o.current; })));
+            } catch(e) {}
+        }
+        function openCCSettings() {
+            closeMenu();
+            loadCCSettings();
+            ccSettings.selectedIndex = 0;
+            document.getElementById('ccSettingsOverlay').style.display = 'flex';
+            document.getElementById('ccSettingsOverlay').classList.remove('hidden');
+            renderCCSettings();
+            document.getElementById('ccSettingsBackBtn').onclick = closeCCSettings;
+        }
+        function closeCCSettings() {
+            document.getElementById('ccSettingsOverlay').style.display = 'none';
+            document.getElementById('ccSettingsOverlay').classList.add('hidden');
+        }
+        function renderCCSettings() {
+            var list = document.getElementById('ccSettingsList');
+            if (!list) return;
+            list.innerHTML = '';
+            ccSettings.options.forEach(function(opt, idx) {
+                var row = document.createElement('div');
+                row.className = 'p-2 rounded flex justify-between items-center transition-all' + (idx === ccSettings.selectedIndex ? ' samsung-osd-highlight' : '');
+                row.innerHTML = '<span class="font-semibold">' + opt.name + '</span><span class="font-mono font-bold text-sky-400' + (idx === ccSettings.selectedIndex ? ' text-white' : '') + '">' + opt.values[opt.current] + '</span>';
+                list.appendChild(row);
+            });
+        }
+        function navigateCCSettings(direction) {
+            if (direction === 'up') {
+                ccSettings.selectedIndex = (ccSettings.selectedIndex - 1 + ccSettings.options.length) % ccSettings.options.length;
+            } else if (direction === 'down') {
+                ccSettings.selectedIndex = (ccSettings.selectedIndex + 1) % ccSettings.options.length;
+            } else if (direction === 'right' || direction === 'enter') {
+                var opt = ccSettings.options[ccSettings.selectedIndex];
+                opt.current = (opt.current + 1) % opt.values.length;
+                saveCCSettings();
+                showToast('Closed Captions: ' + opt.name + ' set to ' + opt.values[opt.current], '<i class="fa-solid fa-closed-captioning"></i>', 'info');
+            } else if (direction === 'left') {
+                var opt = ccSettings.options[ccSettings.selectedIndex];
+                opt.current = (opt.current - 1 + opt.values.length) % opt.values.length;
+                saveCCSettings();
+                showToast('Closed Captions: ' + opt.name + ' set to ' + opt.values[opt.current], '<i class="fa-solid fa-closed-captioning"></i>', 'info');
+            }
+            renderCCSettings();
+        }
+
         function renderUpdateMethodMenu() {
             const options = document.querySelectorAll('.update-method-option');
             options.forEach((el, i) => {
@@ -2335,11 +2815,41 @@
             showToast('USB drive connected: ' + virtualUSB.label, '<i class="fa-solid fa-usb"></i>', 'success');
         }
 
+        function playUsbEjectSound() {
+            if (!tvSynth || !tvSynth.context) return;
+            var ctx = tvSynth.context;
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        }
+        function animateUsbEject(callback) {
+            var badge = document.getElementById('usbPortBtn');
+            if (!badge) { if (callback) callback(); return; }
+            badge.style.transition = 'transform 0.4s ease-in, opacity 0.4s ease-in';
+            badge.style.transform = 'translateY(20px)';
+            badge.style.opacity = '0';
+            setTimeout(function() {
+                badge.style.display = 'none';
+                badge.style.transition = '';
+                if (callback) callback();
+            }, 450);
+        }
         function usbDisconnect() {
             if (!virtualUSB.connected) return;
             virtualUSB.connected = false;
             usbSaveState();
-            usbUpdatePortUI();
+            playUsbEjectSound();
+            animateUsbEject(function() {
+                usbUpdatePortUI();
+            });
             usbUpdateMenuStatus();
             if (usbFileBrowserOpen) usbCloseBrowser();
             showToast('USB drive disconnected', '<i class="fa-solid fa-usb"></i>', 'error');
@@ -2348,6 +2858,10 @@
         function usbUpdatePortUI() {
             const btn = document.getElementById('usbPortBtn');
             if (!btn) return;
+            // Restore display in case animateUsbEject hid it
+            btn.style.display = '';
+            btn.style.transform = '';
+            btn.style.opacity = '';
             if (virtualUSB.connected) {
                 btn.className = 'text-[8px] px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-bold uppercase tracking-wider border border-emerald-500/50 transition-all';
                 btn.innerHTML = '<i class="fa-solid fa-usb mr-1"></i>USB: ' + virtualUSB.label;
@@ -2388,6 +2902,35 @@
             return entries;
         }
 
+        function usbEnsureThumbnails(dirPath) {
+            var cleaned = dirPath.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+            var prefix = cleaned === '/' ? '' : cleaned + '/';
+            var imageFiles = [];
+            var thumbPrefix = prefix + '.thumbnails/';
+            var hasThumbDir = false;
+            Object.keys(virtualUSB.files).forEach(function(key) {
+                if (key.startsWith(thumbPrefix)) hasThumbDir = true;
+                if (key.startsWith(prefix) && key !== prefix) {
+                    var remainder = key.substring(prefix.length);
+                    if (remainder.indexOf('/') === -1) {
+                        var ext = remainder.split('.').pop().toLowerCase();
+                        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].indexOf(ext) >= 0) {
+                            imageFiles.push(remainder);
+                        }
+                    }
+                }
+            });
+            if (imageFiles.length > 0 && !hasThumbDir) {
+                imageFiles.forEach(function(f, i) {
+                    var thumbKey = thumbPrefix + 'thumb_' + f;
+                    if (!virtualUSB.files[thumbKey]) {
+                        virtualUSB.files[thumbKey] = 'THUMBNAIL:w=120,h=90,src=' + f;
+                    }
+                });
+                usbSaveState();
+            }
+        }
+
         function usbReadFile(filePath) {
             const key = filePath.replace(/^\//, '');
             return virtualUSB.files[key] || null;
@@ -2396,6 +2939,7 @@
         function usbWriteFile(filePath, content) {
             const key = filePath.replace(/^\//, '');
             virtualUSB.files[key] = content;
+            localStorage.setItem('usbmtime_' + virtualUSB.label + '_' + key, String(Date.now()));
             usbSaveState();
         }
 
@@ -2411,6 +2955,7 @@
         function usbMkdir(dirPath) {
             const key = dirPath.replace(/^\//, '') + '/.folder';
             virtualUSB.files[key] = '';
+            localStorage.setItem('usbmtime_' + virtualUSB.label + '_' + key, String(Date.now()));
             usbSaveState();
         }
 
@@ -2420,6 +2965,48 @@
             const parts = cleaned.split('/');
             parts.pop();
             return parts.join('/') || '/';
+        }
+
+        // ── File metadata helpers ───────────────────────────────────
+        var recentlyViewed = JSON.parse(localStorage.getItem('samsung_recently_viewed') || '[]');
+        var MAX_RECENT = 10;
+        var usbShowingRecentlyViewed = false;
+
+        function getFileIcon(filename) {
+            var ext = filename.split('.').pop().toLowerCase();
+            if (filename.endsWith('/')) return '\uD83D\uDCC1';
+            if (['mp3','wav','m4a','ogg'].indexOf(ext) >= 0) return '\uD83C\uDFB5';
+            if (['jpg','jpeg','png','gif','webp'].indexOf(ext) >= 0) return '\uD83D\uDDBC\uFE0F';
+            if (['mp4','mov','mkv','webm'].indexOf(ext) >= 0) return '\uD83C\uDFAC';
+            if (['json'].indexOf(ext) >= 0) return '\u2699\uFE0F';
+            if (['html','htm'].indexOf(ext) >= 0) return '\uD83D\uDCE6';
+            if (['txt','md','log'].indexOf(ext) >= 0) return '\uD83D\uDCC4';
+            if (['xml'].indexOf(ext) >= 0) return '\uD83D\uDCCB';
+            return '\uD83D\uDCC4';
+        }
+        function humanFileSize(bytes) {
+            if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+        }
+        function getFileSize(value) {
+            if (typeof value === 'string' && value.startsWith('http')) return '\u2014 remote \u2014';
+            if (typeof value === 'string') return humanFileSize(value.length);
+            return '0 B';
+        }
+        function getModifiedDate(filename) {
+            var key = 'usbmtime_' + virtualUSB.label + '_' + filename;
+            var stored = localStorage.getItem(key);
+            if (stored) return new Date(parseInt(stored)).toLocaleDateString('en-IN');
+            return '\u2014';
+        }
+        function trackFileView(filename) {
+            var entry = { filename: filename, profileLabel: virtualUSB.label, timestamp: Date.now() };
+            recentlyViewed = recentlyViewed.filter(function(e) { return e.filename !== filename || e.profileLabel !== virtualUSB.label; });
+            recentlyViewed.unshift(entry);
+            recentlyViewed = recentlyViewed.slice(0, MAX_RECENT);
+            localStorage.setItem('samsung_recently_viewed', JSON.stringify(recentlyViewed));
         }
 
         function usbOpenBrowser() {
@@ -2439,45 +3026,110 @@
             document.getElementById('usbFileBrowser').style.display = 'none';
         }
 
+        function renderFileRow(type, name, icon, size, date, selected) {
+            var row = document.createElement('div');
+            row.className = 'usb-file-row' + (selected ? ' usb-file-row-selected' : '');
+            row.dataset.type = type;
+            row.dataset.name = name;
+            row.innerHTML = '<span class="icon">' + icon + '</span><span class="name">' + name + '</span><span class="size">' + size + '</span><span class="date">' + date + '</span>';
+            return row;
+        }
+
         function usbRenderBrowser() {
             const listEl = document.getElementById('usbBrowserList');
             const pathEl = document.getElementById('usbBrowserPath');
             if (!listEl || !pathEl) return;
             pathEl.innerText = usbFileBrowserPath;
+            usbEnsureThumbnails(usbFileBrowserPath);
             const entries = usbGetDirContents(usbFileBrowserPath);
             listEl.innerHTML = '';
-            if (usbFileBrowserPath !== '/') {
-                const parentItem = document.createElement('div');
-                parentItem.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-zinc-400 hover:text-zinc-200 text-[10px]';
-                parentItem.dataset.type = 'parent';
-                parentItem.innerHTML = '<i class="fa-solid fa-level-up-alt text-[8px]"></i> ..';
-                listEl.appendChild(parentItem);
+
+            // Virtual "Recently Viewed" folder at root
+            if (usbFileBrowserPath === '/' && !usbShowingRecentlyViewed) {
+                var recents = recentlyViewed.filter(function(e) { return e.profileLabel === virtualUSB.label; });
+                if (recents.length > 0) {
+                    var recentRow = renderFileRow('pseudo-recents', '\uD83D\uDD50  Recently Viewed/', '', recents.length + ' items', '\u2014 virtual \u2014', false);
+                    listEl.appendChild(recentRow);
+                }
             }
-            entries.dirs.forEach((dir, idx) => {
-                const item = document.createElement('div');
-                const dirOffset = usbFileBrowserPath !== '/' ? 1 : 0;
-                const dirSelected = (dirOffset + idx) === usbFileBrowserSelectedIndex;
-                item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px] ' + (dirSelected ? 'bg-sky-800/40 text-sky-200' : 'text-zinc-400 hover:text-zinc-200 hover:bg-sky-900/20');
-                item.dataset.type = 'dir';
-                item.dataset.name = dir;
-                item.innerHTML = '<i class="fa-solid fa-folder text-amber-400 text-[8px]"></i> ' + dir;
-                listEl.appendChild(item);
+
+            var idx = 0;
+            if (usbFileBrowserPath !== '/') {
+                var parentRow = renderFileRow('parent', '..', '<i class="fa-solid fa-level-up-alt text-[8px]"></i>', '', '', idx === usbFileBrowserSelectedIndex);
+                listEl.appendChild(parentRow);
+                idx++;
+            }
+            entries.dirs.forEach(function(dir) {
+                var selected = idx === usbFileBrowserSelectedIndex;
+                var row = renderFileRow('dir', dir, '\uD83D\uDCC1', '\u2014', '\u2014', selected);
+                listEl.appendChild(row);
+                idx++;
             });
-            entries.files.forEach((file, idx) => {
-                const item = document.createElement('div');
-                const fileOffset = (usbFileBrowserPath !== '/' ? 1 : 0) + entries.dirs.length;
-                const fileSelected = (fileOffset + idx) === usbFileBrowserSelectedIndex;
-                item.className = 'py-1 px-2 cursor-pointer flex items-center gap-2 text-[10px] ' + (fileSelected ? 'bg-sky-800/40 text-sky-200' : 'text-zinc-400 hover:text-zinc-200 hover:bg-sky-900/20');
-                item.dataset.type = 'file';
-                item.dataset.name = file;
-                item.innerHTML = '<i class="fa-solid fa-file text-sky-400 text-[8px]"></i> ' + file;
-                listEl.appendChild(item);
+            entries.files.forEach(function(file) {
+                var selected = idx === usbFileBrowserSelectedIndex;
+                var filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + file;
+                var value = usbReadFile(filePath);
+                var icon = getFileIcon(file);
+                var size = getFileSize(value);
+                var date = getModifiedDate(file);
+                var row = renderFileRow('file', file, icon, size, date, selected);
+                listEl.appendChild(row);
+                idx++;
             });
         }
 
+        function usbShowRecentlyViewed() {
+            usbShowingRecentlyViewed = true;
+            usbFileBrowserPath = '/';
+            var listEl = document.getElementById('usbBrowserList');
+            var pathEl = document.getElementById('usbBrowserPath');
+            if (pathEl) pathEl.innerText = 'Recently Viewed/';
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            var recents = recentlyViewed.filter(function(e) { return e.profileLabel === virtualUSB.label; });
+            if (recents.length === 0) return;
+            recents.forEach(function(entry, idx) {
+                var selected = idx === usbFileBrowserSelectedIndex;
+                var row = document.createElement('div');
+                row.className = 'usb-file-row' + (selected ? ' usb-file-row-selected' : '');
+                row.dataset.type = 'file';
+                row.dataset.name = entry.filename;
+                row.dataset.recent = '1';
+                var icon = getFileIcon(entry.filename);
+                var date = new Date(entry.timestamp).toLocaleDateString('en-IN');
+                row.innerHTML = '<span class="icon">' + icon + '</span><span class="name">' + entry.filename + '</span><span class="size">\u2014</span><span class="date">' + date + '</span>';
+                listEl.appendChild(row);
+            });
+            // Add back button
+            var backRow = document.createElement('div');
+            backRow.className = 'usb-file-row';
+            backRow.dataset.type = 'parent';
+            backRow.innerHTML = '<span class="icon"><i class="fa-solid fa-level-up-alt text-[8px]"></i></span><span class="name">\u2190 Back</span><span class="size"></span><span class="date"></span>';
+            listEl.appendChild(backRow);
+        }
+
         function usbNavigateBrowser(direction) {
+            if (usbShowingRecentlyViewed) {
+                var listEl = document.getElementById('usbBrowserList');
+                if (!listEl) return;
+                var children = listEl.children;
+                var total = children.length;
+                if (direction === 'up') {
+                    usbFileBrowserSelectedIndex = (usbFileBrowserSelectedIndex - 1 + total) % total;
+                } else if (direction === 'down') {
+                    usbFileBrowserSelectedIndex = (usbFileBrowserSelectedIndex + 1) % total;
+                }
+                usbShowRecentlyViewed();
+                return;
+            }
             const entries = usbGetDirContents(usbFileBrowserPath);
-            const total = entries.dirs.length + entries.files.length + (usbFileBrowserPath !== '/' ? 1 : 0);
+            var rootExtra = 0;
+            if (usbFileBrowserPath === '/') {
+                var recents = recentlyViewed.filter(function(e) { return e.profileLabel === virtualUSB.label; });
+                if (recents.length > 0) rootExtra = 1;
+            }
+            var parentExtra = usbFileBrowserPath !== '/' ? 1 : 0;
+            var total = rootExtra + parentExtra + entries.dirs.length + entries.files.length;
             if (direction === 'up') {
                 usbFileBrowserSelectedIndex = (usbFileBrowserSelectedIndex - 1 + total) % total;
             } else if (direction === 'down') {
@@ -2496,10 +3148,19 @@
             if (!child) return;
             const type = child.dataset.type;
             const name = child.dataset.name;
-            if (type === 'parent') {
-                usbFileBrowserPath = usbGetParentPath(usbFileBrowserPath);
-                usbFileBrowserSelectedIndex = 0;
-                usbRenderBrowser();
+            if (type === 'pseudo-recents') {
+                usbShowRecentlyViewed();
+            } else if (type === 'parent') {
+                if (usbShowingRecentlyViewed) {
+                    usbShowingRecentlyViewed = false;
+                    usbFileBrowserPath = '/';
+                    usbFileBrowserSelectedIndex = 0;
+                    usbRenderBrowser();
+                } else {
+                    usbFileBrowserPath = usbGetParentPath(usbFileBrowserPath);
+                    usbFileBrowserSelectedIndex = 0;
+                    usbRenderBrowser();
+                }
             } else if (type === 'dir') {
                 usbFileBrowserPath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name;
                 usbFileBrowserSelectedIndex = 0;
@@ -2507,30 +3168,45 @@
             } else if (type === 'file') {
                 const filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name;
                 const content = usbReadFile(filePath);
+                trackFileView(name);
                 if (name === 'version.json') {
                     if (content) {
-                        try {
-                            const verData = JSON.parse(content);
-                            if (verData.version && isNewerVersion(verData.version, APP_VERSION)) {
-                                recordPendingUpdate('usb', verData.version, 'USB v' + verData.version);
-                                if (hasConflicts()) {
-                                    usbCloseBrowser();
-                                    showConflictPicker();
-                                    return;
+                        (async function() {
+                            try {
+                                const verData = JSON.parse(content);
+                                if (verData.version && isNewerVersion(verData.version, APP_VERSION)) {
+                                    recordPendingUpdate('usb', verData.version, 'USB v' + verData.version);
+                                    if (hasConflicts()) {
+                                        usbCloseBrowser();
+                                        showConflictPicker();
+                                        return;
+                                    }
+                                    clearAllPendingUpdates();
+                                    var updateConfirmed = await showTVConfirm('USB Update', 'Update found on USB: v' + verData.version + '\n\nCurrent: v' + APP_VERSION + '\n\nInstall this update?');
+                                    if (updateConfirmed) {
+                                        usbCloseBrowser();
+                                        showToast('Installing USB update v' + verData.version + '...', '<i class="fa-solid fa-usb"></i>', 'success');
+                                        showUpdateOverlay(verData.version);
+                                    }
+                                } else if (verData.version === APP_VERSION) {
+                                    await showTVAlert('Already Up to Date', 'This version (v' + verData.version + ') matches the currently installed firmware. No update needed.');
+                                } else {
+                                    var downgradeConfirmed = await showTVConfirm('⚠ Downgrade Warning', 'This USB contains v' + verData.version + ', which is OLDER than the currently installed firmware (v' + APP_VERSION + ').\n\nDowngrading firmware is not recommended and may cause feature loss. Continue anyway?');
+                                    if (downgradeConfirmed) {
+                                        usbCloseBrowser();
+                                        showToast('Installing downgrade to v' + verData.version + '...', '<i class="fa-solid fa-usb"></i>', 'warning');
+                                        showUpdateOverlay(verData.version);
+                                    }
                                 }
-                                clearAllPendingUpdates();
-                                if (confirm('Update found on USB: v' + verData.version + '\n\nCurrent: v' + APP_VERSION + '\n\nInstall this update?')) {
-                                    usbCloseBrowser();
-                                    showToast('Installing USB update v' + verData.version + '...', '<i class="fa-solid fa-usb"></i>', 'success');
-                                    showUpdateOverlay(verData.version);
-                                }
-                            } else {
-                                alert('This version (' + (verData.version || 'unknown') + ') is not newer than the current firmware (v' + APP_VERSION + ').');
+                            } catch(e) {
+                                showToast('Invalid version.json on USB.', '<i class="fa-solid fa-file-excel"></i>', 'error');
                             }
-                        } catch(e) {
-                            showToast('Invalid version.json on USB.', '<i class="fa-solid fa-file-excel"></i>', 'error');
-                        }
+                        })();
                     }
+                } else if (name.toLowerCase().endsWith('.mp3')) {
+                    usbOpenMediaPlayer(filePath, content || '');
+                } else if (name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.jpeg')) {
+                    usbOpenPhotoViewer(filePath);
                 } else {
                     usbOpenFileEditor(filePath, content || '');
                 }
@@ -2559,29 +3235,122 @@
         }
 
         function usbDeleteEditedFile() {
-            if (!confirm('Delete ' + usbFileEditPath + '?')) return;
-            usbDeleteFile(usbFileEditPath);
-            usbCloseFileEditor();
-            usbRenderBrowser();
-            showToast('File deleted: ' + usbFileEditPath, '<i class="fa-solid fa-trash"></i>', 'info');
+            showTVConfirm('Delete File', 'Delete ' + usbFileEditPath + '?').then(function(confirmed) {
+                if (confirmed) {
+                    usbDeleteFile(usbFileEditPath);
+                    usbCloseFileEditor();
+                    usbRenderBrowser();
+                    showToast('File deleted: ' + usbFileEditPath, '<i class="fa-solid fa-trash"></i>', 'info');
+                }
+            });
+        }
+
+        function usbOpenMediaPlayer(filePath, content) {
+            usbMediaPlayerOpen = true;
+            const url = content && content.startsWith('http') ? content : null;
+            document.getElementById('mediaPlayerTitle').innerText = filePath.split('/').pop();
+            const audio = document.getElementById('mediaPlayerAudio');
+            if (url) {
+                audio.src = url;
+                audio.load();
+                audio.play().then(function() {
+                    showToast('Now playing: ' + filePath.split('/').pop(), '<i class="fa-solid fa-music"></i>', 'success');
+                }).catch(function(err) {
+                    showToast('Audio playback failed - try a different file', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
+                });
+            } else {
+                audio.src = '';
+                showToast('No audio URL found for this file', '<i class="fa-solid fa-circle-exclamation"></i>', 'error');
+            }
+            document.getElementById('usbMediaPlayer').classList.remove('hidden');
+        }
+
+        function usbCloseMediaPlayer() {
+            usbMediaPlayerOpen = false;
+            const audio = document.getElementById('mediaPlayerAudio');
+            audio.pause();
+            audio.src = '';
+            document.getElementById('usbMediaPlayer').classList.add('hidden');
+        }
+
+        function usbOpenPhotoViewer(filePath) {
+            usbPhotoViewerOpen = true;
+            const entries = usbGetDirContents(usbFileBrowserPath);
+            usbPhotoList = entries.files.filter(function(f) {
+                return f.toLowerCase().endsWith('.jpg') || f.toLowerCase().endsWith('.jpeg');
+            });
+            usbPhotoIndex = usbPhotoList.indexOf(filePath.split('/').pop());
+            if (usbPhotoIndex < 0) usbPhotoIndex = 0;
+            usbRenderPhoto();
+            document.getElementById('usbPhotoViewer').classList.remove('hidden');
+        }
+
+        function usbRenderPhoto() {
+            if (!usbPhotoList.length) return;
+            const name = usbPhotoList[usbPhotoIndex];
+            const filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name;
+            const content = usbReadFile(filePath);
+            const img = document.getElementById('photoViewerImg');
+            if (content && content.startsWith('http')) {
+                img.src = content;
+            }
+            document.getElementById('photoViewerCounter').innerText = 'Photo ' + (usbPhotoIndex + 1) + ' of ' + usbPhotoList.length;
+        }
+
+        function usbNavigatePhoto(direction) {
+            if (!usbPhotoViewerOpen || !usbPhotoList.length) return;
+            if (direction === 'next') {
+                usbPhotoIndex = (usbPhotoIndex + 1) % usbPhotoList.length;
+            } else {
+                usbPhotoIndex = (usbPhotoIndex - 1 + usbPhotoList.length) % usbPhotoList.length;
+            }
+            usbRenderPhoto();
+        }
+
+        function usbClosePhotoViewer() {
+            usbPhotoViewerOpen = false;
+            document.getElementById('usbPhotoViewer').classList.add('hidden');
+            document.getElementById('photoViewerImg').src = '';
+            usbPhotoList = [];
         }
 
         function usbNewFile() {
-            const name = prompt('Enter file name:');
-            if (!name || name.trim() === '') return;
-            const filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
-            usbWriteFile(filePath, '');
-            usbRenderBrowser();
-            showToast('File created: ' + name.trim(), '<i class="fa-solid fa-file-circle-plus"></i>', 'success');
+            showTVPrompt('New File', 'Enter file name:').then(function(name) {
+                if (!name || name.trim() === '') return;
+                var filePath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
+                usbWriteFile(filePath, '');
+                usbRenderBrowser();
+                showToast('File created: ' + name.trim(), '<i class="fa-solid fa-file-circle-plus"></i>', 'success');
+            });
         }
 
         function usbNewFolder() {
-            const name = prompt('Enter folder name:');
-            if (!name || name.trim() === '') return;
-            const dirPath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
-            usbMkdir(dirPath);
-            usbRenderBrowser();
-            showToast('Folder created: ' + name.trim(), '<i class="fa-solid fa-folder-plus"></i>', 'success');
+            showTVPrompt('New Folder', 'Enter folder name:').then(function(name) {
+                if (!name || name.trim() === '') return;
+                var dirPath = (usbFileBrowserPath === '/' ? '/' : usbFileBrowserPath + '/') + name.trim();
+                usbMkdir(dirPath);
+                usbRenderBrowser();
+                showToast('Folder created: ' + name.trim(), '<i class="fa-solid fa-folder-plus"></i>', 'success');
+            });
+        }
+
+        function usbResetToDefaults() {
+            showTVConfirm('Reset USB', 'Reset USB to its original profile content? Any edits will be lost.').then(function(confirmed) {
+                if (!confirmed) return;
+                const currentLabel = virtualUSB.label;
+                const profile = usbProfiles.find(function(p) { return p.label === currentLabel; });
+                if (profile) {
+                    virtualUSB.files = {};
+                    Object.keys(profile.files).forEach(function(key) {
+                        virtualUSB.files[key] = profile.files[key];
+                    });
+                } else {
+                    virtualUSB.files = usbGetDefaultData();
+                }
+                usbSaveState();
+                usbRenderBrowser();
+                showToast('USB reset to defaults: ' + currentLabel, '<i class="fa-solid fa-rotate-left"></i>', 'info');
+            });
         }
 
         function usbCheckFirmwareFile() {
@@ -2616,7 +3385,7 @@
         let usbProfileDropdownOpen = false;
 
         function usbFetchProfiles() {
-            const profileNames = ['normal', 'empty', 'corrupted', 'multi-firmware'];
+            const profileNames = ['normal', 'empty', 'corrupted', 'multi-firmware', 'music', 'vacation', 'older-firmware', 'wii-saves'];
             const base = VERCEL_URL + '/usb-images/';
             usbProfiles = [];
             profileNames.forEach(name => {
@@ -2780,15 +3549,41 @@
             showUpdateOverlay(version);
         }
 
-        // ========== AAJTAK :55 EXHALE WINDOW ==========
+        // ========== AAJTAK EXHALE WINDOW (customizable schedule) ==========
         let exhaleTimerActive = false;
         let exhaleInterval = null;
+        var exhaleMode = localStorage.getItem('samsung_exhale_mode') || 'hourly';
+        var exhaleDailyTime = parseInt(localStorage.getItem('samsung_exhale_daily_time') || '21', 10);
+        var lastDailyExhaleDate = localStorage.getItem('samsung_last_daily_exhale') || '';
+        var lastExhaleMinute = -1;
+
+        function shouldTriggerExhale() {
+            var now = new Date();
+            if (exhaleMode === 'off') return false;
+            if (exhaleMode === 'hourly') {
+                return now.getMinutes() === 55 && now.getSeconds() < 5;
+            }
+            if (exhaleMode === 'daily') {
+                var today = now.toISOString().split('T')[0];
+                if (now.getHours() === exhaleDailyTime && now.getMinutes() === 0 && now.getSeconds() < 5 && lastDailyExhaleDate !== today) {
+                    lastDailyExhaleDate = today;
+                    localStorage.setItem('samsung_last_daily_exhale', today);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function setExhaleMode(mode) {
+            exhaleMode = mode;
+            localStorage.setItem('samsung_exhale_mode', mode);
+            showToast('AajTak Exhale: ' + (mode === 'off' ? 'OFF' : mode === 'hourly' ? 'Every Hour' : 'Daily at ' + exhaleDailyTime + ':00'), '🌬️', 'info');
+        }
 
         function startExhaleTimer() {
             if (exhaleInterval) return;
             exhaleInterval = setInterval(() => {
-                const now = new Date();
-                if (now.getMinutes() === 55 && now.getSeconds() < 5) {
+                if (shouldTriggerExhale()) {
                     if (!exhaleTimerActive && powerState === 'active') {
                         exhaleTimerActive = true;
                         showExhaleOverlay();
@@ -2825,6 +3620,52 @@
             if (el) {
                 el.classList.add('hidden');
                 el.style.display = 'none';
+            }
+        }
+
+        // ========== EPG (Electronic Program Guide) ==========
+        var EPG_DATA = [
+            { time: '10:00 AM', channel: '124', showName: 'AajTak \u2014 Aaj Subah' },
+            { time: '11:00 AM', channel: '131', showName: 'AajTak \u2014 Ek aur Ek Gyarah' },
+            { time: '05:00 PM', channel: '136', showName: 'AajTak \u2014 Dangal' },
+            { time: '06:00 PM', channel: '126', showName: 'AajTak \u2014 Halla Bol' },
+            { time: '06:30 PM', channel: '128', showName: 'AajTak \u2014 Halla Bol (Evening)' },
+            { time: '07:00 PM', channel: '137', showName: 'AajTak \u2014 Desh Tak' },
+            { time: '08:30 PM', channel: '123', showName: 'AajTak \u2014 Special Report' },
+            { time: '09:00 PM', channel: '133', showName: 'AajTak \u2014 Khabardar' },
+            { time: '09:30 PM', channel: '127', showName: 'AajTak \u2014 Black and White' },
+            { time: '10:00 PM', channel: '127', showName: 'AajTak \u2014 Das Tak' }
+        ];
+
+        function renderEPG() {
+            var tbody = document.getElementById('epgRows');
+            if (!tbody) return;
+            tbody.innerHTML = EPG_DATA.map(function(row) {
+                return '<tr class="border-b border-zinc-800 hover:bg-zinc-800/50">' +
+                  '<td class="py-1 text-amber-400">' + row.time + '</td>' +
+                  '<td class="py-1 text-zinc-300">Ch ' + row.channel + '</td>' +
+                  '<td class="py-1 text-white">' + row.showName + '</td>' +
+                '</tr>';
+            }).join('');
+            var dateEl = document.getElementById('epgDateNow');
+            if (dateEl) dateEl.textContent = new Date().toLocaleString('en-IN');
+        }
+
+        function openEPG() {
+            renderEPG();
+            var overlay = document.getElementById('epgOverlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.style.display = '';
+            }
+            if (tvSynth && tvSynth.playFMNote) tvSynth.playFMNote(660, 0.15, 0.2);
+        }
+
+        function closeEPG() {
+            var overlay = document.getElementById('epgOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
             }
         }
 
@@ -3180,6 +4021,8 @@
 
         document.getElementById('closeSoundTestBtn').addEventListener('click', stopSoundTest);
 
+        document.getElementById('aboutTVCloseBtn').addEventListener('click', closeAboutTV);
+
         document.getElementById('upToDateOkBtn').addEventListener('click', hideUpToDateOverlay);
 
         document.getElementById('updateMethodBackBtn').addEventListener('click', closeUpdateMethodMenu);
@@ -3377,20 +4220,28 @@
             const backlight = pic[1].current;
             const contrast = pic[2].current;
             const brightness = pic[3].current;
+            const color = pic[4] ? pic[4].current : 50;
             const blEl = document.getElementById('pictureBacklight');
             const brEl = document.getElementById('pictureBrightness');
             if (blEl) blEl.style.opacity = backlight / 20;
             if (brEl) brEl.style.opacity = 1 - (brightness / 100);
-            const saturateVal = (contrast / 100) * 1.5;
-            const screenArea = document.querySelector('.aspect-video');
-            if (screenArea) {
-                const existing = screenArea.style.filter || '';
-                if (existing.includes('saturate')) {
-                    screenArea.style.filter = existing.replace(/saturate\([^)]+\)/, `saturate(${saturateVal})`);
-                } else {
-                    screenArea.style.filter = `saturate(${saturateVal})`;
-                }
-            }
+            currentBrightnessFilter = 0.5 + (brightness / 100);
+            currentContrastFilter = 0.5 + (contrast / 100);
+            currentColorFilter = color / 50;
+            applyPictureCombinedFilters();
+            localStorage.setItem('samsung_picture_brightness', brightness);
+            localStorage.setItem('samsung_picture_contrast', contrast);
+            localStorage.setItem('samsung_picture_color', color);
+        }
+        function applyPictureCombinedFilters() {
+            var userBrightness = currentBrightnessFilter || 1;
+            var finalBrightness = userBrightness * (currentEnergyMultiplier || 1);
+            var saturate = currentColorFilter || 1;
+            var contrast = currentContrastFilter || 1;
+            var filterVal = 'brightness(' + finalBrightness + ') saturate(' + saturate + ') contrast(' + contrast + ')';
+            document.querySelectorAll('video').forEach(function(v) {
+                v.style.filter = filterVal;
+            });
         }
 
         // --- SOUND MODE EQ FILTER ---
@@ -3440,34 +4291,191 @@
             }
         }
 
-        // --- ENERGY SAVING AUTO-DIMMING ---
+        // --- ENERGY SAVING SYSTEM (v1.0.26) ---
+        var ENERGY_MULTIPLIERS = {
+            'off': 1.00,
+            'low': 0.90,
+            'medium': 0.75,
+            'high': 0.55,
+            'auto': null
+        };
+        function applyEnergySaving(mode) {
+            var multiplier = ENERGY_MULTIPLIERS[mode];
+            if (mode === 'auto') {
+                var hour = new Date().getHours();
+                multiplier = (hour >= 18 || hour < 6) ? 0.65 : 0.95;
+            }
+            currentEnergyMultiplier = multiplier;
+            applyPictureCombinedFilters();
+            var indicator = document.getElementById('energySavingIndicator');
+            if (!indicator) indicator = createEnergyIndicator();
+            if (mode === 'off' || !mode) {
+                indicator.style.display = 'none';
+            } else {
+                indicator.style.display = 'flex';
+                indicator.textContent = '\uD83C\uDF31 Energy: ' + mode.toUpperCase();
+            }
+            localStorage.setItem('samsung_energy_mode', mode);
+        }
         function setupEnergySaving() {
-            if (energySavingInterval) clearInterval(energySavingInterval);
-            lastInteractionTime = Date.now();
-            energySavingInterval = setInterval(() => {
-                const es = menuConfig[3].options[1].current;
-                if (es === 0) {
-                    document.getElementById('energyOverlay').style.opacity = '0';
-                    energySavingActive = false;
-                    return;
-                }
-                const elapsed = Date.now() - lastInteractionTime;
-                if (elapsed > 60000) {
-                    energySavingActive = true;
-                    const levels = [0, 0.2, 0.4, 0.6];
-                    document.getElementById('energyOverlay').style.opacity = levels[es];
-                } else {
-                    energySavingActive = false;
-                    document.getElementById('energyOverlay').style.opacity = '0';
-                }
-            }, 10000);
+            var savedMode = localStorage.getItem('samsung_energy_mode');
+            if (!savedMode) savedMode = 'off';
+            var picOpts = menuConfig[0].options;
+            var esOpt = picOpts[picOpts.length - 1];
+            if (esOpt && esOpt.name === 'Energy Saving') {
+                var idx = esOpt.values.map(function(v) { return v.toLowerCase(); }).indexOf(savedMode);
+                if (idx >= 0) esOpt.current = idx;
+            }
+            applyEnergySaving(savedMode);
         }
         function resetEnergySaving() {
-            lastInteractionTime = Date.now();
-            if (energySavingActive) {
-                energySavingActive = false;
-                document.getElementById('energyOverlay').style.opacity = '0';
+            // no-op: repurposed for v1.0.26, handled by applyEnergySaving
+        }
+        function createEnergyIndicator() {
+            var ind = document.createElement('div');
+            ind.id = 'energySavingIndicator';
+            ind.style.cssText = 'position: fixed; top: 12px; right: 12px; background: rgba(34, 197, 94, 0.85); color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 60; display: none;';
+            document.body.appendChild(ind);
+            return ind;
+        }
+
+        // --- PICTURE-IN-PICTURE (PiP) ---
+        let pipState = 'off';
+        var PIP_SIZES = ['off', 'small', 'medium', 'large'];
+        var PIP_DIMS = { small: { w: 180, h: 120 }, medium: { w: 280, h: 190 }, large: { w: 400, h: 270 } };
+
+        function createPiPOverlay() {
+            var el = document.createElement('div');
+            el.id = 'pipOverlay';
+            el.style.cssText = 'position:fixed; bottom:80px; right:20px; z-index:55; border:2px solid rgba(34,211,238,0.6); border-radius:8px; overflow:hidden; display:none; box-shadow:0 4px 20px rgba(0,0,0,0.6); cursor:pointer;';
+            el.innerHTML = '<video id="pipVideo" autoplay muted loop style="display:block;object-fit:contain;background:#000;"></video><div style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.7);color:#22d3ee;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:bold;font-family:monospace;">PiP</div>';
+            el.addEventListener('click', function() { cyclePiP(); });
+            document.body.appendChild(el);
+            return el;
+        }
+
+        function cyclePiP() {
+            var idx = PIP_SIZES.indexOf(pipState);
+            idx = (idx + 1) % PIP_SIZES.length;
+            pipState = PIP_SIZES[idx];
+            applyPiP();
+        }
+
+        function applyPiP() {
+            var el = document.getElementById('pipOverlay');
+            if (!el) el = createPiPOverlay();
+            var video = document.getElementById('pipVideo');
+            if (!video) return;
+            if (pipState === 'off') {
+                el.style.display = 'none';
+                video.pause();
+                video.src = '';
+                localStorage.setItem('samsung_pip_state', 'off');
+                return;
             }
+            var dims = PIP_DIMS[pipState];
+            el.style.width = dims.w + 'px';
+            el.style.height = dims.h + 'px';
+            el.style.display = 'block';
+            // Mirror the active video source
+            var activeVideo = document.querySelector('#dishVideo, #wiiVideo, #appleVideo, #ps3Video, #tvVideo:not(.hidden)');
+            if (activeVideo && activeVideo.src) {
+                if (video.src !== activeVideo.src) {
+                    video.src = activeVideo.src;
+                    video.play().catch(function(){});
+                }
+            } else {
+                video.src = '';
+            }
+            localStorage.setItem('samsung_pip_state', pipState);
+        }
+
+        function restorePiP() {
+            var saved = localStorage.getItem('samsung_pip_state');
+            if (saved && saved !== 'off') {
+                pipState = saved;
+                applyPiP();
+            }
+        }
+
+        // --- SLEEP TIMER ---
+        var sleepTimerMinutes = parseInt(localStorage.getItem('samsung_sleep_timer') || '0');
+        var sleepTimerInterval = null;
+
+        function openSleepTimerSettings() {
+            closeMenu();
+            var dialog = document.getElementById('tvDialog');
+            var title = document.getElementById('tvDialogTitle');
+            var msg = document.getElementById('tvDialogMessage');
+            var btnContainer = document.getElementById('tvDialogButtons');
+            var input = document.getElementById('tvDialogInput');
+            if (!dialog || !title || !msg || !btnContainer) return;
+            if (input) input.style.display = 'none';
+            title.innerText = 'Sleep Timer';
+            var options = ['Off', '30 min', '60 min', '90 min', '120 min'];
+            var values = [0, 30, 60, 90, 120];
+            var currentVal = sleepTimerMinutes;
+            var currentIdx = values.indexOf(currentVal);
+            if (currentIdx < 0) currentIdx = 0;
+            msg.innerHTML = '<div style="text-align:center;">' + options.map(function(o, i) {
+                return '<div class="sleep-timer-option' + (i === currentIdx ? ' samsung-osd-highlight' : '') + '" data-idx="' + i + '" style="padding:6px 12px;cursor:pointer;border-radius:4px;margin:2px 0;">' + o + '</div>';
+            }).join('') + '<\/div><div style="font-size:10px;color:#94a3b8;margin-top:8px;">TV will turn off automatically after selected time.</div>';
+            btnContainer.innerHTML = '<button id="tvDialogCancelBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-2 rounded text-[10px] uppercase tracking-wider">Close</button>';
+            dialog.classList.remove('hidden');
+            dialog.style.display = 'flex';
+            tvDialogResolve = function() {
+                dialog.classList.add('hidden');
+                dialog.style.display = 'none';
+            };
+            document.getElementById('tvDialogCancelBtn').onclick = function() {
+                tvDialogResolve = null;
+                dialog.classList.add('hidden');
+                dialog.style.display = 'none';
+            };
+            msg.querySelectorAll('.sleep-timer-option').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    var idx = parseInt(el.dataset.idx);
+                    var val = values[idx];
+                    sleepTimerMinutes = val;
+                    localStorage.setItem('samsung_sleep_timer', String(val));
+                    setupSleepTimer();
+                    dialog.classList.add('hidden');
+                    dialog.style.display = 'none';
+                    showToast('Sleep Timer: ' + options[idx], '<i class="fa-regular fa-clock"></i>', 'info');
+                });
+            });
+        }
+
+        function setupSleepTimer() {
+            if (sleepTimerInterval) {
+                clearInterval(sleepTimerInterval);
+                sleepTimerInterval = null;
+            }
+            var indicator = document.getElementById('sleepTimerIndicator');
+            if (indicator) { indicator.remove(); }
+            if (sleepTimerMinutes <= 0) return;
+            var remaining = sleepTimerMinutes * 60;
+            var indicatorEl = document.createElement('div');
+            indicatorEl.id = 'sleepTimerIndicator';
+            indicatorEl.style.cssText = 'position:fixed;bottom:12px;right:12px;background:rgba(30,41,59,0.9);color:#fbbf24;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:bold;z-index:60;border:1px solid rgba(251,191,36,0.3);font-family:monospace;';
+            document.body.appendChild(indicatorEl);
+            function updateIndicator() {
+                if (remaining <= 0) {
+                    if (indicatorEl.parentNode) indicatorEl.remove();
+                    togglePower();
+                    return;
+                }
+                var m = Math.floor(remaining / 60);
+                var s = remaining % 60;
+                indicatorEl.textContent = '\u23F1 Sleep: ' + m + ':' + (s < 10 ? '0' : '') + s;
+                remaining--;
+            }
+            updateIndicator();
+            sleepTimerInterval = setInterval(updateIndicator, 1000);
+        }
+
+        function restoreSleepTimer() {
+            if (sleepTimerMinutes > 0) setupSleepTimer();
         }
 
         // --- HDMI-CEC SIMULATION ---
@@ -3966,11 +4974,18 @@
             usbRenderBrowser();
         });
         addSafeListener('usbBrowserCloseBtn', 'click', usbCloseBrowser);
+        addSafeListener('usbResetBtn', 'click', usbResetToDefaults);
 
         // USB File Edit buttons
         addSafeListener('usbEditSaveBtn', 'click', usbSaveEditedFile);
         addSafeListener('usbEditCancelBtn', 'click', usbCloseFileEditor);
         addSafeListener('usbEditDeleteBtn', 'click', usbDeleteEditedFile);
+
+        // USB Media Player & Photo Viewer
+        addSafeListener('mediaPlayerClose', 'click', usbCloseMediaPlayer);
+        addSafeListener('photoViewerClose', 'click', usbClosePhotoViewer);
+        addSafeListener('photoViewerPrev', 'click', function() { usbNavigatePhoto('prev'); });
+        addSafeListener('photoViewerNext', 'click', function() { usbNavigatePhoto('next'); });
 
         // Click delegation on usbBrowserList
         document.getElementById('usbBrowserList')?.addEventListener('click', (e) => {
@@ -3987,6 +5002,9 @@
         // Broadcast notification buttons
         addSafeListener('broadcastInstallBtn', 'click', installBroadcastUpdate);
         addSafeListener('broadcastLaterBtn', 'click', dismissBroadcastUpdate);
+
+        // EPG close
+        addSafeListener('epgCloseBtn', 'click', closeEPG);
 
         // Conflict picker buttons
         addSafeListener('conflictCancelBtn', 'click', () => {
@@ -4064,11 +5082,26 @@
                 toggleShortcutOverlay();
                 return;
             }
+            if (e.key && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
+                var tag = (e.target && e.target.tagName) || '';
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !(e.target && e.target.isContentEditable)) {
+                    e.preventDefault();
+                    var epg = document.getElementById('epgOverlay');
+                    if (epg && !epg.classList.contains('hidden')) {
+                        closeEPG();
+                    } else {
+                        openEPG();
+                    }
+                    return;
+                }
+            }
 
             switch(e.key) {
                 case 'ArrowUp':
                     e.preventDefault();
-                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        navigateCCSettings('up');
+                    } else if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
                         conflictNavigate('up');
                     } else if (updateMethodMenuOpen) navigateUpdateMethod("up");
                     else if (sourceMenuOpen) sourceSelectUp();
@@ -4078,7 +5111,9 @@
                     break;
                 case 'ArrowDown':
                     e.preventDefault();
-                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        navigateCCSettings('down');
+                    } else if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
                         conflictNavigate('down');
                     } else if (updateMethodMenuOpen) navigateUpdateMethod("down");
                     else if (sourceMenuOpen) sourceSelectDown();
@@ -4088,7 +5123,11 @@
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    if (updateMethodMenuOpen) activateUpdateMethod();
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        navigateCCSettings('right');
+                    } else if (usbPhotoViewerOpen) usbNavigatePhoto('next');
+                    else if (pictureTestOpen) cyclePictureTest('next');
+                    else if (updateMethodMenuOpen) activateUpdateMethod();
                     else if (menuOpen) navigateRightOrEnter();
                     else if (activeInputSource === 1) wiiNavigate("right");
                     else if (activeInputSource === 3) ps3Navigate("right");
@@ -4096,7 +5135,11 @@
                     break;
                 case 'ArrowLeft':
                     e.preventDefault();
-                    if (updateMethodMenuOpen) closeUpdateMethodMenu();
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        navigateCCSettings('left');
+                    } else if (usbPhotoViewerOpen) usbNavigatePhoto('prev');
+                    else if (pictureTestOpen) cyclePictureTest('prev');
+                    else if (updateMethodMenuOpen) closeUpdateMethodMenu();
                     else if (menuOpen) navigateLeftAdjustment();
                     else if (activeInputSource === 1) wiiNavigate("left");
                     else if (activeInputSource === 3) ps3Navigate("left");
@@ -4104,7 +5147,9 @@
                     break;
                 case 'Enter':
                     e.preventDefault();
-                    if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        navigateCCSettings('enter');
+                    } else if (!document.getElementById('screenConflictPicker').classList.contains('hidden')) {
                         conflictActivate();
                     } else if (updateMethodMenuOpen) activateUpdateMethod();
                     else if (sourceMenuOpen) sourceSelectConfirm();
@@ -4117,12 +5162,20 @@
                 case 'Escape':
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
                     e.preventDefault();
-                    if (document.getElementById('screenConflictPicker') && !document.getElementById('screenConflictPicker').classList.contains('hidden')) {
+                    if (document.getElementById('ccSettingsOverlay') && !document.getElementById('ccSettingsOverlay').classList.contains('hidden')) {
+                        closeCCSettings();
+                    } else if (usbMediaPlayerOpen) usbCloseMediaPlayer();
+                    else if (usbPhotoViewerOpen) usbClosePhotoViewer();
+                    else if (pictureTestOpen) closePictureTest();
+                    else if (aboutTVOpen) closeAboutTV();
+                    else if (document.getElementById('epgOverlay') && !document.getElementById('epgOverlay').classList.contains('hidden')) closeEPG();
+                    else if (document.getElementById('screenConflictPicker') && !document.getElementById('screenConflictPicker').classList.contains('hidden')) {
                         hideConflictPicker();
                         clearAllPendingUpdates();
                     } else if (updateMethodMenuOpen) closeUpdateMethodMenu();
                     else if (sourceMenuOpen) closeSourceMenu();
                     else if (menuOpen) navigateLeftOrReturn();
+                    else if (tvDialogResolve) closeTVDialog();
                     else if (activeInputSource === 1 && wiiDialogOpen) closeWiiDialog();
                     break;
 
@@ -4136,6 +5189,11 @@
                     if (usbFileBrowserOpen) { usbCloseBrowser(); }
                     if (updateMethodMenuOpen) { closeUpdateMethodMenu(); }
                     if (sourceMenuOpen) { closeSourceMenu(); }
+                    if (aboutTVOpen) { closeAboutTV(); }
+                    if (pictureTestOpen) { closePictureTest(); }
+                    if (tvDialogResolve) { closeTVDialog(); }
+                    if (usbMediaPlayerOpen) { usbCloseMediaPlayer(); }
+                    if (usbPhotoViewerOpen) { usbClosePhotoViewer(); }
                     document.getElementById('broadcastReadyOverlay').style.display = 'none';
                     document.getElementById('soundTestModal').classList.add('hidden');
                     document.getElementById('shortcutOverlay').classList.add('hidden');
@@ -4153,7 +5211,11 @@
                 case 'p':
                 case 'P':
                     e.preventDefault();
-                    togglePower();
+                    if (e.altKey) {
+                        cyclePiP();
+                    } else {
+                        togglePower();
+                    }
                     break;
                 case '0':
                     e.preventDefault();
@@ -4167,8 +5229,119 @@
                 case '_':
                     adjustVolume(-5);
                     break;
+                case 'b':
+                case 'B':
+                    e.preventDefault();
+                    if (activeInputSource === 4) {
+                        cycleSubtitleMode();
+                    }
+                    break;
             }
         });
+
+        // ── 6.1 — Retail Demo Mode ─────────────────────────────────
+        function toggleDemoMode() {
+            const enabled = localStorage.getItem('samsung_demo_mode') !== 'true';
+            localStorage.setItem('samsung_demo_mode', enabled ? 'true' : 'false');
+            if (enabled) {
+                startDemoMode();
+                showToast('Retail Demo Mode: ON', '<i class="fa-solid fa-tv"></i>', 'info');
+            } else {
+                stopDemoMode();
+                showToast('Retail Demo Mode: OFF', '<i class="fa-solid fa-tv"></i>', 'info');
+            }
+        }
+        function switchInputSource(idx) {
+            if (idx === activeInputSource) return;
+            var oldSource = activeInputSource;
+            // Save channel memory for the source we're leaving
+            if (oldSource === 4) {
+                try {
+                    var mem = JSON.parse(localStorage.getItem('samsung_channel_memory') || '{}');
+                    mem['src_' + oldSource] = dishChannel;
+                    localStorage.setItem('samsung_channel_memory', JSON.stringify(mem));
+                } catch(e) {}
+            }
+            activeInputSource = idx;
+            // Restore channel memory for the source we're entering
+            if (idx === 4) {
+                try {
+                    var mem = JSON.parse(localStorage.getItem('samsung_channel_memory') || '{}');
+                    var savedChannel = mem['src_4'];
+                    if (savedChannel !== undefined && savedChannel !== null && savedChannel >= 0 && savedChannel < dishChannels.length) {
+                        dishChannel = savedChannel;
+                    }
+                } catch(e) {}
+            }
+            renderActiveScreen();
+            if (typeof handleCEC === 'function') handleCEC(oldSource, activeInputSource);
+            if (typeof showToast === 'function') showToast('Input switched to: ' + (['TV/RF','AV/Component','HDMI 1 (Apple TV)','HDMI 2 (PS3)','HDMI 3 (DishTV)'][idx] || 'Source ' + idx), '<i class="fa-solid fa-circle-nodes"></i>', 'success');
+            if (typeof saveSettings === 'function') saveSettings();
+            if (idx === 4 && typeof startBroadcastScanner === 'function') startBroadcastScanner();
+            else if (typeof stopBroadcastScanner === 'function') stopBroadcastScanner();
+        }
+        function startDemoMode() {
+            stopDemoMode();
+            demoModeTimer = setInterval(function() {
+                demoInputIdx = (demoInputIdx + 1) % DEMO_INPUTS.length;
+                switchInputSource(DEMO_INPUTS[demoInputIdx]);
+                showFloatingDemoBanner();
+            }, 30000);
+        }
+        function stopDemoMode() {
+            if (demoModeTimer) { clearInterval(demoModeTimer); demoModeTimer = null; }
+        }
+        function showFloatingDemoBanner() {
+            var banner = document.createElement('div');
+            banner.style.cssText = 'position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(245, 158, 11, 0.9); color: black; padding: 8px 16px; border-radius: 4px; font-weight: bold; font-size: 11px; z-index: 80; animation: fade-in-out 4s; pointer-events: none;';
+            banner.textContent = 'Samsung BN59 — Smart 1080p LCD — On Display';
+            document.body.appendChild(banner);
+            setTimeout(function() { banner.remove(); }, 4000);
+        }
+
+        // ── 6.2 — Channel logos / bugs overlay ──────────────────────
+        function updateChannelBug() {
+            var bug = document.getElementById('channelBug');
+            if (!bug) return;
+            var channelName = (dishChannels[dishChannel] && dishChannels[dishChannel].name) || '';
+            if (channelName.indexOf('AajTak') !== -1) {
+                bug.innerHTML = '<div style="background:linear-gradient(135deg,#DC2626,#EAB308);padding:6px 12px;border-radius:4px;color:white;font-weight:900;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,0.5);">AAJ TAK</div>';
+            } else if (channelName.indexOf('NDTV') !== -1) {
+                bug.innerHTML = '<div style="background:#DC2626;padding:6px 12px;border-radius:4px;color:white;font-weight:900;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,0.5);">NDTV INDIA</div>';
+            } else {
+                bug.innerHTML = '';
+            }
+        }
+
+        // ── 6.3 — Blue button (SAP/language toggle) wiring ──────────
+        function cycleSubtitleMode() {
+            var modes = ['off', 'english', 'hindi'];
+            var currentIdx = modes.indexOf(subtitleMode);
+            subtitleMode = modes[(currentIdx + 1) % modes.length];
+            localStorage.setItem('samsung_subtitle_mode', subtitleMode);
+            updateSubtitleOverlay();
+            var labels = { off: 'Subtitles OFF', english: 'Subtitles: English', hindi: 'Subtitles: हिंदी' };
+            showToast(labels[subtitleMode] || subtitleMode, '<i class="fa-solid fa-closed-captioning"></i>', 'info');
+        }
+        function updateSubtitleOverlay() {
+            var overlay = document.getElementById('subtitleOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'subtitleOverlay';
+                overlay.style.cssText = 'position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; color: white; background: rgba(0,0,0,0.7); padding: 4px 12px; font-size: 14px; z-index: 25; pointer-events: none;';
+                var dishInput = document.getElementById('inputDishTV');
+                if (dishInput) dishInput.appendChild(overlay);
+            }
+            if (subtitleMode === 'off') {
+                overlay.style.display = 'none';
+            } else if (subtitleMode === 'english') {
+                overlay.style.display = 'block';
+                overlay.textContent = '[English subtitles enabled — auto-translation]';
+            } else {
+                overlay.style.display = 'block';
+                overlay.textContent = '[हिंदी उपशीर्षक सक्षम]';
+            }
+        }
 
 
         /* Initial TV Settings configuration setup */
@@ -4197,7 +5370,6 @@
                 }
             } catch(e) {}
             applyWatermarkVisibility();
-            document.getElementById('dishChannelInfo').innerText = dishChannels[dishChannel].name;
             const fill = document.getElementById('volumeBarFill');
             const text = document.getElementById('volumeValText');
             fill.style.height = `${volume}%`;
@@ -4228,12 +5400,22 @@
             usbRenderProfileButton();
             // Start the AajTak :55 exhale timer
             startExhaleTimer();
+            // Restore energy saving mode
+            setupEnergySaving();
 
+            // Phase 6 — Retail Demo Mode auto-start
+            if (localStorage.getItem('samsung_demo_mode') === 'true') {
+                startDemoMode();
+            }
+            // Phase 6 — Subtitle overlay init
+            subtitleMode = localStorage.getItem('samsung_subtitle_mode') || 'off';
+            updateSubtitleOverlay();
+            // Phase 6 — Channel bug init
+            updateChannelBug();
 
         };
 
     </script>
-    <!-- AI Channel Picker (RAG) v1.0.24 -->
-    <script src="ai-picker.js" defer></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a043edfcab60518f',t:'MTc4MDIwOTAyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <!-- AI Channel Picker (RAG) v1.0.25.0 -->
+    <script src="ai-picker.js" defer></script></body>
 </html>
