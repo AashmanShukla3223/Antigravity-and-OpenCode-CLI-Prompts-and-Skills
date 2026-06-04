@@ -536,7 +536,7 @@ export const SystemSettings: React.FC = () => {
             {currentTab === 'Wallpaper' && (
               <div className="flex flex-col h-full">
                 <h2 className="text-2xl font-semibold mb-6">Wallpaper</h2>
-                <div className="grid grid-cols-2 gap-6 pb-8">
+                <div className="grid grid-cols-3 gap-6 pb-8">
                   <div 
                     className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/tahoe-light.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
                     onClick={() => updateSystemState({ wallpaperUrl: '/wallpapers/tahoe-light.png', wallpaperType: 'image' })}
@@ -550,6 +550,21 @@ export const SystemSettings: React.FC = () => {
                   >
                     <img src="/wallpapers/tahoe-dark.png" alt="Tahoe Dark" className="w-full aspect-video object-cover" />
                     <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Tahoe Dark</div>
+                  </div>
+                  <div 
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla%20Bol.mp4' ? 'border-blue-500 scale-[1.02]' : systemState.dynamicWallpaperEnabled ? 'border-white/10 hover:border-white/30' : 'border-white/5 opacity-40'}`}
+                    onClick={() => {
+                      if (systemState.dynamicWallpaperEnabled) {
+                        updateSystemState({ wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla%20Bol.mp4', wallpaperType: 'video' });
+                      }
+                    }}
+                  >
+                    <video 
+                      src="https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla%20Bol.mp4" 
+                      autoPlay muted loop playsInline
+                      className={`w-full aspect-video object-cover ${systemState.dynamicWallpaperEnabled ? '' : 'grayscale blur-sm'}`}
+                    />
+                    <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Halla Bol</div>
                   </div>
                 </div>
 
