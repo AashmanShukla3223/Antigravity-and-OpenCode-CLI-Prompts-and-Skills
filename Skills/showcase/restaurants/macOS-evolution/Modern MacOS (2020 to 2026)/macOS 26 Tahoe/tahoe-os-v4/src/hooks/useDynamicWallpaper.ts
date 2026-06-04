@@ -3,23 +3,13 @@ import { useSystem } from '../contexts/SystemContext';
 
 type TahoeStage = 'Dawn' | 'Day' | 'Dusk' | 'Night';
 
+const HALA_BOL = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla%20Bol.mp4';
+
 const STAGE_WALLPAPERS: Record<TahoeStage, { url: string; type: 'image' | 'video' }> = {
-  Dawn: { 
-    url: '/wallpapers/tahoe-light.png', 
-    type: 'image' 
-  },
-  Day: { 
-    url: '/wallpapers/tahoe-light.png', 
-    type: 'image' 
-  },
-  Dusk: { 
-    url: '/wallpapers/tahoe-dark.png', 
-    type: 'image' 
-  },
-  Night: { 
-    url: '/wallpapers/tahoe-dark.png', 
-    type: 'image' 
-  }
+  Dawn: { url: HALA_BOL, type: 'video' },
+  Day: { url: HALA_BOL, type: 'video' },
+  Dusk: { url: HALA_BOL, type: 'video' },
+  Night: { url: HALA_BOL, type: 'video' }
 };
 
 const calculateTahoeStage = (): TahoeStage => {
