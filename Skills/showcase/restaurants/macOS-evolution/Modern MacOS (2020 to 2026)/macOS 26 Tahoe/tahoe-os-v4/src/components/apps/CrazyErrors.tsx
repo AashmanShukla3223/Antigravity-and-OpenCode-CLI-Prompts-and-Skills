@@ -17,7 +17,14 @@ export const CrazyErrors: React.FC = () => {
   };
 
   useEffect(() => {
-    playSound('Blow');
+    const bgMusic = new Audio(`${base}music/LUZ ROJA - Sped Up - bxkq.mp3`);
+    bgMusic.loop = true;
+    bgMusic.volume = 0.4;
+    bgMusic.play().catch(() => {});
+    return () => {
+      bgMusic.pause();
+      bgMusic.src = '';
+    };
   }, []);
 
   const handleStage1Confirm = () => {
