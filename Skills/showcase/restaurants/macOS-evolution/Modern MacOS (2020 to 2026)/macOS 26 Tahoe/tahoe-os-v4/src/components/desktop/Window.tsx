@@ -93,6 +93,10 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [windowState, setWindowState] = useState<WindowState>('normal');
+  const [size, setSize] = useState({ width: 800, height: 500 });
+  const [position] = useState({ top: 80, left: 80 });
+  const resizing = useRef<'right' | 'bottom' | 'corner' | null>(null);
+  const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   const isActive = activeApp === appId;
   const isMinimized = minimizedApps.includes(appId);
@@ -141,6 +145,25 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
 
   const dragElastic = Math.max(0.1, 0.5 - (telemetry.cpuPressure * 0.4));
+
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!resizing.current) return;
+      const dx = e.clientX - resizeStart.current.x;
+      const dy = e.clientY - resizeStart.current.y;
+      setSize({
+        width: Math.max(400, resizeStart.current.w + (resizing.current === 'right' || resizing.current === 'corner' ? dx : 0)),
+        height: Math.max(300, resizeStart.current.h + (resizing.current === 'bottom' || resizing.current === 'corner' ? dy : 0)),
+      });
+    };
+    const onMouseUp = () => { resizing.current = null; };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
 
   const handleGreenDot = useCallback(() => {
     setWindowState(prev => {
@@ -193,10 +216,10 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       scaleY: 1,
       scale: 1,
       y: 0,
-      width: isFullscreen ? '100vw' : isMaximized ? '100vw' : '800px',
-      height: isFullscreen ? '100vh' : isMaximized ? 'calc(100vh - 30px)' : '500px',
-      top: isFullscreen ? 0 : isMaximized ? '30px' : '80px',
-      left: isFullscreen ? 0 : isMaximized ? 0 : '80px',
+      width: isFullscreen ? '100vw' : isMaximized ? '100vw' : size.width,
+      height: isFullscreen ? '100vh' : isMaximized ? 'calc(100vh - 30px)' : size.height,
+      top: isFullscreen ? 0 : isMaximized ? '30px' : position.top,
+      left: isFullscreen ? 0 : isMaximized ? 0 : position.left,
       borderRadius: isFullscreen ? 0 : isMaximized ? 0 : '1rem',
       filter: "blur(0px) saturate(100%) brightness(1)",
       transition: {
@@ -306,6 +329,35 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       <div className={`flex-1 relative z-10 overflow-hidden ${isEndurance ? 'bg-amber-950/80' : 'bg-white/5'}`}>
         {AppContent ? <AppContent /> : <AppNotFound appId={appId} />}
       </div>
+
+      {!isMaximized && !isFullscreen && (
+        <>
+          <div
+            className="absolute right-0 top-0 w-1.5 h-full cursor-ew-resize z-20 hover:bg-blue-400/30"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              resizing.current = 'right';
+              resizeStart.current = { x: e.clientX, y: e.clientY, w: size.width, h: size.height };
+            }}
+          />
+          <div
+            className="absolute bottom-0 left-0 h-1.5 w-full cursor-ns-resize z-20 hover:bg-blue-400/30"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              resizing.current = 'bottom';
+              resizeStart.current = { x: e.clientX, y: e.clientY, w: size.width, h: size.height };
+            }}
+          />
+          <div
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-20 hover:bg-blue-400/40 rounded-bl"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              resizing.current = 'corner';
+              resizeStart.current = { x: e.clientX, y: e.clientY, w: size.width, h: size.height };
+            }}
+          />
+        </>
+      )}
     </motion.div>
   );
 };
