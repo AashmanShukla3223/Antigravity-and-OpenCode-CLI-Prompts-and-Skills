@@ -444,7 +444,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Background music loop - Persistent loop
     if (!infectionMusicRef.current) {
-      infectionMusicRef.current = new Audio(`${base}music/Kala-Chashma.mp3`);
+      infectionMusicRef.current = new Audio(`${base}music/LUZ ROJA - Sped Up - bxkq.mp3`);
       infectionMusicRef.current.loop = true;
       infectionMusicRef.current.volume = 0.7;
       infectionMusicRef.current.play().catch(e => console.warn('Infection music failed', e));

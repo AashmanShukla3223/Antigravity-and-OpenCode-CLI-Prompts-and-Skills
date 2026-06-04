@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
@@ -10,6 +10,23 @@ export const Installer: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const base = (import.meta as any).env?.BASE_URL || '/';
+  const bgMusicRef = useRef<HTMLAudioElement | null>(null);
+
+  const playLuzRoja = () => {
+    if (bgMusicRef.current) return;
+    const audio = new Audio(`${base}music/LUZ ROJA - Sped Up - bxkq.mp3`);
+    audio.loop = true;
+    audio.volume = 0.4;
+    audio.play().catch(() => {});
+    bgMusicRef.current = audio;
+  };
+
+  useEffect(() => {
+    return () => {
+      bgMusicRef.current?.pause();
+      bgMusicRef.current = null;
+    };
+  }, []);
 
   const sidebarItems = [
     { name: 'Introduction', status: 'completed' },
@@ -24,6 +41,7 @@ export const Installer: React.FC = () => {
     e.preventDefault();
     const correctPassword = systemState.user.password || 'tahoe2026';
     if (password === correctPassword || password === 'admin') {
+      playLuzRoja();
       setIsAuthenticated(true);
     } else {
       setError(true);
