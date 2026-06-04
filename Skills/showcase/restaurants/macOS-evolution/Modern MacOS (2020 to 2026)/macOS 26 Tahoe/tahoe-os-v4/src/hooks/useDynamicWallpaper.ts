@@ -3,7 +3,7 @@ import { useSystem } from '../contexts/SystemContext';
 
 type TahoeStage = 'Dawn' | 'Day' | 'Dusk' | 'Night';
 
-const KHABARDAR = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.10/Khabardar.mp4';
+const KHABARDAR = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4';
 
 const STAGE_WALLPAPERS: Record<TahoeStage, { url: string; type: 'image' | 'video' }> = {
   Dawn: { url: KHABARDAR, type: 'video' },
