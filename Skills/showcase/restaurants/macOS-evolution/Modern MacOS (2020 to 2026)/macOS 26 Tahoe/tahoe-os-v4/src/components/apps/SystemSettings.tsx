@@ -552,15 +552,15 @@ export const SystemSettings: React.FC = () => {
                     <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Tahoe Dark</div>
                   </div>
                   <div 
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.10/Khabardar.mp4' ? 'border-blue-500 scale-[1.02]' : systemState.dynamicWallpaperEnabled ? 'border-white/10 hover:border-white/30' : 'border-white/5 opacity-40'}`}
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4' ? 'border-blue-500 scale-[1.02]' : systemState.dynamicWallpaperEnabled ? 'border-white/10 hover:border-white/30' : 'border-white/5 opacity-40'}`}
                     onClick={() => {
                       if (systemState.dynamicWallpaperEnabled) {
-                        updateSystemState({ wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.10/Khabardar.mp4', wallpaperType: 'video' });
+                        updateSystemState({ wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4', wallpaperType: 'video' });
                       }
                     }}
                   >
                     <video 
-                      src="https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.10/Khabardar.mp4" 
+                      src="https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4" 
                       autoPlay muted loop playsInline
                       className={`w-full aspect-video object-cover ${systemState.dynamicWallpaperEnabled ? '' : 'grayscale blur-sm'}`}
                     />
