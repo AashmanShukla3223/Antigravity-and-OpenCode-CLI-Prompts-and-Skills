@@ -79,6 +79,15 @@ export const SoundTest: React.FC = () => {
       isPremium: true,
       url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/soundtest.mp3'
     },
+    { 
+      name: 'Luz Roja', 
+      label: 'Luz Roja', 
+      desc: 'Luz Roja - Sped Up', 
+      icon: Music, 
+      color: 'bg-red-600', 
+      isPremium: true,
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.8/LUZ.ROJA.-.Sped.Up.-.bxkq.mp3'
+    },
   ];
 
   const handleUnlockSuccess = () => {
