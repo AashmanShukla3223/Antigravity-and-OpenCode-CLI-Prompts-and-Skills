@@ -88,7 +88,7 @@ const defaultState: TahoeV3State = {
   appearance: 'auto',
   sidebarMaterial: 'tinted',
   betaUpdates: false,
-  wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla%20Bol.mp4',
+  wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.9/Halla.Bol.mp4',
   wallpaperType: 'video',
   dynamicWallpaperEnabled: true,
   isCameraOn: false,
