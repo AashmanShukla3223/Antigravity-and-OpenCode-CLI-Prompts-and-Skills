@@ -57,5 +57,6 @@ export const songs: Song[] = [
   { id: '48', title: 'Kinni Kinni', artist: 'Diljit Dosanjh', url: '/music/kinni-kinni.mp3', cover: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '49', title: 'Sa Re Ke Sa Re', artist: 'Amit AB', url: '/music/saregama.mp3', cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200&h=200&auto=format&fit=crop' },
   { id: '50', title: 'the_big_adventure', artist: 'Various', url: '/music/adventure.mp3', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=200&h=200&auto=format&fit=crop' },
-  { id: '51', title: 'Life Is Good', artist: 'Various', url: '/music/life-is-good.mp3', cover: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=200&h=200&auto=format&fit=crop' }
+  { id: '51', title: 'Life Is Good', artist: 'Various', url: '/music/life-is-good.mp3', cover: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=200&h=200&auto=format&fit=crop' },
+  { id: '52', title: 'Luz Roja - Sped Up', artist: 'bxkq', url: '/music/LUZ ROJA - Sped Up - bxkq.mp3', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200&h=200&auto=format&fit=crop' }
 ];
