@@ -156,10 +156,10 @@ export const Desktop: React.FC = () => {
           opacity: isHandoff && shutdownStep >= 3 ? 0.3 : 1
         }}
         transition={{ delay: isHandoff ? 0 : 0.5, duration: 1.2, ease: "easeOut" }}
-        className="absolute inset-0 z-[-1]"
+        className="absolute inset-0"
         style={{ willChange: 'filter, transform, opacity' }}
       >
-        <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
+        <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} fallbackImage="/wallpapers/tahoe-dark.png" />
       </motion.div>
 
       {/* Handoff Overlay (Deep System Blur) */}

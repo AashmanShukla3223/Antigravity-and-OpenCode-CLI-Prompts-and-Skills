@@ -46,7 +46,7 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <div className="w-screen h-screen bg-[#111] relative overflow-hidden flex flex-col items-center select-none">
-      <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} blur={true} />
+      <WallpaperEngine url={systemState.wallpaperUrl} type={systemState.wallpaperType} />
 
       {/* Top Right: Status */}
       <div className="absolute top-8 right-8 z-10 flex items-center gap-3 text-white/80">

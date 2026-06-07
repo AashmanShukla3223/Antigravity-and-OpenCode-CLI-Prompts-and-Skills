@@ -5,9 +5,10 @@ interface WallpaperEngineProps {
   url: string;
   type: 'image' | 'video';
   blur?: boolean;
+  fallbackImage?: string;
 }
 
-export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blur = false }) => {
+export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blur = false, fallbackImage }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -22,8 +23,12 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
     }
   }, [url, type]);
 
+  const bgImage = type === 'image' ? url : (fallbackImage || '');
+
   return (
-    <div className="absolute inset-0 overflow-hidden bg-black pointer-events-none z-[-1]">
+    <div className="absolute inset-0 overflow-hidden bg-transparent pointer-events-none"
+      style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={url}
