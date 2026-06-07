@@ -15,7 +15,7 @@ export const contacts: Contact[] = [
     name: 'Executive Chairman',
     title: 'Executive Chairman',
     department: 'Board of Directors',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 88743 XXXXX',
     email: 'chairman@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'chairman@icloud.com'
@@ -26,7 +26,7 @@ export const contacts: Contact[] = [
     name: 'Ms. Sonia Bajpai',
     title: 'Chief Executive Officer',
     department: 'Executive',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 88408 XXXXX',
     email: 'sonia.bajpai@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'sonia.bajpai@icloud.com'
@@ -66,7 +66,7 @@ export const contacts: Contact[] = [
     name: 'Ms. Shalu Bhatia',
     title: 'Chief Hardware Officer',
     department: 'Hardware Engineering',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 97944 XXXXX',
     email: 'shalu.bhatia@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'shalu.bhatia@icloud.com'
@@ -116,7 +116,7 @@ export const contacts: Contact[] = [
     name: 'Ms. Neeta Garg',
     title: 'General Counsel',
     department: 'Legal',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 88088 XXXXX',
     email: 'neeta.garg@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'neeta.garg@icloud.com'
@@ -127,7 +127,7 @@ export const contacts: Contact[] = [
     name: 'Kritharth Tiwari',
     title: 'VP, Core Software Architecture',
     department: 'Software Engineering',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 82996 XXXXX',
     email: 'kritharth.tiwari@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'kritharth.tiwari@icloud.com'
@@ -147,7 +147,7 @@ export const contacts: Contact[] = [
     name: 'Afifa Shoaib Khan',
     title: 'VP, macOS Tahoe Development',
     department: 'Software Engineering',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 87560 XXXXX',
     email: 'afifa.khan@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'afifa.khan@icloud.com'
@@ -157,7 +157,7 @@ export const contacts: Contact[] = [
     name: 'Vanya Chaudhary',
     title: 'Head of Tahoe UI/UX',
     department: 'Software Engineering',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 73768 XXXXX',
     email: 'vanya.chaudhary@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'vanya.chaudhary@icloud.com'
@@ -174,7 +174,7 @@ export const contacts: Contact[] = [
   },
   {
     id: 16,
-    name: 'Shivoy Malodia',
+    name: 'Shivoy Banaudhia',
     title: 'Lead iPhone Architecture',
     department: 'Hardware Engineering',
     phone: '+91 98XXX XXXXX',
@@ -207,7 +207,7 @@ export const contacts: Contact[] = [
     name: 'Aaradhay Shukla',
     title: 'VP, iCloud Infrastructure',
     department: 'Services',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 91409 XXXXX',
     email: 'aaradhay.shukla@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'aaradhay.shukla@icloud.com'
@@ -217,7 +217,7 @@ export const contacts: Contact[] = [
     name: 'Samriddhi Verma',
     title: 'VP, Apple Music & Media',
     department: 'Services',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 97951 XXXXX',
     email: 'samriddhi.verma@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'samriddhi.verma@icloud.com'
@@ -237,7 +237,7 @@ export const contacts: Contact[] = [
     name: 'Diya Tandon',
     title: 'Lead Communications',
     department: 'Marketing',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 97920 XXXXX,
     email: 'diya.tandon@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'diya.tandon@icloud.com'
@@ -247,7 +247,7 @@ export const contacts: Contact[] = [
     name: 'Mishthi Sharma',
     title: 'VP, Global Supply Chain',
     department: 'Operations',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 79824 XXXXX',
     email: 'mishthi.sharma@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'mishthi.sharma@icloud.com'
@@ -257,7 +257,7 @@ export const contacts: Contact[] = [
     name: 'Rudra Kumar',
     title: 'Lead Manufacturing Operations',
     department: 'Operations',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 88876 XXXXX',
     email: 'rudra.kumar@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'rudra.kumar@icloud.com'
@@ -267,7 +267,7 @@ export const contacts: Contact[] = [
     name: 'Poorvika Gupta',
     title: 'VP, Corporate Finance',
     department: 'Finance',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 73101 XXXXX',
     email: 'poorvika.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'poorvika.gupta@icloud.com'
@@ -297,17 +297,17 @@ export const contacts: Contact[] = [
     name: 'Aarav Gupta',
     title: 'VP, Intellectual Property',
     department: 'Legal',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 87956 XXXXX',
     email: 'aarav.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'aarav.gupta@icloud.com'
   },
   {
     id: 29,
-    name: 'Arnab Singh',
+    name: 'Arnav Singh',
     title: 'Chief of Staff',
     department: 'Executive',
-    phone: '+91 98XXX XXXXX',
+    phone: '+91 63941 XXXXX',
     email: 'arnab.singh@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'arnab.singh@icloud.com'
