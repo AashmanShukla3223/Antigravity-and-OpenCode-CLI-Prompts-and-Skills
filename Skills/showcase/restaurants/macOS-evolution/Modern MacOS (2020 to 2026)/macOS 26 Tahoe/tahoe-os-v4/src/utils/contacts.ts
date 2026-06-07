@@ -237,7 +237,7 @@ export const contacts: Contact[] = [
     name: 'Diya Tandon',
     title: 'Lead Communications',
     department: 'Marketing',
-    phone: '+91 97920 XXXXX,
+    phone: '+91 97920 XXXXX',
     email: 'diya.tandon@icloud.com',
     work: 'Apple Park, Cupertino / Tahoe Digital HQ',
     faceTime: 'diya.tandon@icloud.com'
