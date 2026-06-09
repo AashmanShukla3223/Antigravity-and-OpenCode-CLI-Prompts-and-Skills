@@ -241,7 +241,7 @@ export const SystemSettings: React.FC = () => {
              </div>
              
              <h3 className="text-3xl font-black mb-1">macOS <span className="font-light">Golden Gate</span></h3>
-             <p className="text-xs text-white/40 mb-10 font-black uppercase tracking-[0.3em]">Version 27.0 (Build 27A405)</p>
+             <p className="text-xs text-white/40 mb-10 font-black uppercase tracking-[0.3em]">Version 27.0.0 (Build 27A405)</p>
              
              <div className="w-full space-y-6 max-w-md text-left font-mono text-[11px]">
                <div className="flex flex-col gap-1 border-b border-white/5 pb-4">

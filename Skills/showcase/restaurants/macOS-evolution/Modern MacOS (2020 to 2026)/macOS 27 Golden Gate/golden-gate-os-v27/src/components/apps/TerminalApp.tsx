@@ -12,7 +12,7 @@ export const TerminalApp: React.FC = () => {
   const [history, setHistory] = useState<{ command: string; output: string }[]>([
     { command: '', output: isRecovery 
       ? `macOS Recovery Terminal (zsh)\n# Secure enclave active. Neural architecture identified.`
-      : `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Golden Gate (Version 27.0) simulated.` 
+      : `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Golden Gate (Version 27.0.0) simulated.` 
     }
   ]);
   const [input, setInput] = useState('');
@@ -114,7 +114,7 @@ export const TerminalApp: React.FC = () => {
       case 'neofetch':
         output = `        .       ${username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
        .:.      ---------------------------
-      .:::.     OS: macOS Golden Gate 27.0 ${isRecovery ? '(Recovery Mode)' : ''}
+      .:::.     OS: macOS Golden Gate 27.0.0 ${isRecovery ? '(Recovery Mode)' : ''}
      .:::::.    Kernel: Darwin 27.0.0
      :::::::    Uptime: ${Math.floor(uptime / 60)} mins, ${uptime % 60} secs
      ':::::'    Battery: ${Math.round(battery.level * 100)}% (${battery.isCharging ? 'Charging' : 'Discharging'})
