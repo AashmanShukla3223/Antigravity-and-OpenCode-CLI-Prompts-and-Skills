@@ -70,6 +70,12 @@
 }
 
 @layer base {
+  :root {
+    --glass-blur: 50px;
+    --glass-bg-dark: rgba(0, 0, 0, 0.35);
+    --glass-bg-light: rgba(255, 255, 255, 0.21);
+  }
+
   body {
     @apply transition-colors duration-500;
     -webkit-font-smoothing: antialiased;
@@ -79,11 +85,18 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/20 backdrop-blur-3xl border border-white/30 shadow-2xl;
+    background-color: var(--glass-bg-light, rgba(255, 255, 255, 0.2));
+    backdrop-filter: blur(var(--glass-blur, 50px)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
   
   .glass-dark {
-    @apply bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl text-white;
+    background-color: var(--glass-bg-dark, rgba(0, 0, 0, 0.4));
+    backdrop-filter: blur(var(--glass-blur, 50px)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    color: white;
   }
   
   .mac-shadow {

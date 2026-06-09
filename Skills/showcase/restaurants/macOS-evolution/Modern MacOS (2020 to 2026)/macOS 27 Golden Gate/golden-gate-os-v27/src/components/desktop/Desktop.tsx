@@ -554,7 +554,7 @@ export const Desktop: React.FC = () => {
               top: contextMenu.type === 'dock' ? contextMenu.y - 140 : contextMenu.y, 
               left: contextMenu.x 
             }}
-            className="absolute z-[300] w-64 bg-black/40 backdrop-blur-[60px] saturate-[190%] border border-white/20 rounded-2xl shadow-2xl py-2 flex flex-col gap-0.5"
+            className="absolute z-[300] w-64 bg-black/40 backdrop-blur-[var(--glass-blur)] saturate-[190%] border border-white/20 rounded-2xl shadow-2xl py-2 flex flex-col gap-0.5"
             onClick={(e) => e.stopPropagation()}
             onContextMenu={(e) => e.preventDefault()}
           >

@@ -208,7 +208,7 @@ export const Spotlight: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -40 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-black/40 backdrop-blur-[60px] saturate-[190%] border border-white/20 rounded-[28px] shadow-[0_40px_100px_rgba(0,0,0,0.6)] z-[210] overflow-hidden flex flex-col"
+            className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-black/40 backdrop-blur-[var(--glass-blur)] saturate-[190%] border border-white/20 rounded-[28px] shadow-[0_40px_100px_rgba(0,0,0,0.6)] z-[210] overflow-hidden flex flex-col"
           >
             <div className="flex items-center px-6 py-5 gap-4">
               <Search01Icon size={24} className="text-white/40" />

@@ -106,7 +106,7 @@ export const SystemMenuBar: React.FC<SystemMenuBarProps> = ({ mode, showUtilitie
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  className="absolute top-8 right-0 w-64 bg-black/60 backdrop-blur-[60px] saturate-[190%] border border-white/20 rounded-2xl p-2 z-50 overflow-hidden shadow-2xl"
+                  className="absolute top-8 right-0 w-64 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[190%] border border-white/20 rounded-2xl p-2 z-50 overflow-hidden shadow-2xl"
                 >
                   <div className="px-3 py-1 text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Select Network</div>
                   {ssids.map(ssid => (

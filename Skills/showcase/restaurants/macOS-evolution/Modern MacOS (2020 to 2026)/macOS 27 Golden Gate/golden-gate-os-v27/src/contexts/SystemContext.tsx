@@ -70,6 +70,7 @@ export interface GoldenGateV27State {
   isCameraOn: boolean;
   notchVisible: boolean;
   glassBlurIntensity: number;
+  glassOpacity: number;
   lowPowerMode: boolean;
   dockHidden: boolean;
   apiKey?: string;
@@ -94,6 +95,7 @@ const defaultState: GoldenGateV27State = {
   isCameraOn: false,
   notchVisible: true,
   glassBlurIntensity: 50,
+  glassOpacity: 0.35,
   lowPowerMode: false,
   dockHidden: false,
   apiKey: (import.meta as any).env?.GEMINI_API_KEY_VITE || '',
@@ -611,7 +613,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => clearTimeout(timer);
   }, [battery.level, systemState.lowPowerMode]);
 
-  // Handle System-wide Appearance
+  // Handle System-wide Appearance & Liquid Glass CSS variables
   useEffect(() => {
     const root = window.document.documentElement;
     if (systemState.appearance === 'dark') {
@@ -625,7 +627,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         root.classList.remove('dark');
       }
     }
-  }, [systemState.appearance]);
+
+    const blurPx = systemState.lowPowerMode ? 0 : systemState.glassBlurIntensity;
+    root.style.setProperty('--glass-blur', `${blurPx}px`);
+    root.style.setProperty('--glass-bg-dark', `rgba(0, 0, 0, ${systemState.glassOpacity})`);
+    root.style.setProperty('--glass-bg-light', `rgba(255, 255, 255, ${systemState.glassOpacity * 0.6})`);
+  }, [systemState.appearance, systemState.glassBlurIntensity, systemState.glassOpacity, systemState.lowPowerMode]);
 
   const resetSystem = useCallback((targetState: BootState = 'recovery') => {
     localStorage.removeItem('golden_gate_v27_state');

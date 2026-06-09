@@ -291,7 +291,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       }}
       className={`overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'} ${isEndurance ? 'bg-amber-900/40 border-amber-500/30' : 'bg-white/5 dark:bg-black/20'} ${isProMotion ? 'border-white/40' : 'border-white/20'} ${isFullscreen ? 'rounded-none' : 'rounded-2xl'}`}
     >
-      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isEndurance ? '' : 'backdrop-blur-[40px]'} ${isProMotion ? 'backdrop-blur-[50px] saturate-[200%]' : ''}`} />
+      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isEndurance ? '' : 'backdrop-blur-[var(--glass-blur)]'} ${isProMotion ? 'saturate-[200%]' : ''}`} />
 
       {isFullscreen ? null : (
         <div

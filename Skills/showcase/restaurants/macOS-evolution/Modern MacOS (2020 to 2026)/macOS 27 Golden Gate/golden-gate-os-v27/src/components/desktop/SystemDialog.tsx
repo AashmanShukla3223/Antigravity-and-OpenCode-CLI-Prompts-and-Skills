@@ -38,7 +38,7 @@ export const SystemDialog: React.FC = () => {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="w-[380px] bg-white/10 dark:bg-black/60 backdrop-blur-[40px] border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 flex flex-col items-center text-center text-black dark:text-white"
+          className="w-[380px] bg-white/10 dark:bg-black/60 backdrop-blur-[var(--glass-blur)] border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 flex flex-col items-center text-center text-black dark:text-white"
         >
           <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
             <img 

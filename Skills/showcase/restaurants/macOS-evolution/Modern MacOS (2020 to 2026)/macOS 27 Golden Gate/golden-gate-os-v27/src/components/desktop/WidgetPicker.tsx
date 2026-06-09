@@ -73,7 +73,7 @@ export const WidgetPicker: React.FC = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 300, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 h-[280px] bg-black/40 backdrop-blur-[30px] saturate-[180%] border-t border-white/10 z-[200] flex flex-col"
+            className="fixed bottom-0 left-0 right-0 h-[280px] bg-black/40 backdrop-blur-[var(--glass-blur)] saturate-[180%] border-t border-white/10 z-[200] flex flex-col"
           >
             <div className="flex items-center justify-between px-8 py-4">
                <h2 className="text-2xl font-bold text-white tracking-tight">Widgets</h2>

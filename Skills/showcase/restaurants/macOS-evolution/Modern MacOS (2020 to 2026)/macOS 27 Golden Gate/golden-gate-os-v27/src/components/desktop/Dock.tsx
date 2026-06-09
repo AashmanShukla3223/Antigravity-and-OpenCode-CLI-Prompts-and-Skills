@@ -111,7 +111,7 @@ export const Dock: React.FC = () => {
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
       <div 
-        className="mb-4 flex items-end gap-2 px-3 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[50px] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
+        className="mb-4 flex items-end gap-2 px-3 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >

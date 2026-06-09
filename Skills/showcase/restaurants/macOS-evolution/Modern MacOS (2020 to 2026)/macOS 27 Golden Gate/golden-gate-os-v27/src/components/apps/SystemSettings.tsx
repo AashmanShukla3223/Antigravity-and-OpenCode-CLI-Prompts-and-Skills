@@ -496,6 +496,53 @@ export const SystemSettings: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+                  <div className="mb-5">
+                    <h3 className="font-medium text-lg text-white">Liquid Glass</h3>
+                    <p className="text-sm text-white/50">Adjust transparency and blur intensity for the Liquid Glass aesthetic.</p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Blur Intensity</span>
+                        <span className="text-xs font-mono text-white/40">{systemState.glassBlurIntensity}px</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-12 text-right">Opaque</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={systemState.glassBlurIntensity}
+                          onChange={(e) => updateSystemState({ glassBlurIntensity: parseInt(e.target.value) })}
+                          className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-[10px] text-white/30 w-12">Glassy</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Glass Opacity</span>
+                        <span className="text-xs font-mono text-white/40">{Math.round(systemState.glassOpacity * 100)}%</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-12 text-right">Opaque</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={Math.round(systemState.glassOpacity * 100)}
+                          onChange={(e) => updateSystemState({ glassOpacity: parseInt(e.target.value) / 100 })}
+                          className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-[10px] text-white/30 w-12">Glassy</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
             {currentTab === 'General' && renderGeneralContent()}

@@ -37,7 +37,7 @@ const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         initial={{ opacity: 0, scale: 0.95, y: -10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -10 }}
-        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[60px] saturate-[200%] border border-white/20 rounded-[28px] shadow-2xl p-4 z-50 text-white overflow-hidden"
+        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[28px] shadow-2xl p-4 z-50 text-white overflow-hidden"
       >
         <div className="flex items-center justify-between mb-4 px-2">
           <span className="text-sm font-bold text-white/50 uppercase tracking-widest">FACETIME GOLDEN GATE</span>
@@ -99,7 +99,7 @@ const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         initial={{ opacity: 0, scale: 0.95, y: -10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -10 }}
-        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[60px] saturate-[200%] border border-white/20 rounded-[28px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] p-6 z-50 text-white overflow-hidden"
+        className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[28px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] p-6 z-50 text-white overflow-hidden"
       >
         {/* Siri AI Avatar Glow */}
         <div className="flex flex-col items-center mb-6">
@@ -232,7 +232,6 @@ const MenuDropdown: React.FC<{
   items: { label?: string; action?: () => void; disabled?: boolean; shortcut?: string; separator?: boolean }[];
   style?: React.CSSProperties;
 }> = ({ isOpen, onClose, items, style }) => {
-  const { systemState } = useSystem();
   if (!isOpen) return null;
   return (
     <>
@@ -243,7 +242,7 @@ const MenuDropdown: React.FC<{
         exit={{ opacity: 0, scale: 0.95, y: -5 }}
         transition={{ duration: 0.1 }}
         style={style}
-        className={`absolute top-8 w-64 bg-black/60 saturate-[190%] border border-white/20 rounded-[20px] shadow-2xl py-2 z-50 overflow-hidden ${systemState.lowPowerMode ? '' : 'backdrop-blur-[50px]'}`}
+        className="absolute top-8 w-64 bg-black/60 saturate-[190%] border border-white/20 rounded-[20px] shadow-2xl py-2 z-50 overflow-hidden backdrop-blur-[var(--glass-blur)]"
       >
         {items.map((item, i) => (
           item.separator ? (
@@ -284,7 +283,7 @@ const BatteryDropdown: React.FC<{
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -5 }}
         transition={{ duration: 0.1 }}
-        className="absolute top-8 right-0 w-72 bg-black/60 backdrop-blur-[50px] saturate-[190%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 overflow-hidden text-white"
+        className="absolute top-8 right-0 w-72 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[190%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 overflow-hidden text-white"
       >
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm font-bold text-white/50 uppercase tracking-widest">Battery</span>
