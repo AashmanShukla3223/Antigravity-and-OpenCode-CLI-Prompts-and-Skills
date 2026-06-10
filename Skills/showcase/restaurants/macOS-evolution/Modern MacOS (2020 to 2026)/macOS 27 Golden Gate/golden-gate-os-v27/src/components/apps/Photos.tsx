@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search01Icon, PlayIcon, PauseIcon, Cancel01Icon, Menu01Icon, Image01Icon, Video01Icon } from 'hugeicons-react';
+import { Search01Icon, PlayIcon, Cancel01Icon, Menu01Icon, Image01Icon, Video01Icon } from 'hugeicons-react';
 
 interface MediaItem {
   id: string;
@@ -27,7 +27,6 @@ export const Photos: React.FC = () => {
   const [viewer, setViewer] = useState<MediaItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
 
   const filtered = mediaItems.filter(m => 
     (selectedAlbum === 'Wallpapers' ? m.album === 'Wallpapers' : m.album === 'Dynamic Wallpaper') &&
@@ -36,10 +35,9 @@ export const Photos: React.FC = () => {
 
   useEffect(() => {
     if (videoRef.current) {
-      if (isPlaying) videoRef.current.play();
-      else videoRef.current.pause();
+      videoRef.current.play();
     }
-  }, [isPlaying, viewer]);
+  }, [viewer]);
 
   const viewerIndex = viewer ? filtered.findIndex(m => m.id === viewer.id) : -1;
 
