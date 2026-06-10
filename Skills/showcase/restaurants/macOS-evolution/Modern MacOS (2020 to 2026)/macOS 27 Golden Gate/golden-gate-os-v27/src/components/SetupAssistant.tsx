@@ -70,7 +70,7 @@ export const SetupAssistant: React.FC = () => {
   };
 
   return (
-    <motion.div 
+    <motion.main
       className={`fixed inset-0 z-50 transition-colors duration-1000 ${
         systemState.appearance === 'dark' ? 'bg-black text-white' : 
         systemState.appearance === 'light' ? 'bg-gray-100 text-black' : 
@@ -424,6 +424,6 @@ export const SetupAssistant: React.FC = () => {
           )}
         </div>
       </div>
-    </motion.div>
+    </motion.main>
   );
 };

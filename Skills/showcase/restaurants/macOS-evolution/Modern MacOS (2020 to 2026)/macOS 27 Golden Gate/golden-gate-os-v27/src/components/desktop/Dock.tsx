@@ -88,7 +88,7 @@ export const Dock: React.FC = () => {
   const isHidden = systemState.dockHidden && !reveal;
 
   return (
-    <div
+    <nav
       className="absolute bottom-0 w-full flex justify-center z-40 pointer-events-none"
       onMouseEnter={() => { if (systemState.dockHidden) setReveal(true); }}
       onMouseLeave={() => { if (systemState.dockHidden) setReveal(false); }}
@@ -189,7 +189,7 @@ export const Dock: React.FC = () => {
         />
       </div>
       )}
-    </div>
+    </nav>
   );
 };
 

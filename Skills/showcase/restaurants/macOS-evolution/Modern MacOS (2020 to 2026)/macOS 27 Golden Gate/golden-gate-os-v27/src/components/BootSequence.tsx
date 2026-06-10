@@ -143,7 +143,7 @@ export const BootSequence: React.FC = () => {
   }
 
   return (
-    <motion.div 
+    <motion.main 
       className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50"
       initial={{ opacity: 1 }}
       animate={{ opacity: fadeOut ? 0 : 1, filter: fadeOut ? 'blur(20px)' : 'blur(0px)' }}
@@ -173,6 +173,6 @@ export const BootSequence: React.FC = () => {
           }}
         />
       </div>
-    </motion.div>
+    </motion.main>
   );
 };

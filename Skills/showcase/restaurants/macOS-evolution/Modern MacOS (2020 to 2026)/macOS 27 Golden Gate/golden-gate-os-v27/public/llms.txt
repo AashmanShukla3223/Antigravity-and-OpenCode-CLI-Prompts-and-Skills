@@ -1,0 +1,21 @@
+# macOS 27 Golden Gate
+
+> A high-fidelity web-based macOS simulation representing the "Unit 7" era of Apple computing. Built with React, TypeScript, Framer Motion, and Tailwind CSS.
+
+## Key Documentation
+
+- AGENTS.md: Project blueprint with architecture, technical stack, and development conventions
+- src/App.tsx: Root component — boot state routing (booting → setup → login → desktop)
+- src/contexts/SystemContext.tsx: OS state machine with app lifecycle, hardware simulation, and persistence
+- src/contexts/FileSystemContext.tsx: Virtual File System with persistent node management, trash, and self-healing
+- src/components/desktop/Dock.tsx: macOS Dock with true-magnification physics
+- src/components/desktop/Window.tsx: Window manager with app component registry (43 apps)
+- src/components/desktop/MenuBar.tsx: Top menu bar with Apple menu, app menus, and control center
+
+## Architecture
+
+- **Framework:** React 19 + Vite + TypeScript
+- **Styling:** Tailwind CSS 4 with custom glassmorphism utilities
+- **Animations:** Framer Motion (physics-based, genie effect, 120fps)
+- **Persistence:** LocalStorage under `golden_gate_v27_state` and `golden_gate_v27_fs`
+- **Hardware Simulation:** Battery Status API, Performance Memory API, Storage Estimation API
