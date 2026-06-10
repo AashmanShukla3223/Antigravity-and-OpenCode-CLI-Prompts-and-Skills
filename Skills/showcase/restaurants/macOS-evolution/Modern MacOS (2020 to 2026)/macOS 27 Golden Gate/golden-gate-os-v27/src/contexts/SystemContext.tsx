@@ -112,7 +112,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: ['installer'],
-  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv', 'calculator', 'siriai'],
+  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv', 'calculator', 'siriai', 'aboutme'],
   notes: [
     { 
       id: '1', 

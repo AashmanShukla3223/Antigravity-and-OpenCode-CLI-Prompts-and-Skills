@@ -30,6 +30,7 @@ const apps: AppItem[] = [
   { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
   { id: 'calculator', name: 'Calculator' },
   { id: 'siriai', name: 'Siri' },
+  { id: 'aboutme', name: 'About Me' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
@@ -42,7 +43,8 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'messages', name: 'Messages' },
     { id: 'mail', name: 'Mail' },
     { id: 'facetime', name: 'FaceTime' },
-    { id: 'contacts', name: 'Contacts' }
+    { id: 'contacts', name: 'Contacts' },
+    { id: 'aboutme', name: 'About Me' }
   ],
   'developer': [
     { id: 'terminal', name: 'Terminal' },

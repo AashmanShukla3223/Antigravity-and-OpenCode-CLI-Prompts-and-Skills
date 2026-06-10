@@ -1,76 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search01Icon, Image01Icon, Eraser01Icon, Menu01Icon, PinIcon, StarIcon } from 'hugeicons-react';
+import { Search01Icon, PlayIcon, PauseIcon, Cancel01Icon, Menu01Icon, Image01Icon, Video01Icon } from 'hugeicons-react';
+
+interface MediaItem {
+  id: string;
+  type: 'photo' | 'video';
+  src: string;
+  thumb?: string;
+  title: string;
+  album: string;
+}
+
+const base = (import.meta as any).env?.BASE_URL || '/';
+
+const mediaItems: MediaItem[] = [
+  { id: 'wp-dark', type: 'photo', src: `${base}wallpapers/golden-gate-dark.png`, title: 'Golden Gate Dark', album: 'Wallpapers' },
+  { id: 'wp-light', type: 'photo', src: `${base}wallpapers/golden-gate-light.png`, title: 'Golden Gate Light', album: 'Wallpapers' },
+  { id: 'dyn-wall', type: 'video', src: 'https://cdn.coverr.co/videos/coverr-golden-gate-bridge-in-fog-5775/1080p.mp4', title: 'Golden Gate Dynamic', album: 'Dynamic Wallpaper' },
+];
+
+const albums = ['Wallpapers', 'Dynamic Wallpaper'];
 
 export const Photos: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedAlbum, setSelectedAlbum] = useState('Wallpapers');
+  const [viewer, setViewer] = useState<MediaItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cleanUpMode, setCleanUpMode] = useState(false);
-  
-  // Lazy Loading RAM Hack: Instead of thousands of DOM nodes, only render visible or a constrained subset.
-  // "On 0.5GB RAM, implement Lazy-Loading Thumbnails so the system doesn't crash during a 1,000-photo scroll."
-  const [loadedThumbnails, setLoadedThumbnails] = useState(24);
-  
-  // Cleanup RAM on unmount
-  useEffect(() => {
-    return () => {
-      setLoadedThumbnails(0);
-      setSearchQuery('');
-    };
-  }, []);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5) {
-      if (loadedThumbnails < 1000) {
-        setLoadedThumbnails(prev => Math.min(prev + 24, 1000));
-      }
+  const filtered = mediaItems.filter(m => 
+    (selectedAlbum === 'Wallpapers' ? m.album === 'Wallpapers' : m.album === 'Dynamic Wallpaper') &&
+    m.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPlaying) videoRef.current.play();
+      else videoRef.current.pause();
+    }
+  }, [isPlaying, viewer]);
+
+  const viewerIndex = viewer ? filtered.findIndex(m => m.id === viewer.id) : -1;
+
+  const navigateViewer = (dir: number) => {
+    const next = viewerIndex + dir;
+    if (next >= 0 && next < filtered.length) {
+      setViewer(filtered[next]);
     }
   };
 
   return (
-    <div className="flex h-full w-full bg-white/5 dark:bg-black/10 text-gray-800 dark:text-gray-200">
-      {/* iPad-style Sidebar */}
+    <div className="flex h-full w-full bg-black/20 saturate-[150%]">
+      {/* Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div 
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 220, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="flex-shrink-0 bg-white/20 dark:bg-black/30 backdrop-blur-[50px] border-r border-white/10 h-full overflow-y-auto"
+            className="flex-shrink-0 bg-black/30 backdrop-blur-[var(--glass-blur)] border-r border-white/10 h-full overflow-y-auto"
           >
             <div className="p-4 pt-6 flex flex-col gap-6">
               <div className="relative">
-                <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 hugeicon-golden-gate" />
+                <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                 <input 
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Find 'blue glass building'" 
-                  className="w-full bg-black/10 dark:bg-white/10 border-none rounded-lg py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Search photos & videos" 
+                  className="w-full bg-white/10 border border-white/10 rounded-lg py-1.5 pl-8 pr-3 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-2">Library</div>
+                <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2 px-2">Library</div>
                 <div className="flex flex-col gap-1">
-                  <div className="px-3 py-1.5 rounded-md bg-blue-500 text-white text-sm font-medium cursor-pointer shadow-sm">All Photos</div>
-                  <div className="px-3 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium cursor-pointer">Days</div>
-                  <div className="px-3 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium cursor-pointer">Favorites</div>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
-                  <PinIcon size={10} className="hugeicon-golden-gate" /> Pinned Collections
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="px-3 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium cursor-pointer flex items-center gap-2">
-                    <StarIcon size={14} className="text-yellow-500 hugeicon-golden-gate" /> Summer 2025
-                  </div>
-                  <div className="px-3 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium cursor-pointer flex items-center gap-2">
-                    <Image01Icon size={14} className="text-blue-400 hugeicon-golden-gate" /> Design Inspo
-                  </div>
+                  {albums.map(album => (
+                    <div
+                      key={album}
+                      onClick={() => setSelectedAlbum(album)}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-all ${
+                        selectedAlbum === album ? 'bg-blue-500 text-white shadow-lg' : 'text-white/70 hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {album === 'Wallpapers' ? <Image01Icon size={14} /> : <Video01Icon size={14} />}
+                        {album}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -78,60 +97,107 @@ export const Photos: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-white/10 backdrop-blur-md z-10">
+        <div className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-black/20 backdrop-blur-md z-10">
           <button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-md hover:bg-white/20 transition-colors"
+            className="p-2 rounded-md hover:bg-white/10 transition-colors"
           >
-            <Menu01Icon size={18} className="hugeicon-golden-gate" />
+            <Menu01Icon size={18} className="text-white" />
           </button>
-          
-          <button 
-            onClick={() => setCleanUpMode(!cleanUpMode)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-              cleanUpMode 
-                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg scale-105' 
-                : 'bg-white/10 hover:bg-white/20'
-            }`}
-          >
-            <Eraser01Icon size={16} className="hugeicon-golden-gate" />
-            {cleanUpMode ? 'Liquid Brush Active' : 'Clean Up 2.0'}
-          </button>
+          <span className="text-sm font-bold text-white/60">{selectedAlbum}</span>
+          <div className="w-9" />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4" onScroll={handleScroll}>
-          {cleanUpMode && (
-            <div className="mb-4 p-3 bg-purple-500/20 border border-purple-500/30 rounded-xl backdrop-blur-md flex items-center justify-center text-sm text-purple-200">
-              Select an object to instantly remove it via Apple Intelligence.
-            </div>
-          )}
-          <div className="grid grid-cols-4 gap-2">
-            {Array.from({ length: loadedThumbnails }).map((_, i) => (
-              <motion.div 
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filtered.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                key={i} 
-                className={`aspect-square rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10 border border-white/10 relative overflow-hidden group cursor-pointer ${cleanUpMode ? 'cursor-crosshair' : ''}`}
+                onClick={() => setViewer(item)}
+                className="aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/10 group cursor-pointer relative"
               >
-                {/* Simulated photo content */}
-                <div className={`absolute inset-0 bg-gradient-to-tr from-blue-400/20 to-pink-500/20 opacity-50`} />
-                {cleanUpMode && (
-                  <div className="absolute inset-0 bg-purple-500/0 hover:bg-purple-500/20 transition-colors flex items-center justify-center">
-                    <Eraser01Icon size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md hugeicon-golden-gate" />
-                  </div>
+                {item.type === 'photo' ? (
+                  <img src={item.src} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <>
+                    <video src={item.src} className="w-full h-full object-cover" muted loop playsInline />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <PlayIcon size={24} className="text-white ml-1" />
+                      </div>
+                    </div>
+                  </>
                 )}
+                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-xs font-bold text-white drop-shadow-lg">{item.title}</span>
+                </div>
               </motion.div>
             ))}
           </div>
-          {loadedThumbnails < 1000 && (
-            <div className="py-8 flex justify-center text-xs text-gray-500 font-medium">
-              Loading more thumbnails (RAM optimized)...
-            </div>
+          {filtered.length === 0 && (
+            <div className="flex items-center justify-center h-full text-white/30 font-bold text-sm">No media found</div>
           )}
         </div>
       </div>
+
+      {/* Viewer Modal */}
+      <AnimatePresence>
+        {viewer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] bg-black/90 backdrop-blur-xl flex items-center justify-center"
+            onClick={() => setViewer(null)}
+          >
+            <button
+              onClick={() => setViewer(null)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+            >
+              <Cancel01Icon size={20} className="text-white" />
+            </button>
+
+            {viewerIndex > 0 && (
+              <button onClick={(e) => { e.stopPropagation(); navigateViewer(-1); }} className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+            )}
+
+            <div className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center p-8" onClick={(e) => e.stopPropagation()}>
+              {viewer.type === 'photo' ? (
+                <img src={viewer.src} alt={viewer.title} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
+              ) : (
+                <div className="relative w-full max-w-4xl aspect-video">
+                  <video
+                    ref={videoRef}
+                    src={viewer.src}
+                    className="w-full h-full rounded-2xl shadow-2xl"
+                    controls
+                    autoPlay
+                    loop
+                    playsInline
+                  />
+                </div>
+              )}
+            </div>
+
+            {viewerIndex < filtered.length - 1 && (
+              <button onClick={(e) => { e.stopPropagation(); navigateViewer(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            )}
+
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full text-sm text-white/80 font-medium">
+              {viewer.title} — {viewerIndex + 1} of {filtered.length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

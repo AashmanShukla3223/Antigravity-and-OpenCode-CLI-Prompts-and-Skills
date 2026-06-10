@@ -99,6 +99,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'utility': `${base}icons/utility.png`,
     'samsunglcdtv': `${base}icons/Samsung LCD TV Simulator.png`,
     'siriai': `${base}icons/Siri AI.png`,
+    'aboutme': `${base}icons/about me.png`,
   };
 
   const handleImageError = (iconId: string) => {

@@ -37,6 +37,7 @@ const ALL_APPS = [
   { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
   { id: 'calculator', name: 'Calculator' },
   { id: 'siriai', name: 'Siri' },
+  { id: 'aboutme', name: 'About Me' },
 ];
 
 export const Dock: React.FC = () => {

@@ -41,6 +41,7 @@ import { CodeViewer } from '../apps/CodeViewer';
 import { SamsungLCDApp } from '../apps/SamsungLCDApp';
 import { Calculator } from '../apps/Calculator';
 import { SiriAI } from '../apps/SiriAI';
+import { AboutMe } from '../apps/AboutMe';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -84,6 +85,7 @@ const AppMap: Record<string, React.FC<any>> = {
   samsunglcdtv: SamsungLCDApp,
   calculator: Calculator,
   siriai: SiriAI,
+  aboutme: AboutMe,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -146,6 +148,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     samsunglcdtv: 'Samsung LCD TV Simulator',
     calculator: 'Calculator',
     siriai: 'Siri',
+    aboutme: 'About Me',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
