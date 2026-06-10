@@ -12,6 +12,7 @@
   ],
   "rewrites": [
     { "source": "/version.json", "destination": "/version.json" },
+    { "source": "/_vercel/(.*)", "destination": "/_vercel/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
