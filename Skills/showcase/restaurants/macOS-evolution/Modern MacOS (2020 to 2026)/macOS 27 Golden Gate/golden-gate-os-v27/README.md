@@ -11,9 +11,9 @@ A high-fidelity web-based macOS simulation built with React 19, TypeScript, and 
 ![Desktop](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.15/macOS.png)
 *Desktop with Dock, Menu Bar, and active windows.*
 
-![Video Tour](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.16/macos-tour.gif)
+![Video Tour](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.17/macos-tour-smol.gif)
 
-![OTA Update](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.16/ota-upgrade.gif)
+![OTA Update](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.17/ota-upgrade-smol.gif)
 *Over-the-air update notification with version comparison.*
 
 ---
