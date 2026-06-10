@@ -5,8 +5,6 @@ import {
   GithubIcon, 
   GlobalIcon, 
   File01Icon, 
-  Video01Icon, 
-  Image01Icon,
   BookOpen01Icon,
   Wallet01Icon,
   Store01Icon,
