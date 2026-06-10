@@ -43,6 +43,10 @@ import { Calculator } from '../apps/Calculator';
 import { SiriAI } from '../apps/SiriAI';
 import { AboutMe } from '../apps/AboutMe';
 import { Clock } from '../apps/Clock';
+import { Pages } from '../apps/Pages';
+import { Numbers } from '../apps/Numbers';
+import { Keynote } from '../apps/Keynote';
+import { Games } from '../apps/Games';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -88,6 +92,10 @@ const AppMap: Record<string, React.FC<any>> = {
   siriai: SiriAI,
   aboutme: AboutMe,
   clock: Clock,
+  pages: Pages,
+  numbers: Numbers,
+  keynote: Keynote,
+  games: Games,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -95,7 +103,7 @@ const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
 );
 
 export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { activeApp, setActiveApp, closeApp, quitApp, openApps, minimizedApps, minimizeApp, powerMode } = useSystem();
+  const { activeApp, setActiveApp, closeApp, quitApp, openApps, minimizedApps, minimizeApp, powerMode, systemState } = useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
@@ -152,6 +160,10 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     siriai: 'Siri',
     aboutme: 'About Me',
     clock: 'Clock',
+    pages: 'Pages',
+    numbers: 'Numbers',
+    keynote: 'Keynote',
+    games: 'Games',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
@@ -297,7 +309,9 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       }}
       className={`overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'} ${isEndurance ? 'bg-amber-900/40 border-amber-500/30' : 'bg-white/5 dark:bg-black/20'} ${isProMotion ? 'border-white/40' : 'border-white/20'} ${isFullscreen ? 'rounded-none' : 'rounded-2xl'}`}
     >
-      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isEndurance ? '' : 'backdrop-blur-[var(--glass-blur)]'} ${isProMotion ? 'saturate-[200%]' : ''}`} />
+      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isProMotion ? 'saturate-[200%]' : ''}`}
+        style={isEndurance ? {} : { backdropFilter: `blur(${systemState.systemOpacity * 0.5}px) saturate(${100 + systemState.systemOpacity * 0.8}%)` }}
+      />
 
       {isFullscreen ? null : (
         <div

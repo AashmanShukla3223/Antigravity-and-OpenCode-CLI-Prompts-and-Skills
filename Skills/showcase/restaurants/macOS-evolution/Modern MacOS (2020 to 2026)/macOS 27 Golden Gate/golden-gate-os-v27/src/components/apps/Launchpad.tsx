@@ -32,11 +32,17 @@ const apps: AppItem[] = [
   { id: 'siriai', name: 'Siri' },
   { id: 'aboutme', name: 'About Me' },
   { id: 'clock', name: 'Clock' },
+  { id: 'keynote', name: 'Keynote' },
+  { id: 'numbers', name: 'Numbers' },
+  { id: 'pages', name: 'Pages' },
+  { id: 'games', name: 'Games' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
   { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github'] },
-  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
+  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] },
+  { id: 'productivity', name: 'Productivity', isFolder: true, folderApps: ['pages', 'numbers', 'keynote'] },
+  { id: 'entertainment', name: 'Entertainment', isFolder: true, folderApps: ['games', 'music', 'tv', 'books'] }
 ];
 
 const subApps: Record<string, AppItem[]> = {
@@ -61,6 +67,17 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'timemachine', name: 'Time Machine' },
     { id: 'diskutility', name: 'Disk Utility' },
     { id: 'iphonemirroring', name: 'iPhone Mirroring' }
+  ],
+  'productivity': [
+    { id: 'pages', name: 'Pages' },
+    { id: 'numbers', name: 'Numbers' },
+    { id: 'keynote', name: 'Keynote' }
+  ],
+  'entertainment': [
+    { id: 'games', name: 'Games' },
+    { id: 'music', name: 'Music' },
+    { id: 'tv', name: 'Apple TV+' },
+    { id: 'books', name: 'Books' }
   ]
 };
 

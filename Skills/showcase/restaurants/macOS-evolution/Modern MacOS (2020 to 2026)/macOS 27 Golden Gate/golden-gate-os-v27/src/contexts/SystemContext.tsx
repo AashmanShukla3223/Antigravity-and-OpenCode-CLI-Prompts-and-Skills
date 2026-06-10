@@ -71,6 +71,7 @@ export interface GoldenGateV27State {
   notchVisible: boolean;
   glassBlurIntensity: number;
   glassOpacity: number;
+  systemOpacity: number;
   lowPowerMode: boolean;
   dockHidden: boolean;
   apiKey?: string;
@@ -96,6 +97,7 @@ const defaultState: GoldenGateV27State = {
   notchVisible: true,
   glassBlurIntensity: 50,
   glassOpacity: 0.35,
+  systemOpacity: 70,
   lowPowerMode: false,
   dockHidden: false,
   apiKey: (import.meta as any).env?.GEMINI_API_KEY_VITE || '',
@@ -112,7 +114,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: ['installer'],
-  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv', 'calculator', 'siriai', 'aboutme', 'clock'],
+  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'settings', 'aboutme', 'githubnavigator'],
   notes: [
     { 
       id: '1', 
@@ -224,6 +226,18 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
       if (!state.pinnedApps.includes('clock')) {
         state.pinnedApps = [...state.pinnedApps, 'clock'];
+      }
+      if (!state.pinnedApps.includes('keynote')) {
+        state.pinnedApps = [...state.pinnedApps, 'keynote'];
+      }
+      if (!state.pinnedApps.includes('numbers')) {
+        state.pinnedApps = [...state.pinnedApps, 'numbers'];
+      }
+      if (!state.pinnedApps.includes('pages')) {
+        state.pinnedApps = [...state.pinnedApps, 'pages'];
+      }
+      if (!state.pinnedApps.includes('games')) {
+        state.pinnedApps = [...state.pinnedApps, 'games'];
       }
       return state;
     } catch (e) {
@@ -638,7 +652,11 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     root.style.setProperty('--glass-blur', `${blurPx}px`);
     root.style.setProperty('--glass-bg-dark', `rgba(0, 0, 0, ${systemState.glassOpacity})`);
     root.style.setProperty('--glass-bg-light', `rgba(255, 255, 255, ${systemState.glassOpacity * 0.6})`);
-  }, [systemState.appearance, systemState.glassBlurIntensity, systemState.glassOpacity, systemState.lowPowerMode]);
+    const transitBlur = systemState.lowPowerMode ? 0 : systemState.systemOpacity * 0.5;
+    const transitSaturate = 100 + systemState.systemOpacity * 0.8;
+    root.style.setProperty('--transit-blur', `${transitBlur}px`);
+    root.style.setProperty('--transit-saturate', `${transitSaturate}%`);
+  }, [systemState.appearance, systemState.glassBlurIntensity, systemState.glassOpacity, systemState.lowPowerMode, systemState.systemOpacity]);
 
   const resetSystem = useCallback((targetState: BootState = 'recovery') => {
     localStorage.removeItem('golden_gate_v27_state');

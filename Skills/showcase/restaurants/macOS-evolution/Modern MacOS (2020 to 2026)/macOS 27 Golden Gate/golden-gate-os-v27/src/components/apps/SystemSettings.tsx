@@ -542,6 +542,25 @@ export const SystemSettings: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
+                    <div className="pt-4 border-t border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Transit Opacity</span>
+                        <span className="text-xs font-mono text-white/40">{systemState.systemOpacity}%</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-16 text-right">Ultra-Clear</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={systemState.systemOpacity}
+                          onChange={(e) => updateSystemState({ systemOpacity: parseInt(e.target.value) })}
+                          className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <span className="text-[10px] text-white/30 w-16">Tinted Glass</span>
+                      </div>
+                    </div>
                 </div>
               </>
             )}
