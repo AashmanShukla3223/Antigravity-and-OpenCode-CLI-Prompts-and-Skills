@@ -24,6 +24,8 @@ const ALL_APPS = [
   { id: 'pages', name: 'Pages' },
   { id: 'appstore', name: 'App Store' },
   { id: 'games', name: 'Games' },
+  { id: 'iphonemirroring', name: 'iPhone Mirroring' },
+  { id: 'siriai', name: 'Siri' },
   { id: 'settings', name: 'System Settings' },
   { id: 'aboutme', name: 'About Me' },
 ];
@@ -95,7 +97,7 @@ export const Dock: React.FC = () => {
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
       <div 
-        className="mb-4 flex items-end gap-1 px-2 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
+        className="mb-4 flex items-end gap-0.5 px-1.5 py-1.5 rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
@@ -135,7 +137,7 @@ export const Dock: React.FC = () => {
         ))}
         
         {/* Divider */}
-        <div className="w-[1px] h-10 bg-white/20 mx-1 self-center" />
+        <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
 
         {/* Minimized Windows Space */}
         <AnimatePresence mode="popLayout">
@@ -147,7 +149,7 @@ export const Dock: React.FC = () => {
               exit={{ width: 0, opacity: 0, scale: 0 }}
               className="flex items-center overflow-hidden"
             >
-              <div className="mx-1">
+              <div className="mx-0.5">
                 <DockIcon 
                   app={{ id: appId, name: appId }} 
                   mouseX={mouseX} 
@@ -162,7 +164,7 @@ export const Dock: React.FC = () => {
         </AnimatePresence>
 
         {minimizedApps.length > 0 && (
-          <div className="w-[1px] h-10 bg-white/20 mx-1 self-center" />
+          <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
         )}
         
         {/* Downloads */}
