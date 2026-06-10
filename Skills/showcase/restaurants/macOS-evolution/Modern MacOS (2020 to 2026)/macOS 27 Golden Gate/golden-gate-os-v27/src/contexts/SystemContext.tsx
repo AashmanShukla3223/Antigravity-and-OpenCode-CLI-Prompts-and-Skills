@@ -113,7 +113,7 @@ const defaultState: GoldenGateV27State = {
     playbackProgress: 0,
     volume: 0.8
   },
-  runningApps: ['installer'],
+  runningApps: [],
   pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'github'],
   notes: [
     { 
@@ -246,7 +246,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return defaultState;
   });
   const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [openApps, setOpenApps] = useState<string[]>(['installer']);
+  const [openApps, setOpenApps] = useState<string[]>([]);
   const [minimizedApps, setMinimizedApps] = useState<string[]>([]);
   const [maximizedApps, setMaximizedApps] = useState<string[]>([]);
   const [launchingApp, setLaunchingApp] = useState<string | null>(null);
