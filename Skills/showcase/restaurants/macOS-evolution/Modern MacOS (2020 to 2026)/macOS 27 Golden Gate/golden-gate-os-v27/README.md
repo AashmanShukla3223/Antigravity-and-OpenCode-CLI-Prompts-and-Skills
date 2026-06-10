@@ -8,7 +8,7 @@ A high-fidelity web-based macOS simulation built with React 19, TypeScript, and 
 
 ## Preview
 
-![Desktop]([https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/desktop.png)
+![Desktop](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/desktop.png)
 *Desktop with Dock, Menu Bar, and active windows.*
 
 ![Video Tour](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/macOS.27.Tour.mp4)
@@ -89,9 +89,6 @@ macOS Golden Gate is the successor to **macOS Tahoe (v26)**.
 | **Storage** | `tahoe_v3_state` | `golden_gate_v27_state` |
 | **New Apps** | — | Clock, About Me, Samsung LCD TV Simulator, GitHub Navigator, Code Viewer, EKG Canvas |
 | **New Features** | — | OTA updates, System Infection/Chaos Mode, 12-step Setup Assistant, Dynamic Glass sliders, Spotlight AI, Siri multi-provider, Widget Picker, Incoming Call Overlay |
-
-![Evolution](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v27.0.0/screenshot-evolution.png)
-*Tahoe (v26) to Golden Gate (v27) transition.*
 
 ---
 
