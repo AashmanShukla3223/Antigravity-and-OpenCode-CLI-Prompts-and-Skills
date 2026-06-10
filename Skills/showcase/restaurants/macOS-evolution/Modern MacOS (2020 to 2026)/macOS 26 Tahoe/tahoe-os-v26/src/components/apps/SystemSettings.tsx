@@ -10,7 +10,8 @@ import {
   Alert01Icon, 
   ArrowRight01Icon,
   BatteryCharging01Icon,
-  FlashIcon
+  FlashIcon,
+  Tick01Icon
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,16 +56,13 @@ export const SystemSettings: React.FC = () => {
     hardware, 
     setShowAboutWindow,
     battery,
-    showConfirm,
-    showAlert,
-    initiateRestart
+    launchApp
   } = useSystem();
   
   const [currentTab, setCurrentTab] = useState('Appearance');
   const [resetStep, setResetStep] = useState(0); 
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
-  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   
   const [brightness, setBrightness] = useState(80);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 512, percent: 0 });
@@ -94,46 +92,7 @@ export const SystemSettings: React.FC = () => {
     if (password === systemState.user.password || !systemState.user.password) setResetStep(4);
     else { setError(true); setTimeout(() => setError(false), 500); setPassword(''); }
   };
-  const checkUpdates = async () => { 
-    setIsCheckingUpdate(true); 
-    try {
-      const response = await fetch('/version.json?t=' + Date.now());
-      const data = await response.json();
-      setTimeout(async () => {
-        setIsCheckingUpdate(false);
-        if (data.version !== App_Version) {
-          const confirmed = await showConfirm(
-            `A new software update (macOS Tahoe ${data.version}) is available. Would you like to update and restart now?`,
-            "Software Update"
-          );
-          if (confirmed) {
-            await showAlert("Downloading update and preparing system restart...", "macOS Updater");
-            initiateRestart();
-          }
-        } else {
-          await showAlert("Your Mac is up to date.", "Software Update");
-        }
-      }, 2000);
-    } catch (e) {
-      console.error('Update check failed', e);
-      setIsCheckingUpdate(false);
-    }
-  };
 
-
-
-  const [latestCommit, setLatestCommit] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (systemState.betaUpdates) {
-      fetch('https://api.github.com/repos/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/commits/main')
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.sha) setLatestCommit(data.sha.substring(0, 7));
-        })
-        .catch(err => console.error(err));
-    }
-  }, [systemState.betaUpdates]);
 
   const [gpuInfo, setGpuInfo] = useState('Apple GPU');
   const [deviceType, setDeviceType] = useState('Desktop');
@@ -310,13 +269,38 @@ export const SystemSettings: React.FC = () => {
             <button onClick={() => setResetStep(0)} className="p-1 hover:bg-white/10 rounded-full transition"><ArrowLeft01Icon size={20} className="hugeicon-tahoe" /></button>
             <h2 className="text-2xl font-semibold">Software Update</h2>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6 flex flex-col items-center justify-center text-center">
-            {isCheckingUpdate ? (
-              <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"/><h3 className="text-xl font-medium">Checking for updates...</h3></>
-            ) : (
-              <><div className="w-20 h-20 rounded-3xl bg-blue-500/20 flex items-center justify-center text-blue-500 mb-6"><Settings01Icon size={40} /></div><h3 className="text-2xl font-bold mb-2">macOS Tahoe {App_Version}</h3><p className="text-white/50 mb-8">{systemState.betaUpdates && latestCommit ? `Beta Build ${latestCommit}` : 'Your Mac is up to date.'}</p><button onClick={checkUpdates} className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition">Check for Updates</button></>
-            )}
+
+          <div className="bg-gradient-to-br from-yellow-500/20 to-orange-600/20 border border-yellow-500/30 rounded-2xl p-8 mb-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,200,0,0.15),transparent_70%)] pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-600 shadow-lg flex items-center justify-center mb-6">
+                <img src={`${base}icons/golden-gate-upgrade-installer.png`} className="w-14 h-14 object-contain" alt="Golden Gate" />
+              </div>
+              <h3 className="text-2xl font-bold mb-1">macOS 27 Golden Gate</h3>
+              <p className="text-white/60 text-sm mb-1">Version 27.0.0 (Build 27A001) — 8.2 GB</p>
+              <p className="text-white/40 text-xs mb-6">A major upgrade is available for your Mac.</p>
+              <button
+                onClick={() => launchApp('installer')}
+                className="px-10 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 rounded-xl font-bold text-white shadow-lg transition-all flex items-center gap-2"
+              >
+                Upgrade Now <ArrowRight01Icon size={18} />
+              </button>
+            </div>
           </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <Settings01Icon size={20} className="text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-bold">macOS Tahoe {App_Version}</h4>
+                <p className="text-xs text-white/50">Currently installed on your Mac.</p>
+              </div>
+              <Tick01Icon size={18} className="text-green-400" />
+            </div>
+          </div>
+
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
             <div>
               <h4 className="font-bold text-sm">Beta Updates</h4>

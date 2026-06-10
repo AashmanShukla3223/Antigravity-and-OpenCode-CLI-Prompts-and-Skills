@@ -15,7 +15,7 @@ function semverCompare(a: string, b: string): number {
   return 0;
 }
 
-const DISMISSED_KEY = 'tahoe_update_dismissed';
+const REMINDER_INTERVAL = 3 * 60 * 1000;
 
 export const useSoftwareUpdate = () => {
   const { showConfirm, showAlert, initiateRestart, bootState } = useSystem();
@@ -23,7 +23,19 @@ export const useSoftwareUpdate = () => {
   const [latestVersion, setLatestVersion] = useState('');
   const [updateNotes, setUpdateNotes] = useState('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const hasPromptedRef = useRef(false);
+  const reminderRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleReminder = () => {
+    if (reminderRef.current) clearTimeout(reminderRef.current);
+    reminderRef.current = setTimeout(() => {
+      setUpdateAvailable(true);
+    }, REMINDER_INTERVAL);
+  };
+
+  const dismissUpdate = () => {
+    setUpdateAvailable(false);
+    scheduleReminder();
+  };
 
   useEffect(() => {
     const audio = new Audio('/sounds/Blow.mp3');
@@ -31,10 +43,7 @@ export const useSoftwareUpdate = () => {
     audioRef.current = audio;
 
     const checkForUpdates = async () => {
-      if (bootState !== 'desktop' || hasPromptedRef.current) return;
-
-      const dismissed = localStorage.getItem(DISMISSED_KEY);
-      if (dismissed) return;
+      if (bootState !== 'desktop') return;
 
       try {
         const response = await fetch('/version.json?t=' + Date.now());
@@ -47,7 +56,6 @@ export const useSoftwareUpdate = () => {
 
           if (semverCompare(data.version, App_Version) > 0) {
             setUpdateAvailable(true);
-            hasPromptedRef.current = true;
 
             if (audioRef.current) {
               audioRef.current.currentTime = 0;
@@ -62,7 +70,7 @@ export const useSoftwareUpdate = () => {
 
     let timer: any;
     if (bootState === 'desktop') {
-      timer = setTimeout(checkForUpdates, 10000);
+      timer = setTimeout(checkForUpdates, 5000);
     }
 
     const interval = setInterval(checkForUpdates, 30 * 60 * 1000);
@@ -70,13 +78,9 @@ export const useSoftwareUpdate = () => {
     return () => {
       if (timer) clearTimeout(timer);
       clearInterval(interval);
+      if (reminderRef.current) clearTimeout(reminderRef.current);
     };
   }, [bootState, showConfirm, showAlert, initiateRestart]);
-
-  const dismissUpdate = () => {
-    setUpdateAvailable(false);
-    localStorage.setItem(DISMISSED_KEY, 'true');
-  };
 
   return { updateAvailable, dismissUpdate, currentVersion: App_Version, latestVersion, updateNotes };
 };
