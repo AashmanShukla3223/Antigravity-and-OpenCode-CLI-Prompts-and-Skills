@@ -112,7 +112,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: ['installer'],
-  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv', 'calculator', 'siriai', 'aboutme'],
+  pinnedApps: ['finder', 'safari', 'installer', 'messages', 'music', 'tv', 'photos', 'calendar', 'githubnavigator', 'soundtest', 'appstore', 'itunes', 'notes', 'settings', 'samsunglcdtv', 'calculator', 'siriai', 'aboutme', 'clock'],
   notes: [
     { 
       id: '1', 
@@ -218,6 +218,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
       if (!state.pinnedApps.includes('siriai')) {
         state.pinnedApps = [...state.pinnedApps, 'siriai'];
+      }
+      if (!state.pinnedApps.includes('clock')) {
+        state.pinnedApps = [...state.pinnedApps, 'clock'];
       }
       return state;
     } catch (e) {

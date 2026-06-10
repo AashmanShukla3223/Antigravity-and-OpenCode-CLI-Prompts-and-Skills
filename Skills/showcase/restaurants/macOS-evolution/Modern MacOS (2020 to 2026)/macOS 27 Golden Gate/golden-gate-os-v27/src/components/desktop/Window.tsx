@@ -42,6 +42,7 @@ import { SamsungLCDApp } from '../apps/SamsungLCDApp';
 import { Calculator } from '../apps/Calculator';
 import { SiriAI } from '../apps/SiriAI';
 import { AboutMe } from '../apps/AboutMe';
+import { Clock } from '../apps/Clock';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -86,6 +87,7 @@ const AppMap: Record<string, React.FC<any>> = {
   calculator: Calculator,
   siriai: SiriAI,
   aboutme: AboutMe,
+  clock: Clock,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -149,6 +151,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     calculator: 'Calculator',
     siriai: 'Siri',
     aboutme: 'About Me',
+    clock: 'Clock',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

@@ -38,6 +38,7 @@ const ALL_APPS = [
   { id: 'calculator', name: 'Calculator' },
   { id: 'siriai', name: 'Siri' },
   { id: 'aboutme', name: 'About Me' },
+  { id: 'clock', name: 'Clock' },
 ];
 
 export const Dock: React.FC = () => {
