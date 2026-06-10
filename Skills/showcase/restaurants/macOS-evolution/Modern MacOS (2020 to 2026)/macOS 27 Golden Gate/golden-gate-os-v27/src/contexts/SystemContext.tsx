@@ -239,6 +239,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!state.pinnedApps.includes('games')) {
         state.pinnedApps = [...state.pinnedApps, 'games'];
       }
+      if (!state.pinnedApps.includes('launchpad')) {
+        state.pinnedApps = ['launchpad', ...state.pinnedApps];
+      }
       return state;
     } catch (e) {
       console.error('Failed to parse golden_gate_v27_state', e);
