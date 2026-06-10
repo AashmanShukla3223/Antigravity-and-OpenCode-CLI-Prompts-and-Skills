@@ -8,10 +8,12 @@ A high-fidelity web-based macOS simulation built with React 19, TypeScript, and 
 
 ## Preview
 
-![Desktop](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v27.0.0/screenshot-desktop.png)
+![Desktop]([https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/desktop.png)
 *Desktop with Dock, Menu Bar, and active windows.*
 
-![OTA Update](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v27.0.0/screenshot-ota.png)
+![Video Tour](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/macOS.27.Tour.mp4)
+
+![OTA Update](https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.14/Tahoe.to.Golden.Gate.upgrade.mp4)
 *Over-the-air update notification with version comparison.*
 
 ---
