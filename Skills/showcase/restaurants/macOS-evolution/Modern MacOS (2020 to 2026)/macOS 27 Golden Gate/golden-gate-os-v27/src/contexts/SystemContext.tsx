@@ -219,6 +219,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!state.pinnedApps.includes('siriai')) {
         state.pinnedApps = [...state.pinnedApps, 'siriai'];
       }
+      if (!state.pinnedApps.includes('aboutme')) {
+        state.pinnedApps = [...state.pinnedApps, 'aboutme'];
+      }
       if (!state.pinnedApps.includes('clock')) {
         state.pinnedApps = [...state.pinnedApps, 'clock'];
       }
