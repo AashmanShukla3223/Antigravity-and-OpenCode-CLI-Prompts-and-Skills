@@ -229,7 +229,7 @@ export class AIEngine {
 {"action": "setPowerMode", "mode": "Low Power|Normal|High Performance"}
 {"action": "toggleGlass", "enabled": true|false}
 
-Available apps: finder, safari, messages, music, tv, photos, calendar, notes, settings, terminal, activitymonitor, weather, calculator, siriai, facetime, mail, maps, phone, reminders, stickies, contacts, appstore, books, wallet, githubnavigator.
+Available apps: finder, safari, messages, music, tv, photos, calendar, notes, settings, terminal, activitymonitor, weather, calculator, siriai, facetime, mail, maps, phone, reminders, stickies, contacts, appstore, books, wallet, github.
 
 If no system action is needed, respond conversationally as a helpful AI assistant. Keep responses concise.`;
   }

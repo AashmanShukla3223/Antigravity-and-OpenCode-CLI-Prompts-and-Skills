@@ -36,7 +36,6 @@ import { Weather } from '../apps/Weather';
 import { Notes } from '../apps/Notes';
 import { Calendar } from '../apps/Calendar';
 import { CrazyErrors } from '../apps/CrazyErrors';
-import { GitHubNavigator } from '../apps/GitHubNavigator';
 import { CodeViewer } from '../apps/CodeViewer';
 import { SamsungLCDApp } from '../apps/SamsungLCDApp';
 import { Calculator } from '../apps/Calculator';
@@ -85,7 +84,6 @@ const AppMap: Record<string, React.FC<any>> = {
   notes: Notes,
   calendar: Calendar,
   crazyerrors: CrazyErrors,
-  githubnavigator: GitHubNavigator,
   codeviewer: CodeViewer,
   samsunglcdtv: SamsungLCDApp,
   calculator: Calculator,
@@ -153,7 +151,6 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     notes: 'Notes',
     calendar: 'Calendar',
     crazyerrors: 'Crazy Errors',
-    githubnavigator: 'GitHub Navigator',
     codeviewer: 'Code Viewer',
     samsunglcdtv: 'Samsung LCD TV Simulator',
     calculator: 'Calculator',

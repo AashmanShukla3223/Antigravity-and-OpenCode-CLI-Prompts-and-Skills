@@ -26,7 +26,6 @@ const ALL_APPS = [
   { id: 'games', name: 'Games' },
   { id: 'settings', name: 'System Settings' },
   { id: 'aboutme', name: 'About Me' },
-  { id: 'githubnavigator', name: 'GitHub' },
 ];
 
 export const Dock: React.FC = () => {
@@ -46,7 +45,6 @@ export const Dock: React.FC = () => {
   // Applications, Finder and GitHub are special static anchors in this dock
   const finalApps = [
     { id: 'finder', name: 'Finder' },
-    { id: 'apps', name: 'Applications' },
     ...dockApps,
     { id: 'github', name: 'GitHub' }
   ].filter((app, index, self) => 
@@ -64,10 +62,6 @@ export const Dock: React.FC = () => {
     if (appId === 'finder') {
         launchApp('finder');
         return;
-    }
-    if (appId === 'apps') {
-       launchApp('launchpad');
-       return;
     }
     if (appId === 'trash') {
        launchApp('finder');
@@ -101,7 +95,7 @@ export const Dock: React.FC = () => {
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
       <div 
-        className="mb-4 flex items-end gap-2 px-3 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
+        className="mb-4 flex items-end gap-1 px-2 py-2 rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
