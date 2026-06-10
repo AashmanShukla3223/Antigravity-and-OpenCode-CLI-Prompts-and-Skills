@@ -28,7 +28,7 @@ export const SiriAI: React.FC = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Hello! I\'m Siri AI, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
+      content: 'Hello! I\'m Siri, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
       timestamp: Date.now(),
     },
   ]);
@@ -75,10 +75,11 @@ export const SiriAI: React.FC = () => {
 
     const apiKey = apiKeys[activeProvider];
     if (!apiKey) {
+      const res = await engine.executeCommand(input.trim());
       setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
+        id: `local-${Date.now()}`,
         role: 'assistant',
-        content: `No API key configured for ${PROVIDERS.find(p => p.key === activeProvider)?.name}. Please add your key in Settings.`,
+        content: res,
         timestamp: Date.now(),
       }]);
       setIsProcessing(false);
@@ -146,7 +147,7 @@ export const SiriAI: React.FC = () => {
         <div className="flex-1 flex flex-col overflow-y-auto p-8">
           <div className="max-w-lg mx-auto w-full space-y-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-bold text-white">Siri AI Settings</h2>
+              <h2 className="text-lg font-bold text-white">Siri Settings</h2>
               <button
                 onClick={() => setShowSettings(false)}
                 className="p-2 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
@@ -211,7 +212,7 @@ export const SiriAI: React.FC = () => {
                   setMessages([{
                     id: 'welcome',
                     role: 'assistant',
-                    content: 'Hello! I\'m Siri AI, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
+                    content: 'Hello! I\'m Siri, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
                     timestamp: Date.now(),
                   }]);
                   setShowSettings(false);
@@ -253,7 +254,7 @@ export const SiriAI: React.FC = () => {
                     setMessages([{
                       id: 'welcome',
                       role: 'assistant',
-                      content: 'Hello! I\'m Siri AI, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
+      content: 'Hello! I\'m Siri, powered by Apple Intelligence 2.0 with multi-provider AI. Configure your API keys in settings to get started.',
                       timestamp: Date.now(),
                     }]);
                   }}
@@ -285,7 +286,7 @@ export const SiriAI: React.FC = () => {
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#5E5CE6] to-[#007AFF] flex items-center justify-center shadow-[0_0_15px_rgba(94,92,230,0.5)]">
                   <SparklesIcon size={14} className="text-white" />
                 </div>
-                <span className="text-sm font-bold text-white">Siri AI</span>
+                <span className="text-sm font-bold text-white">Siri</span>
                 {hasKeys && (
                   <span className="text-[10px] font-bold text-[#5E5CE6] bg-[#5E5CE6]/20 px-2 py-0.5 rounded-full">
                     {PROVIDERS.find(p => p.key === activeProvider)?.name}
@@ -337,7 +338,7 @@ export const SiriAI: React.FC = () => {
                         <div className="w-4 h-4 rounded-full bg-gradient-to-br from-[#5E5CE6] to-[#007AFF] flex items-center justify-center">
                           <SparklesIcon size={8} className="text-white" />
                         </div>
-                        <span className="text-[10px] font-bold text-[#5E5CE6]">Siri AI</span>
+                        <span className="text-[10px] font-bold text-[#5E5CE6]">Siri</span>
                         <span className="text-[8px] text-white/30">·</span>
                         <LockIcon size={10} className="text-green-400" />
                         <span className="text-[8px] text-green-400/60">PCC</span>
@@ -451,7 +452,7 @@ export const SiriAI: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={hasKeys ? 'Ask Siri AI...' : 'Configure API keys in settings...'}
+                placeholder={hasKeys ? 'Ask Siri...' : 'Configure API keys in settings...'}
                 rows={1}
                 className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none resize-none max-h-32 py-1.5"
                 style={{ minHeight: '24px' }}
@@ -475,7 +476,7 @@ export const SiriAI: React.FC = () => {
               </button>
             </div>
             <p className="text-[10px] text-white/20 text-center mt-2">
-              Siri AI uses Apple Intelligence 2.0 with {PROVIDERS.find(p => p.key === activeProvider)?.name}.
+              Siri uses Apple Intelligence 2.0 with {PROVIDERS.find(p => p.key === activeProvider)?.name}.
             </p>
           </div>
         </div>

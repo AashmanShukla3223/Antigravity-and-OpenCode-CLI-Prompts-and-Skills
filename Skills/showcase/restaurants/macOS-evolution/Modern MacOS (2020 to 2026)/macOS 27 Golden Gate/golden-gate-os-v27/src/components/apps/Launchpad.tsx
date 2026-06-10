@@ -29,7 +29,7 @@ const apps: AppItem[] = [
   { id: 'soundtest', name: 'Sound Test' },
   { id: 'samsunglcdtv', name: 'Samsung LCD TV Simulator' },
   { id: 'calculator', name: 'Calculator' },
-  { id: 'siriai', name: 'Siri AI' },
+  { id: 'siriai', name: 'Siri' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },

@@ -81,17 +81,19 @@ export const Desktop: React.FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'Space') {
+      if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
         e.preventDefault();
-        setShowSpotlight(!showSpotlight);
+        e.stopPropagation();
+        setShowSpotlight(prev => !prev);
+        return;
       }
       if (e.key === 'Escape') {
         clearSystemErrors();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSpotlight, setShowSpotlight, clearSystemErrors]);
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [setShowSpotlight, clearSystemErrors]);
 
   useEffect(() => {
     const handleGlobalContextMenu = (e: MouseEvent) => {

@@ -145,7 +145,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     codeviewer: 'Code Viewer',
     samsunglcdtv: 'Samsung LCD TV Simulator',
     calculator: 'Calculator',
-    siriai: 'Siri AI',
+    siriai: 'Siri',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

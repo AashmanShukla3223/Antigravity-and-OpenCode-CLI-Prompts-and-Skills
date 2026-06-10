@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
 import { 
   Video01Icon,
@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
+import { AIEngine } from '../../utils/AIEngine';
 
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
@@ -77,7 +78,8 @@ const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
 };
 
 const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { launchApp } = useSystem();
+  const { launchApp, showAlert, updateSystemState, setPowerMode } = useSystem();
+  const engineRef = useRef<AIEngine | null>(null);
 
   if (!isOpen) return null;
 
@@ -86,10 +88,15 @@ const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
   const suggestions = [
     { label: 'Open Safari', action: () => { launchApp('safari'); onClose(); } },
-    { label: 'What\'s the weather?', action: () => { launchApp('weather'); onClose(); } },
+    { label: 'What\'s the weather?', action: async () => { 
+      if (!engineRef.current) engineRef.current = new AIEngine({ launchApp, updateSystemState, setPowerMode });
+      const res = await engineRef.current.executeCommand("What's the weather today?");
+      await showAlert(res, 'Apple Intelligence');
+      onClose();
+    } },
     { label: 'Launch Terminal', action: () => { launchApp('terminal'); onClose(); } },
     { label: 'Open Calculator', action: () => { launchApp('calculator'); onClose(); } },
-    { label: 'Siri AI Chat', action: () => { launchApp('siriai'); onClose(); } },
+    { label: 'Open Siri', action: () => { launchApp('siriai'); onClose(); } },
   ];
 
   return (
@@ -101,7 +108,7 @@ const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         exit={{ opacity: 0, scale: 0.95, y: -10 }}
         className="absolute top-10 right-0 w-80 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[28px] shadow-[0_30px_60px_rgba(0,0,0,0.5)] p-6 z-50 text-white overflow-hidden"
       >
-        {/* Siri AI Avatar Glow */}
+        {/* Siri Avatar Glow */}
         <div className="flex flex-col items-center mb-6">
           <motion.div
             className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5E5CE6] to-[#007AFF] flex items-center justify-center shadow-[0_0_30px_rgba(94,92,230,0.4)]"
@@ -590,7 +597,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
             <div className="relative">
               <img 
                 src={`${base}icons/Siri AI.png`} 
-                alt="Siri AI" 
+                alt="Siri" 
                 className="w-4 h-4 object-contain"
                 loading="lazy"
               />
