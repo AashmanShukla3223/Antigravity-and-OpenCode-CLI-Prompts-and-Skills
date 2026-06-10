@@ -80,6 +80,7 @@ export const Installer: React.FC = () => {
     const { scrollTop, scrollHeight, clientHeight } = termsRef.current;
     if (scrollHeight - scrollTop - clientHeight < 5) {
       setShowScrolled(true);
+      setLicenseAccepted(true);
     }
   };
 
@@ -195,13 +196,13 @@ export const Installer: React.FC = () => {
         )}
 
         {step === 'license' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col px-12 py-8">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col px-12 py-8 min-h-0">
             <h2 className="text-[22px] font-bold text-black mb-1">Software License Agreement</h2>
             <p className="text-[13px] text-black/40 mb-4">Please read the license agreement before continuing.</p>
             <div
               ref={termsRef}
               onScroll={handleTermsScroll}
-              className="flex-1 bg-[#F6F6F6] border border-black/5 rounded-xl p-6 text-[12px] text-black/70 leading-relaxed overflow-y-auto whitespace-pre-line font-mono"
+              className="flex-1 bg-[#F6F6F6] border border-black/5 rounded-xl p-6 text-[12px] text-black/70 leading-relaxed overflow-y-auto whitespace-pre-line font-mono min-h-0"
             >
               {TERMS}
             </div>
@@ -211,7 +212,6 @@ export const Installer: React.FC = () => {
                 id="agree"
                 checked={licenseAccepted}
                 onChange={() => setLicenseAccepted(!licenseAccepted)}
-                disabled={!showScrolled}
                 className="w-4 h-4 rounded border-black/20 accent-[#007AFF]"
               />
               <label htmlFor="agree" className={`text-[13px] ${showScrolled ? 'text-black' : 'text-black/30'}`}>
