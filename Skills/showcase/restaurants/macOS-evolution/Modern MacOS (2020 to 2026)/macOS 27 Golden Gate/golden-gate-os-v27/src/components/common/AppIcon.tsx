@@ -103,6 +103,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'vmware': `${base}icons/VMware Fusion Pro.png`,
     'launchpad': `${base}icons/apps.png`,
     'games': `${base}icons/games.png`,
+    'freeform': `${base}icons/freeform.png`,
   };
 
   const handleImageError = (iconId: string) => {

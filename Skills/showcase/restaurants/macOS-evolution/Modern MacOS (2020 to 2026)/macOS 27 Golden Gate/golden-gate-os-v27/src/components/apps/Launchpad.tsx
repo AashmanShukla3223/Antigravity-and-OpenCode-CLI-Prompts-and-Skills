@@ -38,6 +38,7 @@ const apps: AppItem[] = [
   { id: 'pages', name: 'Pages' },
   { id: 'games', name: 'Games' },
   { id: 'installer', name: 'Installer' },
+  { id: 'freeform', name: 'Freeform' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
