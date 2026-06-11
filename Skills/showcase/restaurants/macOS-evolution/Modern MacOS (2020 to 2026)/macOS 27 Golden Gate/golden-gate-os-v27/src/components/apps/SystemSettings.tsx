@@ -415,9 +415,9 @@ export const SystemSettings: React.FC = () => {
         </div>
       );
       default: return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-y-auto pr-4 scrollbar-hide pb-12">
           <h2 className="text-2xl font-semibold mb-6">General</h2>
-          <div className="space-y-1">
+          <div className="space-y-1 mb-8">
             {[
               { name: 'About', icon: InformationCircleIcon, action: () => setResetStep(5) },
               { name: 'Software Update', icon: Settings01Icon, action: () => setResetStep(6) },
@@ -429,6 +429,64 @@ export const SystemSettings: React.FC = () => {
                 <ArrowRight01Icon size={16} className="text-white/20 group-hover:text-white/50" />
               </div>
             ))}
+          </div>
+
+          <h3 className="text-lg font-semibold mb-4">Dock</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
+              <div>
+                <span className="text-sm font-medium">Magnification</span>
+                <p className="text-xs text-white/40 mt-0.5">Icons enlarge when hovered</p>
+              </div>
+              <button
+                onClick={() => updateSystemState({ dockMagnifier: !systemState.dockMagnifier })}
+                className={`w-12 h-6 rounded-full relative transition-colors shrink-0 ${systemState.dockMagnifier ? 'bg-blue-500' : 'bg-white/10'}`}
+              >
+                <motion.div animate={{ x: systemState.dockMagnifier ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
+              <div>
+                <span className="text-sm font-medium">Speed</span>
+                <p className="text-xs text-white/40 mt-0.5">Animation responsiveness</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => updateSystemState({ dockSpeed: 'slow' })}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'slow' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                >
+                  Slow
+                </button>
+                <button
+                  onClick={() => updateSystemState({ dockSpeed: 'fast' })}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'fast' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                >
+                  Fast
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
+              <div>
+                <span className="text-sm font-medium">Size</span>
+                <p className="text-xs text-white/40 mt-0.5">Icon size in the Dock</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => updateSystemState({ dockSize: 'small' })}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'small' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                >
+                  Small
+                </button>
+                <button
+                  onClick={() => updateSystemState({ dockSize: 'large' })}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'large' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+                >
+                  Large
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       );

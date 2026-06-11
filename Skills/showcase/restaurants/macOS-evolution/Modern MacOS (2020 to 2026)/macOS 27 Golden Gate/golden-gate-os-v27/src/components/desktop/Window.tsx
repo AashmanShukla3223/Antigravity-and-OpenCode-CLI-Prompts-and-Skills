@@ -41,6 +41,7 @@ import { SamsungLCDApp } from '../apps/SamsungLCDApp';
 import { Calculator } from '../apps/Calculator';
 import { SiriAI } from '../apps/SiriAI';
 import { AboutMe } from '../apps/AboutMe';
+import { VSCode } from '../apps/VSCode';
 import { Clock } from '../apps/Clock';
 import { Pages } from '../apps/Pages';
 import { Numbers } from '../apps/Numbers';
@@ -89,6 +90,7 @@ const AppMap: Record<string, React.FC<any>> = {
   calculator: Calculator,
   siriai: SiriAI,
   aboutme: AboutMe,
+  code: VSCode,
   clock: Clock,
   pages: Pages,
   numbers: Numbers,
@@ -156,6 +158,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     calculator: 'Calculator',
     siriai: 'Siri',
     aboutme: 'About Me',
+    code: 'VS Code',
     clock: 'Clock',
     pages: 'Pages',
     numbers: 'Numbers',

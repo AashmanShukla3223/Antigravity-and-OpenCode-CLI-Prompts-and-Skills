@@ -28,6 +28,7 @@ const ALL_APPS = [
   { id: 'siriai', name: 'Siri' },
   { id: 'settings', name: 'System Settings' },
   { id: 'aboutme', name: 'About Me' },
+  { id: 'code', name: 'VS Code' },
 ];
 
 export const Dock: React.FC = () => {
@@ -38,13 +39,11 @@ export const Dock: React.FC = () => {
   const trashContents = getDirectoryContents('trash');
   const isTrashFull = trashContents.length > 0;
 
-  // Combine pinned apps and currently running apps (dot indicator)
   const dockAppsIds = Array.from(new Set([...systemState.pinnedApps, ...systemState.runningApps]));
   const dockApps = dockAppsIds
     .map(id => ALL_APPS.find(a => a.id === id))
     .filter(Boolean) as { id: string, name: string }[];
 
-  // Applications, Finder and GitHub are special static anchors in this dock
   const finalApps = [
     { id: 'finder', name: 'Finder' },
     ...dockApps,
@@ -53,7 +52,6 @@ export const Dock: React.FC = () => {
     index === self.findIndex((t) => t.id === app.id)
   );
 
-  // Dock true magnification physics
   const mouseX = useMotionValue(Infinity);
   
   const handleAppClick = (appId: string) => {
@@ -81,7 +79,6 @@ export const Dock: React.FC = () => {
   const handleContextMenu = (e: React.MouseEvent, appId: string) => {
     e.preventDefault();
     e.stopPropagation();
-    // Offset Y to be above the dock
     setContextMenu({ x: e.pageX, y: e.pageY, type: 'dock', targetId: appId });
   };
 
@@ -97,7 +94,7 @@ export const Dock: React.FC = () => {
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
       <div 
-        className="mb-4 flex items-end gap-0.5 px-1.5 py-1.5 rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
+        className="mb-4 flex items-end gap-0.5 px-1.5 py-1.5 rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
@@ -117,6 +114,9 @@ export const Dock: React.FC = () => {
                 isMinimized={false}
                 isActive={false}
                 isLaunching={false}
+                magnifierEnabled={systemState.dockMagnifier}
+                dockSpeed={systemState.dockSpeed}
+                dockSize={systemState.dockSize}
                 onClick={() => {}}
                 onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
               />
@@ -130,16 +130,17 @@ export const Dock: React.FC = () => {
             isMinimized={false}
             isActive={activeApp === app.id}
             isLaunching={launchingApp === app.id}
+            magnifierEnabled={systemState.dockMagnifier}
+            dockSpeed={systemState.dockSpeed}
+            dockSize={systemState.dockSize}
             onClick={() => handleAppClick(app.id)}
             onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
           />
           )
         ))}
         
-        {/* Divider */}
         <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
 
-        {/* Minimized Windows Space */}
         <AnimatePresence mode="popLayout">
           {minimizedApps.map((appId) => (
             <motion.div
@@ -156,6 +157,9 @@ export const Dock: React.FC = () => {
                   isOpen={true}
                   isMinimized={false}
                   isActive={false}
+                  magnifierEnabled={systemState.dockMagnifier}
+                  dockSpeed={systemState.dockSpeed}
+                  dockSize={systemState.dockSize}
                   onClick={() => unminimizeApp(appId)}
                 />
               </div>
@@ -167,17 +171,18 @@ export const Dock: React.FC = () => {
           <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
         )}
         
-        {/* Downloads */}
         <DockIcon 
           app={{ id: 'downloads', name: 'Downloads' }} 
           mouseX={mouseX} 
           isOpen={false}
           isMinimized={false}
           isActive={activeApp === 'downloads'}
+          magnifierEnabled={systemState.dockMagnifier}
+          dockSpeed={systemState.dockSpeed}
+          dockSize={systemState.dockSize}
           onClick={() => handleAppClick('downloads')}
         />
 
-        {/* Trash */}
         <DockIcon 
           app={{ id: 'trash', name: 'Trash' }} 
           mouseX={mouseX} 
@@ -185,6 +190,9 @@ export const Dock: React.FC = () => {
           isMinimized={false}
           isFull={isTrashFull}
           isActive={activeApp === 'trash'}
+          magnifierEnabled={systemState.dockMagnifier}
+          dockSpeed={systemState.dockSpeed}
+          dockSize={systemState.dockSize}
           onClick={() => handleAppClick('trash')}
         />
       </div>
@@ -193,17 +201,33 @@ export const Dock: React.FC = () => {
   );
 };
 
-const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLaunching, onClick, onContextMenu }: any) => {
+const SPRING_CONFIGS: Record<string, { mass: number; stiffness: number; damping: number }> = {
+  fast: { mass: 0.1, stiffness: 150, damping: 12 },
+  slow: { mass: 0.3, stiffness: 80, damping: 20 },
+};
+
+const SIZE_CONFIGS: Record<string, { base: number; hover: number }> = {
+  small: { base: 36, hover: 56 },
+  large: { base: 48, hover: 72 },
+};
+
+const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLaunching, magnifierEnabled, dockSpeed, dockSize, onClick, onContextMenu }: any) => {
   const ref = useRef<HTMLDivElement>(null);
-  
-  // True Magnification (1.0 -> 1.5 on hover based on distance)
+
+  const sizeConfig = SIZE_CONFIGS[dockSize] || SIZE_CONFIGS.large;
+  const springConfig = SPRING_CONFIGS[dockSpeed] || SPRING_CONFIGS.fast;
+
   const distance = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
     return val - bounds.x - bounds.width / 2;
   });
 
-  const widthSync = useTransform(distance, [-150, 0, 150], [48, 72, 48]);
-  const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
+  const widthSync = useTransform(
+    distance,
+    [-150, 0, 150],
+    magnifierEnabled ? [sizeConfig.base, sizeConfig.hover, sizeConfig.base] : [sizeConfig.base, sizeConfig.base, sizeConfig.base]
+  );
+  const width = useSpring(widthSync, springConfig);
 
   const [hovered, setHovered] = useState(false);
 
@@ -232,10 +256,9 @@ const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLau
         onContextMenu={onContextMenu}
         whileTap={{ scale: 0.9 }}
       >
-        <AppIcon id={app.id} size={48} isFull={isFull} />
+        <AppIcon id={app.id} size={sizeConfig.base} isFull={isFull} />
       </motion.div>
       
-      {/* Open indicator dot - Shows if the app is RUNNING (process active) */}
       {isRunning && (
         <div className={`absolute -bottom-1.5 w-1 h-1 bg-white/80 rounded-full shadow-[0_0_5px_white] transition-opacity ${isMinimized ? 'opacity-30' : 'opacity-100'}`} />
       )}

@@ -74,6 +74,9 @@ export interface GoldenGateV27State {
   systemOpacity: number;
   lowPowerMode: boolean;
   dockHidden: boolean;
+  dockMagnifier: boolean;
+  dockSpeed: 'slow' | 'fast';
+  dockSize: 'small' | 'large';
   apiKey?: string;
   widgets: Widget[];
   reminders: Reminder[];
@@ -100,6 +103,9 @@ const defaultState: GoldenGateV27State = {
   systemOpacity: 70,
   lowPowerMode: false,
   dockHidden: false,
+  dockMagnifier: true,
+  dockSpeed: 'fast',
+  dockSize: 'small',
   apiKey: (import.meta as any).env?.GEMINI_API_KEY_VITE || '',
   widgets: [],
   reminders: [
@@ -114,7 +120,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: [],
-  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'github'],
+  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'github'],
   notes: [
     { 
       id: '1', 
