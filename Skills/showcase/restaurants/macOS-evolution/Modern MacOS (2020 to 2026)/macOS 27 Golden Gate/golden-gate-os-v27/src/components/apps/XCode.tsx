@@ -1,12 +1,19 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
+import { useSystem } from '../../contexts/SystemContext';
 
-interface XcodeFile {
+interface GitHubItem {
   name: string;
   path: string;
-  content: string;
-  language: string;
-  icon: string;
+  type: 'file' | 'dir';
+  download_url: string | null;
+}
+
+interface FileNode {
+  name: string;
+  path: string;
+  type: 'file' | 'dir';
+  children?: FileNode[];
 }
 
 interface GitChange {
@@ -14,261 +21,188 @@ interface GitChange {
   status: 'M' | 'A' | 'D' | '??';
 }
 
-const SAMPLE_FILES: XcodeFile[] = [
-  { name: 'ContentView.swift', path: 'GoldenGate/ContentView.swift', language: 'swift', icon: '🕊️',
-    content: `import SwiftUI
-
-struct ContentView: View {
-    @State private var counter = 0
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Welcome to macOS 27")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundStyle(.linearGradient(
-                    colors: [.blue, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ))
-            
-            Text("Golden Gate Edition")
-                .font(.title2)
-                .foregroundColor(.secondary)
-            
-            HStack(spacing: 40) {
-                Button("−") { counter -= 1 }
-                    .buttonStyle(.bordered)
-                Text("\(counter)")
-                    .font(.system(.title, design: .monospaced))
-                    .frame(minWidth: 60)
-                Button("+") { counter += 1 }
-                    .buttonStyle(.borderedProminent)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-#Preview {
-    ContentView()
-}
-` },
-  { name: 'AppDelegate.swift', path: 'GoldenGate/AppDelegate.swift', language: 'swift', icon: '🕊️',
-    content: `import Cocoa
-
-@main
-class AppDelegate: NSObject, NSApplicationDelegate {
-    private var window: NSWindow!
-    
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1200, height: 800),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: false
-        )
-        window.title = "macOS 27 Golden Gate"
-        window.center()
-        window.makeKeyAndOrderFront(nil)
-        window.contentView = NSHostingView(rootView: ContentView())
-    }
-    
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        return true
-    }
-}
-` },
-  { name: 'Package.swift', path: 'GoldenGate/Package.swift', language: 'swift', icon: '📦',
-    content: `// swift-tools-version: 6.0
-import PackageDescription
-
-let package = Package(
-    name: "GoldenGate",
-    platforms: [
-        .macOS(.v15)
-    ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-    ],
-    targets: [
-        .executableTarget(
-            name: "GoldenGate",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ],
-            swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency"),
-            ]
-        ),
-        .testTarget(
-            name: "GoldenGateTests",
-            dependencies: ["GoldenGate"]
-        )
-    ]
-)
-` },
-  { name: 'Info.plist', path: 'GoldenGate/Info.plist', language: 'xml', icon: '📋',
-    content: `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en_IN</string>
-    <key>CFBundleExecutable</key>
-    <string>GoldenGate</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.aashman.GoldenGate</string>
-    <key>CFBundleName</key>
-    <string>Golden Gate</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>27.0</string>
-    <key>CFBundleVersion</key>
-    <string>27A405</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>15.0</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-</dict>
-</plist>
-` },
-  { name: 'Assets.xcassets/Contents.json', path: 'GoldenGate/Assets.xcassets/Contents.json', language: 'json', icon: '🖼️',
-    content: `{
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
-  },
-  "properties" : {
-    "provides-namespace" : true
-  }
-}
-` },
-  { name: 'Preview Content/PreviewAssets.xcassets/Contents.json', path: 'GoldenGate/Preview Content/PreviewAssets.xcassets/Contents.json', language: 'json', icon: '🎨',
-    content: `{
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
-  }
-}
-` },
-  { name: 'GoldenGateTests/GoldenGateTests.swift', path: 'GoldenGateTests/GoldenGateTests.swift', language: 'swift', icon: '🕊️',
-    content: `import Testing
-@testable import GoldenGate
-
-struct GoldenGateTests {
-    @Test("Counter increments correctly")
-    func testCounterIncrement() {
-        let view = ContentView()
-        #expect(view.counter == 0)
-    }
-}
-` },
-  { name: 'GoldenGateUITests/GoldenGateUITests.swift', path: 'GoldenGateUITests/GoldenGateUITests.swift', language: 'swift', icon: '🕊️',
-    content: `import XCTest
-
-final class GoldenGateUITests: XCTestCase {
-    var app: XCUIApplication!
-    
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launch()
-    }
-    
-    func testLaunchPerformance() throws {
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
-    }
-}
-` },
-];
-
 const GIT_CHANGES: GitChange[] = [
   { file: 'GoldenGate/ContentView.swift', status: 'M' },
-  { file: 'GoldenGate/AppDelegate.swift', status: 'M' },
-  { file: 'GoldenGate/Package.swift', status: 'A' },
+  { file: 'GoldenGate/AppDelegate.swift', status: 'A' },
+  { file: 'GoldenGate/Package.swift', status: 'M' },
   { file: 'GoldenGateTests/GoldenGateTests.swift', status: 'A' },
 ];
 
-type SidebarTab = 'navigator' | 'sourcecontrol';
-
-let terminalLines: string[] = [
-  'GoldenGate — Build Configuration: Debug',
-  'Swift 6.0 — macOS 15.0 SDK',
-  '',
-];
+const statusColors = { M: 'text-orange-400', A: 'text-green-400', D: 'text-red-400', '??': 'text-blue-400' } as const;
+const statusLabels = { M: 'Modify', A: 'Add', D: 'Delete', '??': 'Untrack' } as const;
 
 export const XCode: React.FC = () => {
-  const [selectedFile, setSelectedFile] = useState<XcodeFile>(SAMPLE_FILES[0]);
-  const [editedContent, setEditedContent] = useState<string>(SAMPLE_FILES[0].content);
-  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('navigator');
+  const { systemState } = useSystem();
+  const [sidebarTab, setSidebarTab] = useState<'navigator' | 'git'>('navigator');
   const [showTerminal, setShowTerminal] = useState(true);
   const [scheme] = useState('GoldenGate');
   const [device] = useState('My Mac');
   const [isBuilding, setIsBuilding] = useState(false);
   const [gitCommitMsg, setGitCommitMsg] = useState('');
-  const [gitChanges] = useState<GitChange[]>(GIT_CHANGES);
-  const [terminalHistory, setTerminalHistory] = useState<string[]>(terminalLines);
-  const [terminalInput, setTerminalInput] = useState('');
   const [commits, setCommits] = useState<string[]>([]);
-  const [showSourceControlFiles, setShowSourceControlFiles] = useState(false);
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalHistory, setTerminalHistory] = useState<string[]>([
+    'GoldenGate — Build Configuration: Debug',
+    'Swift 6.0 — macOS 15.0 SDK',
+    '',
+  ]);
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  const fileTree = buildFileTree(SAMPLE_FILES);
+  const [fileTree, setFileTree] = useState<FileNode[]>([]);
+  const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
+  const [fileContent, setFileContent] = useState('');
+  const [fileLanguage, setFileLanguage] = useState('plaintext');
+  const [loading, setLoading] = useState(true);
+  const [loadingFile, setLoadingFile] = useState(false);
+  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
+  const [gitChanges] = useState<GitChange[]>(GIT_CHANGES);
 
-  const handleFileSelect = useCallback((file: XcodeFile) => {
-    setSelectedFile(file);
-    setEditedContent(file.content);
+  const OWNER = 'AashmanShukla3223';
+  const REPO = 'Antigravity-and-OpenCode-CLI-Prompts-and-Skills';
+
+  const headersRef = useRef<Record<string, string>>({ Accept: 'application/vnd.github.v3+json' });
+  headersRef.current = {
+    Accept: 'application/vnd.github.v3+json',
+    ...(systemState.apiKey ? { Authorization: `Bearer ${systemState.apiKey}` } : {}),
+  };
+
+  const fetchDir = useCallback(async (path: string): Promise<GitHubItem[]> => {
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=main`;
+    const res = await fetch(url, { headers: headersRef.current });
+    if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
   }, []);
+
+  const fetchFile = useCallback(async (path: string): Promise<string> => {
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=main`;
+    const res = await fetch(url, { headers: headersRef.current });
+    if (!res.ok) throw new Error(`Failed to load file: ${res.status}`);
+    const data = await res.json();
+    return atob(data.content);
+  }, []);
+
+  const expandDir = useCallback(async (node: FileNode) => {
+    if (node.children) return;
+    try {
+      const items = await fetchDir(node.path);
+      node.children = items.filter(i => i.type === 'dir' || i.type === 'file') as FileNode[];
+      setFileTree(prev => [...prev]);
+    } catch {
+      node.children = [];
+      setFileTree(prev => [...prev]);
+    }
+  }, [fetchDir]);
+
+  const loadFile = useCallback(async (path: string) => {
+    setLoadingFile(true);
+    setSelectedFilePath(path);
+    try {
+      const content = await fetchFile(path);
+      setFileContent(content);
+      setFileLanguage(detectLanguage(path));
+    } catch {
+      setFileContent('// Error loading file from GitHub');
+    }
+    setLoadingFile(false);
+  }, [fetchFile]);
+
+  const loadTree = useCallback(async () => {
+    setLoading(true);
+    setFileTree([]);
+    setSelectedFilePath(null);
+    setFileContent('');
+    setExpandedDirs(new Set());
+    try {
+      const root = await fetchDir('');
+      const nodes: FileNode[] = [];
+      let readmePath: string | null = null;
+      for (const item of root) {
+        if (item.type !== 'file' && item.type !== 'dir') continue;
+        const node: FileNode = { name: item.name, path: item.path, type: item.type };
+        nodes.push(node);
+        if (item.type === 'file' && item.name.toLowerCase() === 'readme.md') {
+          readmePath = item.path;
+        }
+      }
+      setFileTree(nodes);
+      if (readmePath) {
+        const content = await fetchFile(readmePath);
+        setFileContent(content);
+        setFileLanguage('markdown');
+        setSelectedFilePath(readmePath);
+      }
+    } catch {
+      setTerminalHistory(prev => [...prev, '⚠️ Failed to load repository files']);
+    }
+    setLoading(false);
+  }, [fetchDir, fetchFile]);
+
+  useEffect(() => {
+    loadTree();
+  }, [loadTree]);
+
+  const toggleDir = useCallback((node: FileNode) => {
+    setExpandedDirs(prev => {
+      const next = new Set(prev);
+      next.has(node.path) ? next.delete(node.path) : next.add(node.path);
+      return next;
+    });
+    if (!node.children) expandDir(node);
+  }, [expandDir]);
 
   const handleBuild = useCallback(() => {
     setIsBuilding(true);
-    setTerminalHistory(prev => [...prev, '', `▸ Build GoldenGate (${new Date().toLocaleTimeString()})`, '  Resolving packages...', '  Compiling Swift source files...']);
+    setTerminalHistory(prev => [...prev, '', `▸ Build GoldenGate (${new Date().toLocaleTimeString()})`]);
     setTimeout(() => {
       setIsBuilding(false);
-      setTerminalHistory(prev => [...prev, '  ✅ Build Succeeded (0.8s)', '  GoldenGate.app built successfully']);
-    }, 1500);
+      setTerminalHistory(prev => [...prev, '  Compile Swift source files', '  Link GoldenGate', '  ✅ Build Succeeded (0.8s)']);
+    }, 1200);
   }, []);
 
   const handleRun = useCallback(() => {
-    setTerminalHistory(prev => [...prev, '', `▸ Run GoldenGate on ${device}`, '  Launching...', '  Process: GoldenGate [PID: 48291]', '  Runtime: macOS 15.0, ARM64']);
+    setTerminalHistory(prev => [...prev, '', `▸ Run GoldenGate on ${device}`, '  Process launched [PID: 48291]']);
   }, [device]);
 
   const handleCommit = useCallback(() => {
     if (!gitCommitMsg.trim()) return;
     setCommits(prev => [`${new Date().toLocaleDateString()} — ${gitCommitMsg}`, ...prev]);
-    setTerminalHistory(prev => [...prev, '', `✅ Committed: "${gitCommitMsg}"`, '  3 files changed, 45 insertions(+)', '  To push, use Push button']);
+    setTerminalHistory(prev => [...prev, '', `✅ Committed: "${gitCommitMsg}"`]);
     setGitCommitMsg('');
-    setShowSourceControlFiles(true);
   }, [gitCommitMsg]);
 
   const handlePush = useCallback(() => {
-    setTerminalHistory(prev => [...prev, '', '▸ git push origin main', '  remote: Resolving deltas...', '  remote: Processing references...', `  ✅ Pushed 1 commit to origin/main (${new Date().toLocaleTimeString()})`]);
-  }, []);
+    if (commits.length === 0) return;
+    setTerminalHistory(prev => [...prev, '', '▸ git push origin main', `  ✅ Pushed to origin/main (${new Date().toLocaleTimeString()})`]);
+  }, [commits]);
 
   const handleTerminalCommand = useCallback((cmd: string) => {
     setTerminalHistory(prev => [...prev, `$ ${cmd}`]);
     const lower = cmd.trim().toLowerCase();
-    if (lower === 'clear') {
-      setTerminalHistory([]);
-    } else if (lower === 'help') {
-      setTerminalHistory(prev => [...prev, '  Available commands: help, clear, ls, pwd, swift --version, echo', '  Use git commit and push from Source Control tab']);
-    } else if (lower === 'ls') {
-      setTerminalHistory(prev => [...prev, '  GoldenGate/', '  GoldenGate.xcodeproj/', '  GoldenGateTests/', '  GoldenGateUITests/', '  Package.swift', '  README.md', '  .gitignore']);
-    } else if (lower === 'pwd') {
-      setTerminalHistory(prev => [...prev, '  /Users/aashman/Projects/GoldenGate']);
-    } else if (lower === 'swift --version') {
-      setTerminalHistory(prev => [...prev, '  Swift version 6.0 (swift-6.0.0.1.123)', '  Target: arm64-apple-macosx15.0']);
-    } else if (cmd.trim().startsWith('echo ')) {
-      setTerminalHistory(prev => [...prev, `  ${cmd.slice(5)}`]);
-    } else {
-      setTerminalHistory(prev => [...prev, `  zsh: command not found: ${cmd.trim().split(' ')[0]}`]);
+    if (lower === 'clear') { setTerminalHistory([]); return; }
+    if (lower === 'help') {
+      setTerminalHistory(prev => [...prev, '  Commands: clear, ls, pwd, cd, swift --version, git status, make, echo']);
+      return;
     }
-  }, []);
+    if (lower === 'ls') {
+      setTerminalHistory(prev => [...prev, '  GoldenGate/  GoldenGate.xcodeproj/  GoldenGateTests/', '  Package.swift  README.md  .gitignore']);
+      return;
+    }
+    if (lower === 'pwd') {
+      setTerminalHistory(prev => [...prev, '  /Users/aashman/Developer/GoldenGate']);
+      return;
+    }
+    if (lower === 'git status') {
+      setTerminalHistory(prev => [...prev, '  On branch main', '  Changes not staged for commit:', '    modified:   GoldenGate/ContentView.swift', '    modified:   GoldenGate/Package.swift', '  Untracked files:', '    GoldenGate/AppDelegate.swift']);
+      return;
+    }
+    if (lower === 'make' || lower === 'build') { handleBuild(); return; }
+    if (cmd.trim().startsWith('echo ')) {
+      setTerminalHistory(prev => [...prev, `  ${cmd.slice(5)}`]);
+      return;
+    }
+    setTerminalHistory(prev => [...prev, `  zsh: command not found: ${cmd.split(' ')[0]}`]);
+  }, [handleBuild]);
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -276,8 +210,46 @@ export const XCode: React.FC = () => {
     }
   }, [terminalHistory]);
 
-  const statusColors: Record<string, string> = { M: 'text-orange-400', A: 'text-green-400', D: 'text-red-400', '??': 'text-blue-400' };
-  const statusLabels: Record<string, string> = { M: 'Modify', A: 'Add', D: 'Delete', '??': 'Untrack' };
+  const renderTree = (nodes: FileNode[], depth = 0): React.ReactNode => {
+    const sorted = [...nodes].sort((a, b) => {
+      if (a.type !== b.type) return a.type === 'dir' ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    return sorted.map(node => {
+      const isExpanded = expandedDirs.has(node.path);
+
+      if (node.type === 'dir') {
+        return (
+          <div key={node.path}>
+            <div
+              className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer text-xs truncate"
+              style={{ paddingLeft: `${8 + depth * 14}px` }}
+              onClick={() => toggleDir(node)}
+            >
+              <span className="text-[8px] text-white/40">{isExpanded ? '▼' : '▶'}</span>
+              <span className="text-white/60">📁</span>
+              <span className="truncate text-white/80">{node.name}</span>
+            </div>
+            {isExpanded && node.children && renderTree(node.children, depth + 1)}
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={node.path}
+          className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer text-xs truncate ${selectedFilePath === node.path ? 'bg-blue-500/20 text-blue-400' : 'text-white/80'}`}
+          style={{ paddingLeft: `${8 + depth * 14}px` }}
+          onClick={() => loadFile(node.path)}
+        >
+          <span className="w-3" />
+          <span className="text-white/40">{getFileIcon(node.name)}</span>
+          <span className="truncate">{node.name}</span>
+        </div>
+      );
+    });
+  };
 
   return (
     <div className="flex flex-col h-full w-full bg-[#1e1e1e] text-white">
@@ -289,17 +261,11 @@ export const XCode: React.FC = () => {
         </div>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <div className="flex items-center gap-1">
-          <button onClick={handleBuild} disabled={isBuilding} className="px-3 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-40 transition flex items-center gap-1.5">
-            <span>🔨</span> Build
-          </button>
-          <button onClick={handleRun} className="px-3 py-1 rounded text-xs bg-blue-600 hover:bg-blue-500 transition flex items-center gap-1.5">
-            <span>▶</span> Run
-          </button>
+          <button onClick={handleBuild} disabled={isBuilding} className="px-3 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-40 transition">Build</button>
+          <button onClick={handleRun} className="px-3 py-1 rounded text-xs bg-blue-600 hover:bg-blue-500 transition">▶ Run</button>
         </div>
         <div className="flex-1" />
-        <div className="text-[10px] text-gray-500">
-          {isBuilding ? 'Building...' : 'Ready'}
-        </div>
+        <span className="text-[10px] text-gray-500">{isBuilding ? 'Building...' : 'Ready'}</span>
       </div>
 
       <div className="flex-1 flex min-h-0">
@@ -308,22 +274,19 @@ export const XCode: React.FC = () => {
             <button
               onClick={() => setSidebarTab('navigator')}
               className={`flex-1 py-2 text-[10px] font-medium uppercase tracking-wider transition ${sidebarTab === 'navigator' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              📁 Files
-            </button>
+            >📁 Files</button>
             <button
-              onClick={() => setSidebarTab('sourcecontrol')}
-              className={`flex-1 py-2 text-[10px] font-medium uppercase tracking-wider transition ${sidebarTab === 'sourcecontrol' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              🔀 Git
-            </button>
+              onClick={() => setSidebarTab('git')}
+              className={`flex-1 py-2 text-[10px] font-medium uppercase tracking-wider transition ${sidebarTab === 'git' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
+            >🔀 Git</button>
           </div>
-
           <div className="flex-1 overflow-y-auto">
             {sidebarTab === 'navigator' ? (
-              <div className="py-1">
-                {fileTree.map(item => renderTreeItem(item, selectedFile, handleFileSelect, 0))}
-              </div>
+              loading ? (
+                <div className="p-4 text-xs text-gray-500">Loading files...</div>
+              ) : (
+                <div className="py-1">{renderTree(fileTree)}</div>
+              )
             ) : (
               <div className="p-3 space-y-3">
                 <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Changes ({gitChanges.length})</div>
@@ -339,28 +302,15 @@ export const XCode: React.FC = () => {
                     onChange={(e) => setGitCommitMsg(e.target.value)}
                     placeholder="Commit message..."
                     className="w-full h-16 bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-xs text-white placeholder-gray-500 resize-none outline-none focus:border-blue-500"
-                    rows={3}
                   />
                   <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={handleCommit}
-                      disabled={!gitCommitMsg.trim()}
-                      className="flex-1 py-1.5 rounded text-xs bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition"
-                    >
-                      Commit
-                    </button>
-                    <button
-                      onClick={handlePush}
-                      disabled={commits.length === 0}
-                      className="flex-1 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-30 disabled:cursor-not-allowed transition"
-                    >
-                      Push
-                    </button>
+                    <button onClick={handleCommit} disabled={!gitCommitMsg.trim()} className="flex-1 py-1.5 rounded text-xs bg-blue-600 hover:bg-blue-500 disabled:opacity-30 transition">Commit</button>
+                    <button onClick={handlePush} disabled={commits.length === 0} className="flex-1 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-30 transition">Push</button>
                   </div>
                 </div>
                 {commits.length > 0 && (
                   <div className="pt-2 border-t border-[#333]">
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-2">Recent Commits</div>
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-2">Recent</div>
                     {commits.slice(0, 5).map((msg, i) => (
                       <div key={i} className="text-[10px] text-gray-400 py-1 border-b border-[#2a2a2a] last:border-0">{msg}</div>
                     ))}
@@ -373,58 +323,39 @@ export const XCode: React.FC = () => {
 
         <div className="flex-1 flex flex-col min-w-0">
           <div className="h-9 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 gap-2 shrink-0">
-            <span className="text-xs text-blue-400 truncate">{selectedFile.icon} {selectedFile.path}</span>
-            <span className="text-[10px] text-gray-500 ml-auto">{selectedFile.language}</span>
+            <span className="text-xs text-blue-400 truncate">{selectedFilePath || 'No file selected'}</span>
+            {selectedFilePath && <span className="text-[10px] text-gray-500 ml-auto">{fileLanguage}</span>}
           </div>
           <div className="flex-1 min-h-0">
-            <Editor
-              height="100%"
-              language={selectedFile.language}
-              value={editedContent}
-              theme="vs-dark"
-              onChange={(val) => setEditedContent(val || '')}
-              options={{
-                readOnly: false,
-                minimap: { enabled: true },
-                fontSize: 13,
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                padding: { top: 12 },
-              }}
-            />
+            {selectedFilePath ? (
+              loadingFile ? (
+                <div className="flex items-center justify-center h-full text-xs text-gray-500">Loading...</div>
+              ) : (
+                <Editor height="100%" language={fileLanguage} value={fileContent} theme="vs-dark" onChange={(val) => setFileContent(val || '')}
+                  options={{ readOnly: false, minimap: { enabled: true }, fontSize: 13, lineNumbers: 'on', scrollBeyondLastLine: false, automaticLayout: true, padding: { top: 12 } }}
+                />
+              )
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-gray-500">Select a file from the navigator</div>
+            )}
           </div>
         </div>
       </div>
 
       {showTerminal && (
         <div className="h-44 bg-[#1a1a1a] border-t border-[#3c3c3c] flex flex-col shrink-0">
-          <div className="h-8 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 gap-3 shrink-0">
-            <span className="text-xs font-medium text-gray-300">Terminal</span>
+          <div className="h-8 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 shrink-0">
+            <span className="text-xs text-gray-300">Terminal</span>
             <div className="flex-1" />
-            <button
-              onClick={() => setShowTerminal(false)}
-              className="text-[10px] text-gray-500 hover:text-gray-300"
-            >✕</button>
+            <button onClick={() => setShowTerminal(false)} className="text-[10px] text-gray-500 hover:text-gray-300">✕</button>
           </div>
-          <div
-            ref={terminalRef}
-            className="flex-1 overflow-y-auto p-3 font-mono text-xs leading-relaxed"
-            style={{ backgroundColor: '#1a1a1a', color: '#d4d4d4' }}
-            onClick={() => {
-              const input = document.getElementById('xcode-terminal-input');
-              if (input) input.focus();
-            }}
-          >
+          <div ref={terminalRef} className="flex-1 overflow-y-auto p-3 font-mono text-xs leading-relaxed" style={{ backgroundColor: '#1a1a1a' }}>
             {terminalHistory.map((line, i) => (
-              <div key={i} className={line.startsWith('  ✅') ? 'text-green-400' : line.startsWith('  ❌') ? 'text-red-400' : line.startsWith('▸') ? 'text-blue-400' : line.startsWith('$') ? 'text-green-300' : ''}>
-                {line}
-              </div>
+              <div key={i} className={line.startsWith('✅') ? 'text-green-400' : line.startsWith('⚠️') ? 'text-yellow-400' : line.startsWith('▸') ? 'text-blue-400' : line.startsWith('$') ? 'text-green-300' : line.startsWith('  ✅') ? 'text-green-400' : 'text-gray-300'}>{line}</div>
             ))}
             <div className="flex items-center gap-1 mt-0.5">
               <span className="text-green-300">$</span>
               <input
-                id="xcode-terminal-input"
                 value={terminalInput}
                 onChange={(e) => setTerminalInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -433,7 +364,7 @@ export const XCode: React.FC = () => {
                     setTerminalInput('');
                   }
                 }}
-                className="flex-1 bg-transparent text-green-300 outline-none border-none text-xs"
+                className="flex-1 bg-transparent text-green-300 outline-none text-xs"
                 placeholder="Type a command..."
                 spellCheck={false}
                 autoComplete="off"
@@ -446,78 +377,33 @@ export const XCode: React.FC = () => {
   );
 };
 
-function buildFileTree(files: XcodeFile[]): FileTreeItem[] {
-  const root: FileTreeItem[] = [];
-  const map = new Map<string, FileTreeItem>();
-
-  files.forEach(file => {
-    const parts = file.path.split('/');
-    let current = root;
-
-    parts.forEach((part, i) => {
-      const parentPath = parts.slice(0, i + 1).join('/');
-      const isLast = i === parts.length - 1;
-
-      if (isLast) {
-        current.push({ name: part, path: file.path, isFile: true, file });
-      } else {
-        let existing = map.get(parentPath);
-        if (!existing) {
-          existing = { name: part, path: parentPath, isFile: false, children: [] };
-          map.set(parentPath, existing);
-          current.push(existing);
-        }
-        current = existing.children!;
-      }
-    });
-  });
-
-  return root;
+function detectLanguage(path: string): string {
+  const ext = path.split('.').pop()?.toLowerCase();
+  const map: Record<string, string> = {
+    ts: 'typescript', tsx: 'typescript', js: 'javascript', jsx: 'javascript',
+    json: 'json', md: 'markdown', html: 'html', css: 'css', scss: 'scss',
+    py: 'python', rs: 'rust', go: 'go', java: 'java', kt: 'kotlin',
+    swift: 'swift', c: 'c', cpp: 'cpp', h: 'c', yml: 'yaml', yaml: 'yaml',
+    xml: 'xml', sh: 'shell', bash: 'shell', sql: 'sql', graphql: 'graphql',
+    swiftinterface: 'swift', plist: 'xml', xcscheme: 'xml',
+  };
+  return map[ext || ''] || 'plaintext';
 }
 
-interface FileTreeItem {
-  name: string;
-  path: string;
-  isFile: boolean;
-  file?: XcodeFile;
-  children?: FileTreeItem[];
-}
-
-function renderTreeItem(
-  item: FileTreeItem,
-  selectedFile: XcodeFile,
-  onSelect: (file: XcodeFile) => void,
-  depth: number,
-): React.ReactNode {
-  const isSelected = selectedFile.path === item.path;
-  const [expanded, setExpanded] = React.useState(depth < 2);
-
-  if (item.isFile && item.file) {
-    return (
-      <div
-        key={item.path}
-        onClick={() => onSelect(item.file!)}
-        className={`flex items-center gap-2 px-3 py-1 cursor-pointer text-xs transition ${isSelected ? 'bg-blue-600/30 text-white' : 'text-gray-300 hover:bg-white/5'}`}
-        style={{ paddingLeft: `${12 + depth * 14}px` }}
-      >
-        <span>{item.file!.icon}</span>
-        <span className="truncate">{item.name}</span>
-      </div>
-    );
-  }
-
-  return (
-    <div key={item.path}>
-      <div
-        onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1.5 px-3 py-1 cursor-pointer text-xs text-gray-400 hover:text-gray-200 hover:bg-white/5 transition"
-        style={{ paddingLeft: `${12 + depth * 14}px` }}
-      >
-        <span className="text-[8px]">{expanded ? '▼' : '▶'}</span>
-        <span>📁</span>
-        <span>{item.name}</span>
-      </div>
-      {expanded && item.children?.map(child => renderTreeItem(child, selectedFile, onSelect, depth + 1))}
-    </div>
-  );
+function getFileIcon(name: string): string {
+  const ext = name.split('.').pop()?.toLowerCase();
+  const iconMap: Record<string, string> = {
+    ts: '🟦', tsx: '⚛️', js: '🟨', jsx: '⚛️', json: '📋', md: '📝',
+    html: '🌐', css: '🎨', py: '🐍', rs: '🦀', go: '🔷', java: '☕',
+    swift: '🕊️', c: '⚙️', cpp: '⚙️', yml: '⚙️', sh: '💻', sql: '🗃️',
+    xml: '📰', plist: '📋', swiftinterface: '🕊️',
+  };
+  const dirIcons: Record<string, string> = {
+    node_modules: '📦', 'dist': '📦', build: '🔨', src: '📁', public: '🌍',
+    assets: '🖼️', components: '🧩', hooks: '🪝', utils: '🔧', contexts: '🌐',
+    GoldenGate: '📱', 'GoldenGate.xcodeproj': '📁', 'GoldenGateTests': '🧪',
+    'GoldenGateUITests': '🧪',
+  };
+  if (dirIcons[name]) return dirIcons[name];
+  return iconMap[ext || ''] || '📄';
 }
