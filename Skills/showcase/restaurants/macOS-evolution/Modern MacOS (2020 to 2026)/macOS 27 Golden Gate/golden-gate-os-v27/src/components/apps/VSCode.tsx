@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { useSystem } from '../../contexts/SystemContext';
 
@@ -28,7 +28,6 @@ interface FileNode {
   path: string;
   type: 'file' | 'dir';
   children?: FileNode[];
-  expanded?: boolean;
 }
 
 interface RepoInfo {
@@ -49,51 +48,100 @@ export const VSCode: React.FC = () => {
   const [fileLanguage, setFileLanguage] = useState<string>('plaintext');
   const [loading, setLoading] = useState(true);
   const [loadingFile, setLoadingFile] = useState(false);
-  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['']));
+  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
   const [userRepos, setUserRepos] = useState<RepoInfo[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
-
 
   const isProfileMode = !selectedRepo.includes('/');
 
   const currentOption = REPO_OPTIONS.find(r => r.value === selectedRepo) || REPO_OPTIONS[0];
 
-  const headers: Record<string, string> = {
+  const headersRef = useRef<Record<string, string>>({ Accept: 'application/vnd.github.v3+json' });
+  headersRef.current = {
     Accept: 'application/vnd.github.v3+json',
+    ...(systemState.apiKey ? { Authorization: `Bearer ${systemState.apiKey}` } : {}),
   };
-  if (systemState.apiKey) {
-    headers['Authorization'] = `Bearer ${systemState.apiKey}`;
-  }
 
   const fetchDir = useCallback(async (owner: string, repo: string, path: string): Promise<GitHubItem[]> => {
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=main`;
-    const res = await fetch(url, { headers });
+    const res = await fetch(url, { headers: headersRef.current });
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
     const data = await res.json();
     return Array.isArray(data) ? data : [];
-  }, [headers]);
+  }, []);
 
-  const loadRepoTree = useCallback(async (owner: string, repo: string) => {
+  const fetchFile = useCallback(async (owner: string, repo: string, path: string): Promise<string> => {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=main`;
+    const res = await fetch(url, { headers: headersRef.current });
+    if (!res.ok) throw new Error(`Failed to load file: ${res.status}`);
+    const data = await res.json();
+    return atob(data.content);
+  }, []);
+
+  const expandDir = useCallback(async (node: FileNode) => {
+    if (node.children) return;
+    const [owner, repo] = selectedRepo.split('/');
+    try {
+      const items = await fetchDir(owner, repo, node.path);
+      node.children = items.filter(i => i.type === 'dir' || i.type === 'file');
+      setFileTree(prev => [...prev]);
+    } catch {
+      node.children = [];
+      setFileTree(prev => [...prev]);
+    }
+  }, [selectedRepo, fetchDir]);
+
+  const loadFile = useCallback(async (path: string) => {
+    const [owner, repo] = selectedRepo.split('/');
+    setLoadingFile(true);
+    setSelectedFile(path);
+    try {
+      const content = await fetchFile(owner, repo, path);
+      setFileContent(content);
+      setFileLanguage(detectLanguage(path));
+    } catch (err: any) {
+      setFileContent(`// Error loading file: ${err.message}`);
+    }
+    setLoadingFile(false);
+  }, [selectedRepo, fetchFile]);
+
+  const loadRepoTree = useCallback(async () => {
+    const [owner, repo] = selectedRepo.split('/');
     setLoading(true);
     setFileTree([]);
     setSelectedFile(null);
     setFileContent('');
-    setExpandedDirs(new Set(['']));
+    setExpandedDirs(new Set());
     try {
       const root = await fetchDir(owner, repo, '');
-      const tree = await buildFileTree(root, (path) => fetchDir(owner, repo, path));
-      setFileTree(tree);
+      const nodes: FileNode[] = [];
+      let readmePath: string | null = null;
+      for (const item of root) {
+        if (item.type !== 'file' && item.type !== 'dir') continue;
+        const node: FileNode = { name: item.name, path: item.path, type: item.type };
+        nodes.push(node);
+        if (item.type === 'file' && item.name.toLowerCase() === 'readme.md') {
+          readmePath = item.path;
+        }
+      }
+      setFileTree(nodes);
+      if (readmePath) {
+        const content = await fetchFile(owner, repo, readmePath);
+        setFileContent(content);
+        setFileLanguage('markdown');
+        setSelectedFile(readmePath);
+      }
     } catch (err: any) {
       console.error('Failed to load repo:', err);
     }
     setLoading(false);
-  }, [fetchDir]);
+  }, [selectedRepo, fetchDir, fetchFile]);
 
   const loadUserRepos = useCallback(async () => {
     setLoadingRepos(true);
     setUserRepos([]);
     try {
-      const res = await fetch(`https://api.github.com/users/${OWNER}/repos?sort=updated&per_page=30`, { headers });
+      const res = await fetch(`https://api.github.com/users/${OWNER}/repos?sort=updated&per_page=30`, { headers: headersRef.current });
       if (!res.ok) throw new Error(`Failed to load repos: ${res.status}`);
       const data = await res.json();
       setUserRepos(data.map((r: any) => ({
@@ -107,48 +155,26 @@ export const VSCode: React.FC = () => {
       console.error('Failed to load user repos:', err);
     }
     setLoadingRepos(false);
-  }, [headers]);
+  }, []);
 
   useEffect(() => {
     if (isProfileMode) {
       loadUserRepos();
     } else {
-      const [owner, repo] = selectedRepo.split('/');
-      loadRepoTree(owner, repo);
+      loadRepoTree();
     }
   }, [selectedRepo, isProfileMode, loadRepoTree, loadUserRepos]);
 
-  const openRepo = (repoName: string) => {
-    setSelectedRepo(`${OWNER}/${repoName}`);
-  };
-
-  const loadFile = async (path: string) => {
-    if (isProfileMode) return;
-    const [owner, repo] = selectedRepo.split('/');
-    setLoadingFile(true);
-    setSelectedFile(path);
-    try {
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=main`;
-      const res = await fetch(url, { headers });
-      if (!res.ok) throw new Error(`Failed to load file: ${res.status}`);
-      const data = await res.json();
-      const content = atob(data.content);
-      setFileContent(content);
-      setFileLanguage(detectLanguage(path));
-    } catch (err: any) {
-      console.error('Failed to load file:', err);
-      setFileContent(`// Error loading file: ${err.message}`);
-    }
-    setLoadingFile(false);
-  };
-
-  const toggleDir = (path: string) => {
+  const toggleDir = (node: FileNode) => {
     setExpandedDirs(prev => {
       const next = new Set(prev);
-      if (next.has(path)) next.delete(path);
-      else next.add(path);
+      if (next.has(node.path)) next.delete(node.path);
+      else next.add(node.path);
       return next;
     });
+    if (!node.children) {
+      expandDir(node);
+    }
   };
 
   const renderTree = (nodes: FileNode[], depth = 0) => {
@@ -166,16 +192,7 @@ export const VSCode: React.FC = () => {
             <div
               className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer text-xs truncate"
               style={{ paddingLeft: `${8 + depth * 14}px` }}
-              onClick={() => {
-                toggleDir(node.path);
-                if (!node.children && !isExpanded) {
-                  const [owner, repo] = selectedRepo.split('/');
-                  fetchDir(owner, repo, node.path).then(items => {
-                    node.children = items.filter(i => i.type === 'dir' || i.type === 'file') as FileNode[];
-                    setFileTree([...fileTree]);
-                  });
-                }
-              }}
+              onClick={() => toggleDir(node)}
             >
               <span className="shrink-0 text-white/40">{isExpanded ? '▼' : '▶'}</span>
               <span className="text-white/60 shrink-0">📁</span>
@@ -250,7 +267,7 @@ export const VSCode: React.FC = () => {
                 userRepos.map(repo => (
                   <div
                     key={repo.name}
-                    onClick={() => openRepo(repo.name)}
+                    onClick={() => setSelectedRepo(`${OWNER}/${repo.name}`)}
                     className="flex flex-col px-3 py-2 hover:bg-white/10 cursor-pointer border-b border-[#3c3c3c]/50 last:border-0"
                   >
                     <div className="flex items-center gap-2">
@@ -312,31 +329,6 @@ export const VSCode: React.FC = () => {
     </div>
   );
 };
-
-async function buildFileTree(
-  items: GitHubItem[],
-  fetchDir: (path: string) => Promise<GitHubItem[]>
-): Promise<FileNode[]> {
-  const nodes: FileNode[] = [];
-  for (const item of items) {
-    if (item.type !== 'file' && item.type !== 'dir') continue;
-    const node: FileNode = {
-      name: item.name,
-      path: item.path,
-      type: item.type,
-    };
-    if (item.type === 'dir') {
-      try {
-        const children = await fetchDir(item.path);
-        node.children = children.filter(c => c.type === 'file' || c.type === 'dir');
-      } catch {
-        node.children = [];
-      }
-    }
-    nodes.push(node);
-  }
-  return nodes;
-}
 
 function detectLanguage(path: string): string {
   const ext = path.split('.').pop()?.toLowerCase();
