@@ -52,6 +52,7 @@ import { Freeform } from '../apps/Freeform';
 import { Motion } from '../apps/Motion';
 import { XCode } from '../apps/XCode';
 import { PixelmatorPro } from '../apps/PixelmatorPro';
+import { FinalCutPro } from '../apps/FinalCutPro';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -106,6 +107,7 @@ const AppMap: Record<string, React.FC<any>> = {
   motion: Motion,
   xcode: XCode,
   pixelmatorpro: PixelmatorPro,
+  finalcutpro: FinalCutPro,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -179,6 +181,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     motion: 'Motion',
     xcode: 'Xcode',
     pixelmatorpro: 'Pixelmator Pro',
+    finalcutpro: 'Final Cut Pro',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
