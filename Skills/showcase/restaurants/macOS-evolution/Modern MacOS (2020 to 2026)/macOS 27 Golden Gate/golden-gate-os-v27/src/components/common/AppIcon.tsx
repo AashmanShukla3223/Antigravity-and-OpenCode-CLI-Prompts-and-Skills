@@ -105,6 +105,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'games': `${base}icons/games.png`,
     'freeform': `${base}icons/freeform.png`,
     'motion': `${base}icons/motion.png`,
+    'xcode': `${base}icons/XCode.png`,
   };
 
   const handleImageError = (iconId: string) => {

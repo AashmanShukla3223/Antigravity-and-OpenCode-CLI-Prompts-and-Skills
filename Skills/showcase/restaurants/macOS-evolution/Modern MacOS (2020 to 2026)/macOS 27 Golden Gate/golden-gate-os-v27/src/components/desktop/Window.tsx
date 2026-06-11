@@ -50,6 +50,7 @@ import { Keynote } from '../apps/Keynote';
 import { Games } from '../apps/Games';
 import { Freeform } from '../apps/Freeform';
 import { Motion } from '../apps/Motion';
+import { XCode } from '../apps/XCode';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -102,6 +103,7 @@ const AppMap: Record<string, React.FC<any>> = {
   games: Games,
   freeform: Freeform,
   motion: Motion,
+  xcode: XCode,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -173,6 +175,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     games: 'Games',
     freeform: 'Freeform',
     motion: 'Motion',
+    xcode: 'Xcode',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

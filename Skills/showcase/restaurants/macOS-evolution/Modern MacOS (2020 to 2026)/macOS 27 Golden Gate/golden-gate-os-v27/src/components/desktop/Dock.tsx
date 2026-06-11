@@ -33,6 +33,7 @@ const ALL_APPS = [
   { id: 'samsunglcdtv', name: 'Samsung LCD TV' },
   { id: 'freeform', name: 'Freeform' },
   { id: 'motion', name: 'Motion' },
+  { id: 'xcode', name: 'Xcode' },
 ];
 
 export const Dock: React.FC = () => {
