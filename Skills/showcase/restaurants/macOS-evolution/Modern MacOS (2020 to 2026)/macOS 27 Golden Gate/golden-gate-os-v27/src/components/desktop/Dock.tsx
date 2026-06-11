@@ -30,6 +30,7 @@ const ALL_APPS = [
   { id: 'aboutme', name: 'About Me' },
   { id: 'code', name: 'VS Code' },
   { id: 'vmware', name: 'VMware Fusion Pro' },
+  { id: 'samsunglcdtv', name: 'Samsung LCD TV' },
 ];
 
 export const Dock: React.FC = () => {
