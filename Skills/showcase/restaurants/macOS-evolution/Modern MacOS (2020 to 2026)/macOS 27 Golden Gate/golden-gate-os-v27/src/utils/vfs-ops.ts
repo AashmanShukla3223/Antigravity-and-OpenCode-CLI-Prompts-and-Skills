@@ -28,8 +28,11 @@ export function useImportFile(
     input.type = 'file';
     input.multiple = true;
     input.accept = accept;
+    input.style.display = 'none';
+    document.body.appendChild(input);
     input.onchange = () => {
       const files = Array.from(input.files || []);
+      let loaded = 0;
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -41,9 +44,16 @@ export function useImportFile(
             content: dataUrl,
             size: file.size,
           });
+          loaded++;
+          if (loaded === files.length) document.body.removeChild(input);
+        };
+        reader.onerror = () => {
+          loaded++;
+          if (loaded === files.length) document.body.removeChild(input);
         };
         reader.readAsDataURL(file);
       });
+      if (files.length === 0) document.body.removeChild(input);
     };
     input.click();
   };
