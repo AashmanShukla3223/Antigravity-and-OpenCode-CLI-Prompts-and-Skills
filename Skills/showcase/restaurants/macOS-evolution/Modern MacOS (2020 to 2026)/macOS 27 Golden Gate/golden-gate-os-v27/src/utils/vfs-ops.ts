@@ -32,31 +32,36 @@ export function useImportFile(
     document.body.appendChild(input);
     input.onchange = () => {
       const files = Array.from(input.files || []);
+      if (files.length === 0) { cleanup(input); return; }
       let loaded = 0;
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
           const dataUrl = reader.result as string;
-          createNode({
-            name: file.name,
-            type: 'file',
-            parentId,
-            content: dataUrl,
-            size: file.size,
-          });
+          try {
+            createNode({
+              name: file.name,
+              type: 'file',
+              parentId,
+              content: dataUrl,
+              size: file.size,
+            });
+          } catch (e) {
+            console.warn('Failed to import file:', file.name, e);
+          }
           loaded++;
-          if (loaded === files.length) document.body.removeChild(input);
+          if (loaded === files.length) cleanup(input);
         };
-        reader.onerror = () => {
-          loaded++;
-          if (loaded === files.length) document.body.removeChild(input);
-        };
+        reader.onerror = () => { loaded++; if (loaded === files.length) cleanup(input); };
         reader.readAsDataURL(file);
       });
-      if (files.length === 0) document.body.removeChild(input);
     };
     input.click();
   };
+}
+
+function cleanup(input: HTMLInputElement) {
+  try { if (input.parentNode) document.body.removeChild(input); } catch {/* ignore */}
 }
 
 export function saveToVFS(

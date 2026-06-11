@@ -3,6 +3,31 @@ import type { ReactNode } from 'react';
 
 export type TagColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'gray';
 
+const generateId = () => {
+  try { return crypto.randomUUID(); } catch { return `n${Date.now()}-${Math.random().toString(36).slice(2, 9)}`; }
+};
+
+const FILE_STORE_PREFIX = 'golden_gate_v27_file_';
+
+export const storeFileExternal = (content: string): string | null => {
+  const id = generateId();
+  try {
+    localStorage.setItem(`${FILE_STORE_PREFIX}${id}`, content);
+    return id;
+  } catch (e) {
+    console.warn('File too large for localStorage', e);
+    return null;
+  }
+};
+
+export const getFileExternal = (id: string): string | null => {
+  try { return localStorage.getItem(`${FILE_STORE_PREFIX}${id}`); } catch { return null; }
+};
+
+export const removeFileExternal = (id: string) => {
+  try { localStorage.removeItem(`${FILE_STORE_PREFIX}${id}`); } catch {/* ignore */}
+};
+
 export type FileSystemNode = {
   id: string;
   name: string;
@@ -129,9 +154,16 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   }, []);
 
   const createNode = (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => {
+    const id = generateId();
+    let content = node.content;
+    if (content && content.length > 50000) {
+      const fileId = storeFileExternal(content);
+      content = fileId ? `__vfs_ext_${fileId}` : content.slice(0, 50000);
+    }
     setNodes(prev => [...prev, { 
       ...node, 
-      id: crypto.randomUUID(),
+      id,
+      content,
       modifiedAt: Date.now(),
       tags: node.tags || []
     }]);
