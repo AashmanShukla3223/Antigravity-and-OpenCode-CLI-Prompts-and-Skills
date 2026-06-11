@@ -20,12 +20,14 @@ export function downloadDataURL(dataUrl: string, filename: string) {
 
 export function useImportFile(
   createNode: (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => void,
-  parentId: string = 'documents'
+  parentId: string = 'documents',
+  accept: string = '*/*'
 ) {
   return () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.multiple = true;
+    input.accept = accept;
     input.onchange = () => {
       const files = Array.from(input.files || []);
       files.forEach(file => {
@@ -66,12 +68,14 @@ export function ImportFileButton({
   createNode,
   parentId = 'documents',
   className = '',
+  accept = '*/*',
 }: {
   createNode: (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => void;
   parentId?: string;
   className?: string;
+  accept?: string;
 }) {
-  const importFile = useImportFile(createNode, parentId);
+  const importFile = useImportFile(createNode, parentId, accept);
   return React.createElement(
     'button',
     {

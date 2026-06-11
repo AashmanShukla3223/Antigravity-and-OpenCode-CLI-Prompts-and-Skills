@@ -197,7 +197,7 @@ export const Motion: React.FC = () => {
           <button onClick={() => addElement('shape')} className="px-3 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">+ Shape</button>
           <button onClick={() => addElement('particle')} className="px-3 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">+ Particles</button>
         </div>
-        <ImportFileButton createNode={createNode} parentId="documents" />
+        <ImportFileButton createNode={createNode} parentId="documents" accept=".json" />
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <div className="flex items-center gap-2">
           <button

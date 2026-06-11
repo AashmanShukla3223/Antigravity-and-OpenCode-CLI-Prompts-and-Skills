@@ -192,7 +192,7 @@ export const FinalCutPro: React.FC = () => {
           <span className="text-gray-400 w-8 text-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">+</button>
         </div>
-        <ImportFileButton createNode={createNode} parentId="movies" />
+        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm" />
         <button
           onClick={() => {
             const project = { clips, currentFrame, TIMELINE_DURATION, fps };

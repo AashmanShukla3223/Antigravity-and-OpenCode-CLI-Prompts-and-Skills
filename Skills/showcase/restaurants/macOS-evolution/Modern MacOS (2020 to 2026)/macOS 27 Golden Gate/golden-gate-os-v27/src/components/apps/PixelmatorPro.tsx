@@ -173,7 +173,7 @@ export const PixelmatorPro: React.FC = () => {
           <input type="range" min={2} max={40} value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-20 accent-blue-500" />
           <span className="text-gray-400 w-6">{brushSize}px</span>
         </div>
-        <ImportFileButton createNode={createNode} parentId="pictures" />
+        <ImportFileButton createNode={createNode} parentId="pictures" accept=".png,.jpeg,.jpg,.svg,.webp" />
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <button
           onClick={() => {

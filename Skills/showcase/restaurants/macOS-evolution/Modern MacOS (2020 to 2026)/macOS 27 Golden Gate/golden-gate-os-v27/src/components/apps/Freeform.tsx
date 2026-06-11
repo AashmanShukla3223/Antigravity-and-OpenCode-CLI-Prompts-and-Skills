@@ -203,7 +203,7 @@ export const Freeform: React.FC = () => {
             />
           ))}
         </div>
-        <ImportFileButton createNode={createNode} parentId="documents" />
+        <ImportFileButton createNode={createNode} parentId="documents" accept=".png,.jpeg,.jpg,.svg,.webp" />
         <button
           onClick={() => saveToVFS(createNode, JSON.stringify(elements), `freeform-${Date.now()}.json`, 'documents')}
           className="px-3 py-1.5 rounded-md text-xs bg-emerald-600 hover:bg-emerald-500 transition"

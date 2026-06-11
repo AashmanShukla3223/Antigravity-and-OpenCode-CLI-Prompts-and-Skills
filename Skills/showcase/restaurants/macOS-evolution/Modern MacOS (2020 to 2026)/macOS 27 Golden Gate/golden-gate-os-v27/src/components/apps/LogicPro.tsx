@@ -188,7 +188,7 @@ export const LogicPro: React.FC = () => {
         </div>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <span className="text-xs text-gray-400">{bpm} BPM</span>
-        <ImportFileButton createNode={createNode} parentId="music" />
+        <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav" />
         <button
           onClick={() => {
             const project = { tracks, bpm, masterVolume, notes };
