@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
-import { saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
+import { saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 interface Track {
   id: string;
@@ -33,18 +33,9 @@ const TOTAL_BARS = 64;
 let trackIdCounter = 0;
 const nextTrackId = () => `track-${++trackIdCounter}`;
 
-const INITIAL_TRACKS: Track[] = [
-  { id: nextTrackId(), name: 'Kick', color: TRACK_COLORS[0], volume: 0.8, pan: 0, muted: false, solo: false, armed: true },
-  { id: nextTrackId(), name: 'Snare', color: TRACK_COLORS[1], volume: 0.7, pan: 0, muted: false, solo: false, armed: true },
-  { id: nextTrackId(), name: 'Hi-Hat', color: TRACK_COLORS[2], volume: 0.5, pan: 0.2, muted: false, solo: false, armed: true },
-  { id: nextTrackId(), name: 'Bass', color: TRACK_COLORS[3], volume: 0.9, pan: -0.1, muted: false, solo: false, armed: true },
-  { id: nextTrackId(), name: 'Synth Pad', color: TRACK_COLORS[4], volume: 0.6, pan: -0.3, muted: false, solo: false, armed: true },
-  { id: nextTrackId(), name: 'Lead', color: TRACK_COLORS[5], volume: 0.7, pan: 0.1, muted: false, solo: false, armed: true },
-];
-
 export const LogicPro: React.FC = () => {
   const { createNode } = useFileSystem();
-  const [tracks, setTracks] = useState<Track[]>(INITIAL_TRACKS);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [currentBar, setCurrentBar] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm] = useState(120);
@@ -53,17 +44,10 @@ export const LogicPro: React.FC = () => {
   const [exportProgress, setExportProgress] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const [exportDone, setExportDone] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState<string>(tracks[0]?.id || '');
+  const [selectedTrack, setSelectedTrack] = useState<string>('');
   const animRef = useRef<number | null>(null);
   const [masterVolume, setMasterVolume] = useState(0.8);
-  const [notes] = useState<Record<string, number[]>>({
-    [INITIAL_TRACKS[0].id]: [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60],
-    [INITIAL_TRACKS[1].id]: [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62],
-    [INITIAL_TRACKS[2].id]: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47],
-    [INITIAL_TRACKS[3].id]: [0, 8, 16, 24, 32, 40, 48, 56],
-    [INITIAL_TRACKS[4].id]: [0, 16, 32, 48],
-    [INITIAL_TRACKS[5].id]: [4, 12, 20, 28, 36, 44, 52, 60],
-  });
+  const [notes, setNotes] = useState<Record<string, number[]>>({});
 
   const selectedTrackData = tracks.find(t => t.id === selectedTrack);
 
@@ -104,9 +88,24 @@ export const LogicPro: React.FC = () => {
   }, [tracks.length]);
 
   const deleteTrack = useCallback((id: string) => {
-    setTracks(prev => prev.filter(t => t.id !== id));
+    setTracks(prev => { const next = prev.filter(t => t.id !== id); return next; });
     if (selectedTrack === id) setSelectedTrack(tracks[0]?.id || '');
   }, [tracks, selectedTrack]);
+
+  const addTrackFromFile = useCallback((name: string) => {
+    const newTrack: Track = {
+      id: nextTrackId(),
+      name: name.replace(/\.[^.]+$/, '').slice(0, 20),
+      color: TRACK_COLORS[tracks.length % TRACK_COLORS.length],
+      volume: 0.7, pan: 0, muted: false, solo: false, armed: true,
+    };
+    setTracks(prev => [...prev, newTrack]);
+    setSelectedTrack(newTrack.id);
+  }, [tracks.length]);
+
+  const dropHandlers = useFileDrop(createNode, 'music', '.mp3,.wav', (file) => {
+    addTrackFromFile(file.name);
+  });
 
   const handleExport = useCallback(() => {
     setIsExporting(true);
@@ -297,7 +296,7 @@ export const LogicPro: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0" {...dropHandlers}>
           <div className="h-8 bg-[#2d2d2d] border-b border-[#333] flex items-center px-3 text-[10px] text-gray-500 gap-2 shrink-0">
             {Array.from({ length: TOTAL_BARS }).map((_, i) => (
               <span key={i} className={`w-12 shrink-0 ${i % 4 === 0 ? 'text-gray-300 font-medium' : ''}`}>{i + 1}</span>

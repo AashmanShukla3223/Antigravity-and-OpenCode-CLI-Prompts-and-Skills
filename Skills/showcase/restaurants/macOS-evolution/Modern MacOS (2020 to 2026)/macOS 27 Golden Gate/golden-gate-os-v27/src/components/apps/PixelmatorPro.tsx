@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
-import { saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
+import { saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 type Tool = 'brush' | 'eraser' | 'rect' | 'ellipse' | 'fill' | 'eyedropper';
 type Filter = 'none' | 'grayscale' | 'sepia' | 'blur' | 'brightness' | 'contrast';
@@ -154,6 +154,18 @@ export const PixelmatorPro: React.FC = () => {
     handleClear();
   }, [handleClear]);
 
+  const dropHandlers = useFileDrop(createNode, 'pictures', '.png,.jpeg,.jpg,.svg,.webp', (file, dataUrl) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, canvasSize.w, canvasSize.h);
+    };
+    img.src = dataUrl;
+  });
+
   return (
     <div className="flex flex-col h-full w-full bg-[#1a1a1a] text-white select-none">
       <div className="h-11 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 gap-3 shrink-0">
@@ -203,6 +215,7 @@ export const PixelmatorPro: React.FC = () => {
             onPointerMove={handleCanvasMove}
             onPointerUp={handleCanvasUp}
             onPointerLeave={handleCanvasUp}
+            {...dropHandlers}
           />
         </div>
 

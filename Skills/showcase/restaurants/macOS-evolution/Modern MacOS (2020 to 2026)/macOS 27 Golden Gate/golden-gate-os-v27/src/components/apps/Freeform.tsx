@@ -1,11 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
-import { downloadBlob, saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
+import { downloadBlob, saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 type Tool = 'pen' | 'rectangle' | 'ellipse' | 'sticky' | 'text';
 type CanvasElement = {
   id: string;
-  type: 'path' | 'rect' | 'ellipse' | 'sticky' | 'text';
+  type: 'path' | 'rect' | 'ellipse' | 'sticky' | 'text' | 'image';
   x: number;
   y: number;
   color: string;
@@ -177,6 +177,23 @@ export const Freeform: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [undo]);
 
+  const dropHandlers = useFileDrop(createNode, 'documents', '.png,.jpeg,.jpg,.svg,.webp', (file, dataUrl) => {
+    const img = new Image();
+    img.onload = () => {
+      setElements(prev => [...prev, {
+        id: nextId(),
+        type: 'image',
+        x: 200 + Math.random() * 400,
+        y: 200 + Math.random() * 400,
+        color: '#ffffff',
+        width: Math.min(img.width, 400),
+        height: Math.min(img.height, 400),
+        content: dataUrl,
+      }]);
+    };
+    img.src = dataUrl;
+  });
+
   return (
     <div className="flex flex-col h-full w-full bg-[#1a1a1a] text-white select-none">
       <div className="h-12 bg-[#2a2a2a] border-b border-[#3a3a3a] flex items-center px-4 gap-3 shrink-0">
@@ -237,6 +254,7 @@ export const Freeform: React.FC = () => {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        {...dropHandlers}
       >
         <div
           className="absolute"
@@ -310,6 +328,15 @@ export const Freeform: React.FC = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
+              )}
+              {el.type === 'image' && el.content && (
+                <img
+                  src={el.content}
+                  alt=""
+                  className="pointer-events-none"
+                  style={{ width: el.width, height: el.height, objectFit: 'contain' }}
+                  draggable={false}
+                />
               )}
               {!['path'].includes(el.type) && (
                 <button

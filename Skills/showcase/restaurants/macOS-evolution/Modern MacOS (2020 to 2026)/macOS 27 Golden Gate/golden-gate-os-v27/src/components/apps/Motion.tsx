@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
-import { downloadBlob, saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
+import { downloadBlob, saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 type MotionElement = {
   id: string;
@@ -171,6 +171,14 @@ export const Motion: React.FC = () => {
     }
   }, [isPlaying, fps, totalFrames]);
 
+  const dropHandlers = useFileDrop(createNode, 'documents', '.json', (file, dataUrl) => {
+    try {
+      const project = JSON.parse(atob(dataUrl.split(',')[1] || ''));
+      if (project.elements) setElements(project.elements);
+      if (project.keyframes) setKeyframes(project.keyframes);
+    } catch { /* ignore invalid project files */ }
+  });
+
   const getAnimatedProps = (el: MotionElement) => {
     const kfs = keyframes[el.id];
     if (!kfs || kfs.length === 0) return el;
@@ -268,6 +276,7 @@ export const Motion: React.FC = () => {
           onPointerMove={handleCanvasPointerMove}
           onPointerUp={handleCanvasPointerUp}
           onPointerLeave={handleCanvasPointerUp}
+          {...dropHandlers}
         >
           <div className="absolute inset-4 border border-dashed border-white/10 rounded-lg flex items-center justify-center">
             {elements.filter(e => e.visible).map(el => {

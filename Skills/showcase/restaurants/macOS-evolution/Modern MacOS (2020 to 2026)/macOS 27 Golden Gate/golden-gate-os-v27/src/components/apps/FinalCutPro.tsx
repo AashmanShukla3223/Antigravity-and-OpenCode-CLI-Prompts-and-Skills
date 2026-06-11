@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
-import { saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
+import { saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 interface Clip {
   id: string;
@@ -31,18 +31,15 @@ const TIMELINE_DURATION = 300;
 let clipIdCounter = 0;
 const nextClipId = () => `clip-${++clipIdCounter}`;
 
-const INITIAL_CLIPS: Clip[] = [
-  { id: nextClipId(), name: 'Intro', start: 0, duration: 80, track: 0, color: TRACK_COLORS[0], type: 'video' },
-  { id: nextClipId(), name: 'Main Scene', start: 80, duration: 120, track: 0, color: TRACK_COLORS[1], type: 'video' },
-  { id: nextClipId(), name: 'B-Roll', start: 120, duration: 60, track: 0, color: TRACK_COLORS[3], type: 'video' },
-  { id: nextClipId(), name: 'Outro', start: 200, duration: 100, track: 0, color: TRACK_COLORS[4], type: 'video' },
-  { id: nextClipId(), name: 'Background Music', start: 0, duration: 300, track: 1, color: TRACK_COLORS[2], type: 'audio' },
-  { id: nextClipId(), name: 'Title Overlay', start: 20, duration: 40, track: 2, color: '#ffa94d', type: 'title' },
-];
+interface MediaItem {
+  name: string;
+  type: 'video' | 'audio' | 'image';
+}
 
 export const FinalCutPro: React.FC = () => {
   const { createNode } = useFileSystem();
-  const [clips] = useState<Clip[]>(INITIAL_CLIPS);
+  const [clips, setClips] = useState<Clip[]>([]);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -59,6 +56,28 @@ export const FinalCutPro: React.FC = () => {
   const fps = 30;
 
   const activeClipAtFrame = clips.find(c => c.track === 0 && currentFrame >= c.start && currentFrame < c.start + c.duration);
+
+  const addClipFromFile = useCallback((name: string) => {
+    const ext = name.split('.').pop()?.toLowerCase() || '';
+    const isVideo = ['mp4', 'mov', 'webm'].includes(ext);
+    const isAudio = ['mp3', 'wav'].includes(ext);
+    const type: Clip['type'] = isVideo ? 'video' : isAudio ? 'audio' : 'title';
+    const newClip: Clip = {
+      id: nextClipId(),
+      name: name.replace(/\.[^.]+$/, '').slice(0, 20),
+      start: 0,
+      duration: type === 'audio' ? TIMELINE_DURATION : 60,
+      track: type === 'video' ? 0 : type === 'audio' ? 1 : 2,
+      color: TRACK_COLORS[clips.length % TRACK_COLORS.length],
+      type,
+    };
+    setClips(prev => [...prev, newClip]);
+    setMediaItems(prev => [...prev, { name, type: ext === 'mp3' || ext === 'wav' ? 'audio' : 'image' }]);
+  }, [clips.length]);
+
+  const dropHandlers = useFileDrop(createNode, 'movies', '.mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav', (file) => {
+    addClipFromFile(file.name);
+  });
 
   useEffect(() => {
     if (isPlaying) {
@@ -192,7 +211,7 @@ export const FinalCutPro: React.FC = () => {
           <span className="text-gray-400 w-8 text-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">+</button>
         </div>
-        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm" />
+        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav" onImport={(file) => addClipFromFile(file.name)} />
         <button
           onClick={() => {
             const project = { clips, currentFrame, TIMELINE_DURATION, fps };
@@ -216,21 +235,26 @@ export const FinalCutPro: React.FC = () => {
           <div className="h-8 bg-[#2d2d2d] border-b border-[#333] flex items-center px-3 text-xs font-medium text-gray-400 uppercase tracking-wider">
             Media
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {['Intro.mp4', 'Main Scene.mp4', 'B-Roll.mov', 'Background.wav', 'Title.png'].map(file => (
-              <div key={file} className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] cursor-pointer text-xs">
-                <span>{file.endsWith('.wav') ? '🎵' : file.endsWith('.png') ? '🖼️' : '🎬'}</span>
-                <span className="truncate">{file}</span>
-              </div>
-            ))}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2" {...dropHandlers}>
+            {mediaItems.length === 0 ? (
+              <div className="text-xs text-gray-500 text-center py-8">Drop files here</div>
+            ) : (
+              mediaItems.map(item => (
+                <div key={item.name} className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] cursor-pointer text-xs">
+                  <span>{item.type === 'audio' ? '🎵' : item.type === 'image' ? '🖼️' : '🎬'}</span>
+                  <span className="truncate">{item.name}</span>
+                </div>
+              ))
+            )}
           </div>
           <div className="h-8 bg-[#2d2d2d] border-t border-[#333] flex items-center px-3 text-xs font-medium text-gray-400 uppercase tracking-wider">
             Effects
           </div>
           <div className="p-3 space-y-1">
-            {['Cross Dissolve', 'Fade', 'Blur', 'Chromatic'].map(effect => (
+            {mediaItems.length > 0 && ['Cross Dissolve', 'Fade', 'Blur', 'Chromatic'].map(effect => (
               <div key={effect} className="text-xs text-gray-400 hover:text-white cursor-pointer py-0.5 px-2 rounded hover:bg-[#2a2a2a]">{effect}</div>
             ))}
+            {mediaItems.length === 0 && <div className="text-xs text-gray-500 text-center py-4">Import media first</div>}
           </div>
         </div>
 
