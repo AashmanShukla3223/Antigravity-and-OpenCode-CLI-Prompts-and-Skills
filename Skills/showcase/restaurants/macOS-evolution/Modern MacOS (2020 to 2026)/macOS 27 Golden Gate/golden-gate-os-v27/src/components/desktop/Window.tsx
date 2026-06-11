@@ -51,6 +51,7 @@ import { Games } from '../apps/Games';
 import { Freeform } from '../apps/Freeform';
 import { Motion } from '../apps/Motion';
 import { XCode } from '../apps/XCode';
+import { PixelmatorPro } from '../apps/PixelmatorPro';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -104,6 +105,7 @@ const AppMap: Record<string, React.FC<any>> = {
   freeform: Freeform,
   motion: Motion,
   xcode: XCode,
+  pixelmatorpro: PixelmatorPro,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -176,6 +178,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     freeform: 'Freeform',
     motion: 'Motion',
     xcode: 'Xcode',
+    pixelmatorpro: 'Pixelmator Pro',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

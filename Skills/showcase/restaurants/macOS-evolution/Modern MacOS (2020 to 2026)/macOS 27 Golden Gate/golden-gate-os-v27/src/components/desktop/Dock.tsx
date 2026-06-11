@@ -34,6 +34,7 @@ const ALL_APPS = [
   { id: 'freeform', name: 'Freeform' },
   { id: 'motion', name: 'Motion' },
   { id: 'xcode', name: 'Xcode' },
+  { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
 ];
 
 export const Dock: React.FC = () => {

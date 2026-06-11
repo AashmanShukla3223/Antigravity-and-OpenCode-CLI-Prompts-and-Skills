@@ -41,6 +41,7 @@ const apps: AppItem[] = [
   { id: 'freeform', name: 'Freeform' },
   { id: 'motion', name: 'Motion' },
   { id: 'xcode', name: 'Xcode' },
+  { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
