@@ -32,6 +32,7 @@ const ALL_APPS = [
   { id: 'vmware', name: 'VMware Fusion Pro' },
   { id: 'samsunglcdtv', name: 'Samsung LCD TV' },
   { id: 'freeform', name: 'Freeform' },
+  { id: 'motion', name: 'Motion' },
 ];
 
 export const Dock: React.FC = () => {
