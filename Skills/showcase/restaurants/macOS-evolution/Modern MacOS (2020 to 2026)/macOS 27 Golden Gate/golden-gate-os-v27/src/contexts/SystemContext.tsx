@@ -66,7 +66,7 @@ export interface GoldenGateV27State {
   betaUpdates: boolean;
   wallpaperUrl: string;
   wallpaperType: 'image' | 'video';
-  dynamicWallpaperEnabled: boolean;
+  wallpaperMode: 'off' | 'static' | 'dynamic';
   isCameraOn: boolean;
   notchVisible: boolean;
   glassBlurIntensity: number;
@@ -90,9 +90,9 @@ const defaultState: GoldenGateV27State = {
   appearance: 'auto',
   sidebarMaterial: 'tinted',
   betaUpdates: false,
-  wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4',
-  wallpaperType: 'video',
-  dynamicWallpaperEnabled: true,
+  wallpaperUrl: '/wallpapers/golden-gate-dark.png',
+  wallpaperType: 'image',
+  wallpaperMode: 'static',
   isCameraOn: false,
   notchVisible: true,
   glassBlurIntensity: 50,
@@ -205,6 +205,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const saved = localStorage.getItem('golden_gate_v27_state');
       const isInfected = localStorage.getItem('golden_gate_infected') === 'true';
       let state = saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
+      
+      if (!saved && state.wallpaperMode !== 'off') {
+        const now = new Date();
+        const mins = now.getHours() * 60 + now.getMinutes();
+        const isDay = mins >= 300 && mins < 1050;
+        if (state.wallpaperMode === 'dynamic') {
+          state.wallpaperUrl = isDay
+            ? '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4'
+            : 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4';
+          state.wallpaperType = 'video';
+        } else {
+          state.wallpaperUrl = isDay ? '/wallpapers/golden-gate-light.png' : '/wallpapers/golden-gate-dark.png';
+          state.wallpaperType = 'image';
+        }
+      }
       
       if (isInfected) {
         state.isSystemInfected = true;
