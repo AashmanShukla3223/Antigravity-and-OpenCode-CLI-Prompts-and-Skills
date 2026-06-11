@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { downloadBlob, saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
 
 type Tool = 'pen' | 'rectangle' | 'ellipse' | 'sticky' | 'text';
 type CanvasElement = {
@@ -28,6 +30,7 @@ let elementIdCounter = 0;
 const nextId = () => `elem-${++elementIdCounter}`;
 
 export const Freeform: React.FC = () => {
+  const { createNode } = useFileSystem();
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [selectedTool, setSelectedTool] = useState<Tool>('pen');
   const [selectedColor, setSelectedColor] = useState('#ffffff');
@@ -200,7 +203,20 @@ export const Freeform: React.FC = () => {
             />
           ))}
         </div>
-        <div className="flex-1" />
+        <ImportFileButton createNode={createNode} parentId="documents" />
+        <button
+          onClick={() => saveToVFS(createNode, JSON.stringify(elements), `freeform-${Date.now()}.json`, 'documents')}
+          className="px-3 py-1.5 rounded-md text-xs bg-emerald-600 hover:bg-emerald-500 transition"
+        >
+          💾 Save
+        </button>
+        <button
+          onClick={() => downloadBlob(JSON.stringify(elements, null, 2), `freeform-${Date.now()}.json`, 'application/json')}
+          className="px-3 py-1.5 rounded-md text-xs bg-[#3a3a3a] hover:bg-[#4a4a4a] transition"
+        >
+          ⬇ Download
+        </button>
+        <div className="w-px h-5 bg-[#3a3a3a]" />
         <button
           onClick={undo}
           disabled={undoStack.length === 0}

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
 
 interface Clip {
   id: string;
@@ -39,6 +41,7 @@ const INITIAL_CLIPS: Clip[] = [
 ];
 
 export const FinalCutPro: React.FC = () => {
+  const { createNode } = useFileSystem();
   const [clips] = useState<Clip[]>(INITIAL_CLIPS);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -189,6 +192,16 @@ export const FinalCutPro: React.FC = () => {
           <span className="text-gray-400 w-8 text-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">+</button>
         </div>
+        <ImportFileButton createNode={createNode} parentId="movies" />
+        <button
+          onClick={() => {
+            const project = { clips, currentFrame, TIMELINE_DURATION, fps };
+            saveToVFS(createNode, JSON.stringify(project, null, 2), `finalcut-${Date.now()}.fcproject`, 'movies');
+          }}
+          className="px-3 py-1 rounded text-xs bg-emerald-600 hover:bg-emerald-500 transition"
+        >
+          💾 Save
+        </button>
         <div className="flex-1" />
         <span className="text-xs text-gray-400">{timeStr(currentFrame)} / {timeStr(TIMELINE_DURATION)}</span>
         <div className="w-px h-5 bg-[#3c3c3c]" />

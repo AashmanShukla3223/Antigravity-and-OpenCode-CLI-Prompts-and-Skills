@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { downloadBlob, saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
 
 type MotionElement = {
   id: string;
@@ -48,6 +50,7 @@ const getKeyframeValue = (frames: Keyframe[], currentFrame: number, prop: keyof 
 };
 
 export const Motion: React.FC = () => {
+  const { createNode } = useFileSystem();
   const [elements, setElements] = useState<MotionElement[]>([
     { id: nextElemId(), name: 'Title', type: 'text', x: 400, y: 200, scale: 1, rotation: 0, opacity: 1, color: '#ffffff', content: 'Motion', visible: true },
     { id: nextElemId(), name: 'Circle 1', type: 'shape', x: 200, y: 300, scale: 1, rotation: 0, opacity: 0.8, color: '#4dabf7', content: 'circle', visible: true },
@@ -194,6 +197,7 @@ export const Motion: React.FC = () => {
           <button onClick={() => addElement('shape')} className="px-3 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">+ Shape</button>
           <button onClick={() => addElement('particle')} className="px-3 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">+ Particles</button>
         </div>
+        <ImportFileButton createNode={createNode} parentId="documents" />
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <div className="flex items-center gap-2">
           <button
@@ -208,6 +212,25 @@ export const Motion: React.FC = () => {
             + Keyframe
           </button>
         </div>
+        <div className="flex-1" />
+        <button
+          onClick={() => {
+            const project = { elements, keyframes, totalFrames, fps };
+            saveToVFS(createNode, JSON.stringify(project, null, 2), `motion-${Date.now()}.json`, 'documents');
+          }}
+          className="px-3 py-1.5 rounded text-xs bg-emerald-600 hover:bg-emerald-500 transition"
+        >
+          💾 Save
+        </button>
+        <button
+          onClick={() => {
+            const project = { elements, keyframes, totalFrames, fps };
+            downloadBlob(JSON.stringify(project, null, 2), `motion-${Date.now()}.json`, 'application/json');
+          }}
+          className="px-2 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition"
+        >
+          ⬇
+        </button>
         <span className="text-xs text-gray-400 ml-auto">{timeStr(currentFrame)} / {timeStr(totalFrames)}</span>
       </div>
 

@@ -53,6 +53,7 @@ import { Motion } from '../apps/Motion';
 import { XCode } from '../apps/XCode';
 import { PixelmatorPro } from '../apps/PixelmatorPro';
 import { FinalCutPro } from '../apps/FinalCutPro';
+import { LogicPro } from '../apps/LogicPro';
 
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
@@ -108,6 +109,7 @@ const AppMap: Record<string, React.FC<any>> = {
   xcode: XCode,
   pixelmatorpro: PixelmatorPro,
   finalcutpro: FinalCutPro,
+  logicpro: LogicPro,
 };
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
@@ -182,6 +184,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     xcode: 'Xcode',
     pixelmatorpro: 'Pixelmator Pro',
     finalcutpro: 'Final Cut Pro',
+    logicpro: 'Logic Pro',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

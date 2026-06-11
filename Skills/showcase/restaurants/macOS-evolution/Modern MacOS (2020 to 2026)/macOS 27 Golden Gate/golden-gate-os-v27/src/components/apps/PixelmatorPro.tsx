@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { saveToVFS, ImportFileButton } from '../../utils/vfs-ops';
 
 type Tool = 'brush' | 'eraser' | 'rect' | 'ellipse' | 'fill' | 'eyedropper';
 type Filter = 'none' | 'grayscale' | 'sepia' | 'blur' | 'brightness' | 'contrast';
@@ -15,6 +17,7 @@ let layerCounter = 0;
 const nextLayer = () => `layer-${++layerCounter}`;
 
 export const PixelmatorPro: React.FC = () => {
+  const { createNode } = useFileSystem();
   const [selectedTool, setSelectedTool] = useState<Tool>('brush');
   const [selectedColor, setSelectedColor] = useState('#4dabf7');
   const [brushSize, setBrushSize] = useState(8);
@@ -170,6 +173,19 @@ export const PixelmatorPro: React.FC = () => {
           <input type="range" min={2} max={40} value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-20 accent-blue-500" />
           <span className="text-gray-400 w-6">{brushSize}px</span>
         </div>
+        <ImportFileButton createNode={createNode} parentId="pictures" />
+        <div className="w-px h-5 bg-[#3c3c3c]" />
+        <button
+          onClick={() => {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const dataUrl = canvas.toDataURL('image/png');
+            saveToVFS(createNode, dataUrl, `pixelmator-${Date.now()}.png`, 'pictures');
+          }}
+          className="px-3 py-1.5 rounded text-xs bg-emerald-600 hover:bg-emerald-500 transition"
+        >
+          💾 Save to VFS
+        </button>
         <div className="flex-1" />
         <button onClick={handleClear} className="px-3 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">Clear</button>
         <button onClick={handleExport} className="px-3 py-1.5 rounded text-xs bg-blue-600 hover:bg-blue-500 transition">Export PNG</button>

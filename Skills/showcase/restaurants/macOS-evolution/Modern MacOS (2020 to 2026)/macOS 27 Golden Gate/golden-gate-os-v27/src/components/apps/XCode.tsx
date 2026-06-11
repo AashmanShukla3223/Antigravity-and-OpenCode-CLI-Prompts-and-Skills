@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { useSystem } from '../../contexts/SystemContext';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { downloadBlob, saveToVFS } from '../../utils/vfs-ops';
 
 interface GitHubItem {
   name: string;
@@ -33,6 +35,7 @@ const statusLabels = { M: 'Modify', A: 'Add', D: 'Delete', '??': 'Untrack' } as 
 
 export const XCode: React.FC = () => {
   const { systemState } = useSystem();
+  const { createNode } = useFileSystem();
   const [sidebarTab, setSidebarTab] = useState<'navigator' | 'git'>('navigator');
   const [showTerminal, setShowTerminal] = useState(true);
   const [scheme] = useState('GoldenGate');
@@ -263,6 +266,29 @@ export const XCode: React.FC = () => {
         <div className="flex items-center gap-1">
           <button onClick={handleBuild} disabled={isBuilding} className="px-3 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-40 transition">Build</button>
           <button onClick={handleRun} className="px-3 py-1 rounded text-xs bg-blue-600 hover:bg-blue-500 transition">▶ Run</button>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => {
+              if (!selectedFilePath || !fileContent) return;
+              saveToVFS(createNode, fileContent, selectedFilePath.split('/').pop() || 'untitled', 'documents');
+            }}
+            disabled={!selectedFilePath}
+            className="px-2 py-1 rounded text-xs bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 transition"
+          >
+            💾 Save to VFS
+          </button>
+          <button
+            onClick={() => {
+              if (!fileContent) return;
+              const filename = selectedFilePath?.split('/').pop() || 'untitled';
+              downloadBlob(fileContent, filename, 'text/plain');
+            }}
+            disabled={!fileContent}
+            className="px-2 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-30 transition"
+          >
+            ⬇ Download
+          </button>
         </div>
         <div className="flex-1" />
         <span className="text-[10px] text-gray-500">{isBuilding ? 'Building...' : 'Ready'}</span>

@@ -43,6 +43,7 @@ const apps: AppItem[] = [
   { id: 'xcode', name: 'Xcode' },
   { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
   { id: 'finalcutpro', name: 'Final Cut Pro' },
+  { id: 'logicpro', name: 'Logic Pro' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
