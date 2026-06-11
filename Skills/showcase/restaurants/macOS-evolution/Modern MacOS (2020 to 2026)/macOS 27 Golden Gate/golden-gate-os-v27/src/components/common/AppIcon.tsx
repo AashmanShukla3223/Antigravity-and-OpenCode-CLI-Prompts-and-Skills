@@ -100,6 +100,7 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'siriai': `${base}icons/Siri AI.png`,
     'aboutme': `${base}icons/aboutme.png`,
     'code': `${base}icons/code.png`,
+    'vmware': `${base}icons/VMware Fusion Pro.png`,
     'launchpad': `${base}icons/apps.png`,
     'games': `${base}icons/games.png`,
   };

@@ -120,7 +120,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: [],
-  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'github'],
+  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'vmware', 'github'],
   notes: [
     { 
       id: '1', 

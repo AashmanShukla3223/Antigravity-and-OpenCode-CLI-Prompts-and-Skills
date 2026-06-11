@@ -29,6 +29,7 @@ const ALL_APPS = [
   { id: 'settings', name: 'System Settings' },
   { id: 'aboutme', name: 'About Me' },
   { id: 'code', name: 'VS Code' },
+  { id: 'vmware', name: 'VMware Fusion Pro' },
 ];
 
 export const Dock: React.FC = () => {

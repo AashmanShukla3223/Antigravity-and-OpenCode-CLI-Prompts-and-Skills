@@ -31,6 +31,7 @@ const apps: AppItem[] = [
   { id: 'siriai', name: 'Siri' },
   { id: 'aboutme', name: 'About Me' },
   { id: 'code', name: 'VS Code' },
+  { id: 'vmware', name: 'VMware Fusion Pro' },
   { id: 'clock', name: 'Clock' },
   { id: 'keynote', name: 'Keynote' },
   { id: 'numbers', name: 'Numbers' },
@@ -40,7 +41,7 @@ const apps: AppItem[] = [
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
-  { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code'] },
+  { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code', 'vmware'] },
   { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
 ];
 
@@ -55,7 +56,8 @@ const subApps: Record<string, AppItem[]> = {
   'developer': [
     { id: 'terminal', name: 'Terminal' },
     { id: 'github', name: 'GitHub' },
-    { id: 'code', name: 'VS Code' }
+    { id: 'code', name: 'VS Code' },
+    { id: 'vmware', name: 'VMware Fusion Pro' },
   ],
   'utility': [
     { id: 'settings', name: 'Settings' },
