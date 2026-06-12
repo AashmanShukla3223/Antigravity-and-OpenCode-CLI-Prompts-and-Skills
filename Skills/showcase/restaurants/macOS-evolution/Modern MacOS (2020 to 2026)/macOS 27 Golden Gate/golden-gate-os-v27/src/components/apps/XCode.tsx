@@ -591,7 +591,7 @@ export const XCode: React.FC = () => {
               loadingFile ? (
                 <div className="flex items-center justify-center h-full text-xs text-gray-500">Loading...</div>
               ) : (
-                <Editor height="100%" language={fileLanguage} value={fileContent} theme="vs-dark" onChange={(val) => setFileContent(val || '')}
+                <Editor height="100%" language={fileLanguage} value={fileContent} theme="vs-dark" onChange={(val: string | undefined) => setFileContent(val || '')}
                   options={{ readOnly: false, minimap: { enabled: true }, fontSize: 13, lineNumbers: 'on', scrollBeyondLastLine: false, automaticLayout: true, padding: { top: 12 } }}
                 />
               )
