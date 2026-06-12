@@ -70,7 +70,7 @@ export const SetupAssistant: React.FC = () => {
   };
 
   return (
-    <motion.div 
+    <motion.main
       className={`fixed inset-0 z-50 transition-colors duration-1000 ${
         systemState.appearance === 'dark' ? 'bg-black text-white' : 
         systemState.appearance === 'light' ? 'bg-gray-100 text-black' : 
@@ -413,17 +413,28 @@ export const SetupAssistant: React.FC = () => {
             </button>
           ) : <div />}
           
-          {step < 12 && (
-            <button 
-              onClick={handleNext}
-              disabled={step === 7 && !termsScrolled}
-              className={`px-8 py-2 rounded-full backdrop-blur transition shadow-[0_0_15px_rgba(255,255,255,0.2)] ${step === 7 && !termsScrolled ? 'bg-white/10 text-white/50 border border-white/5' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'}`}
-            >
-              Continue
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {step >= 4 && step < 12 && (
+              <button
+                data-testid="skip-setup"
+                onClick={() => setStep(12)}
+                className="px-5 py-2 rounded-full text-xs font-bold text-white/60 hover:text-white border border-white/10 hover:border-white/30 backdrop-blur hover:bg-white/5 transition-all"
+              >
+                Skip Setup →
+              </button>
+            )}
+            {step < 12 && (
+              <button 
+                onClick={handleNext}
+                disabled={step === 7 && !termsScrolled}
+                className={`px-8 py-2 rounded-full backdrop-blur transition shadow-[0_0_15px_rgba(255,255,255,0.2)] ${step === 7 && !termsScrolled ? 'bg-white/10 text-white/50 border border-white/5' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'}`}
+              >
+                Continue
+              </button>
+            )}
+          </div>
         </div>
       </div>
-    </motion.div>
+    </motion.main>
   );
 };

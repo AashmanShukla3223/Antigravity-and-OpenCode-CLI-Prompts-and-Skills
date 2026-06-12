@@ -71,6 +71,7 @@ export const BootSequence: React.FC = () => {
     const startBoot = async () => {
       if (isInfected && !recoveryTriggered.current) {
         await new Promise((r) => setTimeout(r, 2000));
+        if (!mounted) return;
         setIsDeadDrive(true);
         return;
       }
@@ -78,19 +79,22 @@ export const BootSequence: React.FC = () => {
       console.log("🥾 Boot: startBoot() called");
       setProgress(60);
       await new Promise((r) => setTimeout(r, 1200));
+      if (!mounted) return;
       setProgress(100);
       
       await new Promise((r) => setTimeout(r, 400));
+      if (!mounted) return;
       setBreathe(true);
       
       await new Promise((r) => setTimeout(r, 500));
+      if (!mounted) return;
       setFadeOut(true);
 
       await new Promise((r) => setTimeout(r, 800));
+      if (!mounted) return;
       
       console.log("🥾 Boot: Transitioning from booting stage. setup_complete:", systemState.setup_complete);
       
-      // Transition to next boot state
       if (recoveryTriggered.current) {
         console.log("Boot: Transitioning to recovery");
         setBootState('recovery');
@@ -143,7 +147,7 @@ export const BootSequence: React.FC = () => {
   }
 
   return (
-    <motion.div 
+    <motion.main 
       className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50"
       initial={{ opacity: 1 }}
       animate={{ opacity: fadeOut ? 0 : 1, filter: fadeOut ? 'blur(20px)' : 'blur(0px)' }}
@@ -173,6 +177,6 @@ export const BootSequence: React.FC = () => {
           }}
         />
       </div>
-    </motion.div>
+    </motion.main>
   );
 };

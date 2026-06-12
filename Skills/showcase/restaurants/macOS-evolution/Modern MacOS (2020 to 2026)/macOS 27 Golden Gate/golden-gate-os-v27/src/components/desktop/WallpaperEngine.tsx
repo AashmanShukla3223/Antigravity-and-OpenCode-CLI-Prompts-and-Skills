@@ -26,7 +26,7 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
   const bgImage = type === 'image' ? url : (fallbackImage || '');
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-transparent pointer-events-none"
+    <div data-testid="wallpaper" role="presentation" aria-label="Desktop Wallpaper" className="absolute inset-0 overflow-hidden bg-transparent pointer-events-none"
       style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
     >
       <AnimatePresence mode="wait">

@@ -1,124 +1,116 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { useTelemetry } from '../../hooks/useTelemetry';
-import { Finder } from '../apps/Finder';
-import { Safari } from '../apps/Safari';
-import { SystemSettings } from '../apps/SystemSettings';
-import { TerminalApp } from '../apps/TerminalApp';
-import { ActivityMonitor } from '../apps/ActivityMonitor';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 
-import { Messages } from '../apps/Messages';
-import { Photos } from '../apps/Photos';
-import { Phone } from '../apps/Phone';
-import { Maps } from '../apps/Maps';
-import { Mail } from '../apps/Mail';
-import { AppStore } from '../apps/AppStore';
-import { AppleBooks } from '../apps/AppleBooks';
-import { AppleWallet } from '../apps/AppleWallet';
-import { Reminders } from '../apps/Reminders';
-import { Stickies } from '../apps/Stickies';
-import { Launchpad } from '../apps/Launchpad';
-import { FaceTime } from '../apps/FaceTime';
-import { Contacts } from '../apps/Contacts';
-
-import { AppleMusic } from '../apps/AppleMusic';
-import { AppleTVPlus } from '../apps/AppleTVPlus';
-import { ITunesStore } from '../apps/iTunesStore';
-import { SoundTest } from '../apps/SoundTest';
-import { Installer } from '../apps/Installer';
-import { TimeMachine } from '../apps/TimeMachine';
-import { DiskUtility } from '../apps/DiskUtility';
-
-import { IPhoneMirroring } from '../apps/iPhoneMirroring';
-import { Weather } from '../apps/Weather';
-import { Notes } from '../apps/Notes';
-import { Calendar } from '../apps/Calendar';
-import { CrazyErrors } from '../apps/CrazyErrors';
-import { CodeViewer } from '../apps/CodeViewer';
-import { SamsungLCDApp } from '../apps/SamsungLCDApp';
-import { Calculator } from '../apps/Calculator';
-import { SiriAI } from '../apps/SiriAI';
-import { AboutMe } from '../apps/AboutMe';
-import { Clock } from '../apps/Clock';
-import { Pages } from '../apps/Pages';
-import { Numbers } from '../apps/Numbers';
-import { Keynote } from '../apps/Keynote';
-import { Games } from '../apps/Games';
-
-type WindowState = 'normal' | 'maximized' | 'fullscreen';
-
-interface WindowProps {
-  appId: string;
+function namedLazy(getMod: () => Promise<Record<string, React.ComponentType<any>>>, name: string): React.LazyExoticComponent<React.ComponentType<any>> {
+  return lazy(() => getMod().then(m => ({ default: m[name] })));
 }
 
-const AppMap: Record<string, React.FC<any>> = {
-  finder: Finder,
-  safari: Safari,
-  settings: SystemSettings,
-  terminal: TerminalApp,
-  activitymonitor: ActivityMonitor,
-  messages: Messages,
-  photos: Photos,
-  phone: Phone,
-  maps: Maps,
-  mail: Mail,
-  appstore: AppStore,
-  books: AppleBooks,
-  wallet: AppleWallet,
-  reminders: Reminders,
-  stickies: Stickies,
-  launchpad: Launchpad,
-  facetime: FaceTime,
-  contacts: Contacts,
-  music: AppleMusic,
-  tv: AppleTVPlus,
-  itunes: ITunesStore,
-  soundtest: SoundTest,
-  installer: Installer,
-  timemachine: TimeMachine,
-  diskutility: DiskUtility,
-  iphonemirroring: IPhoneMirroring,
-  weather: Weather,
-  notes: Notes,
-  calendar: Calendar,
-  crazyerrors: CrazyErrors,
-  codeviewer: CodeViewer,
-  samsunglcdtv: SamsungLCDApp,
-  calculator: Calculator,
-  siriai: SiriAI,
-  aboutme: AboutMe,
-  clock: Clock,
-  pages: Pages,
-  numbers: Numbers,
-  keynote: Keynote,
-  games: Games,
-};
+const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
+  finder: namedLazy(() => import('../apps/Finder'), 'Finder'),
+  safari: namedLazy(() => import('../apps/Safari'), 'Safari'),
+  settings: namedLazy(() => import('../apps/SystemSettings'), 'SystemSettings'),
+  terminal: namedLazy(() => import('../apps/TerminalApp'), 'TerminalApp'),
+  activitymonitor: namedLazy(() => import('../apps/ActivityMonitor'), 'ActivityMonitor'),
+  messages: namedLazy(() => import('../apps/Messages'), 'Messages'),
+  photos: namedLazy(() => import('../apps/Photos'), 'Photos'),
+  phone: namedLazy(() => import('../apps/Phone'), 'Phone'),
+  maps: namedLazy(() => import('../apps/Maps'), 'Maps'),
+  mail: namedLazy(() => import('../apps/Mail'), 'Mail'),
+  appstore: namedLazy(() => import('../apps/AppStore'), 'AppStore'),
+  books: namedLazy(() => import('../apps/AppleBooks'), 'AppleBooks'),
+  wallet: namedLazy(() => import('../apps/AppleWallet'), 'AppleWallet'),
+  reminders: namedLazy(() => import('../apps/Reminders'), 'Reminders'),
+  stickies: namedLazy(() => import('../apps/Stickies'), 'Stickies'),
+  launchpad: namedLazy(() => import('../apps/Launchpad'), 'Launchpad'),
+  facetime: namedLazy(() => import('../apps/FaceTime'), 'FaceTime'),
+  contacts: namedLazy(() => import('../apps/Contacts'), 'Contacts'),
+  music: namedLazy(() => import('../apps/AppleMusic'), 'AppleMusic'),
+  tv: namedLazy(() => import('../apps/AppleTVPlus'), 'AppleTVPlus'),
+  itunes: namedLazy(() => import('../apps/iTunesStore'), 'ITunesStore'),
+  soundtest: namedLazy(() => import('../apps/SoundTest'), 'SoundTest'),
+  installer: namedLazy(() => import('../apps/Installer'), 'Installer'),
+  timemachine: namedLazy(() => import('../apps/TimeMachine'), 'TimeMachine'),
+  diskutility: namedLazy(() => import('../apps/DiskUtility'), 'DiskUtility'),
+  iphonemirroring: namedLazy(() => import('../apps/iPhoneMirroring'), 'IPhoneMirroring'),
+  weather: namedLazy(() => import('../apps/Weather'), 'Weather'),
+  notes: namedLazy(() => import('../apps/Notes'), 'Notes'),
+  calendar: namedLazy(() => import('../apps/Calendar'), 'Calendar'),
+  crazyerrors: namedLazy(() => import('../apps/CrazyErrors'), 'CrazyErrors'),
+  codeviewer: namedLazy(() => import('../apps/CodeViewer'), 'CodeViewer'),
+  samsunglcdtv: namedLazy(() => import('../apps/SamsungLCDApp'), 'SamsungLCDApp'),
+  calculator: namedLazy(() => import('../apps/Calculator'), 'Calculator'),
+  siriai: namedLazy(() => import('../apps/SiriAI'), 'SiriAI'),
+  aboutme: namedLazy(() => import('../apps/AboutMe'), 'AboutMe'),
+  code: namedLazy(() => import('../apps/VSCode'), 'VSCode'),
+  vmware: namedLazy(() => import('../apps/VMwareFusionPro'), 'VMwareFusionPro'),
+  clock: namedLazy(() => import('../apps/Clock'), 'Clock'),
+  pages: namedLazy(() => import('../apps/Pages'), 'Pages'),
+  numbers: namedLazy(() => import('../apps/Numbers'), 'Numbers'),
+  keynote: namedLazy(() => import('../apps/Keynote'), 'Keynote'),
+  games: namedLazy(() => import('../apps/Games'), 'Games'),
+  freeform: namedLazy(() => import('../apps/Freeform'), 'Freeform'),
+  motion: namedLazy(() => import('../apps/Motion'), 'Motion'),
+  xcode: namedLazy(() => import('../apps/XCode'), 'XCode'),
+  pixelmatorpro: namedLazy(() => import('../apps/PixelmatorPro'), 'PixelmatorPro'),
+  finalcutpro: namedLazy(() => import('../apps/FinalCutPro'), 'FinalCutPro'),
+  logicpro: namedLazy(() => import('../apps/LogicPro'), 'LogicPro'),
+};;
+
+const AppFallback: React.FC = () => (
+  <div className="flex items-center justify-center h-full">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+      <span className="text-xs text-gray-400">Loading...</span>
+    </div>
+  </div>
+);
 
 const AppNotFound: React.FC<{ appId: string }> = ({ appId }) => (
   <div className="p-8 text-white">App not found: {appId}</div>
 );
 
-export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { activeApp, setActiveApp, closeApp, quitApp, openApps, minimizedApps, minimizeApp, powerMode, systemState } = useSystem();
+const AppContent: React.FC<{ appId: string }> = ({ appId }) => {
+  const Comp = AppMap[appId];
+  if (!Comp) return <AppNotFound appId={appId} />;
+  return (
+    <ErrorBoundary appId={appId}>
+      <Suspense fallback={<AppFallback />}>
+        <Comp />
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
+
+type WindowState = 'normal' | 'maximized' | 'fullscreen';
+
+interface WindowProps {
+  windowId: string;
+  appId: string;
+}
+
+export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
+  const { activeWindowId, setActiveWindow, closeWindow, quitApp, openWindows, minimizeWindow, powerMode, systemState } = useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [windowState, setWindowState] = useState<WindowState>('normal');
   const [size, setSize] = useState({ width: 800, height: 500 });
-  const [position] = useState({ top: 80, left: 80 });
+  const sameAppWindows = openWindows.filter(w => w.appId === appId);
+  const instanceIndex = sameAppWindows.findIndex(w => w.id === windowId);
+  const offset = Math.min(instanceIndex, 10) * 28;
+  const [position] = useState({ top: 80 + offset, left: 80 + offset });
   const resizing = useRef<'right' | 'bottom' | 'corner' | null>(null);
   const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
-  const isActive = activeApp === appId;
-  const isMinimized = minimizedApps.includes(appId);
+  const isActive = activeWindowId === windowId;
   const isMaximized = windowState === 'maximized';
   const isFullscreen = windowState === 'fullscreen';
-  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openApps.indexOf(appId) + 10);
-
-  const AppContent = AppMap[appId];
+  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openWindows.findIndex(w => w.id === windowId) + 10);
 
   const appNames: Record<string, string> = {
     finder: 'Finder',
@@ -156,11 +148,19 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     calculator: 'Calculator',
     siriai: 'Siri',
     aboutme: 'About Me',
+    code: 'VS Code',
+    vmware: 'VMware Fusion Pro',
     clock: 'Clock',
     pages: 'Pages',
     numbers: 'Numbers',
     keynote: 'Keynote',
     games: 'Games',
+    freeform: 'Freeform',
+    motion: 'Motion',
+    xcode: 'Xcode',
+    pixelmatorpro: 'Pixelmator Pro',
+    finalcutpro: 'Final Cut Pro',
+    logicpro: 'Logic Pro',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
@@ -199,13 +199,13 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     if (appId === 'terminal' || appId === 'activitymonitor' || appId === 'installer') {
       quitApp(appId);
     } else {
-      closeApp(appId);
+      closeWindow(windowId);
     }
-  }, [appId, closeApp, quitApp]);
+  }, [appId, windowId, closeWindow, quitApp]);
 
   const handleMinimize = useCallback(() => {
-    minimizeApp(appId);
-  }, [appId, minimizeApp]);
+    minimizeWindow(windowId);
+  }, [windowId, minimizeWindow]);
 
   const handleDragEnd = () => {
     if (navigator.vibrate) {
@@ -265,8 +265,6 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     }
   };
 
-  if (isMinimized) return null;
-
   const isEndurance = powerMode === 'Low Power';
   const isProMotion = powerMode === 'High Performance';
 
@@ -294,7 +292,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       dragMomentum={false}
       dragElastic={dragElastic}
       onDragEnd={handleDragEnd}
-      onPointerDown={() => setActiveApp(appId)}
+      onPointerDown={() => setActiveWindow(windowId)}
       variants={genieVariants}
       initial="initial"
       animate="animate"
@@ -315,7 +313,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
           className={`h-12 w-full flex items-center justify-between px-4 border-b border-white/10 select-none cursor-default relative z-10 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/5'} ${isEndurance ? 'bg-amber-900/60' : ''}`}
           onPointerDown={(e) => {
             if (!isMaximized) {
-              setActiveApp(appId);
+              setActiveWindow(windowId);
               controls.start(e);
               if (navigator.vibrate) {
                 navigator.vibrate(10);
@@ -350,7 +348,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       )}
 
       <div className={`flex-1 relative z-10 overflow-hidden ${isEndurance ? 'bg-amber-950/80' : 'bg-white/5'}`}>
-        {AppContent ? <AppContent /> : <AppNotFound appId={appId} />}
+        <AppContent appId={appId} />
       </div>
 
       {!isMaximized && !isFullscreen && (

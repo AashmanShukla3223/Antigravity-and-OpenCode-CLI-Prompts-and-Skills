@@ -1,62 +1,59 @@
 import { useEffect, useState } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 
-type GoldenGateStage = 'Dawn' | 'Day' | 'Dusk' | 'Night';
+type WallpaperStage = 'light' | 'dark';
 
-const KHABARDAR = 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4';
+function getCurrentStage(): WallpaperStage {
+  const now = new Date();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  return (mins >= 300 && mins < 1050) ? 'light' : 'dark';
+}
 
-const STAGE_WALLPAPERS: Record<GoldenGateStage, { url: string; type: 'image' | 'video' }> = {
-  Dawn: { url: KHABARDAR, type: 'video' },
-  Day: { url: KHABARDAR, type: 'video' },
-  Dusk: { url: KHABARDAR, type: 'video' },
-  Night: { url: KHABARDAR, type: 'video' }
-};
-
-const calculateGoldenGateStage = (): GoldenGateStage => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 9) return 'Dawn';
-  if (hour >= 9 && hour < 17) return 'Day';
-  if (hour >= 17 && hour < 21) return 'Dusk';
-  return 'Night';
-};
+function getWallpaper(stage: WallpaperStage, mode: 'static' | 'dynamic') {
+  if (mode === 'dynamic') {
+    return {
+      url: stage === 'light'
+        ? '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4'
+        : 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4',
+      type: 'video' as const,
+    };
+  }
+  return {
+    url: stage === 'light' ? '/wallpapers/golden-gate-light.png' : '/wallpapers/golden-gate-dark.png',
+    type: 'image' as const,
+  };
+}
 
 export const useDynamicWallpaper = () => {
   const { systemState, updateSystemState } = useSystem();
-  const [stage, setStage] = useState<GoldenGateStage>(calculateGoldenGateStage);
+  const [stage, setStage] = useState<WallpaperStage>(getCurrentStage);
 
   useEffect(() => {
-    if (!systemState.dynamicWallpaperEnabled) return;
+    if (systemState.wallpaperMode === 'off') return;
 
-    const currentStage = calculateGoldenGateStage();
-    const wallpaper = STAGE_WALLPAPERS[currentStage];
-    
-    const timer = setTimeout(() => {
-      setStage(currentStage);
-      if (systemState.wallpaperUrl !== wallpaper.url) {
-        updateSystemState({
-          wallpaperUrl: wallpaper.url,
-          wallpaperType: wallpaper.type
-        });
-      }
-    }, 0);
+    const mode = systemState.wallpaperMode;
+    const wallpaper = getWallpaper(stage, mode);
+    if (systemState.wallpaperUrl !== wallpaper.url) {
+      updateSystemState({
+        wallpaperUrl: wallpaper.url,
+        wallpaperType: wallpaper.type,
+      });
+    }
 
     const interval = setInterval(() => {
-      const newStage = calculateGoldenGateStage();
+      const newStage = getCurrentStage();
       if (newStage !== stage) {
         setStage(newStage);
-        const newWallpaper = STAGE_WALLPAPERS[newStage];
+        const newWallpaper = getWallpaper(newStage, mode);
         updateSystemState({
           wallpaperUrl: newWallpaper.url,
-          wallpaperType: newWallpaper.type
+          wallpaperType: newWallpaper.type,
         });
       }
-    }, 60000); // Check every minute
+    }, 60000);
 
-    return () => {
-      clearTimeout(timer);
-      clearInterval(interval);
-    };
-  }, [systemState.dynamicWallpaperEnabled, systemState.wallpaperUrl, stage, updateSystemState]);
+    return () => clearInterval(interval);
+  }, [systemState.wallpaperMode, systemState.wallpaperUrl, stage, updateSystemState]);
 
   return stage;
 };
