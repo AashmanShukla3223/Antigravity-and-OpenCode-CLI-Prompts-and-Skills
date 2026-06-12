@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import { saveToVFS, ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
+import { Delete02Icon } from 'hugeicons-react';
 
 interface Track {
   id: string;
@@ -11,7 +12,28 @@ interface Track {
   muted: boolean;
   solo: boolean;
   armed: boolean;
+  audioUrl?: string;
 }
+
+const TapTempoButton: React.FC<{ onBpmChange: (bpm: number) => void }> = ({ onBpmChange }) => {
+  const tapTimesRef = useRef<number[]>([]);
+  return (
+    <button
+      onClick={() => {
+        const now = performance.now();
+        const recent = [...tapTimesRef.current, now].filter(t => now - t < 3000);
+        if (recent.length >= 2) {
+          const intervals = recent.slice(1).map((t, i) => t - recent[i]);
+          const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+          const calc = Math.round(60000 / avg);
+          if (calc >= 60 && calc <= 200) onBpmChange(calc);
+        }
+        tapTimesRef.current = recent.slice(-8);
+      }}
+      className="px-2 py-0.5 rounded text-[10px] bg-[#3c3c3c] hover:bg-[#4a4a4a] transition"
+    >Tap</button>
+  );
+};
 
 interface ExportPreset {
   label: string;
@@ -38,7 +60,7 @@ export const LogicPro: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentBar, setCurrentBar] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm] = useState(120);
+
   const [showExport, setShowExport] = useState(false);
   const [exportPreset, setExportPreset] = useState<ExportPreset>(EXPORT_PRESETS[2]);
   const [exportProgress, setExportProgress] = useState(0);
@@ -47,12 +69,106 @@ export const LogicPro: React.FC = () => {
   const [selectedTrack, setSelectedTrack] = useState<string>('');
   const animRef = useRef<number | null>(null);
   const [masterVolume, setMasterVolume] = useState(0.8);
-  const [notes, setNotes] = useState<Record<string, number[]>>({});
+  const [notes] = useState<Record<string, number[]>>({});
 
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const sourceNodesRef = useRef<AudioBufferSourceNode[]>([]);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const [levels, setLevels] = useState<number[]>(tracks.map(() => 0));
+  const [bpm, setBpm] = useState(120);
+  const waveformCache = useRef<Map<string, number[]>>(new Map());
+  const playbackStartRef = useRef(0);
+  const rafLevelRef = useRef<number | null>(null);
   const selectedTrackData = tracks.find(t => t.id === selectedTrack);
+
+  const decodeWaveform = useCallback(async (audioUrl: string, bars: number): Promise<number[]> => {
+    if (waveformCache.current.has(audioUrl)) return waveformCache.current.get(audioUrl)!;
+    try {
+      const res = await fetch(audioUrl);
+      const buffer = await res.arrayBuffer();
+      const ctx = new OfflineAudioContext(1, 44100, 44100);
+      const decoded = await ctx.decodeAudioData(buffer);
+      const channel = decoded.getChannelData(0);
+      const samplesPerBar = Math.floor(channel.length / bars);
+      const peaks: number[] = [];
+      for (let i = 0; i < bars; i++) {
+        let max = 0;
+        const start = i * samplesPerBar;
+        const end = Math.min(start + samplesPerBar, channel.length);
+        for (let j = start; j < end; j++) {
+          const abs = Math.abs(channel[j]);
+          if (abs > max) max = abs;
+        }
+        peaks.push(max);
+      }
+      waveformCache.current.set(audioUrl, peaks);
+      return peaks;
+    } catch { return []; }
+  }, []);
+
+  const playTracks = useCallback(async () => {
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
+    const ctx = audioCtxRef.current;
+    sourceNodesRef.current.forEach(s => { try { s.stop(); } catch {} });
+    sourceNodesRef.current = [];
+
+    const activeTracks = tracks.filter(t => {
+      if (!t.audioUrl || t.muted) return false;
+      const hasSolo = tracks.some(s => s.solo);
+      return hasSolo ? t.solo : true;
+    });
+
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    analyserRef.current = analyser;
+    const levelBuffer = new Uint8Array(analyser.frequencyBinCount);
+
+    for (const track of activeTracks) {
+      try {
+        const res = await fetch(track.audioUrl!);
+        const buffer = await res.arrayBuffer();
+        const decoded = await ctx.decodeAudioData(buffer);
+        const source = ctx.createBufferSource();
+        source.buffer = decoded;
+
+        const gain = ctx.createGain();
+        gain.gain.value = track.volume * masterVolume;
+
+        const panner = ctx.createStereoPanner();
+        panner.pan.value = track.pan;
+
+        source.connect(gain);
+        gain.connect(panner);
+        panner.connect(analyser);
+        source.start(0);
+        sourceNodesRef.current.push(source);
+      } catch {}
+    }
+    analyser.connect(ctx.destination);
+
+    const updateLevels = () => {
+      if (!analyserRef.current) return;
+      analyserRef.current.getByteFrequencyData(levelBuffer);
+      const avg = Array.from(levelBuffer).reduce((a, b) => a + b, 0) / levelBuffer.length;
+      setLevels(tracks.map(t => (t.audioUrl && !t.muted ? avg / 255 : 0)));
+      rafLevelRef.current = requestAnimationFrame(updateLevels);
+    };
+    rafLevelRef.current = requestAnimationFrame(updateLevels);
+
+    playbackStartRef.current = ctx.currentTime;
+  }, [tracks, masterVolume]);
+
+  const stopTracks = useCallback(() => {
+    sourceNodesRef.current.forEach(s => { try { s.stop(); } catch {} });
+    sourceNodesRef.current = [];
+    analyserRef.current = null;
+    if (rafLevelRef.current) cancelAnimationFrame(rafLevelRef.current);
+    setLevels(tracks.map(() => 0));
+  }, [tracks.length]);
 
   useEffect(() => {
     if (isPlaying) {
+      playTracks();
       const intervalMs = (60 / bpm) * 1000 / 4;
       let lastTime = performance.now();
       const animate = (time: number) => {
@@ -69,8 +185,10 @@ export const LogicPro: React.FC = () => {
       };
       animRef.current = requestAnimationFrame(animate);
       return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+    } else {
+      stopTracks();
     }
-  }, [isPlaying, bpm]);
+  }, [isPlaying, bpm, playTracks, stopTracks]);
 
   const updateTrack = useCallback((id: string, updates: Partial<Track>) => {
     setTracks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
@@ -87,24 +205,21 @@ export const LogicPro: React.FC = () => {
     setSelectedTrack(newTrack.id);
   }, [tracks.length]);
 
-  const deleteTrack = useCallback((id: string) => {
-    setTracks(prev => { const next = prev.filter(t => t.id !== id); return next; });
-    if (selectedTrack === id) setSelectedTrack(tracks[0]?.id || '');
-  }, [tracks, selectedTrack]);
 
-  const addTrackFromFile = useCallback((name: string) => {
+  const addTrackFromFile = useCallback((name: string, dataUrl?: string) => {
     const newTrack: Track = {
       id: nextTrackId(),
       name: name.replace(/\.[^.]+$/, '').slice(0, 20),
       color: TRACK_COLORS[tracks.length % TRACK_COLORS.length],
       volume: 0.7, pan: 0, muted: false, solo: false, armed: true,
+      audioUrl: dataUrl,
     };
     setTracks(prev => [...prev, newTrack]);
     setSelectedTrack(newTrack.id);
   }, [tracks.length]);
 
-  const dropHandlers = useFileDrop(createNode, 'music', '.mp3,.wav', (file) => {
-    addTrackFromFile(file.name);
+  const dropHandlers = useFileDrop(createNode, 'music', '.mp3,.wav', (file, dataUrl) => {
+    addTrackFromFile(file.name, dataUrl);
   });
 
   const handleExport = useCallback(() => {
@@ -187,7 +302,8 @@ export const LogicPro: React.FC = () => {
         </div>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <span className="text-xs text-gray-400">{bpm} BPM</span>
-        <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav" />
+        <TapTempoButton onBpmChange={setBpm} />
+        <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav" onImport={(file, dataUrl) => addTrackFromFile(file.name, dataUrl)} />
         <button
           onClick={() => {
             const project = { tracks, bpm, masterVolume, notes };
@@ -212,9 +328,10 @@ export const LogicPro: React.FC = () => {
             Mixer
           </div>
           <div className="flex-1 overflow-y-auto">
-            {tracks.map(track => {
+            {tracks.map((track, tIdx) => {
               const hasSolo = tracks.some(t => t.solo);
               const isAudible = hasSolo ? track.solo : !track.muted;
+              const level = levels[tIdx] || 0;
               return (
                 <div
                   key={track.id}
@@ -268,11 +385,26 @@ export const LogicPro: React.FC = () => {
                     />
                     <span className="text-gray-500 w-8">{track.pan > 0 ? 'R' : track.pan < 0 ? 'L' : 'C'}</span>
                   </div>
-                  <div className="mt-1.5 h-8 bg-[#1a1a1a] rounded flex items-end px-1 gap-px">
-                    {Array.from({ length: 16 }).map((_, i) => {
-                      const h = 4 + Math.sin(i * 0.8 + track.volume * 3) * 4 + Math.random() * 2;
-                      return <div key={i} className="flex-1 rounded-t" style={{ height: h, backgroundColor: isAudible ? track.color : track.color + '44' }} />;
-                    })}
+                  <div className="mt-1.5 h-6 bg-[#1a1a1a] rounded flex items-center px-1 gap-0.5">
+                    {level > 0 ? (
+                      Array.from({ length: 12 }).map((_, i) => (
+                        <div key={i} className="flex-1 rounded-t" style={{ height: `${Math.min(100, (level * (i + 1) / 12) * 100)}%`, backgroundColor: i > 8 ? '#ef4444' : i > 5 ? '#f59e0b' : track.color }} />
+                      ))
+                    ) : (
+                      Array.from({ length: 12 }).map((_, i) => {
+                        const h = 4 + Math.sin(i * 0.8 + track.volume * 3) * 3;
+                        return <div key={i} className="flex-1 rounded-t" style={{ height: h, backgroundColor: isAudible ? track.color + '44' : track.color + '22' }} />;
+                      })
+                    )}
+                  </div>
+                  <div className="flex justify-end mt-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setTracks(prev => prev.filter(t => t.id !== track.id)); }}
+                      className="text-red-400 hover:text-red-300 opacity-0 hover:opacity-100 transition-opacity"
+                      title="Delete track"
+                    >
+                      <Delete02Icon size={12} />
+                    </button>
                   </div>
                 </div>
               );
@@ -304,17 +436,19 @@ export const LogicPro: React.FC = () => {
           </div>
           <div className="flex-1 overflow-auto">
             <div className="relative" style={{ width: TOTAL_BARS * 48, minHeight: '100%' }}>
-              {tracks.map(track => (
+              {tracks.map(track => {
+                const waveform = track.audioUrl ? waveformCache.current.get(track.audioUrl) : undefined;
+                return (
                 <div key={track.id} className="h-12 border-b border-[#2a2a2a] flex relative" style={{ backgroundColor: selectedTrack === track.id ? '#ffffff08' : 'transparent' }}>
                   {Array.from({ length: TOTAL_BARS }).map((_, bar) => {
-                    const hasNote = notes[track.id]?.includes(bar);
+                    const peak = waveform ? waveform[bar] || 0 : 0;
+                    const h = Math.max(2, peak * 40);
                     return (
-                      <div key={bar} className={`w-12 h-full shrink-0 border-r border-[#222] flex items-center justify-center relative ${bar % 4 === 0 ? 'border-[#333]' : ''}`}>
-                        {hasNote && (
+                      <div key={bar} className={`w-12 h-full shrink-0 border-r border-[#222] flex items-end justify-center pb-1 ${bar % 4 === 0 ? 'border-[#333]' : ''}`}>
+                        {peak > 0.01 && (
                           <div
-                            className="w-8 h-3 rounded-sm cursor-pointer transition hover:opacity-80"
-                            style={{ backgroundColor: track.color }}
-                            title={`${track.name} - Bar ${bar + 1}`}
+                            className="w-2 rounded-t transition-all duration-100"
+                            style={{ height: h, backgroundColor: track.color }}
                           />
                         )}
                       </div>
@@ -324,8 +458,16 @@ export const LogicPro: React.FC = () => {
                     className="absolute top-0 bottom-0 w-0.5 bg-red-500 shadow-[0_0_6px_rgba(255,50,50,0.8)] z-10 pointer-events-none"
                     style={{ left: currentBar * 48 }}
                   />
+                  {track.audioUrl && !waveform && (
+                    <div className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-500">
+                      <button
+                        onClick={() => decodeWaveform(track.audioUrl!, TOTAL_BARS).then(() => setTracks(prev => [...prev]))}
+                        className="px-2 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]"
+                      >Render Waveform</button>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )})}
             </div>
           </div>
           <div className="h-6 bg-[#252525] border-t border-[#333] flex items-center shrink-0">

@@ -15,7 +15,7 @@ export const storeFileExternal = (content: string): string | null => {
     localStorage.setItem(`${FILE_STORE_PREFIX}${id}`, content);
     return id;
   } catch (e) {
-    console.warn('File too large for localStorage', e);
+    console.warn('localStorage quota exceeded, storing inline', e);
     return null;
   }
 };
@@ -142,7 +142,20 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    localStorage.setItem('golden_gate_v27_fs', JSON.stringify(nodes));
+    const serialized = JSON.stringify(nodes);
+    if (serialized.length > 4_000_000) {
+      console.warn('VFS too large for localStorage, truncating');
+      const trimmed = nodes.map(n => {
+        if (n.content && n.content.length > 500) {
+          const fileId = storeFileExternal(n.content);
+          return { ...n, content: fileId ? `__vfs_ext_${fileId}` : n.content.slice(0, 500) };
+        }
+        return n;
+      });
+      try { localStorage.setItem('golden_gate_v27_fs', JSON.stringify(trimmed)); } catch {}
+      return;
+    }
+    try { localStorage.setItem('golden_gate_v27_fs', serialized); } catch {}
   }, [nodes]);
 
   // Initial self-heal for critical nodes
@@ -173,8 +186,15 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     setNodes(prev => prev.map(n => n.id === id ? { ...n, ...updates, modifiedAt: Date.now() } : n));
   };
 
+  const cleanupFile = (content: string | undefined) => {
+    if (content?.startsWith('__vfs_ext_')) {
+      removeFileExternal(content.replace('__vfs_ext_', ''));
+    }
+  };
+
   const deleteNode = (id: string) => {
-    // macOS Logic: Move to Trash first by changing parentId
+    const node = nodes.find(n => n.id === id);
+    if (node) cleanupFile(node.content);
     setNodes(prev => prev.map(n => n.id === id ? { ...n, parentId: 'trash', modifiedAt: Date.now() } : n));
   };
 
@@ -185,6 +205,10 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     };
     
     const idsToDelete = getChildrenIds('trash');
+    idsToDelete.forEach(id => {
+      const node = nodes.find(n => n.id === id);
+      if (node) cleanupFile(node.content);
+    });
     setNodes(prev => prev.filter(n => !idsToDelete.includes(n.id)));
   };
 

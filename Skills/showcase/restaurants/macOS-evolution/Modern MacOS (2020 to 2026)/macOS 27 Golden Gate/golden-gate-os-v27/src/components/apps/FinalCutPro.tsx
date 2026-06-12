@@ -10,6 +10,7 @@ interface Clip {
   track: number;
   color: string;
   type: 'video' | 'audio' | 'title';
+  contentUrl?: string;
 }
 
 interface ExportPreset {
@@ -50,6 +51,7 @@ export const FinalCutPro: React.FC = () => {
   const [exportDone, setExportDone] = useState(false);
   const animRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [selectedClip, setSelectedClip] = useState<string | null>(null);
   const [previewResolution] = useState({ w: 640, h: 360 });
 
@@ -57,7 +59,7 @@ export const FinalCutPro: React.FC = () => {
 
   const activeClipAtFrame = clips.find(c => c.track === 0 && currentFrame >= c.start && currentFrame < c.start + c.duration);
 
-  const addClipFromFile = useCallback((name: string) => {
+  const addClipFromFile = useCallback((name: string, dataUrl?: string) => {
     const ext = name.split('.').pop()?.toLowerCase() || '';
     const isVideo = ['mp4', 'mov', 'webm'].includes(ext);
     const isAudio = ['mp3', 'wav'].includes(ext);
@@ -70,13 +72,14 @@ export const FinalCutPro: React.FC = () => {
       track: type === 'video' ? 0 : type === 'audio' ? 1 : 2,
       color: TRACK_COLORS[clips.length % TRACK_COLORS.length],
       type,
+      contentUrl: dataUrl,
     };
     setClips(prev => [...prev, newClip]);
     setMediaItems(prev => [...prev, { name, type: ext === 'mp3' || ext === 'wav' ? 'audio' : 'image' }]);
   }, [clips.length]);
 
-  const dropHandlers = useFileDrop(createNode, 'movies', '.mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav', (file) => {
-    addClipFromFile(file.name);
+  const dropHandlers = useFileDrop(createNode, 'movies', '.mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav', (file, dataUrl) => {
+    addClipFromFile(file.name, dataUrl);
   });
 
   useEffect(() => {
@@ -101,39 +104,64 @@ export const FinalCutPro: React.FC = () => {
   }, [isPlaying, fps]);
 
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (activeClipAtFrame?.contentUrl) {
+      if (video.src !== activeClipAtFrame.contentUrl) {
+        video.src = activeClipAtFrame.contentUrl;
+        video.load();
+      }
+      if (isPlaying && video.paused) {
+        const clipFrame = currentFrame - activeClipAtFrame.start;
+        video.currentTime = clipFrame / fps;
+        video.play().catch(() => {});
+      } else if (!isPlaying && !video.paused) {
+        video.pause();
+      }
+    } else {
+      if (!video.paused) video.pause();
+      video.removeAttribute('src');
+    }
+  }, [currentFrame, activeClipAtFrame, isPlaying, fps]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(0, 0, previewResolution.w, previewResolution.h);
+    ctx.clearRect(0, 0, previewResolution.w, previewResolution.h);
 
-    const progress = currentFrame / TIMELINE_DURATION;
-    const hue = (progress * 360) % 360;
+    if (clips.length === 0) {
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, previewResolution.w, previewResolution.h);
+      ctx.font = '14px system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.textAlign = 'center';
+      ctx.fillText('Import media to preview', previewResolution.w / 2, previewResolution.h / 2);
+      ctx.textAlign = 'start';
+      return;
+    }
 
-    const grad = ctx.createLinearGradient(0, 0, previewResolution.w, previewResolution.h);
-    grad.addColorStop(0, `hsl(${hue}, 60%, 20%)`);
-    grad.addColorStop(1, `hsl(${(hue + 60) % 360}, 50%, 15%)`);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, previewResolution.w, previewResolution.h);
-
-    for (let i = 0; i < 8; i++) {
-      const x = (Math.sin(currentFrame * 0.02 + i * 1.2) * 0.4 + 0.5) * previewResolution.w;
-      const y = (Math.cos(currentFrame * 0.015 + i * 0.8) * 0.4 + 0.5) * previewResolution.h;
-      const r = 15 + Math.sin(currentFrame * 0.03 + i) * 10;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${(hue + i * 40) % 360}, 80%, 60%, 0.4)`;
-      ctx.fill();
+    if (!activeClipAtFrame?.contentUrl) {
+      const progress = currentFrame / TIMELINE_DURATION;
+      const hue = (progress * 360) % 360;
+      const grad = ctx.createLinearGradient(0, 0, previewResolution.w, previewResolution.h);
+      grad.addColorStop(0, `hsl(${hue}, 60%, 12%)`);
+      grad.addColorStop(1, `hsl(${(hue + 60) % 360}, 50%, 8%)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, previewResolution.w, previewResolution.h);
     }
 
     if (activeClipAtFrame) {
-      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
       ctx.fillRect(20, 20, 3, 30);
       ctx.font = '14px system-ui, sans-serif';
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
       ctx.fillText(activeClipAtFrame.name, 30, 40);
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.fillText(activeClipAtFrame.type.toUpperCase(), 30, 58);
     }
 
     ctx.fillStyle = 'rgba(255,255,255,0.3)';
@@ -142,7 +170,7 @@ export const FinalCutPro: React.FC = () => {
 
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.strokeRect(0, 0, previewResolution.w, previewResolution.h);
-  }, [currentFrame, activeClipAtFrame, previewResolution]);
+  }, [currentFrame, activeClipAtFrame, previewResolution, clips.length]);
 
   const handleExport = useCallback(() => {
     setIsExporting(true);
@@ -211,7 +239,7 @@ export const FinalCutPro: React.FC = () => {
           <span className="text-gray-400 w-8 text-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">+</button>
         </div>
-        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav" onImport={(file) => addClipFromFile(file.name)} />
+        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav" onImport={(file, dataUrl) => addClipFromFile(file.name, dataUrl)} />
         <button
           onClick={() => {
             const project = { clips, currentFrame, TIMELINE_DURATION, fps };
@@ -261,6 +289,9 @@ export const FinalCutPro: React.FC = () => {
         <div className="flex-1 flex flex-col min-w-0">
           <div className="flex-1 flex items-center justify-center bg-black p-4">
             <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/5" style={{ width: previewResolution.w, height: previewResolution.h }}>
+              {activeClipAtFrame?.contentUrl && (
+                <video ref={videoRef} className="absolute inset-0 w-full h-full object-contain" muted playsInline />
+              )}
               <canvas ref={canvasRef} width={previewResolution.w} height={previewResolution.h} className="absolute inset-0" />
               <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             </div>

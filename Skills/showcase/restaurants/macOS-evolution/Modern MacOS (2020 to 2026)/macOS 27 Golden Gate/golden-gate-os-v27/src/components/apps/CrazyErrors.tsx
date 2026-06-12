@@ -34,8 +34,8 @@ export const CrazyErrors: React.FC = () => {
 
   const handleStage2Confirm = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPassword = systemState.user.password || 'goldengate27';
-    if (password === correctPassword || password === 'admin') {
+    const correctPassword = systemState.user.password || '';
+    if (password === correctPassword) {
       setStage('storm');
       updateSystemState({ isSystemInfected: true });
       triggerSystemError();

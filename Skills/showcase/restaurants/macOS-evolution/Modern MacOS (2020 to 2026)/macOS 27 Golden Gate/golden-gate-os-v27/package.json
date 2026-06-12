@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "npx tsx tests/e2e/qa-test.ts",
+    "test:e2e": "npx tsx tests/e2e/qa-test.ts"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

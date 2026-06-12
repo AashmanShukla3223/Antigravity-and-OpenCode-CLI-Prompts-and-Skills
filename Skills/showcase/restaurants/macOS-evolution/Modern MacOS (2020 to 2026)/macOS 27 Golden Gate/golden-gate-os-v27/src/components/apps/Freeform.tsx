@@ -177,7 +177,7 @@ export const Freeform: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [undo]);
 
-  const dropHandlers = useFileDrop(createNode, 'documents', '.png,.jpeg,.jpg,.svg,.webp', (file, dataUrl) => {
+  const dropHandlers = useFileDrop(createNode, 'documents', '.png,.jpeg,.jpg,.svg,.webp', (_file, dataUrl) => {
     const img = new Image();
     img.onload = () => {
       setElements(prev => [...prev, {

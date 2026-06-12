@@ -39,8 +39,8 @@ export const Installer: React.FC = () => {
 
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPassword = systemState.user.password || 'goldengate27';
-    if (password === correctPassword || password === 'admin') {
+    const correctPassword = systemState.user.password || '';
+    if (password === correctPassword) {
       playLuzRoja();
       setIsAuthenticated(true);
     } else {

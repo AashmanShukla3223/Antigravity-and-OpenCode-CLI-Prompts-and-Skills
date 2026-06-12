@@ -18,7 +18,7 @@ export function downloadDataURL(dataUrl: string, filename: string) {
   a.click();
 }
 
-function readFilesAndStore(
+export function readFilesAndStore(
   files: File[],
   createNode: (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => void,
   parentId: string,
@@ -94,7 +94,6 @@ export function ImportFileButton({
   accept?: string;
   onImport?: (file: File, dataUrl: string) => void;
 }) {
-  const importFile = useImportFile(createNode, parentId, accept);
   return React.createElement(
     'button',
     {

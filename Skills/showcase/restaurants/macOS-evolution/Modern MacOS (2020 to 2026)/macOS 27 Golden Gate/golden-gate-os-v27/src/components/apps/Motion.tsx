@@ -29,8 +29,6 @@ const SHAPES = ['circle', 'square', 'triangle', 'star'];
 
 let elemIdCounter = 0;
 const nextElemId = () => `motion-${++elemIdCounter}`;
-let kfIdCounter = 0;
-const nextKfId = () => `kf-${++kfIdCounter}`;
 
 const interpolate = (a: number, b: number, t: number) => a + (b - a) * t;
 
@@ -51,15 +49,8 @@ const getKeyframeValue = (frames: Keyframe[], currentFrame: number, prop: keyof 
 
 export const Motion: React.FC = () => {
   const { createNode } = useFileSystem();
-  const [elements, setElements] = useState<MotionElement[]>([
-    { id: nextElemId(), name: 'Title', type: 'text', x: 400, y: 200, scale: 1, rotation: 0, opacity: 1, color: '#ffffff', content: 'Motion', visible: true },
-    { id: nextElemId(), name: 'Circle 1', type: 'shape', x: 200, y: 300, scale: 1, rotation: 0, opacity: 0.8, color: '#4dabf7', content: 'circle', visible: true },
-    { id: nextElemId(), name: 'Particles', type: 'particle', x: 400, y: 400, scale: 1, rotation: 0, opacity: 1, color: '#ffd43b', content: '', visible: true },
-  ]);
-  const [keyframes, setKeyframes] = useState<Record<string, Keyframe[]>>({
-    [elements[0].id]: [{ frame: 0, x: 400, y: 200, scale: 0, rotation: 0, opacity: 1 }, { frame: 60, x: 400, y: 200, scale: 1.5, rotation: 360, opacity: 1 }],
-    [elements[1].id]: [{ frame: 0, x: 600, y: 300, scale: 1, rotation: 0, opacity: 1 }, { frame: 90, x: 200, y: 300, scale: 1.5, rotation: 180, opacity: 0.6 }],
-  });
+  const [elements, setElements] = useState<MotionElement[]>([]);
+  const [keyframes, setKeyframes] = useState<Record<string, Keyframe[]>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -171,7 +162,7 @@ export const Motion: React.FC = () => {
     }
   }, [isPlaying, fps, totalFrames]);
 
-  const dropHandlers = useFileDrop(createNode, 'documents', '.json', (file, dataUrl) => {
+  const dropHandlers = useFileDrop(createNode, 'documents', '.json', (_file, dataUrl) => {
     try {
       const project = JSON.parse(atob(dataUrl.split(',')[1] || ''));
       if (project.elements) setElements(project.elements);
@@ -249,7 +240,6 @@ export const Motion: React.FC = () => {
           </div>
           <div className="flex-1 overflow-y-auto">
             {elements.map(el => {
-              const anim = getAnimatedProps(el);
               return (
                 <div
                   key={el.id}

@@ -102,6 +102,9 @@ export const Dock: React.FC = () => {
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
       <div 
+        data-testid="dock"
+        role="navigation"
+        aria-label="Application Dock"
         className="mb-4 flex items-end gap-0.5 px-1.5 py-1.5 rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}

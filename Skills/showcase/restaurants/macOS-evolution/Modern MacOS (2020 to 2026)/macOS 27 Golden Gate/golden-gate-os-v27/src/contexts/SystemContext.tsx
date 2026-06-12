@@ -106,7 +106,7 @@ const defaultState: GoldenGateV27State = {
   dockMagnifier: true,
   dockSpeed: 'fast',
   dockSize: 'small',
-  apiKey: (import.meta as any).env?.GEMINI_API_KEY_VITE || '',
+  apiKey: '',
   widgets: [],
   reminders: [
     { id: 1, text: 'Finalize macOS Golden Gate Core', completed: true },
@@ -120,7 +120,7 @@ const defaultState: GoldenGateV27State = {
     volume: 0.8
   },
   runningApps: [],
-  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'vmware', 'samsunglcdtv', 'github'],
+  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'vmware', 'xcode', 'samsunglcdtv', 'github'],
   notes: [
     { 
       id: '1', 

@@ -25,7 +25,6 @@ export const PixelmatorPro: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<Filter>('none');
   const [filterIntensity, setFilterIntensity] = useState(50);
   const [layers, setLayers] = useState<PixelLayer[]>([
-    { id: nextLayer(), name: 'Background', visible: true, opacity: 1, type: 'drawing' },
     { id: nextLayer(), name: 'Layer 1', visible: true, opacity: 1, type: 'drawing' },
   ]);
   const [selectedLayer, setSelectedLayer] = useState<string>(layers[0].id);
@@ -154,7 +153,7 @@ export const PixelmatorPro: React.FC = () => {
     handleClear();
   }, [handleClear]);
 
-  const dropHandlers = useFileDrop(createNode, 'pictures', '.png,.jpeg,.jpg,.svg,.webp', (file, dataUrl) => {
+  const drawImageOnCanvas = useCallback((_file: File, dataUrl: string) => {
     const img = new Image();
     img.onload = () => {
       const canvas = canvasRef.current;
@@ -164,7 +163,9 @@ export const PixelmatorPro: React.FC = () => {
       ctx.drawImage(img, 0, 0, canvasSize.w, canvasSize.h);
     };
     img.src = dataUrl;
-  });
+  }, [canvasSize]);
+
+  const dropHandlers = useFileDrop(createNode, 'pictures', '.png,.jpeg,.jpg,.svg,.webp', drawImageOnCanvas);
 
   return (
     <div className="flex flex-col h-full w-full bg-[#1a1a1a] text-white select-none">
@@ -185,7 +186,7 @@ export const PixelmatorPro: React.FC = () => {
           <input type="range" min={2} max={40} value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-20 accent-blue-500" />
           <span className="text-gray-400 w-6">{brushSize}px</span>
         </div>
-        <ImportFileButton createNode={createNode} parentId="pictures" accept=".png,.jpeg,.jpg,.svg,.webp" />
+        <ImportFileButton createNode={createNode} parentId="pictures" accept=".png,.jpeg,.jpg,.svg,.webp" onImport={drawImageOnCanvas} />
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <button
           onClick={() => {
