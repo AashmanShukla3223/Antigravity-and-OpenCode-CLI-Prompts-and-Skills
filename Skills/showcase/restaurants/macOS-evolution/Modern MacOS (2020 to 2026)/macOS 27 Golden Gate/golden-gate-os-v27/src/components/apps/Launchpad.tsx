@@ -30,25 +30,18 @@ const apps: AppItem[] = [
   { id: 'calculator', name: 'Calculator' },
   { id: 'siriai', name: 'Siri' },
   { id: 'aboutme', name: 'About Me' },
-  { id: 'code', name: 'VS Code' },
-  { id: 'vmware', name: 'VMware Fusion Pro' },
   { id: 'clock', name: 'Clock' },
   { id: 'keynote', name: 'Keynote' },
   { id: 'numbers', name: 'Numbers' },
   { id: 'pages', name: 'Pages' },
   { id: 'games', name: 'Games' },
-  { id: 'installer', name: 'Installer' },
-  { id: 'freeform', name: 'Freeform' },
-  { id: 'motion', name: 'Motion' },
-  { id: 'xcode', name: 'Xcode' },
-  { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
-  { id: 'finalcutpro', name: 'Final Cut Pro' },
-  { id: 'logicpro', name: 'Logic Pro' },
   
   // Smart Folders
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
-  { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code', 'vmware'] },
-  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
+  { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github'] },
+  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] },
+  { id: 'productivity', name: 'Productivity', isFolder: true, folderApps: ['pages', 'numbers', 'keynote'] },
+  { id: 'entertainment', name: 'Entertainment', isFolder: true, folderApps: ['games', 'music', 'tv', 'books'] }
 ];
 
 const subApps: Record<string, AppItem[]> = {
@@ -61,9 +54,7 @@ const subApps: Record<string, AppItem[]> = {
   ],
   'developer': [
     { id: 'terminal', name: 'Terminal' },
-    { id: 'github', name: 'GitHub' },
-    { id: 'code', name: 'VS Code' },
-    { id: 'vmware', name: 'VMware Fusion Pro' },
+    { id: 'github', name: 'GitHub' }
   ],
   'utility': [
     { id: 'settings', name: 'Settings' },
@@ -75,11 +66,22 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'timemachine', name: 'Time Machine' },
     { id: 'diskutility', name: 'Disk Utility' },
     { id: 'iphonemirroring', name: 'iPhone Mirroring' }
+  ],
+  'productivity': [
+    { id: 'pages', name: 'Pages' },
+    { id: 'numbers', name: 'Numbers' },
+    { id: 'keynote', name: 'Keynote' }
+  ],
+  'entertainment': [
+    { id: 'games', name: 'Games' },
+    { id: 'music', name: 'Music' },
+    { id: 'tv', name: 'Apple TV+' },
+    { id: 'books', name: 'Books' }
   ]
 };
 
 export const Launchpad: React.FC = () => {
-  const { launchApp, closeCurrentWindow, setContextMenu } = useSystem();
+  const { launchApp, closeApp, setContextMenu } = useSystem();
   const [search, setSearch] = useState('');
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
@@ -93,7 +95,7 @@ export const Launchpad: React.FC = () => {
       setActiveFolder(app.id);
     } else {
       launchApp(app.id);
-      closeCurrentWindow();
+      closeApp('launchpad');
     }
   };
 

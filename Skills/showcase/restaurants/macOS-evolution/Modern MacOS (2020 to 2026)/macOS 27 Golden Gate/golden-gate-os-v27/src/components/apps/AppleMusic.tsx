@@ -1,22 +1,21 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
-import { useFileSystem } from '../../contexts/FileSystemContext';
 import { songs } from '../../utils/MusicData';
 import { motion } from 'framer-motion';
-import { PlayIcon, PauseIcon, ArrowRight01Icon, ArrowLeft01Icon, VolumeHighIcon } from 'hugeicons-react';
-import { ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
-
-const AUDIO_EXTS = ['mp3', 'wav', 'aac', 'ogg', 'flac'];
+import { 
+  PlayIcon, 
+  PauseIcon, 
+  ArrowRight01Icon, 
+  ArrowLeft01Icon,
+  VolumeHighIcon
+} from 'hugeicons-react';
 
 export const AppleMusic: React.FC = () => {
   const { systemState, playSong, pauseSong, nextSong, prevSong, setVolume, updatePlaybackProgress } = useSystem();
-  const { nodes, createNode } = useFileSystem();
   const [unlocked, setUnlocked] = useState(false);
-  const vfsAudioRef = useRef<HTMLAudioElement | null>(null);
-  const [vfsPlaying, setVfsPlaying] = useState<string | null>(null);
 
   const { currentSongIndex, isPlaying, playbackProgress, volume } = systemState.music;
-  const currentSong = songs[currentSongIndex] || songs[0];
+  const currentSong = songs[currentSongIndex];
 
   useEffect(() => {
     const checkUnlocked = () => {
@@ -27,31 +26,15 @@ export const AppleMusic: React.FC = () => {
     return () => window.removeEventListener('storage', checkUnlocked);
   }, []);
 
-  const vfsAudioFiles = useMemo(() => {
-    return nodes.filter(n => {
-      if (n.type !== 'file' || !n.content) return false;
-      const ext = n.name.split('.').pop()?.toLowerCase() || '';
-      return AUDIO_EXTS.includes(ext);
-    });
-  }, [nodes]);
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    updatePlaybackProgress(val);
+  };
 
-  const playVfsTrack = useCallback((id: string, dataUrl: string) => {
-    if (!unlocked) return;
-    if (isPlaying) pauseSong();
-    if (vfsAudioRef.current) vfsAudioRef.current.pause();
-    const audio = new Audio(dataUrl);
-    audio.play().catch(() => {});
-    audio.onended = () => setVfsPlaying(null);
-    vfsAudioRef.current = audio;
-    setVfsPlaying(id);
-  }, [unlocked, isPlaying, pauseSong]);
-
-  const stopVfsTrack = useCallback(() => {
-    if (vfsAudioRef.current) { vfsAudioRef.current.pause(); vfsAudioRef.current = null; }
-    setVfsPlaying(null);
-  }, []);
-
-  useFileDrop(createNode, 'music', '.mp3,.wav,.aac,.ogg,.flac');
+  const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setVolume(val);
+  };
 
   return (
     <div className="flex flex-col h-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-white overflow-hidden">
@@ -63,10 +46,10 @@ export const AppleMusic: React.FC = () => {
 
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div className="relative mb-8 group">
-           <img
-            src={currentSong.cover}
-            alt="Cover"
-            className={`w-56 h-56 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-700 ${isPlaying ? 'scale-105' : 'scale-95'} ${unlocked ? '' : 'blur-2xl opacity-40 grayscale'}`}
+           <img 
+            src={currentSong.cover} 
+            alt="Cover" 
+            className={`w-56 h-56 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-700 ${isPlaying ? 'scale-105' : 'scale-95'} ${unlocked ? '' : 'blur-2xl opacity-40 grayscale'}`} 
            />
            {!unlocked && <div className="absolute inset-0 flex items-center justify-center text-red-500 font-black text-3xl drop-shadow-lg">$0.99</div>}
         </div>
@@ -76,14 +59,15 @@ export const AppleMusic: React.FC = () => {
           <p className="text-zinc-500 font-medium">{currentSong.artist}</p>
         </div>
 
+        {/* Progress Slider */}
         <div className="w-full max-w-sm mb-8 px-4">
-           <input
-             type="range"
-             min="0"
-             max="100"
+           <input 
+             type="range" 
+             min="0" 
+             max="100" 
              step="0.1"
              value={playbackProgress}
-             onChange={(e) => updatePlaybackProgress(parseFloat(e.target.value))}
+             onChange={handleSeek}
              disabled={!unlocked}
              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-red-500"
            />
@@ -97,8 +81,8 @@ export const AppleMusic: React.FC = () => {
           <button onClick={prevSong} className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors" disabled={!unlocked}>
             <ArrowLeft01Icon size={24} />
           </button>
-          <button
-            onClick={() => { if (vfsPlaying) stopVfsTrack(); isPlaying ? pauseSong() : playSong(); }}
+          <button 
+            onClick={() => isPlaying ? pauseSong() : playSong()} 
             className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${unlocked ? 'bg-red-500 text-white shadow-red-500/40' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400'}`}
             disabled={!unlocked}
           >
@@ -109,74 +93,48 @@ export const AppleMusic: React.FC = () => {
           </button>
         </div>
 
+        {/* Volume Control */}
         <div className="flex items-center gap-3 w-full max-w-[200px] opacity-60 hover:opacity-100 transition-opacity">
            <VolumeHighIcon size={16} />
-           <input
-             type="range"
-             min="0"
-             max="1"
+           <input 
+             type="range" 
+             min="0" 
+             max="1" 
              step="0.01"
              value={volume}
-             onChange={(e) => setVolume(parseFloat(e.target.value))}
+             onChange={handleVolume}
              className="flex-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-zinc-500"
            />
         </div>
       </div>
 
+      {/* Playlist */}
       <div className="h-48 border-t border-zinc-100 dark:border-zinc-800 overflow-y-auto bg-zinc-50/50 dark:bg-black/20 p-2 scrollbar-hide">
-        <div className="flex items-center justify-between px-2 py-1">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Apple Music Catalog</span>
-          <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav,.aac,.ogg,.flac" />
-        </div>
-        {songs.map((s, i) => (
-          <div
-            key={s.id}
-            onClick={() => { if (unlocked) { stopVfsTrack(); playSong(i); } }}
-            className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer transition-all ${currentSongIndex === i && isPlaying ? 'bg-red-500/10 text-red-500' : 'hover:bg-white dark:hover:bg-zinc-800'}`}
-          >
-             <img src={s.cover} className="w-8 h-8 rounded-lg shadow-sm" alt={s.title} />
-             <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold truncate">{s.title}</div>
-                <div className="text-[10px] opacity-50 truncate">{s.artist}</div>
-             </div>
-             {currentSongIndex === i && isPlaying && (
-               <div className="flex gap-0.5 items-end h-3">
-                  {[1, 2, 3].map(i => (
-                    <motion.div
-                       key={i}
-                       animate={{ height: [4, 12, 6, 10, 4] }}
-                       transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
-                       className="w-0.5 bg-red-500 rounded-full"
-                    />
-                  ))}
-               </div>
-             )}
-          </div>
-        ))}
-        {vfsAudioFiles.length > 0 && (
-          <>
-            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 pt-3 pb-1">Your Library</div>
-            {vfsAudioFiles.map(n => (
-              <div
-                key={n.id}
-                onClick={() => playVfsTrack(n.id, n.content!)}
-                className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer transition-all ${vfsPlaying === n.id ? 'bg-blue-500/10 text-blue-500' : 'hover:bg-white dark:hover:bg-zinc-800'}`}
-              >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm shadow-sm">🎵</div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold truncate">{n.name}</div>
-                </div>
-                {vfsPlaying === n.id && (
-                  <div className="flex gap-0.5 items-end h-3">
-                    {[1, 2, 3].map(i => (
-                      <motion.div key={i} animate={{ height: [4, 12, 6, 10, 4] }} transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }} className="w-0.5 bg-blue-500 rounded-full" />
-                    ))}
-                  </div>
-                )}
+         {songs.map((s, i) => (
+           <div 
+             key={s.id} 
+             onClick={() => unlocked && playSong(i)}
+             className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all ${currentSongIndex === i ? 'bg-red-500/10 text-red-500' : 'hover:bg-white dark:hover:bg-zinc-800'}`}
+           >
+              <img src={s.cover} className="w-10 h-10 rounded-lg shadow-sm" alt={s.title} />
+              <div className="flex-1 min-w-0">
+                 <div className="text-sm font-bold truncate">{s.title}</div>
+                 <div className="text-xs opacity-50 truncate">{s.artist}</div>
               </div>
-            ))}
-          </>
-        )}
+              {currentSongIndex === i && isPlaying && (
+                <div className="flex gap-0.5 items-end h-3">
+                   {[1, 2, 3].map(i => (
+                     <motion.div 
+                        key={i}
+                        animate={{ height: [4, 12, 6, 10, 4] }}
+                        transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                        className="w-0.5 bg-red-500 rounded-full"
+                     />
+                   ))}
+                </div>
+              )}
+           </div>
+         ))}
       </div>
     </div>
   );

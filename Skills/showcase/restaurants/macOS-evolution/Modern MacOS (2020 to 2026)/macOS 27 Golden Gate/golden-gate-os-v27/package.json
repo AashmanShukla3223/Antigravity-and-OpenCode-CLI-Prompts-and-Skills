@@ -7,12 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "npx tsx tests/e2e/qa-test.ts",
-    "test:e2e": "npx tsx tests/e2e/qa-test.ts"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.7.0",
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.38.0",
     "hugeicons-react": "^0.4.0",
     "lucide-react": "^1.8.0",

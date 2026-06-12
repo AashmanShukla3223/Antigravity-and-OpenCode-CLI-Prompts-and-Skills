@@ -3,31 +3,6 @@ import type { ReactNode } from 'react';
 
 export type TagColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'gray';
 
-const generateId = () => {
-  try { return crypto.randomUUID(); } catch { return `n${Date.now()}-${Math.random().toString(36).slice(2, 9)}`; }
-};
-
-const FILE_STORE_PREFIX = 'golden_gate_v27_file_';
-
-export const storeFileExternal = (content: string): string | null => {
-  const id = generateId();
-  try {
-    localStorage.setItem(`${FILE_STORE_PREFIX}${id}`, content);
-    return id;
-  } catch (e) {
-    console.warn('localStorage quota exceeded, storing inline', e);
-    return null;
-  }
-};
-
-export const getFileExternal = (id: string): string | null => {
-  try { return localStorage.getItem(`${FILE_STORE_PREFIX}${id}`); } catch { return null; }
-};
-
-export const removeFileExternal = (id: string) => {
-  try { localStorage.removeItem(`${FILE_STORE_PREFIX}${id}`); } catch {/* ignore */}
-};
-
 export type FileSystemNode = {
   id: string;
   name: string;
@@ -142,20 +117,7 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const serialized = JSON.stringify(nodes);
-    if (serialized.length > 4_000_000) {
-      console.warn('VFS too large for localStorage, truncating');
-      const trimmed = nodes.map(n => {
-        if (n.content && n.content.length > 500) {
-          const fileId = storeFileExternal(n.content);
-          return { ...n, content: fileId ? `__vfs_ext_${fileId}` : n.content.slice(0, 500) };
-        }
-        return n;
-      });
-      try { localStorage.setItem('golden_gate_v27_fs', JSON.stringify(trimmed)); } catch {}
-      return;
-    }
-    try { localStorage.setItem('golden_gate_v27_fs', serialized); } catch {}
+    localStorage.setItem('golden_gate_v27_fs', JSON.stringify(nodes));
   }, [nodes]);
 
   // Initial self-heal for critical nodes
@@ -167,16 +129,9 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   }, []);
 
   const createNode = (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => {
-    const id = generateId();
-    let content = node.content;
-    if (content && content.length > 50000) {
-      const fileId = storeFileExternal(content);
-      content = fileId ? `__vfs_ext_${fileId}` : content.slice(0, 50000);
-    }
     setNodes(prev => [...prev, { 
       ...node, 
-      id,
-      content,
+      id: crypto.randomUUID(),
       modifiedAt: Date.now(),
       tags: node.tags || []
     }]);
@@ -186,15 +141,8 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     setNodes(prev => prev.map(n => n.id === id ? { ...n, ...updates, modifiedAt: Date.now() } : n));
   };
 
-  const cleanupFile = (content: string | undefined) => {
-    if (content?.startsWith('__vfs_ext_')) {
-      removeFileExternal(content.replace('__vfs_ext_', ''));
-    }
-  };
-
   const deleteNode = (id: string) => {
-    const node = nodes.find(n => n.id === id);
-    if (node) cleanupFile(node.content);
+    // macOS Logic: Move to Trash first by changing parentId
     setNodes(prev => prev.map(n => n.id === id ? { ...n, parentId: 'trash', modifiedAt: Date.now() } : n));
   };
 
@@ -205,10 +153,6 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     };
     
     const idsToDelete = getChildrenIds('trash');
-    idsToDelete.forEach(id => {
-      const node = nodes.find(n => n.id === id);
-      if (node) cleanupFile(node.content);
-    });
     setNodes(prev => prev.filter(n => !idsToDelete.includes(n.id)));
   };
 

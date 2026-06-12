@@ -486,7 +486,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const menuKeys = Object.keys(appMenus).map(k => k.charAt(0).toUpperCase() + k.slice(1));
 
   return (
-    <header data-testid="menubar" role="banner" aria-label="Menu Bar" onClick={clearSystemErrors} className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
+    <div onClick={clearSystemErrors} className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
       
       <div className="flex items-center gap-1 pointer-events-auto h-full pr-10">
         <div className="relative h-full">
@@ -632,6 +632,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           <span>{time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
         </div>
       </div>
-    </header>
+    </div>
   );
 };

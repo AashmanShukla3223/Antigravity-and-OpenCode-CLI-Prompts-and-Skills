@@ -28,15 +28,14 @@ import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
-import { readFilesAndStore, downloadDataURL } from '../../utils/vfs-ops';
 import { songs } from '../../utils/MusicData';
 
 export const Desktop: React.FC = () => {
   const { 
     systemState, 
     updateSystemState, 
-    openWindows, 
-    minimizedWindows, 
+    openApps, 
+    minimizedApps, 
     contextMenu, 
     setContextMenu, 
     showSpotlight, 
@@ -462,7 +461,7 @@ export const Desktop: React.FC = () => {
 
       {/* The Notch (180px x 30px, Center Anchor) */}
       {systemState.notchVisible && (
-        <div data-testid="notch" role="presentation" aria-label="Hardware Notch" className="absolute top-0 left-1/2 -translate-x-1/2 w-[180px] h-[30px] bg-black rounded-b-[18px] z-50 flex items-center justify-center shadow-[0_5px_15px_rgba(0,0,0,0.5)] border-x border-b border-white/5">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[180px] h-[30px] bg-black rounded-b-[18px] z-50 flex items-center justify-center shadow-[0_5px_15px_rgba(0,0,0,0.5)] border-x border-b border-white/5">
           {/* Camera LED Dot */}
           <div className={`w-1.5 h-1.5 rounded-full ${systemState.isCameraOn ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-[#111]'} transition-colors ml-12`} />
         </div>
@@ -499,8 +498,6 @@ export const Desktop: React.FC = () => {
 
       {/* Windows Layer */}
       <motion.div 
-        role="main"
-        aria-label="Desktop workspace"
         animate={{ 
           opacity: shutdownStep >= 3 ? 0 : 1,
           scale: shutdownStep >= 3 ? 0 : 1,
@@ -510,8 +507,8 @@ export const Desktop: React.FC = () => {
         className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none"
       >
         <AnimatePresence>
-          {openWindows.filter(w => !minimizedWindows.includes(w.id)).map(w => (
-            <Window key={w.id} windowId={w.id} appId={w.appId} />
+          {openApps.filter(id => !minimizedApps.includes(id)).map(appId => (
+            <Window key={appId} appId={appId} />
           ))}
         </AnimatePresence>
       </motion.div>
@@ -570,21 +567,6 @@ export const Desktop: React.FC = () => {
                   if (name) createNode({ name, type: 'folder', parentId: 'desktop' });
                   setContextMenu(null);
                 }}>New Folder</div>
-                <div className="px-4 py-1.5 text-sm text-white hover:bg-green-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.multiple = true;
-                  input.accept = '*/*';
-                  input.style.display = 'none';
-                  document.body.appendChild(input);
-                  input.onchange = () => {
-                    const files = Array.from(input.files || []);
-                    if (files.length > 0) readFilesAndStore(files, createNode, 'desktop');
-                    try { document.body.removeChild(input); } catch {}
-                  };
-                  input.click();
-                  setContextMenu(null);
-                }}>Import Files...</div>
                 <div className="border-b border-white/10 my-1 mx-3" />
                 <div className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
                   const nextAppearance = systemState.appearance === 'light' ? 'dark' : 'light';
@@ -630,13 +612,6 @@ export const Desktop: React.FC = () => {
                    if (contextMenu.targetId) deleteNode(contextMenu.targetId);
                    setContextMenu(null);
                 }}>Move to Trash</div>
-                {contextMenu.targetId && nodes.find(n => n.id === contextMenu.targetId)?.type === 'file' && nodes.find(n => n.id === contextMenu.targetId)?.content && (
-                  <div className="px-4 py-1.5 text-sm text-white hover:bg-green-500 cursor-pointer transition-colors mx-1.5 rounded-lg" onClick={() => {
-                    const node = nodes.find(n => n.id === contextMenu.targetId);
-                    if (node?.content) downloadDataURL(node.content, node.name);
-                    setContextMenu(null);
-                  }}>Export</div>
-                )}
                 <div className="border-b border-white/10 my-1 mx-3" />
                 <div className="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/30">Tags</div>
                 <div className="px-4 py-2 flex gap-2 mx-1.5">

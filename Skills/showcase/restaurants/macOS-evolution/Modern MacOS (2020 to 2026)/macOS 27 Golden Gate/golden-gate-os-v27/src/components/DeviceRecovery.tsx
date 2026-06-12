@@ -39,7 +39,7 @@ export const DeviceRecovery: React.FC = () => {
         user: { 
           fullName: 'Architect',
           accountName: 'architect',
-          password: '',
+          password: 'debug',
           avatar: '🏗️'
         }
       });

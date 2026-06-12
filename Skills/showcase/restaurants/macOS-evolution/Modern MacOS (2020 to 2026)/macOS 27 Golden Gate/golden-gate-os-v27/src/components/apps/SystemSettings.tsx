@@ -415,9 +415,9 @@ export const SystemSettings: React.FC = () => {
         </div>
       );
       default: return (
-        <div className="flex flex-col h-full overflow-y-auto pr-4 scrollbar-hide pb-12">
+        <div className="flex flex-col h-full">
           <h2 className="text-2xl font-semibold mb-6">General</h2>
-          <div className="space-y-1 mb-8">
+          <div className="space-y-1">
             {[
               { name: 'About', icon: InformationCircleIcon, action: () => setResetStep(5) },
               { name: 'Software Update', icon: Settings01Icon, action: () => setResetStep(6) },
@@ -429,64 +429,6 @@ export const SystemSettings: React.FC = () => {
                 <ArrowRight01Icon size={16} className="text-white/20 group-hover:text-white/50" />
               </div>
             ))}
-          </div>
-
-          <h3 className="text-lg font-semibold mb-4">Dock</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-              <div>
-                <span className="text-sm font-medium">Magnification</span>
-                <p className="text-xs text-white/40 mt-0.5">Icons enlarge when hovered</p>
-              </div>
-              <button
-                onClick={() => updateSystemState({ dockMagnifier: !systemState.dockMagnifier })}
-                className={`w-12 h-6 rounded-full relative transition-colors shrink-0 ${systemState.dockMagnifier ? 'bg-blue-500' : 'bg-white/10'}`}
-              >
-                <motion.div animate={{ x: systemState.dockMagnifier ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-              <div>
-                <span className="text-sm font-medium">Speed</span>
-                <p className="text-xs text-white/40 mt-0.5">Animation responsiveness</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => updateSystemState({ dockSpeed: 'slow' })}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'slow' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                >
-                  Slow
-                </button>
-                <button
-                  onClick={() => updateSystemState({ dockSpeed: 'fast' })}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'fast' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                >
-                  Fast
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-              <div>
-                <span className="text-sm font-medium">Size</span>
-                <p className="text-xs text-white/40 mt-0.5">Icon size in the Dock</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => updateSystemState({ dockSize: 'small' })}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'small' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                >
-                  Small
-                </button>
-                <button
-                  onClick={() => updateSystemState({ dockSize: 'large' })}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'large' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                >
-                  Large
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       );
@@ -660,7 +602,7 @@ export const SystemSettings: React.FC = () => {
             {currentTab === 'Wallpaper' && (
               <div className="flex flex-col h-full">
                 <h2 className="text-2xl font-semibold mb-6">Wallpaper</h2>
-                <div className="grid grid-cols-4 gap-4 pb-8">
+                <div className="grid grid-cols-3 gap-6 pb-8">
                   <div 
                     className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/golden-gate-light.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
                     onClick={() => updateSystemState({ wallpaperUrl: '/wallpapers/golden-gate-light.png', wallpaperType: 'image' })}
@@ -676,50 +618,34 @@ export const SystemSettings: React.FC = () => {
                     <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Golden Gate Dark</div>
                   </div>
                   <div 
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
-                    onClick={() => updateSystemState({ wallpaperUrl: '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4', wallpaperType: 'video' })}
-                  >
-                    <video 
-                      src="/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4" 
-                      autoPlay muted loop playsInline
-                      className="w-full aspect-video object-cover"
-                    />
-                    <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Golden Gate</div>
-                  </div>
-                  <div 
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
-                    onClick={() => updateSystemState({ wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4', wallpaperType: 'video' })}
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4' ? 'border-blue-500 scale-[1.02]' : systemState.dynamicWallpaperEnabled ? 'border-white/10 hover:border-white/30' : 'border-white/5 opacity-40'}`}
+                    onClick={() => {
+                      if (systemState.dynamicWallpaperEnabled) {
+                        updateSystemState({ wallpaperUrl: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4', wallpaperType: 'video' });
+                      }
+                    }}
                   >
                     <video 
                       src="https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4" 
                       autoPlay muted loop playsInline
-                      className="w-full aspect-video object-cover"
+                      className={`w-full aspect-video object-cover ${systemState.dynamicWallpaperEnabled ? '' : 'grayscale blur-sm'}`}
                     />
                     <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-md text-[10px] font-bold uppercase tracking-wider">Khabardar</div>
                   </div>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-sm">Auto Wallpaper</h4>
-                      <p className="text-xs text-white/50">Automatically switch wallpaper based on time of day.</p>
+                      <h4 className="font-bold text-sm">Dynamic Wallpaper</h4>
+                      <p className="text-xs text-white/50">Automatically change wallpaper based on time of day.</p>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {(['off', 'static', 'dynamic'] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => updateSystemState({ wallpaperMode: mode })}
-                        className={`flex-1 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                          systemState.wallpaperMode === mode
-                            ? 'bg-blue-500 text-white shadow-lg'
-                            : 'bg-white/5 text-white/60 hover:bg-white/10'
-                        }`}
-                      >
-                        {mode === 'off' ? 'Off' : mode === 'static' ? 'Static' : 'Dynamic'}
-                      </button>
-                    ))}
+                    <button 
+                      onClick={() => updateSystemState({ dynamicWallpaperEnabled: !systemState.dynamicWallpaperEnabled })} 
+                      className={`w-12 h-6 rounded-full relative transition-colors ${systemState.dynamicWallpaperEnabled ? 'bg-blue-500' : 'bg-white/10'}`}
+                    >
+                      <motion.div animate={{ x: systemState.dynamicWallpaperEnabled ? 26 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow" />
+                    </button>
                   </div>
                 </div>
               </div>

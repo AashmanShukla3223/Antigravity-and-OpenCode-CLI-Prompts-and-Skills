@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft01Icon } from 'hugeicons-react';
+import { Chess } from './Chess';
 
-type GameType = 'snake' | 'memory' | 'tictactoe' | null;
+type GameType = 'snake' | 'memory' | 'tictactoe' | 'chess' | null;
 
 const STORAGE_KEY = 'golden_gate_games_unlocked';
 
@@ -282,19 +283,57 @@ export const Games: React.FC = () => {
     );
   }
 
+  const [chessMode, setChessMode] = useState<'friend' | 'computer' | null>(null);
+
   if (selectedGame === 'snake') return <SnakeGame onBack={() => setSelectedGame(null)} />;
   if (selectedGame === 'memory') return <MemoryGame onBack={() => setSelectedGame(null)} />;
   if (selectedGame === 'tictactoe') return <TicTacToe onBack={() => setSelectedGame(null)} />;
+  if (selectedGame === 'chess' && !chessMode) {
+    return (
+      <div className="h-full w-full bg-zinc-900 text-white flex flex-col items-center justify-center gap-6 p-8">
+        <div className="w-20 h-20 rounded-3xl bg-amber-900/50 flex items-center justify-center border border-amber-500/20">
+          <img src="/icons/games.png" alt="Chess" className="w-14 h-14 object-contain" />
+        </div>
+        <h2 className="text-2xl font-bold">Chess</h2>
+        <p className="text-white/50 text-sm">Choose a mode</p>
+        <div className="flex gap-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setChessMode('friend')}
+            className="px-8 py-4 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-2xl font-medium transition-colors"
+          >
+            <div className="text-3xl mb-2">👥</div>
+            <div>Play with Friend</div>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setChessMode('computer')}
+            className="px-8 py-4 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-2xl font-medium transition-colors"
+          >
+            <div className="text-3xl mb-2">🤖</div>
+            <div>vs Computer</div>
+          </motion.button>
+        </div>
+        <button onClick={() => setSelectedGame(null)} className="mt-4 px-4 py-2 text-sm text-white/40 hover:text-white transition-colors">Back</button>
+      </div>
+    );
+  }
+  if (selectedGame === 'chess' && chessMode) {
+    return <Chess onBack={() => { setSelectedGame(null); setChessMode(null); }} mode={chessMode} />;
+  }
 
   return (
     <div className="h-full w-full bg-zinc-900 text-white overflow-y-auto">
       <div className="p-8">
         <h2 className="text-2xl font-bold mb-2">Games</h2>
         <p className="text-white/40 text-sm mb-8">Choose a game to play</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl">
           <GameCard title="Snake" desc="Classic snake game. Eat food, grow, avoid walls!" color="bg-gradient-to-br from-green-900/50 to-green-800/30" icon="🐍" onClick={() => setSelectedGame('snake')} />
           <GameCard title="Memory Match" desc="Flip cards and find matching pairs." color="bg-gradient-to-br from-purple-900/50 to-purple-800/30" icon="🎴" onClick={() => setSelectedGame('memory')} />
           <GameCard title="Tic-Tac-Toe" desc="Classic 3-in-a-row with a friend." color="bg-gradient-to-br from-blue-900/50 to-blue-800/30" icon="❌" onClick={() => setSelectedGame('tictactoe')} />
+          <GameCard title="Chess" desc="Play with a friend or vs computer AI." color="bg-gradient-to-br from-amber-900/50 to-amber-800/30" icon="♟" onClick={() => setSelectedGame('chess')} />
         </div>
       </div>
     </div>
