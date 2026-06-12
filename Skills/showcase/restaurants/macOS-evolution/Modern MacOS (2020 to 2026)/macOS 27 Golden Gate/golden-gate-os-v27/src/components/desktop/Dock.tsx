@@ -40,7 +40,7 @@ const ALL_APPS = [
 ];
 
 export const Dock: React.FC = () => {
-  const { launchApp, activeApp, unminimizeApp, minimizedApps, launchingApp, systemState, setContextMenu } = useSystem();
+  const { launchApp, activeApp, unminimizeWindow, minimizedWindows, openWindows, launchingApp, systemState, setContextMenu } = useSystem();
   const [reveal, setReveal] = useState(false);
   const { getDirectoryContents } = useFileSystem();
   
@@ -153,32 +153,36 @@ export const Dock: React.FC = () => {
         <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
 
         <AnimatePresence mode="popLayout">
-          {minimizedApps.map((appId) => (
-            <motion.div
-              key={`minimized-${appId}`}
-              initial={{ width: 0, opacity: 0, scale: 0.5 }}
-              animate={{ width: 'auto', opacity: 1, scale: 1 }}
-              exit={{ width: 0, opacity: 0, scale: 0 }}
-              className="flex items-center overflow-hidden"
-            >
-              <div className="mx-0.5">
-                <DockIcon 
-                  app={{ id: appId, name: appId }} 
-                  mouseX={mouseX} 
-                  isOpen={true}
-                  isMinimized={false}
-                  isActive={false}
-                  magnifierEnabled={systemState.dockMagnifier}
-                  dockSpeed={systemState.dockSpeed}
-                  dockSize={systemState.dockSize}
-                  onClick={() => unminimizeApp(appId)}
-                />
-              </div>
-            </motion.div>
-          ))}
+          {minimizedWindows.map((wId) => {
+            const win = openWindows.find(w => w.id === wId);
+            const appName = win?.appId || wId;
+            return (
+              <motion.div
+                key={`minimized-${wId}`}
+                initial={{ width: 0, opacity: 0, scale: 0.5 }}
+                animate={{ width: 'auto', opacity: 1, scale: 1 }}
+                exit={{ width: 0, opacity: 0, scale: 0 }}
+                className="flex items-center overflow-hidden"
+              >
+                <div className="mx-0.5">
+                  <DockIcon 
+                    app={{ id: appName, name: appName }} 
+                    mouseX={mouseX} 
+                    isOpen={true}
+                    isMinimized={false}
+                    isActive={false}
+                    magnifierEnabled={systemState.dockMagnifier}
+                    dockSpeed={systemState.dockSpeed}
+                    dockSize={systemState.dockSize}
+                    onClick={() => unminimizeWindow(wId)}
+                  />
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
-        {minimizedApps.length > 0 && (
+        {minimizedWindows.length > 0 && (
           <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
         )}
         

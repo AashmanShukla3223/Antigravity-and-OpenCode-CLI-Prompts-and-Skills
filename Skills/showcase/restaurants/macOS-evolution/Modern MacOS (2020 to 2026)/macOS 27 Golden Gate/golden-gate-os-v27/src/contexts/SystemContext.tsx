@@ -32,6 +32,11 @@ export interface Note {
   lastModified: number;
 }
 
+export interface WindowInstance {
+  id: string;
+  appId: string;
+}
+
 export interface ActiveError {
   id: string;
   x: number;
@@ -146,17 +151,21 @@ interface SystemContextProps {
   updateSystemState: (updates: Partial<GoldenGateV27State>) => void;
   resetSystem: (targetState?: BootState) => void;
   activeApp: string | null;
-  setActiveApp: (appId: string | null) => void;
+  activeWindowId: string | null;
+  setActiveWindow: (id: string | null) => void;
+  openWindows: WindowInstance[];
   openApps: string[];
-  minimizedApps: string[];
-  maximizedApps: string[];
+  minimizedWindows: string[];
+  maximizedWindows: string[];
   launchingApp: string | null;
   launchApp: (appId: string) => void;
+  closeWindow: (windowId: string) => void;
+  closeCurrentWindow: () => void;
   closeApp: (appId: string) => void;
   quitApp: (appId: string) => void;
-  minimizeApp: (appId: string) => void;
-  unminimizeApp: (appId: string) => void;
-  toggleMaximizeApp: (appId: string) => void;
+  minimizeWindow: (windowId: string) => void;
+  unminimizeWindow: (windowId: string) => void;
+  toggleMaximizeWindow: (windowId: string) => void;
   showAboutWindow: boolean;
   setShowAboutWindow: (show: boolean) => void;
   showSpotlight: boolean;
@@ -266,10 +275,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
     return defaultState;
   });
-  const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [openApps, setOpenApps] = useState<string[]>([]);
-  const [minimizedApps, setMinimizedApps] = useState<string[]>([]);
-  const [maximizedApps, setMaximizedApps] = useState<string[]>([]);
+  const [activeWindowId, setActiveWindow] = useState<string | null>(null);
+  const [openWindows, setOpenWindows] = useState<WindowInstance[]>([]);
+  const [minimizedWindows, setMinimizedWindows] = useState<string[]>([]);
+  const [maximizedWindows, setMaximizedWindows] = useState<string[]>([]);
   const [launchingApp, setLaunchingApp] = useState<string | null>(null);
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
@@ -292,6 +301,15 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [powerMode, setPowerMode] = useState<'Low Power' | 'Normal' | 'High Performance'>('Normal');
   const [uptime, setUptime] = useState(0);
   const [startTime] = useState(() => Date.now());
+
+  const windowIdCounter = React.useRef(0);
+  const activeApp = React.useMemo(() => {
+    if (!activeWindowId) return null;
+    return openWindows.find(w => w.id === activeWindowId)?.appId ?? null;
+  }, [activeWindowId, openWindows]);
+  const openApps = React.useMemo(() => {
+    return [...new Set(openWindows.map(w => w.appId))];
+  }, [openWindows]);
 
   const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
   const stormIntervalRef = React.useRef<any>(null);
@@ -402,10 +420,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setShutdownStep(3); // T+600ms: Fade/Shrink Widgets/Icons/Windows
       // Clear memory-heavy states only now so they can animate out
       clearSystemErrors();
-      setOpenApps([]);
-      setMinimizedApps([]);
-      setMaximizedApps([]);
-      setActiveApp(null);
+      setOpenWindows([]);
+      setMinimizedWindows([]);
+      setMaximizedWindows([]);
+      setActiveWindow(null);
     }, 600); 
 
     setTimeout(() => setShutdownStep(4), 900); // T+900ms: Fade Wallpaper to Black & Beachball Cursor
@@ -565,38 +583,102 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [bootState, triggerSystemError]);
 
   const launchApp = useCallback((appId: string) => {
-    // Add to running apps if not there
+    const SINGLE_INSTANCE_APPS = new Set(['launchpad', 'installer', 'siriai']);
+
+    if (SINGLE_INSTANCE_APPS.has(appId)) {
+      const existing = openWindows.filter(w => w.appId === appId);
+      existing.forEach(w => {
+        setMinimizedWindows(prev => prev.filter(id => id !== w.id));
+        setMaximizedWindows(prev => prev.filter(id => id !== w.id));
+        setOpenWindows(prev => prev.filter(pw => pw.id !== w.id));
+      });
+      if (existing.length > 0 && activeWindowId && existing.some(w => w.id === activeWindowId)) {
+        setActiveWindow(null);
+      }
+    }
+
     if (!systemState.runningApps.includes(appId)) {
       updateSystemState({
         runningApps: [...systemState.runningApps, appId]
       });
     }
 
-    setOpenApps(prev => {
-      if (prev.includes(appId)) {
-        setMinimizedApps(m => m.filter(id => id !== appId));
-        setActiveApp(appId);
-        return prev;
-      }
+    setLaunchingApp(appId);
+    windowIdCounter.current += 1;
+    const newId = `${appId}-${windowIdCounter.current}`;
+    const newWindow: WindowInstance = { id: newId, appId };
+    setTimeout(() => {
+      setOpenWindows(current => [...current, newWindow]);
+      setLaunchingApp(null);
+      setActiveWindow(newId);
+      setMinimizedWindows(prev => prev.filter(id => id !== newId));
+    }, 1000);
+  }, [openWindows, activeWindowId, systemState.runningApps, updateSystemState]);
+
+  const closeWindow = useCallback((windowId: string) => {
+    setOpenWindows(prev => prev.filter(w => w.id !== windowId));
+    setMinimizedWindows(prev => prev.filter(id => id !== windowId));
+    setMaximizedWindows(prev => prev.filter(id => id !== windowId));
+    setActiveWindow(prev => prev === windowId ? null : prev);
+  }, []);
+
+  const closeCurrentWindow = useCallback(() => {
+    if (activeWindowId) closeWindow(activeWindowId);
+  }, [activeWindowId, closeWindow]);
+
+  const closeApp = useCallback((appId: string) => {
+    const targets = openWindows.filter(w => w.appId === appId);
+    targets.forEach(w => {
+      setOpenWindows(prev => prev.filter(pw => pw.id !== w.id));
+      setMinimizedWindows(prev => prev.filter(id => id !== w.id));
+      setMaximizedWindows(prev => prev.filter(id => id !== w.id));
+    });
+    if (activeWindowId && targets.some(w => w.id === activeWindowId)) {
+      setActiveWindow(null);
+    }
+  }, [openWindows, activeWindowId]);
+
+  const quitApp = useCallback((appId: string) => {
+    closeApp(appId);
+    updateSystemState({
+      runningApps: systemState.runningApps.filter(id => id !== appId)
+    });
+  }, [closeApp, systemState.runningApps, updateSystemState]);
+
+  const minimizeWindow = useCallback((windowId: string) => {
+    setMinimizedWindows(prev => {
+      if (!prev.includes(windowId)) return [...prev, windowId];
       return prev;
     });
-
-    if (!openApps.includes(appId)) {
-      setLaunchingApp(appId);
-      setTimeout(() => {
-        setOpenApps(current => {
-          if (current.includes(appId)) return current;
-          return [...current, appId];
-        });
-        setLaunchingApp(null);
-        setActiveApp(appId);
-      }, 1000);
+    if (activeWindowId === windowId) {
+      setActiveWindow(null);
     }
-  }, [openApps, systemState.runningApps, updateSystemState]);
+  }, [activeWindowId]);
+
+  const unminimizeWindow = useCallback((windowId: string) => {
+    setMinimizedWindows(prev => prev.filter(id => id !== windowId));
+    setActiveWindow(windowId);
+  }, []);
+
+  const toggleMaximizeWindow = useCallback((windowId: string) => {
+    setMaximizedWindows(prev => 
+      prev.includes(windowId) ? prev.filter(id => id !== windowId) : [...prev, windowId]
+    );
+  }, []);
+
+  const resetSystem = useCallback((targetState: BootState = 'recovery') => {
+    localStorage.removeItem('golden_gate_v27_state');
+    setSystemState(defaultState);
+    setOpenWindows([]);
+    setMinimizedWindows([]);
+    setMaximizedWindows([]);
+    setActiveWindow(null);
+    setShowAboutWindow(false);
+    setBootState(targetState);
+  }, []);
 
   // Initialize Hardware APIs
   useEffect(() => {
-    // Battery API with timeout to prevent hanging
     if ('getBattery' in navigator) {
       const batteryTimeout = setTimeout(() => {
         console.warn('Battery API timeout, continuing without battery info');
@@ -622,7 +704,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
     }
 
-    // Uptime Ticker
     const ticker = setInterval(() => {
       setUptime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
@@ -636,94 +717,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       clearInterval(ticker);
     };
   }, [startTime, launchApp]);
-
-  // Power Mode Logic based on Battery & lowPowerMode state
-  useEffect(() => {
-    let mode: 'Low Power' | 'Normal' | 'High Performance' = 'Normal';
-    if (systemState.lowPowerMode) {
-      mode = 'Low Power';
-    } else {
-      const level = battery.level * 100;
-      if (level >= 50) mode = 'High Performance';
-      else if (level >= 30) mode = 'Normal';
-      else if (level <= 20) mode = 'Low Power';
-    }
-    const timer = setTimeout(() => {
-      setPowerMode(mode);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [battery.level, systemState.lowPowerMode]);
-
-  // Handle System-wide Appearance & Liquid Glass CSS variables
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (systemState.appearance === 'dark') {
-      root.classList.add('dark');
-    } else if (systemState.appearance === 'light') {
-      root.classList.remove('dark');
-    } else {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-    }
-
-    const blurPx = systemState.lowPowerMode ? 0 : systemState.glassBlurIntensity;
-    root.style.setProperty('--glass-blur', `${blurPx}px`);
-    root.style.setProperty('--glass-bg-dark', `rgba(0, 0, 0, ${systemState.glassOpacity})`);
-    root.style.setProperty('--glass-bg-light', `rgba(255, 255, 255, ${systemState.glassOpacity * 0.6})`);
-    const transitBlur = systemState.lowPowerMode ? 0 : systemState.systemOpacity * 0.5;
-    const transitSaturate = 100 + systemState.systemOpacity * 0.8;
-    root.style.setProperty('--transit-blur', `${transitBlur}px`);
-    root.style.setProperty('--transit-saturate', `${transitSaturate}%`);
-  }, [systemState.appearance, systemState.glassBlurIntensity, systemState.glassOpacity, systemState.lowPowerMode, systemState.systemOpacity]);
-
-  const resetSystem = useCallback((targetState: BootState = 'recovery') => {
-    localStorage.removeItem('golden_gate_v27_state');
-    setSystemState(defaultState);
-    setOpenApps([]);
-    setMinimizedApps([]);
-    setMaximizedApps([]);
-    setActiveApp(null);
-    setShowAboutWindow(false);
-    setBootState(targetState);
-  }, []);
-
-  const closeApp = useCallback((appId: string) => {
-    setOpenApps(prev => prev.filter(id => id !== appId));
-    setMinimizedApps(prev => prev.filter(id => id !== appId));
-    setMaximizedApps(prev => prev.filter(id => id !== appId));
-    setActiveApp(prev => prev === appId ? null : prev);
-  }, []);
-
-  const quitApp = useCallback((appId: string) => {
-    closeApp(appId);
-    updateSystemState({
-      runningApps: systemState.runningApps.filter(id => id !== appId)
-    });
-  }, [closeApp, systemState.runningApps, updateSystemState]);
-
-  const minimizeApp = useCallback((appId: string) => {
-    setMinimizedApps(prev => {
-      if (!prev.includes(appId)) return [...prev, appId];
-      return prev;
-    });
-    if (activeApp === appId) {
-      setActiveApp(null);
-    }
-  }, [activeApp]);
-
-  const unminimizeApp = useCallback((appId: string) => {
-    setMinimizedApps(prev => prev.filter(id => id !== appId));
-    setActiveApp(appId);
-  }, []);
-
-  const toggleMaximizeApp = useCallback((appId: string) => {
-    setMaximizedApps(prev => 
-      prev.includes(appId) ? prev.filter(id => id !== appId) : [...prev, appId]
-    );
-  }, []);
 
   const showAlert = useCallback((message: string, title: string = 'System Alert'): Promise<void> => {
     return new Promise((resolve) => {
@@ -788,17 +781,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updateSystemState,
       resetSystem,
       activeApp,
-      setActiveApp,
+      activeWindowId,
+      setActiveWindow,
+      openWindows,
       openApps,
-      minimizedApps,
-      maximizedApps,
+      minimizedWindows,
+      maximizedWindows,
       launchingApp,
       launchApp,
+      closeWindow,
+      closeCurrentWindow,
       closeApp,
       quitApp,
-      minimizeApp,
-      unminimizeApp,
-      toggleMaximizeApp,
+      minimizeWindow,
+      unminimizeWindow,
+      toggleMaximizeWindow,
       showAboutWindow,
       setShowAboutWindow,
       showSpotlight,

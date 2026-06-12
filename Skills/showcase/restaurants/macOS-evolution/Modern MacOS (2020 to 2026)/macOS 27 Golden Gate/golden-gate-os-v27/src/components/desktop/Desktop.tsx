@@ -35,8 +35,8 @@ export const Desktop: React.FC = () => {
   const { 
     systemState, 
     updateSystemState, 
-    openApps, 
-    minimizedApps, 
+    openWindows, 
+    minimizedWindows, 
     contextMenu, 
     setContextMenu, 
     showSpotlight, 
@@ -510,8 +510,8 @@ export const Desktop: React.FC = () => {
         className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none"
       >
         <AnimatePresence>
-          {openApps.filter(id => !minimizedApps.includes(id)).map(appId => (
-            <Window key={appId} appId={appId} />
+          {openWindows.filter(w => !minimizedWindows.includes(w.id)).map(w => (
+            <Window key={w.id} windowId={w.id} appId={w.appId} />
           ))}
         </AnimatePresence>
       </motion.div>

@@ -79,7 +79,7 @@ const subApps: Record<string, AppItem[]> = {
 };
 
 export const Launchpad: React.FC = () => {
-  const { launchApp, closeApp, setContextMenu } = useSystem();
+  const { launchApp, closeCurrentWindow, setContextMenu } = useSystem();
   const [search, setSearch] = useState('');
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
@@ -93,7 +93,7 @@ export const Launchpad: React.FC = () => {
       setActiveFolder(app.id);
     } else {
       launchApp(app.id);
-      closeApp('launchpad');
+      closeCurrentWindow();
     }
   };
 

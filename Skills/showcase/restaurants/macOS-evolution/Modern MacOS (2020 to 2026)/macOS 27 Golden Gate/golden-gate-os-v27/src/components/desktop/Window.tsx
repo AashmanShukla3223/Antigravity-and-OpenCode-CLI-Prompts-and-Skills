@@ -88,26 +88,29 @@ const AppContent: React.FC<{ appId: string }> = ({ appId }) => {
 type WindowState = 'normal' | 'maximized' | 'fullscreen';
 
 interface WindowProps {
+  windowId: string;
   appId: string;
 }
 
-export const Window: React.FC<WindowProps> = ({ appId }) => {
-  const { activeApp, setActiveApp, closeApp, quitApp, openApps, minimizedApps, minimizeApp, powerMode, systemState } = useSystem();
+export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
+  const { activeWindowId, setActiveWindow, closeWindow, quitApp, openWindows, minimizeWindow, powerMode, systemState } = useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [windowState, setWindowState] = useState<WindowState>('normal');
   const [size, setSize] = useState({ width: 800, height: 500 });
-  const [position] = useState({ top: 80, left: 80 });
+  const sameAppWindows = openWindows.filter(w => w.appId === appId);
+  const instanceIndex = sameAppWindows.findIndex(w => w.id === windowId);
+  const offset = Math.min(instanceIndex, 10) * 28;
+  const [position] = useState({ top: 80 + offset, left: 80 + offset });
   const resizing = useRef<'right' | 'bottom' | 'corner' | null>(null);
   const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
-  const isActive = activeApp === appId;
-  const isMinimized = minimizedApps.includes(appId);
+  const isActive = activeWindowId === windowId;
   const isMaximized = windowState === 'maximized';
   const isFullscreen = windowState === 'fullscreen';
-  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openApps.indexOf(appId) + 10);
+  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openWindows.findIndex(w => w.id === windowId) + 10);
 
   const appNames: Record<string, string> = {
     finder: 'Finder',
@@ -196,13 +199,13 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     if (appId === 'terminal' || appId === 'activitymonitor' || appId === 'installer') {
       quitApp(appId);
     } else {
-      closeApp(appId);
+      closeWindow(windowId);
     }
-  }, [appId, closeApp, quitApp]);
+  }, [appId, windowId, closeWindow, quitApp]);
 
   const handleMinimize = useCallback(() => {
-    minimizeApp(appId);
-  }, [appId, minimizeApp]);
+    minimizeWindow(windowId);
+  }, [windowId, minimizeWindow]);
 
   const handleDragEnd = () => {
     if (navigator.vibrate) {
@@ -262,8 +265,6 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
     }
   };
 
-  if (isMinimized) return null;
-
   const isEndurance = powerMode === 'Low Power';
   const isProMotion = powerMode === 'High Performance';
 
@@ -291,7 +292,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
       dragMomentum={false}
       dragElastic={dragElastic}
       onDragEnd={handleDragEnd}
-      onPointerDown={() => setActiveApp(appId)}
+      onPointerDown={() => setActiveWindow(windowId)}
       variants={genieVariants}
       initial="initial"
       animate="animate"
@@ -312,7 +313,7 @@ export const Window: React.FC<WindowProps> = ({ appId }) => {
           className={`h-12 w-full flex items-center justify-between px-4 border-b border-white/10 select-none cursor-default relative z-10 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/5'} ${isEndurance ? 'bg-amber-900/60' : ''}`}
           onPointerDown={(e) => {
             if (!isMaximized) {
-              setActiveApp(appId);
+              setActiveWindow(windowId);
               controls.start(e);
               if (navigator.vibrate) {
                 navigator.vibrate(10);
