@@ -53,6 +53,7 @@ interface FileSystemContextProps {
   addTag: (id: string, tag: TagColor) => void;
   removeTag: (id: string, tag: TagColor) => void;
   restoreSystemNodes: () => void;
+  getNodeContent: (content: string | undefined) => string | undefined;
 }
 const initialNodes: FileSystemNode[] = [
   { id: 'root', name: 'Macintosh HD', type: 'folder', parentId: null, modifiedAt: Date.now() },
@@ -226,6 +227,14 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     return path;
   };
 
+  const getNodeContent = (content: string | undefined): string | undefined => {
+    if (!content) return undefined;
+    if (content.startsWith('__vfs_ext_')) {
+      return getFileExternal(content.replace('__vfs_ext_', '')) || undefined;
+    }
+    return content;
+  };
+
   const addTag = (id: string, tag: TagColor) => {
     setNodes(prev => prev.map(n => {
       if (n.id === id) {
@@ -256,7 +265,8 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
       getPath,
       addTag,
       removeTag,
-      restoreSystemNodes
+      restoreSystemNodes,
+      getNodeContent
     }}>
       {children}
     </FileSystemContext.Provider>

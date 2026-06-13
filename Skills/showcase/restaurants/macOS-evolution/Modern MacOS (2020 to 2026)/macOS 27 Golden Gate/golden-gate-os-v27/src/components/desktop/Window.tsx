@@ -58,6 +58,8 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   pixelmatorpro: namedLazy(() => import('../apps/PixelmatorPro'), 'PixelmatorPro'),
   finalcutpro: namedLazy(() => import('../apps/FinalCutPro'), 'FinalCutPro'),
   logicpro: namedLazy(() => import('../apps/LogicPro'), 'LogicPro'),
+  photobooth: namedLazy(() => import('../apps/PhotoBooth'), 'PhotoBooth'),
+  chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
 };;
 
 const AppFallback: React.FC = () => (
@@ -161,6 +163,8 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     pixelmatorpro: 'Pixelmator Pro',
     finalcutpro: 'Final Cut Pro',
     logicpro: 'Logic Pro',
+    photobooth: 'Photo Booth',
+    chess: 'Chess',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);

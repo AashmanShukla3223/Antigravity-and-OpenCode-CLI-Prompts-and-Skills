@@ -44,11 +44,12 @@ const apps: AppItem[] = [
   { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
   { id: 'finalcutpro', name: 'Final Cut Pro' },
   { id: 'logicpro', name: 'Logic Pro' },
+  { id: 'chess', name: 'Chess' },
   
   // Smart Folders
-  { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts'] },
+  { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts', 'photobooth'] },
   { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code', 'vmware'] },
-  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring'] }
+  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring', 'chess'] }
 ];
 
 const subApps: Record<string, AppItem[]> = {
@@ -57,7 +58,8 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'mail', name: 'Mail' },
     { id: 'facetime', name: 'FaceTime' },
     { id: 'contacts', name: 'Contacts' },
-    { id: 'aboutme', name: 'About Me' }
+    { id: 'aboutme', name: 'About Me' },
+    { id: 'photobooth', name: 'Photo Booth' }
   ],
   'developer': [
     { id: 'terminal', name: 'Terminal' },
@@ -74,7 +76,8 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'stickies', name: 'Stickies' },
     { id: 'timemachine', name: 'Time Machine' },
     { id: 'diskutility', name: 'Disk Utility' },
-    { id: 'iphonemirroring', name: 'iPhone Mirroring' }
+    { id: 'iphonemirroring', name: 'iPhone Mirroring' },
+    { id: 'chess', name: 'Chess' }
   ]
 };
 

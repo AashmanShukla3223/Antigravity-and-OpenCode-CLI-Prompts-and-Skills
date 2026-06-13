@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft01Icon } from 'hugeicons-react';
-import { Chess } from './Chess';
 
-type GameType = 'snake' | 'memory' | 'tictactoe' | 'chess' | null;
+type GameType = 'snake' | 'memory' | 'tictactoe' | null;
 
 const STORAGE_KEY = 'golden_gate_games_unlocked';
 
@@ -266,7 +265,6 @@ const TicTacToe: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
 export const Games: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<GameType>(null);
-  const [chessMode, setChessMode] = useState<'friend' | 'computer'>('friend');
   const [paid, setPaid] = useState(() => localStorage.getItem(STORAGE_KEY) === 'true');
 
   if (!paid) {
@@ -287,7 +285,6 @@ export const Games: React.FC = () => {
   if (selectedGame === 'snake') return <SnakeGame onBack={() => setSelectedGame(null)} />;
   if (selectedGame === 'memory') return <MemoryGame onBack={() => setSelectedGame(null)} />;
   if (selectedGame === 'tictactoe') return <TicTacToe onBack={() => setSelectedGame(null)} />;
-  if (selectedGame === 'chess') return <Chess onBack={() => setSelectedGame(null)} mode={chessMode} />;
 
   return (
     <div className="h-full w-full bg-zinc-900 text-white overflow-y-auto">
@@ -298,15 +295,6 @@ export const Games: React.FC = () => {
           <GameCard title="Snake" desc="Classic snake game. Eat food, grow, avoid walls!" color="bg-gradient-to-br from-green-900/50 to-green-800/30" icon="🐍" onClick={() => setSelectedGame('snake')} />
           <GameCard title="Memory Match" desc="Flip cards and find matching pairs." color="bg-gradient-to-br from-purple-900/50 to-purple-800/30" icon="🎴" onClick={() => setSelectedGame('memory')} />
           <GameCard title="Tic-Tac-Toe" desc="Classic 3-in-a-row with a friend." color="bg-gradient-to-br from-blue-900/50 to-blue-800/30" icon="❌" onClick={() => setSelectedGame('tictactoe')} />
-          <div className="bg-gradient-to-br from-stone-900/50 to-amber-900/30 rounded-3xl p-6 border border-white/10 shadow-lg flex flex-col items-center justify-center text-center gap-3">
-            <div className="text-5xl">♟</div>
-            <h3 className="text-xl font-bold">Chess</h3>
-            <p className="text-sm text-white/60">Full chess with offline AI</p>
-            <div className="flex gap-2 mt-1">
-              <button onClick={() => { setChessMode('friend'); setSelectedGame('chess'); }} className="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition">Friend</button>
-              <button onClick={() => { setChessMode('computer'); setSelectedGame('chess'); }} className="px-4 py-1.5 bg-amber-600/40 hover:bg-amber-600/60 rounded-lg text-xs font-medium transition">Computer</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -37,6 +37,8 @@ const ALL_APPS = [
   { id: 'pixelmatorpro', name: 'Pixelmator Pro' },
   { id: 'finalcutpro', name: 'Final Cut Pro' },
   { id: 'logicpro', name: 'Logic Pro' },
+  { id: 'photobooth', name: 'Photo Booth' },
+  { id: 'chess', name: 'Chess' },
 ];
 
 export const Dock: React.FC = () => {

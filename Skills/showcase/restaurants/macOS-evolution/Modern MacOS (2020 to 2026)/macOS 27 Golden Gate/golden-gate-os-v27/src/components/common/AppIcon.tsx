@@ -109,6 +109,8 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     'pixelmatorpro': `${base}icons/pixelmator-pro.png`,
     'finalcutpro': `${base}icons/final-cut-pro.png`,
     'logicpro': `${base}icons/logic-pro.png`,
+    'photobooth': `${base}icons/photo-booth.png`,
+    'chess': `${base}icons/chess.png`,
   };
 
   const handleImageError = (iconId: string) => {

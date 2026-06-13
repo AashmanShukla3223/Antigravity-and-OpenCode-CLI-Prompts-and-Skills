@@ -92,7 +92,7 @@ export const FinderIcon = () => (
 const tagColors: TagColor[] = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'gray'];
 
 export const Finder: React.FC = () => {
-  const { nodes, getDirectoryContents, createNode, deleteNode, getPath, addTag, removeTag, emptyTrash } = useFileSystem();
+  const { nodes, getDirectoryContents, createNode, deleteNode, getPath, addTag, removeTag, emptyTrash, getNodeContent } = useFileSystem();
   const { setContextMenu, systemState, showPrompt, showConfirm } = useSystem();
   
   const [currentFolderId, setCurrentFolderId] = useState<string | null>('user-home');
@@ -492,18 +492,18 @@ export const Finder: React.FC = () => {
             <button onClick={closePreview} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm z-10 transition-colors">✕</button>
             {(() => {
               const mt = isMedia(previewNode);
-              if (mt === 'image') return <img src={previewNode.content} alt={previewNode.name} className="max-w-[85vw] max-h-[85vh] object-contain" />;
+              if (mt === 'image') return <img src={getNodeContent(previewNode.content)} alt={previewNode.name} className="max-w-[85vw] max-h-[85vh] object-contain" />;
               if (mt === 'audio') return (
                 <div className="flex flex-col items-center justify-center p-12 min-w-[400px]">
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl mb-6">🎵</div>
                   <p className="text-white font-bold text-lg mb-2">{previewNode.name}</p>
-                  <audio src={previewNode.content} controls autoPlay className="w-full max-w-md" />
+                  <audio src={getNodeContent(previewNode.content)} controls autoPlay className="w-full max-w-md" />
                 </div>
               );
               if (mt === 'video') return (
                 <div className="p-4">
                   <p className="text-white font-bold text-sm mb-2">{previewNode.name}</p>
-                  <video src={previewNode.content} controls autoPlay className="max-w-[85vw] max-h-[80vh] rounded-xl" />
+                  <video src={getNodeContent(previewNode.content)} controls autoPlay className="max-w-[85vw] max-h-[80vh] rounded-xl" />
                 </div>
               );
               return null;

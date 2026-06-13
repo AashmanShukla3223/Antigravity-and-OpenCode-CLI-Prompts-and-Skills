@@ -7,7 +7,7 @@ import { ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
 export const Photos: React.FC = () => {
-  const { nodes, createNode } = useFileSystem();
+  const { nodes, createNode, getNodeContent } = useFileSystem();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [viewer, setViewer] = useState<{ content: string; title: string } | null>(null);
@@ -143,7 +143,7 @@ export const Photos: React.FC = () => {
                   onClick={() => setViewer({ content: item.content!, title: item.name })}
                   className="aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/10 group cursor-pointer relative"
                 >
-                  <img src={item.content} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                  <img src={getNodeContent(item.content)} alt={item.name} className="w-full h-full object-contain" loading="lazy" />
                   <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="text-xs font-bold text-white drop-shadow-lg">{item.name}</span>
                   </div>
@@ -182,7 +182,7 @@ export const Photos: React.FC = () => {
             )}
 
             <div className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center p-8" onClick={(e) => e.stopPropagation()}>
-              <img src={viewer.content} alt={viewer.title} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
+              <img src={getNodeContent(viewer.content)} alt={viewer.title} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
             </div>
 
             {viewerIndex < filtered.length - 1 && (
