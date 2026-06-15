@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Volume2, 
-  AlertTriangle, 
-  Info, 
-  CheckCircle,
-  Play,
-  Lock,
-  Music,
-  ShieldCheck
-} from 'lucide-react';
+import { Volume2, AlertTriangle, Info, CheckCircle, Play, Lock, Music, ShieldCheck } from 'lucide-react';
 import { useSystem } from '../../contexts/SystemContext';
 import { ApplePayFramework } from './AppleWallet';
 
@@ -24,7 +15,9 @@ interface SoundItem {
 
 export const SoundTest: React.FC = () => {
   const { showAlert } = useSystem();
-  const [isPremiumUnlocked, setIsPremiumUnlocked] = useState(() => localStorage.getItem('golden_gate_sound_premium') === 'true');
+  const [isPremiumUnlocked, setIsPremiumUnlocked] = useState(
+    () => localStorage.getItem('golden_gate_sound_premium') === 'true',
+  );
   const [showPaywall, setShowPaywall] = useState(false);
 
   const sounds: SoundItem[] = [
@@ -43,50 +36,50 @@ export const SoundTest: React.FC = () => {
     { name: 'Submarine', label: 'Submarine', desc: 'Deep water sonar', icon: Info, color: 'bg-blue-700' },
     { name: 'Tink', label: 'Tink', desc: 'High metallic tap', icon: Info, color: 'bg-gray-400' },
     // Premium Tracks
-    { 
-      name: 'Halla Bol', 
-      label: 'Halla Bol', 
-      desc: 'AajTak Signature Theme', 
-      icon: Music, 
-      color: 'bg-rose-600', 
+    {
+      name: 'Halla Bol',
+      label: 'Halla Bol',
+      desc: 'AajTak Signature Theme',
+      icon: Music,
+      color: 'bg-rose-600',
       isPremium: true,
-      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/halla.bol.mp3'
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.6/halla.bol.mp3',
     },
-    { 
-      name: 'AajTak Test', 
-      label: 'AajTak Test', 
-      desc: 'Sound Test Frequency', 
-      icon: Music, 
-      color: 'bg-rose-500', 
+    {
+      name: 'AajTak Test',
+      label: 'AajTak Test',
+      desc: 'Sound Test Frequency',
+      icon: Music,
+      color: 'bg-rose-500',
       isPremium: true,
-      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/aajtak.sound.test.mp3'
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/aajtak.sound.test.mp3',
     },
-    { 
-      name: 'Batidao', 
-      label: 'Batidao Speed', 
-      desc: 'Fast paced rhythmic test', 
-      icon: Music, 
-      color: 'bg-purple-600', 
+    {
+      name: 'Batidao',
+      label: 'Batidao Speed',
+      desc: 'Fast paced rhythmic test',
+      icon: Music,
+      color: 'bg-purple-600',
       isPremium: true,
-      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/Batidao.da.Madrugada.Speed.mp3'
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.5/Batidao.da.Madrugada.Speed.mp3',
     },
-    { 
-      name: 'Legacy Test', 
-      label: 'SoundTest Classic', 
-      desc: 'Original sound test track', 
-      icon: Music, 
-      color: 'bg-zinc-700', 
+    {
+      name: 'Legacy Test',
+      label: 'SoundTest Classic',
+      desc: 'Original sound test track',
+      icon: Music,
+      color: 'bg-zinc-700',
       isPremium: true,
-      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/soundtest.mp3'
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/soundtest.mp3',
     },
-    { 
-      name: 'Luz Roja', 
-      label: 'Luz Roja', 
-      desc: 'Luz Roja - Sped Up', 
-      icon: Music, 
-      color: 'bg-red-600', 
+    {
+      name: 'Luz Roja',
+      label: 'Luz Roja',
+      desc: 'Luz Roja - Sped Up',
+      icon: Music,
+      color: 'bg-red-600',
       isPremium: true,
-      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.8/LUZ.ROJA.-.Sped.Up.-.bxkq.mp3'
+      url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.8/LUZ.ROJA.-.Sped.Up.-.bxkq.mp3',
     },
   ];
 
@@ -94,7 +87,7 @@ export const SoundTest: React.FC = () => {
     localStorage.setItem('golden_gate_sound_premium', 'true');
     setIsPremiumUnlocked(true);
     setShowPaywall(false);
-    showAlert("Premium tracks unlocked! Enjoy the high-fidelity sound.", "Success");
+    showAlert('Premium tracks unlocked! Enjoy the high-fidelity sound.', 'Success');
   };
 
   const playSound = (sound: SoundItem) => {
@@ -106,27 +99,29 @@ export const SoundTest: React.FC = () => {
     const audioUrl = sound.url || `/sounds/${sound.name}.mp3`;
     const audio = new Audio(audioUrl);
     audio.play().catch(() => {
-        console.warn("Audio play failed, trying fallback...");
-        if (sound.name === 'Glass' || sound.name === 'glass') {
-            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.frequency.setValueAtTime(1200, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + 0.3);
-        }
+      console.warn('Audio play failed, trying fallback...');
+      if (sound.name === 'Glass' || sound.name === 'glass') {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(1200, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      }
     });
   };
 
   return (
     <div className="flex flex-col h-full bg-zinc-900 text-white p-8 overflow-y-auto custom-scrollbar relative">
       {showPaywall && (
-        <ApplePayFramework 
-          amount="$5.00" 
-          itemName="Sound Test Premium" 
-          onSuccess={handleUnlockSuccess} 
-          onCancel={() => setShowPaywall(false)} 
+        <ApplePayFramework
+          amount="$5.00"
+          itemName="Sound Test Premium"
+          onSuccess={handleUnlockSuccess}
+          onCancel={() => setShowPaywall(false)}
         />
       )}
       <div className="flex items-center justify-between mb-10">
@@ -140,7 +135,7 @@ export const SoundTest: React.FC = () => {
           </div>
         </div>
         {!isPremiumUnlocked && (
-          <button 
+          <button
             onClick={() => setShowPaywall(true)}
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-orange-500 text-black text-sm font-bold rounded-xl hover:scale-105 transition-transform shadow-lg shadow-orange-500/20"
           >
@@ -151,8 +146,8 @@ export const SoundTest: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sounds.map(sound => (
-          <div 
+        {sounds.map((sound) => (
+          <div
             key={sound.name}
             className={`flex items-center justify-between p-5 bg-white/5 border ${sound.isPremium ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/10'} rounded-2xl hover:bg-white/10 transition-all group cursor-pointer relative overflow-hidden`}
             onClick={() => playSound(sound)}

@@ -3,6 +3,57 @@ import { songs } from '../utils/MusicData';
 
 type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
 
+export const DEFAULT_PINNED_APPS = [
+  'finder',
+  'launchpad',
+  'safari',
+  'messages',
+  'mail',
+  'maps',
+  'photos',
+  'facetime',
+  'phone',
+  'calendar',
+  'contacts',
+  'notes',
+  'tv',
+  'music',
+  'keynote',
+  'numbers',
+  'pages',
+  'appstore',
+  'games',
+  'iphonemirroring',
+  'siriai',
+  'settings',
+  'aboutme',
+  'code',
+  'vmware',
+  'xcode',
+  'samsunglcdtv',
+  'github',
+  'minecraft',
+];
+
+export interface UserAccount {
+  id: string;
+  fullName: string;
+  accountName: string;
+  password?: string;
+  avatar?: string;
+  pinnedApps?: string[];
+}
+
+export interface Notification {
+  id: string;
+  appId: string;
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  icon?: string;
+}
+
 export interface Widget {
   id: string;
   type: 'reminders' | 'facetime' | 'music' | 'weather' | 'all-apps' | 'connected-devices';
@@ -60,12 +111,9 @@ export interface SystemDialogConfig {
 export interface GoldenGateV27State {
   setup_complete: boolean;
   isSystemInfected: boolean;
-  user: {
-    fullName: string;
-    accountName: string;
-    password?: string;
-    avatar?: string;
-  };
+  users: UserAccount[];
+  activeUserId: string;
+  notifications: Notification[];
   appearance: 'light' | 'dark' | 'auto';
   sidebarMaterial: 'clear' | 'tinted';
   betaUpdates: boolean;
@@ -94,7 +142,9 @@ export interface GoldenGateV27State {
 const defaultState: GoldenGateV27State = {
   setup_complete: false,
   isSystemInfected: false,
-  user: { fullName: '', accountName: '', password: '', avatar: '👤' },
+  users: [{ id: 'default', fullName: '', accountName: '', password: '', avatar: '👤' }],
+  activeUserId: 'default',
+  notifications: [],
   appearance: 'auto',
   sidebarMaterial: 'tinted',
   betaUpdates: false,
@@ -122,26 +172,28 @@ const defaultState: GoldenGateV27State = {
     currentSongIndex: 0,
     isPlaying: false,
     playbackProgress: 0,
-    volume: 0.8
+    volume: 0.8,
   },
   runningApps: [],
-  pinnedApps: ['finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone', 'calendar', 'contacts', 'notes', 'tv', 'music', 'keynote', 'numbers', 'pages', 'appstore', 'games', 'iphonemirroring', 'siriai', 'settings', 'aboutme', 'code', 'vmware', 'xcode', 'samsunglcdtv', 'github'],
+  pinnedApps: DEFAULT_PINNED_APPS,
   notes: [
-    { 
-      id: '1', 
-      title: 'Golden Gate OS Vision', 
-      content: 'The "Unit 7" era is about fluid interfaces and silicon-native glass. We must push Framer Motion to its limits.', 
-      date: '10:42 AM', 
-      lastModified: Date.now() 
+    {
+      id: '1',
+      title: 'Golden Gate OS Vision',
+      content:
+        'The "Unit 7" era is about fluid interfaces and silicon-native glass. We must push Framer Motion to its limits.',
+      date: '10:42 AM',
+      lastModified: Date.now(),
     },
-    { 
-      id: '2', 
-      title: 'AI Integration Ideas', 
-      content: 'Apple Intelligence should handle tone adjustment in Notes and automatic summarization of long thoughts.', 
-      date: 'Yesterday', 
-      lastModified: Date.now() - 86400000 
-    }
-  ]
+    {
+      id: '2',
+      title: 'AI Integration Ideas',
+      content:
+        'Apple Intelligence should handle tone adjustment in Notes and automatic summarization of long thoughts.',
+      date: 'Yesterday',
+      lastModified: Date.now() - 86400000,
+    },
+  ],
 };
 
 interface SystemContextProps {
@@ -177,7 +229,9 @@ interface SystemContextProps {
   incomingCall: { contact: any; type: 'facetime' | 'phone' } | null;
   setIncomingCall: (call: { contact: any; type: 'facetime' | 'phone' } | null) => void;
   contextMenu: { x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null;
-  setContextMenu: (menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null) => void;
+  setContextMenu: (
+    menu: { x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null,
+  ) => void;
   // Hardware Info
   battery: { level: number; isCharging: boolean };
   wifi: boolean;
@@ -209,6 +263,20 @@ interface SystemContextProps {
   prevSong: () => void;
   setVolume: (val: number) => void;
   updatePlaybackProgress: (val: number) => void;
+  // Notifications
+  showNotificationCenter: boolean;
+  setShowNotificationCenter: (show: boolean) => void;
+  addNotification: (notif: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  removeNotification: (id: string) => void;
+  clearNotifications: () => void;
+  // Multi-User
+  activeUser: UserAccount;
+  userPinnedApps: string[];
+  switchUser: (userId: string) => void;
+  addUser: (user: Omit<UserAccount, 'id'>) => void;
+  removeUser: (userId: string) => void;
+  updateUser: (userId: string, updates: Partial<UserAccount>) => void;
+  verifyPassword: (password: string) => boolean;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -220,7 +288,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const saved = localStorage.getItem('golden_gate_v27_state');
       const isInfected = localStorage.getItem('golden_gate_infected') === 'true';
       let state = saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
-      
+
       if (!saved && state.wallpaperMode !== 'off') {
         const now = new Date();
         const mins = now.getHours() * 60 + now.getMinutes();
@@ -235,7 +303,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           state.wallpaperType = 'image';
         }
       }
-      
+
       if (isInfected) {
         state.isSystemInfected = true;
         if (!state.pinnedApps.includes('installer')) {
@@ -245,14 +313,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!state.pinnedApps.includes('samsunglcdtv')) {
         state.pinnedApps = [...state.pinnedApps, 'samsunglcdtv'];
       }
-      if (!state.pinnedApps.includes('calculator')) {
-        state.pinnedApps = [...state.pinnedApps, 'calculator'];
-      }
       if (!state.pinnedApps.includes('aboutme')) {
         state.pinnedApps = [...state.pinnedApps, 'aboutme'];
-      }
-      if (!state.pinnedApps.includes('clock')) {
-        state.pinnedApps = [...state.pinnedApps, 'clock'];
       }
       if (!state.pinnedApps.includes('keynote')) {
         state.pinnedApps = [...state.pinnedApps, 'keynote'];
@@ -269,6 +331,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!state.pinnedApps.includes('launchpad')) {
         state.pinnedApps = ['launchpad', ...state.pinnedApps];
       }
+
+      state.users = state.users.map((u) =>
+        u.pinnedApps ? u : { ...u, pinnedApps: [...state.pinnedApps] },
+      );
       return state;
     } catch (e) {
       console.error('Failed to parse golden_gate_v27_state', e);
@@ -284,9 +350,15 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [systemDialog, setSystemDialog] = useState<SystemDialogConfig | null>(null);
   const [incomingCall, setIncomingCall] = useState<{ contact: any; type: 'facetime' | 'phone' } | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'desktop' | 'item' | 'writing' | 'dock'; targetId?: string } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    type: 'desktop' | 'item' | 'writing' | 'dock';
+    targetId?: string;
+  } | null>(null);
 
   // Shutdown Sequence State
   const [isShuttingDown, setIsShuttingDown] = useState(false);
@@ -305,10 +377,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const windowIdCounter = React.useRef(0);
   const activeApp = React.useMemo(() => {
     if (!activeWindowId) return null;
-    return openWindows.find(w => w.id === activeWindowId)?.appId ?? null;
+    return openWindows.find((w) => w.id === activeWindowId)?.appId ?? null;
   }, [activeWindowId, openWindows]);
   const openApps = React.useMemo(() => {
-    return [...new Set(openWindows.map(w => w.appId))];
+    return [...new Set(openWindows.map((w) => w.appId))];
   }, [openWindows]);
 
   const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
@@ -317,30 +389,35 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const infectionMusicRef = React.useRef<HTMLAudioElement | null>(null);
 
   const updateSystemState = useCallback((updates: Partial<GoldenGateV27State>) => {
-    setSystemState(prev => {
+    setSystemState((prev) => {
       const newState = { ...prev, ...updates };
       localStorage.setItem('golden_gate_v27_state', JSON.stringify(newState));
       return newState;
     });
   }, []);
 
-  const playSong = useCallback((index?: number) => {
-    const isUnlocked = localStorage.getItem('golden_gate_music_unlocked') === 'true';
-    if (!isUnlocked) return;
+  const playSong = useCallback(
+    (index?: number) => {
+      const isUnlocked = localStorage.getItem('golden_gate_music_unlocked') === 'true';
+      if (!isUnlocked) return;
 
-    if (audioRef.current) {
-      if (index !== undefined) {
-        audioRef.current.src = songs[index].url;
-        updateSystemState({ music: { ...systemState.music, currentSongIndex: index, isPlaying: true, playbackProgress: 0 } });
-      } else {
-        if (!audioRef.current.src) {
-           audioRef.current.src = songs[systemState.music.currentSongIndex].url;
+      if (audioRef.current) {
+        if (index !== undefined) {
+          audioRef.current.src = songs[index].url;
+          updateSystemState({
+            music: { ...systemState.music, currentSongIndex: index, isPlaying: true, playbackProgress: 0 },
+          });
+        } else {
+          if (!audioRef.current.src) {
+            audioRef.current.src = songs[systemState.music.currentSongIndex].url;
+          }
+          updateSystemState({ music: { ...systemState.music, isPlaying: true } });
         }
-        updateSystemState({ music: { ...systemState.music, isPlaying: true } });
+        audioRef.current.play().catch((e) => console.warn('Music play failed', e));
       }
-      audioRef.current.play().catch(e => console.warn('Music play failed', e));
-    }
-  }, [systemState.music, updateSystemState]);
+    },
+    [systemState.music, updateSystemState],
+  );
 
   const pauseSong = useCallback(() => {
     if (audioRef.current) {
@@ -359,17 +436,20 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     playSong(prevIndex);
   }, [systemState.music.currentSongIndex, playSong]);
 
-  const setVolume = useCallback((val: number) => {
-    if (audioRef.current) {
-      audioRef.current.volume = val;
-      updateSystemState({ music: { ...systemState.music, volume: val } });
-    }
-  }, [systemState.music, updateSystemState]);
+  const setVolume = useCallback(
+    (val: number) => {
+      if (audioRef.current) {
+        audioRef.current.volume = val;
+        updateSystemState({ music: { ...systemState.music, volume: val } });
+      }
+    },
+    [systemState.music, updateSystemState],
+  );
 
   const updatePlaybackProgress = useCallback((val: number) => {
-     if (audioRef.current && audioRef.current.duration) {
-        audioRef.current.currentTime = (val / 100) * audioRef.current.duration;
-     }
+    if (audioRef.current && audioRef.current.duration) {
+      audioRef.current.currentTime = (val / 100) * audioRef.current.duration;
+    }
   }, []);
 
   useEffect(() => {
@@ -378,9 +458,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       audioRef.current.addEventListener('timeupdate', () => {
         if (audioRef.current) {
           const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-          setSystemState(prev => ({
+          setSystemState((prev) => ({
             ...prev,
-            music: { ...prev.music, playbackProgress: progress || 0 }
+            music: { ...prev.music, playbackProgress: progress || 0 },
           }));
         }
       });
@@ -403,7 +483,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const initiateRestart = useCallback(() => {
     setIsShuttingDown(true);
     pauseSong(); // Stop music immediately
-    
+
     // Step 0: Clear only dialogs/modals immediately
     setShowRestartDialog(false);
     setShowAboutWindow(false);
@@ -413,9 +493,9 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Sequential Shutdown Sequence
     setShutdownStep(1); // T+0ms: Slide Dock to extreme bottom
-    
+
     setTimeout(() => setShutdownStep(2), 300); // T+300ms: Slide Menu Bar to extreme top
-    
+
     setTimeout(() => {
       setShutdownStep(3); // T+600ms: Fade/Shrink Widgets/Icons/Windows
       // Clear memory-heavy states only now so they can animate out
@@ -424,10 +504,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setMinimizedWindows([]);
       setMaximizedWindows([]);
       setActiveWindow(null);
-    }, 600); 
+    }, 600);
 
     setTimeout(() => setShutdownStep(4), 900); // T+900ms: Fade Wallpaper to Black & Beachball Cursor
-    
+
     // Handover to BootSequence
     setTimeout(() => {
       setBootState('booting');
@@ -436,77 +516,92 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, 1200);
   }, [clearSystemErrors, setBootState, pauseSong]);
 
-  const initiateSystemHandoff = useCallback((target: BootState) => {
-    setIsHandoff(true);
-    setHandoffTarget(target);
-    pauseSong();
-    
-    // Step 0: Clear only dialogs/modals immediately
-    setShowRestartDialog(false);
-    setShowAboutWindow(false);
-    setShowSpotlight(false);
-    setShowWidgetPicker(false);
-    setSystemDialog(null);
+  const initiateSystemHandoff = useCallback(
+    (target: BootState) => {
+      setIsHandoff(true);
+      setHandoffTarget(target);
+      pauseSong();
 
-    // Sequential Shutdown Sequence
-    setShutdownStep(1); // T+0ms: Slide Dock
-    setTimeout(() => setShutdownStep(2), 300); // T+300ms: Slide Menu Bar
-    setTimeout(() => {
-      setShutdownStep(3); // T+600ms: Fade Widgets/Icons
-      clearSystemErrors();
-    }, 600); 
+      // Step 0: Clear only dialogs/modals immediately
+      setShowRestartDialog(false);
+      setShowAboutWindow(false);
+      setShowSpotlight(false);
+      setShowWidgetPicker(false);
+      setSystemDialog(null);
 
-    setTimeout(() => {
-      setBootState(target);
-      setIsHandoff(false);
-      setHandoffTarget(null);
-      setShutdownStep(0);
-    }, 1200);
-  }, [clearSystemErrors, setBootState, pauseSong]);
+      // Sequential Shutdown Sequence
+      setShutdownStep(1); // T+0ms: Slide Dock
+      setTimeout(() => setShutdownStep(2), 300); // T+300ms: Slide Menu Bar
+      setTimeout(() => {
+        setShutdownStep(3); // T+600ms: Fade Widgets/Icons
+        clearSystemErrors();
+      }, 600);
+
+      setTimeout(() => {
+        setBootState(target);
+        setIsHandoff(false);
+        setHandoffTarget(null);
+        setShutdownStep(0);
+      }, 1200);
+    },
+    [clearSystemErrors, setBootState, pauseSong],
+  );
 
   const triggerSystemError = useCallback(() => {
     if (stormIntervalRef.current) return;
-    
+
     const ERROR_MESSAGES = [
-      "The disk is full of bubbles",
-      "Kernel Panic: Too much vibe",
-      "Memory Leak in the Gold Mine",
-      "System Overheating: Silicon Meltdown",
-      "Quantum Bit Flip detected in Reality",
-      "Logic Error: App is too cool for this OS",
-      "Refractive Index out of bounds",
-      "Glass Blur is becoming solid",
-      "User Identity found in Trash",
+      'The disk is full of bubbles',
+      'Kernel Panic: Too much vibe',
+      'Memory Leak in the Gold Mine',
+      'System Overheating: Silicon Meltdown',
+      'Quantum Bit Flip detected in Reality',
+      'Logic Error: App is too cool for this OS',
+      'Refractive Index out of bounds',
+      'Glass Blur is becoming solid',
+      'User Identity found in Trash',
       "Finder found something it shouldn't have",
-      "CPU is vibing too hard",
-      "GPU is drawing outside the lines",
-      "Please Send it to Apple: This error is a feature, not a bug",
-      "Your Mac is experiencing a moment of self-awareness. Please wait while it contemplates existence.",
-      "macOS is not initalized. Please turn it off and on again."
+      'CPU is vibing too hard',
+      'GPU is drawing outside the lines',
+      'Please Send it to Apple: This error is a feature, not a bug',
+      'Your Mac is experiencing a moment of self-awareness. Please wait while it contemplates existence.',
+      'macOS is not initalized. Please turn it off and on again.',
     ];
-    
+
     const ERROR_ICONS = [
-      "dialog-warning",
-      "dialog-error",
-      "dialog-information",
-      "software-updates-important",
-      "security-high",
-      "security-low",
-      "socialize"
+      'dialog-warning',
+      'dialog-error',
+      'dialog-information',
+      'software-updates-important',
+      'security-high',
+      'security-low',
+      'socialize',
     ];
 
     const SOUNDS = [
-      "Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero",
-      "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"
+      'Basso',
+      'Blow',
+      'Bottle',
+      'Frog',
+      'Funk',
+      'Glass',
+      'Hero',
+      'Morse',
+      'Ping',
+      'Pop',
+      'Purr',
+      'Sosumi',
+      'Submarine',
+      'Tink',
     ];
 
-    const AVAILABLE_BUTTONS = ["Send to Apple", "OK", "Learn More", "Try Again", "Cancel", "Ignore"];
+    const AVAILABLE_BUTTONS = ['Send to Apple', 'OK', 'Learn More', 'Try Again', 'Cancel', 'Ignore'];
 
     const base = (import.meta as any).env?.BASE_URL || '/';
-    
+
     const playSound = (name: string) => {
       const audio = new Audio(`${base}sounds/${name}.mp3`);
-      audio.play().catch(e => console.warn('Audio play failed', e));
+      audio.play().catch((e) => console.warn('Audio play failed', e));
     };
 
     // Background music loop - Persistent loop
@@ -514,18 +609,18 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       infectionMusicRef.current = new Audio(`${base}music/LUZ ROJA - Sped Up - bxkq.mp3`);
       infectionMusicRef.current.loop = true;
       infectionMusicRef.current.volume = 0.7;
-      infectionMusicRef.current.play().catch(e => console.warn('Infection music failed', e));
+      infectionMusicRef.current.play().catch((e) => console.warn('Infection music failed', e));
     }
 
     // High-fidelity recursive spawning (2-3 per second)
     const interval = setInterval(() => {
       const spawnCount = Math.floor(Math.random() * 2) + 2; // 2 or 3
-      
+
       for (let s = 0; s < spawnCount; s++) {
         const id = Math.random().toString(36).substr(2, 9);
         const message = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
         const iconName = ERROR_ICONS[Math.floor(Math.random() * ERROR_ICONS.length)];
-        
+
         // Modal Variations: Vertical (320x580) and Horizontal (700x240) alerts
         const orientation = Math.random() > 0.5 ? 'vertical' : 'horizontal';
         const width = orientation === 'vertical' ? 320 : 700;
@@ -538,27 +633,40 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (iconName === 'socialize') {
           iconPath = `${base}icons/socialize.png`;
         }
-        
-        const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = ['standard', 'vertical_stretch', 'horizontal_glitch'];
+
+        const types: ('standard' | 'vertical_stretch' | 'horizontal_glitch')[] = [
+          'standard',
+          'vertical_stretch',
+          'horizontal_glitch',
+        ];
         const type = types[Math.floor(Math.random() * types.length)];
-        
+
         // Random combination of buttons
-        const buttons = [...AVAILABLE_BUTTONS].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
+        const buttons = [...AVAILABLE_BUTTONS]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, Math.floor(Math.random() * 3) + 1);
 
         const newError: ActiveError = {
-          id, x, y, message, icon: iconPath, type, orientation, buttons
+          id,
+          x,
+          y,
+          message,
+          icon: iconPath,
+          type,
+          orientation,
+          buttons,
         };
 
-        setSystemErrors(prev => {
+        setSystemErrors((prev) => {
           const next = [...prev, newError];
           // Endgame: When the screen is 80% covered (simulated by 80 modals)
           if (next.length >= 80) {
             clearInterval(interval);
             stormIntervalRef.current = null;
             // Trigger dead drive state
-            updateSystemState({ isSystemInfected: true }); 
+            updateSystemState({ isSystemInfected: true });
             setTimeout(() => {
-               initiateRestart(); 
+              initiateRestart();
             }, 1000);
           }
           return next;
@@ -569,7 +677,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         playSound(randomSound);
       }
     }, 1000); // Check every second, spawns multiple modals
-    
+
     stormIntervalRef.current = interval as any;
   }, [updateSystemState, initiateRestart]);
 
@@ -582,87 +690,99 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [bootState, triggerSystemError]);
 
-  const launchApp = useCallback((appId: string) => {
-    const SINGLE_INSTANCE_APPS = new Set(['launchpad', 'installer', 'siriai']);
+  const launchApp = useCallback(
+    (appId: string) => {
+      const SINGLE_INSTANCE_APPS = new Set(['launchpad', 'installer', 'siriai']);
 
-    if (SINGLE_INSTANCE_APPS.has(appId)) {
-      const existing = openWindows.filter(w => w.appId === appId);
-      existing.forEach(w => {
-        setMinimizedWindows(prev => prev.filter(id => id !== w.id));
-        setMaximizedWindows(prev => prev.filter(id => id !== w.id));
-        setOpenWindows(prev => prev.filter(pw => pw.id !== w.id));
-      });
-      if (existing.length > 0 && activeWindowId && existing.some(w => w.id === activeWindowId)) {
-        setActiveWindow(null);
+      if (SINGLE_INSTANCE_APPS.has(appId)) {
+        const existing = openWindows.filter((w) => w.appId === appId);
+        existing.forEach((w) => {
+          setMinimizedWindows((prev) => prev.filter((id) => id !== w.id));
+          setMaximizedWindows((prev) => prev.filter((id) => id !== w.id));
+          setOpenWindows((prev) => prev.filter((pw) => pw.id !== w.id));
+        });
+        if (existing.length > 0 && activeWindowId && existing.some((w) => w.id === activeWindowId)) {
+          setActiveWindow(null);
+        }
       }
-    }
 
-    if (!systemState.runningApps.includes(appId)) {
-      updateSystemState({
-        runningApps: [...systemState.runningApps, appId]
-      });
-    }
+      if (!systemState.runningApps.includes(appId)) {
+        updateSystemState({
+          runningApps: [...systemState.runningApps, appId],
+        });
+      }
 
-    setLaunchingApp(appId);
-    windowIdCounter.current += 1;
-    const newId = `${appId}-${windowIdCounter.current}`;
-    const newWindow: WindowInstance = { id: newId, appId };
-    setTimeout(() => {
-      setOpenWindows(current => [...current, newWindow]);
-      setLaunchingApp(null);
-      setActiveWindow(newId);
-      setMinimizedWindows(prev => prev.filter(id => id !== newId));
-    }, 1000);
-  }, [openWindows, activeWindowId, systemState.runningApps, updateSystemState]);
+      setLaunchingApp(appId);
+      windowIdCounter.current += 1;
+      const newId = `${appId}-${windowIdCounter.current}`;
+      const newWindow: WindowInstance = { id: newId, appId };
+      setTimeout(() => {
+        setOpenWindows((current) => [...current, newWindow]);
+        setLaunchingApp(null);
+        setActiveWindow(newId);
+        setMinimizedWindows((prev) => prev.filter((id) => id !== newId));
+      }, 1000);
+    },
+    [openWindows, activeWindowId, systemState.runningApps, updateSystemState],
+  );
 
   const closeWindow = useCallback((windowId: string) => {
-    setOpenWindows(prev => prev.filter(w => w.id !== windowId));
-    setMinimizedWindows(prev => prev.filter(id => id !== windowId));
-    setMaximizedWindows(prev => prev.filter(id => id !== windowId));
-    setActiveWindow(prev => prev === windowId ? null : prev);
+    setOpenWindows((prev) => prev.filter((w) => w.id !== windowId));
+    setMinimizedWindows((prev) => prev.filter((id) => id !== windowId));
+    setMaximizedWindows((prev) => prev.filter((id) => id !== windowId));
+    setActiveWindow((prev) => (prev === windowId ? null : prev));
   }, []);
 
   const closeCurrentWindow = useCallback(() => {
     if (activeWindowId) closeWindow(activeWindowId);
   }, [activeWindowId, closeWindow]);
 
-  const closeApp = useCallback((appId: string) => {
-    const targets = openWindows.filter(w => w.appId === appId);
-    targets.forEach(w => {
-      setOpenWindows(prev => prev.filter(pw => pw.id !== w.id));
-      setMinimizedWindows(prev => prev.filter(id => id !== w.id));
-      setMaximizedWindows(prev => prev.filter(id => id !== w.id));
-    });
-    if (activeWindowId && targets.some(w => w.id === activeWindowId)) {
-      setActiveWindow(null);
-    }
-  }, [openWindows, activeWindowId]);
+  const closeApp = useCallback(
+    (appId: string) => {
+      const targets = openWindows.filter((w) => w.appId === appId);
+      targets.forEach((w) => {
+        setOpenWindows((prev) => prev.filter((pw) => pw.id !== w.id));
+        setMinimizedWindows((prev) => prev.filter((id) => id !== w.id));
+        setMaximizedWindows((prev) => prev.filter((id) => id !== w.id));
+      });
+      if (activeWindowId && targets.some((w) => w.id === activeWindowId)) {
+        setActiveWindow(null);
+      }
+    },
+    [openWindows, activeWindowId],
+  );
 
-  const quitApp = useCallback((appId: string) => {
-    closeApp(appId);
-    updateSystemState({
-      runningApps: systemState.runningApps.filter(id => id !== appId)
-    });
-  }, [closeApp, systemState.runningApps, updateSystemState]);
+  const quitApp = useCallback(
+    (appId: string) => {
+      closeApp(appId);
+      updateSystemState({
+        runningApps: systemState.runningApps.filter((id) => id !== appId),
+      });
+    },
+    [closeApp, systemState.runningApps, updateSystemState],
+  );
 
-  const minimizeWindow = useCallback((windowId: string) => {
-    setMinimizedWindows(prev => {
-      if (!prev.includes(windowId)) return [...prev, windowId];
-      return prev;
-    });
-    if (activeWindowId === windowId) {
-      setActiveWindow(null);
-    }
-  }, [activeWindowId]);
+  const minimizeWindow = useCallback(
+    (windowId: string) => {
+      setMinimizedWindows((prev) => {
+        if (!prev.includes(windowId)) return [...prev, windowId];
+        return prev;
+      });
+      if (activeWindowId === windowId) {
+        setActiveWindow(null);
+      }
+    },
+    [activeWindowId],
+  );
 
   const unminimizeWindow = useCallback((windowId: string) => {
-    setMinimizedWindows(prev => prev.filter(id => id !== windowId));
+    setMinimizedWindows((prev) => prev.filter((id) => id !== windowId));
     setActiveWindow(windowId);
   }, []);
 
   const toggleMaximizeWindow = useCallback((windowId: string) => {
-    setMaximizedWindows(prev => 
-      prev.includes(windowId) ? prev.filter(id => id !== windowId) : [...prev, windowId]
+    setMaximizedWindows((prev) =>
+      prev.includes(windowId) ? prev.filter((id) => id !== windowId) : [...prev, windowId],
     );
   }, []);
 
@@ -683,25 +803,27 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const batteryTimeout = setTimeout(() => {
         console.warn('Battery API timeout, continuing without battery info');
       }, 2000);
-      
+
       Promise.race([
         (navigator as any).getBattery(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Battery API timeout')), 2000))
-      ]).then((batt: any) => {
-        clearTimeout(batteryTimeout);
-        const updateBattery = () => {
-          setBattery({
-            level: batt.level,
-            isCharging: batt.charging
-          });
-        };
-        updateBattery();
-        batt.addEventListener('levelchange', updateBattery);
-        batt.addEventListener('chargingchange', updateBattery);
-      }).catch((e) => {
-        clearTimeout(batteryTimeout);
-        console.warn('Battery API unavailable:', e);
-      });
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Battery API timeout')), 2000)),
+      ])
+        .then((batt: any) => {
+          clearTimeout(batteryTimeout);
+          const updateBattery = () => {
+            setBattery({
+              level: batt.level,
+              isCharging: batt.charging,
+            });
+          };
+          updateBattery();
+          batt.addEventListener('levelchange', updateBattery);
+          batt.addEventListener('chargingchange', updateBattery);
+        })
+        .catch((e) => {
+          clearTimeout(batteryTimeout);
+          console.warn('Battery API unavailable:', e);
+        });
     }
 
     const ticker = setInterval(() => {
@@ -731,7 +853,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         onCancel: () => {
           setSystemDialog(null);
           resolve();
-        }
+        },
       });
     });
   }, []);
@@ -749,98 +871,193 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         onCancel: () => {
           setSystemDialog(null);
           resolve(false);
-        }
+        },
       });
     });
   }, []);
 
-  const showPrompt = useCallback((message: string, defaultValue: string = '', title: string = 'Input Required'): Promise<string | null> => {
-    return new Promise((resolve) => {
-      setSystemDialog({
-        type: 'prompt',
-        title,
-        message,
-        defaultValue,
-        onConfirm: (value) => {
-          setSystemDialog(null);
-          resolve(value || null);
-        },
-        onCancel: () => {
-          setSystemDialog(null);
-          resolve(null);
-        }
+  const showPrompt = useCallback(
+    (message: string, defaultValue: string = '', title: string = 'Input Required'): Promise<string | null> => {
+      return new Promise((resolve) => {
+        setSystemDialog({
+          type: 'prompt',
+          title,
+          message,
+          defaultValue,
+          onConfirm: (value) => {
+            setSystemDialog(null);
+            resolve(value || null);
+          },
+          onCancel: () => {
+            setSystemDialog(null);
+            resolve(null);
+          },
+        });
       });
+    },
+    [],
+  );
+
+  const addNotification = useCallback((notif: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    const newNotif: Notification = {
+      ...notif,
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      read: false,
+    };
+    setSystemState((prev) => {
+      const next = { ...prev, notifications: [newNotif, ...prev.notifications].slice(0, 50) };
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
     });
   }, []);
+
+  const removeNotification = useCallback((id: string) => {
+    setSystemState((prev) => {
+      const next = { ...prev, notifications: prev.notifications.filter((n) => n.id !== id) };
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const clearNotifications = useCallback(() => {
+    setSystemState((prev) => {
+      const next = { ...prev, notifications: [] };
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const activeUser = systemState.users.find((u) => u.id === systemState.activeUserId) || systemState.users[0];
+  const userPinnedApps = activeUser.pinnedApps ?? systemState.pinnedApps;
+
+  const switchUser = useCallback((userId: string) => {
+    setOpenWindows([]);
+    setMinimizedWindows([]);
+    setMaximizedWindows([]);
+    setActiveWindow(null);
+    updateSystemState({ activeUserId: userId, runningApps: [] });
+    setBootState('login');
+  }, [updateSystemState, setBootState]);
+
+  const addUser = useCallback((user: Omit<UserAccount, 'id'>) => {
+    const newUser: UserAccount = { ...user, id: crypto.randomUUID(), pinnedApps: [...DEFAULT_PINNED_APPS] };
+    setSystemState((prev) => {
+      const next = { ...prev, users: [...prev.users, newUser] };
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const removeUser = useCallback((userId: string) => {
+    setSystemState((prev) => {
+      if (prev.users.length <= 1) return prev;
+      const next = { ...prev, users: prev.users.filter((u) => u.id !== userId) };
+      if (next.activeUserId === userId) next.activeUserId = next.users[0].id;
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const updateUser = useCallback((userId: string, updates: Partial<UserAccount>) => {
+    setSystemState((prev) => {
+      const next = {
+        ...prev,
+        users: prev.users.map((u) => (u.id === userId ? { ...u, ...updates } : u)),
+      };
+      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const verifyPassword = useCallback((password: string): boolean => {
+    return password === activeUser.password;
+  }, [activeUser.password]);
 
   return (
-    <SystemContext.Provider value={{
-      bootState,
-      setBootState,
-      systemState,
-      updateSystemState,
-      resetSystem,
-      activeApp,
-      activeWindowId,
-      setActiveWindow,
-      openWindows,
-      openApps,
-      minimizedWindows,
-      maximizedWindows,
-      launchingApp,
-      launchApp,
-      closeWindow,
-      closeCurrentWindow,
-      closeApp,
-      quitApp,
-      minimizeWindow,
-      unminimizeWindow,
-      toggleMaximizeWindow,
-      showAboutWindow,
-      setShowAboutWindow,
-      showSpotlight,
-      setShowSpotlight,
-      showRestartDialog,
-      setShowRestartDialog,
-      showWidgetPicker,
-      setShowWidgetPicker,
-      incomingCall,
-      setIncomingCall,
-      contextMenu,
-      setContextMenu,
-      battery,
-      wifi,
-      setWifi,
-      bluetooth,
-      setBluetooth,
-      powerMode,
-      setPowerMode,
-      hardware: { 
-        cores: navigator.hardwareConcurrency || 8,
-        memory: (performance as any).memory?.jsHeapSizeLimit ? Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 / 1024) : 16
-      },
-      uptime,
-      systemErrors,
-      triggerSystemError,
-      clearSystemErrors,
-      isShuttingDown,
-      shutdownStep,
-      initiateRestart,
-      isHandoff,
-      handoffTarget,
-      initiateSystemHandoff,
-      systemDialog,
-      setSystemDialog,
-      showAlert,
-      showConfirm,
-      showPrompt,
-      playSong,
-      pauseSong,
-      nextSong,
-      prevSong,
-      setVolume,
-      updatePlaybackProgress
-    }}>
+    <SystemContext.Provider
+      value={{
+        bootState,
+        setBootState,
+        systemState,
+        updateSystemState,
+        resetSystem,
+        activeApp,
+        activeWindowId,
+        setActiveWindow,
+        openWindows,
+        openApps,
+        minimizedWindows,
+        maximizedWindows,
+        launchingApp,
+        launchApp,
+        closeWindow,
+        closeCurrentWindow,
+        closeApp,
+        quitApp,
+        minimizeWindow,
+        unminimizeWindow,
+        toggleMaximizeWindow,
+        showAboutWindow,
+        setShowAboutWindow,
+        showSpotlight,
+        setShowSpotlight,
+        showRestartDialog,
+        setShowRestartDialog,
+        showWidgetPicker,
+        setShowWidgetPicker,
+        incomingCall,
+        setIncomingCall,
+        contextMenu,
+        setContextMenu,
+        battery,
+        wifi,
+        setWifi,
+        bluetooth,
+        setBluetooth,
+        powerMode,
+        setPowerMode,
+        hardware: {
+          cores: navigator.hardwareConcurrency || 8,
+          memory: (performance as any).memory?.jsHeapSizeLimit
+            ? Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 / 1024)
+            : 16,
+        },
+        uptime,
+        systemErrors,
+        triggerSystemError,
+        clearSystemErrors,
+        isShuttingDown,
+        shutdownStep,
+        initiateRestart,
+        isHandoff,
+        handoffTarget,
+        initiateSystemHandoff,
+        systemDialog,
+        setSystemDialog,
+        showAlert,
+        showConfirm,
+        showPrompt,
+        playSong,
+        pauseSong,
+        nextSong,
+        prevSong,
+        setVolume,
+        updatePlaybackProgress,
+        showNotificationCenter,
+        setShowNotificationCenter,
+        addNotification,
+        removeNotification,
+        clearNotifications,
+        activeUser,
+        userPinnedApps,
+        switchUser,
+        addUser,
+        removeUser,
+        updateUser,
+        verifyPassword,
+      }}
+    >
       {children}
     </SystemContext.Provider>
   );

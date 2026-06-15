@@ -14,9 +14,11 @@ export const AssetLoader = {
   Wallpapers: {
     'golden-gate-light.png': '1ecc3P0UAtfqAAwrxvQcWjBULfB_tJbLF', // Replace with exact file ID
     'golden-gate-dark.png': '1ecc3P0UAtfqAAwrxvQcWjBULfB_tJbLF',
-  }
+  },
 };
 
 export const resolveAsset = (type, name) => {
-  return AssetLoader[type] && AssetLoader[type][name] ? `https://drive.google.com/uc?id=${AssetLoader[type][name]}` : `/assets/${name}`;
+  return AssetLoader[type] && AssetLoader[type][name]
+    ? `https://drive.google.com/uc?id=${AssetLoader[type][name]}`
+    : `/assets/${name}`;
 };

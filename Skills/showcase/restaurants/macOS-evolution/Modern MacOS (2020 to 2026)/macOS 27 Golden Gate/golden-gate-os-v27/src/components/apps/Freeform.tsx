@@ -45,99 +45,115 @@ export const Freeform: React.FC = () => {
   const [canvasSize] = useState({ w: 4000, h: 4000 });
 
   const saveUndo = useCallback(() => {
-    setUndoStack(prev => [...prev.slice(-50), elements]);
+    setUndoStack((prev) => [...prev.slice(-50), elements]);
   }, [elements]);
 
   const undo = useCallback(() => {
     if (undoStack.length === 0) return;
     const prev = undoStack[undoStack.length - 1];
-    setUndoStack(prev => prev.slice(0, -1));
+    setUndoStack((prev) => prev.slice(0, -1));
     setElements(prev);
   }, [undoStack, elements]);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = e.clientX - rect.left - pan.x;
-    const y = e.clientY - rect.top - pan.y;
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const x = e.clientX - rect.left - pan.x;
+      const y = e.clientY - rect.top - pan.y;
 
-    if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
-      setIsPanning(true);
-      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-      return;
-    }
+      if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+        setIsPanning(true);
+        setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+        return;
+      }
 
-    if (selectedTool === 'sticky') {
-      saveUndo();
-      const newElem: CanvasElement = {
-        id: nextId(),
-        type: 'sticky',
-        x, y,
-        color: selectedColor,
-        width: 200,
-        height: 150,
-        content: 'Double-click to edit',
-      };
-      setElements(prev => [...prev, newElem]);
-      return;
-    }
+      if (selectedTool === 'sticky') {
+        saveUndo();
+        const newElem: CanvasElement = {
+          id: nextId(),
+          type: 'sticky',
+          x,
+          y,
+          color: selectedColor,
+          width: 200,
+          height: 150,
+          content: 'Double-click to edit',
+        };
+        setElements((prev) => [...prev, newElem]);
+        return;
+      }
 
-    if (selectedTool === 'text') {
-      saveUndo();
-      const newElem: CanvasElement = {
-        id: nextId(),
-        type: 'text',
-        x, y,
-        color: selectedColor,
-        content: 'Text',
-        fontSize: 24,
-      };
-      setElements(prev => [...prev, newElem]);
-      return;
-    }
+      if (selectedTool === 'text') {
+        saveUndo();
+        const newElem: CanvasElement = {
+          id: nextId(),
+          type: 'text',
+          x,
+          y,
+          color: selectedColor,
+          content: 'Text',
+          fontSize: 24,
+        };
+        setElements((prev) => [...prev, newElem]);
+        return;
+      }
 
-    setIsDrawing(true);
-    setDrawStart({ x, y });
+      setIsDrawing(true);
+      setDrawStart({ x, y });
 
-    if (selectedTool === 'pen') {
-      const path: CanvasElement = {
-        id: nextId(),
-        type: 'path',
-        x: 0, y: 0,
-        color: selectedColor,
-        points: [{ x, y }],
-      };
-      setCurrentPath(path);
-    }
-  }, [pan, selectedTool, selectedColor, elements, saveUndo]);
+      if (selectedTool === 'pen') {
+        const path: CanvasElement = {
+          id: nextId(),
+          type: 'path',
+          x: 0,
+          y: 0,
+          color: selectedColor,
+          points: [{ x, y }],
+        };
+        setCurrentPath(path);
+      }
+    },
+    [pan, selectedTool, selectedColor, elements, saveUndo],
+  );
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (isPanning) {
-      setPan({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
-      return;
-    }
-    if (!isDrawing || !canvasRef.current) return;
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (isPanning) {
+        setPan({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
+        return;
+      }
+      if (!isDrawing || !canvasRef.current) return;
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - pan.x;
-    const y = e.clientY - rect.top - pan.y;
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left - pan.x;
+      const y = e.clientY - rect.top - pan.y;
 
-    if (selectedTool === 'pen' && currentPath) {
-      setCurrentPath(prev => prev ? {
-        ...prev,
-        points: [...(prev.points || []), { x, y }],
-      } : prev);
-    }
-  }, [isPanning, isDrawing, pan, panStart, selectedTool, currentPath]);
+      if (selectedTool === 'pen' && currentPath) {
+        setCurrentPath((prev) =>
+          prev
+            ? {
+                ...prev,
+                points: [...(prev.points || []), { x, y }],
+              }
+            : prev,
+        );
+      }
+    },
+    [isPanning, isDrawing, pan, panStart, selectedTool, currentPath],
+  );
 
   const handlePointerUp = useCallback(() => {
-    if (isPanning) { setIsPanning(false); return; }
+    if (isPanning) {
+      setIsPanning(false);
+      return;
+    }
     if (!isDrawing) return;
     setIsDrawing(false);
 
     if (selectedTool === 'pen' && currentPath && currentPath.points && currentPath.points.length > 1) {
       saveUndo();
-      setElements(prev => [...prev, currentPath]);
+      setElements((prev) => [...prev, currentPath]);
     } else if (selectedTool === 'rectangle' || selectedTool === 'ellipse') {
       saveUndo();
       const dx = drawStart.x - (drawStart.x + pan.x);
@@ -151,23 +167,29 @@ export const Freeform: React.FC = () => {
         height: Math.abs(dy),
         color: selectedColor,
       };
-      setElements(prev => [...prev, elem]);
+      setElements((prev) => [...prev, elem]);
     }
     setCurrentPath(null);
   }, [isPanning, isDrawing, selectedTool, currentPath, drawStart, pan, selectedColor, elements, saveUndo]);
 
   const handleStickyEdit = useCallback((id: string, content: string) => {
-    setElements(prev => prev.map(el => el.id === id ? { ...el, content } : el));
+    setElements((prev) => prev.map((el) => (el.id === id ? { ...el, content } : el)));
   }, []);
 
-  const handleDeleteElement = useCallback((id: string) => {
-    saveUndo();
-    setElements(prev => prev.filter(el => el.id !== id));
-  }, [elements, saveUndo]);
+  const handleDeleteElement = useCallback(
+    (id: string) => {
+      saveUndo();
+      setElements((prev) => prev.filter((el) => el.id !== id));
+    },
+    [elements, saveUndo],
+  );
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+      if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
       if (e.key === 'Delete' || e.key === 'Backspace') {
         const focused = document.activeElement;
         if (focused && focused.classList.contains('sticky-textarea')) return;
@@ -180,16 +202,19 @@ export const Freeform: React.FC = () => {
   const dropHandlers = useFileDrop(createNode, 'documents', '.png,.jpeg,.jpg,.svg,.webp', (_file, dataUrl) => {
     const img = new Image();
     img.onload = () => {
-      setElements(prev => [...prev, {
-        id: nextId(),
-        type: 'image',
-        x: 200 + Math.random() * 400,
-        y: 200 + Math.random() * 400,
-        color: '#ffffff',
-        width: Math.min(img.width, 400),
-        height: Math.min(img.height, 400),
-        content: dataUrl,
-      }]);
+      setElements((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          type: 'image',
+          x: 200 + Math.random() * 400,
+          y: 200 + Math.random() * 400,
+          color: '#ffffff',
+          width: Math.min(img.width, 400),
+          height: Math.min(img.height, 400),
+          content: dataUrl,
+        },
+      ]);
     };
     img.src = dataUrl;
   });
@@ -198,7 +223,7 @@ export const Freeform: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-[#1a1a1a] text-white select-none">
       <div className="h-12 bg-[#2a2a2a] border-b border-[#3a3a3a] flex items-center px-4 gap-3 shrink-0">
         <div className="flex items-center gap-1 bg-[#3a3a3a] rounded-lg p-0.5">
-          {TOOLS.map(tool => (
+          {TOOLS.map((tool) => (
             <button
               key={tool.id}
               onClick={() => setSelectedTool(tool.id)}
@@ -211,7 +236,7 @@ export const Freeform: React.FC = () => {
         </div>
         <div className="w-px h-6 bg-[#3a3a3a]" />
         <div className="flex items-center gap-1">
-          {COLORS.map(c => (
+          {COLORS.map((c) => (
             <button
               key={c}
               onClick={() => setSelectedColor(c)}
@@ -228,7 +253,9 @@ export const Freeform: React.FC = () => {
           💾 Save
         </button>
         <button
-          onClick={() => downloadBlob(JSON.stringify(elements, null, 2), `freeform-${Date.now()}.json`, 'application/json')}
+          onClick={() =>
+            downloadBlob(JSON.stringify(elements, null, 2), `freeform-${Date.now()}.json`, 'application/json')
+          }
           className="px-3 py-1.5 rounded-md text-xs bg-[#3a3a3a] hover:bg-[#4a4a4a] transition"
         >
           ⬇ Download
@@ -268,10 +295,13 @@ export const Freeform: React.FC = () => {
             width={canvasSize.w}
             height={canvasSize.h}
             className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: 'radial-gradient(circle, #333 1px, transparent 1px)', backgroundSize: '30px 30px' }}
+            style={{
+              backgroundImage: 'radial-gradient(circle, #333 1px, transparent 1px)',
+              backgroundSize: '30px 30px',
+            }}
           />
 
-          {elements.map(el => (
+          {elements.map((el) => (
             <div
               key={el.id}
               className="absolute group"
@@ -285,12 +315,29 @@ export const Freeform: React.FC = () => {
             >
               {el.type === 'rect' && (
                 <svg width={el.width ?? 100} height={el.height ?? 100} className="absolute inset-0 pointer-events-none">
-                  <rect x={0} y={0} width={el.width ?? 100} height={el.height ?? 100} fill="none" stroke={el.color} strokeWidth={2} rx={4} />
+                  <rect
+                    x={0}
+                    y={0}
+                    width={el.width ?? 100}
+                    height={el.height ?? 100}
+                    fill="none"
+                    stroke={el.color}
+                    strokeWidth={2}
+                    rx={4}
+                  />
                 </svg>
               )}
               {el.type === 'ellipse' && (
                 <svg width={el.width ?? 100} height={el.height ?? 100} className="absolute inset-0 pointer-events-none">
-                  <ellipse cx={(el.width ?? 100) / 2} cy={(el.height ?? 100) / 2} rx={(el.width ?? 100) / 2} ry={(el.height ?? 100) / 2} fill="none" stroke={el.color} strokeWidth={2} />
+                  <ellipse
+                    cx={(el.width ?? 100) / 2}
+                    cy={(el.height ?? 100) / 2}
+                    rx={(el.width ?? 100) / 2}
+                    ry={(el.height ?? 100) / 2}
+                    fill="none"
+                    stroke={el.color}
+                    strokeWidth={2}
+                  />
                 </svg>
               )}
               {el.type === 'sticky' && (
@@ -340,7 +387,10 @@ export const Freeform: React.FC = () => {
               )}
               {!['path'].includes(el.type) && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleDeleteElement(el.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteElement(el.id);
+                  }}
                   className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition pointer-events-auto shadow-lg"
                 >
                   ×
@@ -366,9 +416,7 @@ export const Freeform: React.FC = () => {
 
       <div className="h-8 bg-[#2a2a2a] border-t border-[#3a3a3a] flex items-center px-4 text-xs text-gray-400 shrink-0">
         <span>Hold Shift + drag to pan • Scroll to zoom • Double-click items to edit</span>
-        <span className="ml-auto">
-          {elements.length} elements on canvas
-        </span>
+        <span className="ml-auto">{elements.length} elements on canvas</span>
       </div>
     </div>
   );

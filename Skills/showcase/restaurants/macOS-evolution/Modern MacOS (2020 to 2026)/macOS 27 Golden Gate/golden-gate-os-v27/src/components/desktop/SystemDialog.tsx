@@ -41,17 +41,15 @@ export const SystemDialog: React.FC = () => {
           className="w-[380px] bg-white/10 dark:bg-black/60 backdrop-blur-[var(--glass-blur)] border border-white/20 dark:border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8 flex flex-col items-center text-center text-black dark:text-white"
         >
           <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
-            <img 
-              src={`${base}${FileSystemResolver.getStatusIcon('dialog-information')}`} 
-              className="w-8 h-8 object-contain" 
-              alt="Dialog Icon" 
+            <img
+              src={`${base}${FileSystemResolver.getStatusIcon('dialog-information')}`}
+              className="w-8 h-8 object-contain"
+              alt="Dialog Icon"
             />
           </div>
-          
+
           <h2 className="text-xl font-black mb-2 tracking-tight">{systemDialog.title}</h2>
-          <p className="text-black/60 dark:text-white/50 text-xs leading-relaxed mb-6 px-4">
-            {systemDialog.message}
-          </p>
+          <p className="text-black/60 dark:text-white/50 text-xs leading-relaxed mb-6 px-4">{systemDialog.message}</p>
 
           {systemDialog.type === 'prompt' && (
             <input
@@ -67,14 +65,14 @@ export const SystemDialog: React.FC = () => {
 
           <div className="flex gap-3 w-full">
             {systemDialog.type !== 'alert' && (
-              <button 
+              <button
                 onClick={systemDialog.onCancel}
                 className="flex-1 h-11 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all border border-black/5 dark:border-white/10"
               >
                 Cancel
               </button>
             )}
-            <button 
+            <button
               onClick={handleConfirm}
               className="flex-1 h-11 bg-white text-black hover:bg-white/90 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-white/10"
             >

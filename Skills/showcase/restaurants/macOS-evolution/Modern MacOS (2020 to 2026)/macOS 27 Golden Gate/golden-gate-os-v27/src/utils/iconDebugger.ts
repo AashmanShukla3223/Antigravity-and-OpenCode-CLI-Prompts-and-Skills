@@ -11,13 +11,13 @@ export const iconDebugger = {
       return {
         exists: response.ok || response.status < 400,
         loadable: response.ok,
-        error: response.ok ? undefined : `HTTP ${response.status}`
+        error: response.ok ? undefined : `HTTP ${response.status}`,
       };
     } catch (e) {
       return {
         exists: false,
         loadable: false,
-        error: e instanceof Error ? e.message : 'Unknown error'
+        error: e instanceof Error ? e.message : 'Unknown error',
       };
     }
   },
@@ -25,13 +25,45 @@ export const iconDebugger = {
   // Check all Golden Gate icons
   checkAllIcons: async () => {
     const icons = [
-      'safari', 'settings', 'music', 'messages', 'facetime', 'finder',
-      'itunes', 'appstore', 'mail', 'maps', 'photos', 'files',
-      'trash_empty', 'trash_full', 'calendar', 'clock', 'contacts',
-      'reminders', 'stickies', 'notes', 'terminal', 'activity',
-      'calculator', 'phone', 'keynote', 'pages', 'numbers', 'tv',
-      'arcade', 'mirroring', 'console', 'controlcenter', 'keychain',
-      'apps', 'weather', 'camera', 'books', 'wallet', 'github'
+      'safari',
+      'settings',
+      'music',
+      'messages',
+      'facetime',
+      'finder',
+      'itunes',
+      'appstore',
+      'mail',
+      'maps',
+      'photos',
+      'files',
+      'trash_empty',
+      'trash_full',
+      'calendar',
+      'clock',
+      'contacts',
+      'reminders',
+      'stickies',
+      'notes',
+      'terminal',
+      'activity',
+      'calculator',
+      'phone',
+      'keynote',
+      'pages',
+      'numbers',
+      'tv',
+      'arcade',
+      'mirroring',
+      'console',
+      'controlcenter',
+      'keychain',
+      'apps',
+      'weather',
+      'camera',
+      'books',
+      'wallet',
+      'github',
     ];
 
     console.group('🎨 Golden Gate Icon Status');
@@ -73,12 +105,12 @@ export const iconDebugger = {
           naturalWidth: htmlImg.naturalWidth,
           naturalHeight: htmlImg.naturalHeight,
           complete: htmlImg.complete,
-          currentSrc: htmlImg.currentSrc
+          currentSrc: htmlImg.currentSrc,
         };
       }
     });
     return state;
-  }
+  },
 };
 
 // Make globally available

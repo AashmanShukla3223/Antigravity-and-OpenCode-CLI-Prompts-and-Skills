@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Location01Icon, Search01Icon, Navigation01Icon, Layers01Icon, BookOpen01Icon, SparklesIcon } from 'hugeicons-react';
+import {
+  Location01Icon,
+  Search01Icon,
+  Navigation01Icon,
+  Layers01Icon,
+  BookOpen01Icon,
+  SparklesIcon,
+} from 'hugeicons-react';
 
 interface Pin {
   id: number;
@@ -46,13 +53,13 @@ export const Maps: React.FC = () => {
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-4">
         <div className="flex-1 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-lg flex items-center px-4 py-2.5">
           <Search01Icon size={18} className="text-gray-500 mr-3 hugeicon-golden-gate" />
-          <input 
-            type="text" 
-            placeholder="Search Maps or Ask Visual Intelligence..." 
+          <input
+            type="text"
+            placeholder="Search Maps or Ask Visual Intelligence..."
             className="flex-1 bg-transparent border-none focus:outline-none text-sm dark:text-white"
           />
         </div>
-        <button 
+        <button
           onClick={() => setLayersOpen(!layersOpen)}
           className="w-10 h-10 rounded-xl bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-black transition-colors"
         >
@@ -61,22 +68,28 @@ export const Maps: React.FC = () => {
       </div>
 
       {layersOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="absolute top-16 right-4 z-20 w-48 bg-white/90 dark:bg-black/80 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-xl shadow-2xl p-2"
         >
           <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-2 pt-1">Map Type</div>
-          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">Explore</button>
-          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">Transit</button>
-          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">Topographic Glass</button>
+          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">
+            Explore
+          </button>
+          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">
+            Transit
+          </button>
+          <button className="w-full text-left px-3 py-1.5 text-sm rounded-lg hover:bg-black/5 dark:hover:bg-white/10 dark:text-white transition-colors">
+            Topographic Glass
+          </button>
         </motion.div>
       )}
 
       {/* Pins Render Layer */}
       <div className="absolute inset-0 z-0">
-        {pins.map(pin => (
-          <motion.div 
+        {pins.map((pin) => (
+          <motion.div
             key={pin.id}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -94,7 +107,10 @@ export const Maps: React.FC = () => {
               </div>
             ) : (
               <div className="relative">
-                <Location01Icon size={32} className="text-red-500 drop-shadow-lg fill-red-500/20 hugeicon-golden-gate" />
+                <Location01Icon
+                  size={32}
+                  className="text-red-500 drop-shadow-lg fill-red-500/20 hugeicon-golden-gate"
+                />
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 bg-white/90 dark:bg-black/90 backdrop-blur-md rounded-md shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity dark:text-white">
                   {pin.title}
                 </div>
@@ -121,7 +137,6 @@ export const Maps: React.FC = () => {
           <div className="mt-2 text-xs text-white/70">Traffic is light. Estimated toll is $8.75.</div>
         </div>
       </div>
-
     </div>
   );
 };

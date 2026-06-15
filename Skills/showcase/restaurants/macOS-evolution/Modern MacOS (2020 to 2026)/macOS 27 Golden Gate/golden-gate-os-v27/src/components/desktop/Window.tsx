@@ -5,8 +5,11 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useTelemetry } from '../../hooks/useTelemetry';
 import { ErrorBoundary } from '../common/ErrorBoundary';
 
-function namedLazy(getMod: () => Promise<Record<string, React.ComponentType<any>>>, name: string): React.LazyExoticComponent<React.ComponentType<any>> {
-  return lazy(() => getMod().then(m => ({ default: m[name] })));
+function namedLazy(
+  getMod: () => Promise<Record<string, React.ComponentType<any>>>,
+  name: string,
+): React.LazyExoticComponent<React.ComponentType<any>> {
+  return lazy(() => getMod().then((m) => ({ default: m[name] })));
 }
 
 const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
@@ -60,7 +63,8 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   logicpro: namedLazy(() => import('../apps/LogicPro'), 'LogicPro'),
   photobooth: namedLazy(() => import('../apps/PhotoBooth'), 'PhotoBooth'),
   chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
-};;
+  minecraft: namedLazy(() => import('../apps/Minecraft'), 'Minecraft'),
+};
 
 const AppFallback: React.FC = () => (
   <div className="flex items-center justify-center h-full">
@@ -95,15 +99,16 @@ interface WindowProps {
 }
 
 export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
-  const { activeWindowId, setActiveWindow, closeWindow, quitApp, openWindows, minimizeWindow, powerMode, systemState } = useSystem();
+  const { activeWindowId, setActiveWindow, closeWindow, quitApp, openWindows, minimizeWindow, powerMode, systemState } =
+    useSystem();
   const telemetry = useTelemetry();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [windowState, setWindowState] = useState<WindowState>('normal');
   const [size, setSize] = useState({ width: 800, height: 500 });
-  const sameAppWindows = openWindows.filter(w => w.appId === appId);
-  const instanceIndex = sameAppWindows.findIndex(w => w.id === windowId);
+  const sameAppWindows = openWindows.filter((w) => w.appId === appId);
+  const instanceIndex = sameAppWindows.findIndex((w) => w.id === windowId);
   const offset = Math.min(instanceIndex, 10) * 28;
   const [position] = useState({ top: 80 + offset, left: 80 + offset });
   const resizing = useRef<'right' | 'bottom' | 'corner' | null>(null);
@@ -112,7 +117,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   const isActive = activeWindowId === windowId;
   const isMaximized = windowState === 'maximized';
   const isFullscreen = windowState === 'fullscreen';
-  const zIndex = appId === 'installer' ? 10000 : (isActive ? 50 : openWindows.findIndex(w => w.id === windowId) + 10);
+  const zIndex = appId === 'installer' ? 10000 : isActive ? 50 : openWindows.findIndex((w) => w.id === windowId) + 10;
 
   const appNames: Record<string, string> = {
     finder: 'Finder',
@@ -165,11 +170,12 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     logicpro: 'Logic Pro',
     photobooth: 'Photo Booth',
     chess: 'Chess',
+    minecraft: 'Minecraft',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
 
-  const dragElastic = Math.max(0.1, 0.5 - (telemetry.cpuPressure * 0.4));
+  const dragElastic = Math.max(0.1, 0.5 - telemetry.cpuPressure * 0.4);
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -177,11 +183,19 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       const dx = e.clientX - resizeStart.current.x;
       const dy = e.clientY - resizeStart.current.y;
       setSize({
-        width: Math.max(400, resizeStart.current.w + (resizing.current === 'right' || resizing.current === 'corner' ? dx : 0)),
-        height: Math.max(300, resizeStart.current.h + (resizing.current === 'bottom' || resizing.current === 'corner' ? dy : 0)),
+        width: Math.max(
+          400,
+          resizeStart.current.w + (resizing.current === 'right' || resizing.current === 'corner' ? dx : 0),
+        ),
+        height: Math.max(
+          300,
+          resizeStart.current.h + (resizing.current === 'bottom' || resizing.current === 'corner' ? dy : 0),
+        ),
       });
     };
-    const onMouseUp = () => { resizing.current = null; };
+    const onMouseUp = () => {
+      resizing.current = null;
+    };
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
     return () => {
@@ -191,7 +205,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   }, []);
 
   const handleGreenDot = useCallback(() => {
-    setWindowState(prev => {
+    setWindowState((prev) => {
       if (prev === 'normal') return 'maximized';
       if (prev === 'maximized') return 'fullscreen';
       return 'normal';
@@ -220,7 +234,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isFullscreen && isActive) {
-        setWindowState(prev => prev === 'fullscreen' ? 'maximized' : prev);
+        setWindowState((prev) => (prev === 'fullscreen' ? 'maximized' : prev));
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -233,7 +247,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       scaleX: 0.1,
       scaleY: 0,
       y: 600,
-      filter: "blur(40px) saturate(200%) brightness(1.2)",
+      filter: 'blur(40px) saturate(200%) brightness(1.2)',
     },
     animate: {
       opacity: 1,
@@ -246,27 +260,27 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       top: isFullscreen ? 0 : isMaximized ? '30px' : position.top,
       left: isFullscreen ? 0 : isMaximized ? 0 : position.left,
       borderRadius: isFullscreen ? 0 : isMaximized ? 0 : '1rem',
-      filter: "blur(0px) saturate(100%) brightness(1)",
+      filter: 'blur(0px) saturate(100%) brightness(1)',
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 180,
         damping: 24,
         mass: 1.2,
         opacity: { duration: 0.4 },
-        y: { type: "spring", stiffness: 220, damping: 28 }
-      }
+        y: { type: 'spring', stiffness: 220, damping: 28 },
+      },
     },
     exit: {
       opacity: 0,
       scaleX: 0.2,
       scaleY: 0,
       y: 600,
-      filter: "blur(40px) saturate(200%) brightness(1.5)",
+      filter: 'blur(40px) saturate(200%) brightness(1.5)',
       transition: {
         duration: 0.4,
-        ease: [0.32, 0, 0.67, 0]
-      }
-    }
+        ease: [0.32, 0, 0.67, 0],
+      },
+    },
   };
 
   const isEndurance = powerMode === 'Low Power';
@@ -308,8 +322,15 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       }}
       className={`overflow-hidden flex flex-col pointer-events-auto shadow-2xl transition-shadow ${isActive ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.3)]'} ${isEndurance ? 'bg-amber-900/40 border-amber-500/30' : 'bg-white/5 dark:bg-black/20'} ${isProMotion ? 'border-white/40' : 'border-white/20'} ${isFullscreen ? 'rounded-none' : 'rounded-2xl'}`}
     >
-      <div className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isProMotion ? 'saturate-[200%]' : ''}`}
-        style={isEndurance ? {} : { backdropFilter: `blur(${systemState.systemOpacity * 0.5}px) saturate(${100 + systemState.systemOpacity * 0.8}%)` }}
+      <div
+        className={`absolute inset-0 saturate-[150%] pointer-events-none transition-all duration-1000 ${isProMotion ? 'saturate-[200%]' : ''}`}
+        style={
+          isEndurance
+            ? {}
+            : {
+                backdropFilter: `blur(${systemState.systemOpacity * 0.5}px) saturate(${100 + systemState.systemOpacity * 0.8}%)`,
+              }
+        }
       />
 
       {isFullscreen ? null : (
@@ -327,23 +348,40 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
         >
           <div className="flex items-center gap-2 w-20">
             <button
-              onClick={(e) => { e.stopPropagation(); handleClose(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
               className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 flex items-center justify-center border border-black/10"
             />
             <button
-              onClick={(e) => { e.stopPropagation(); handleMinimize(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleMinimize();
+              }}
               className="w-3.5 h-3.5 rounded-full bg-[#FEBC2E] hover:bg-[#FEBC2E]/80 flex items-center justify-center border border-black/10"
             />
             <button
-              onClick={(e) => { e.stopPropagation(); handleGreenDot(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleGreenDot();
+              }}
               className="w-3.5 h-3.5 rounded-full bg-[#28C840] hover:bg-[#28C840]/80 flex items-center justify-center border border-black/10 relative group"
-              title={windowState === 'normal' ? 'Maximize' : windowState === 'maximized' ? 'Enter Fullscreen' : 'Exit Fullscreen'}
+              title={
+                windowState === 'normal'
+                  ? 'Maximize'
+                  : windowState === 'maximized'
+                    ? 'Enter Fullscreen'
+                    : 'Exit Fullscreen'
+              }
             >
               {greenDotIcon[windowState]}
             </button>
           </div>
 
-          <div className={`text-sm font-medium flex-1 text-center truncate pointer-events-none transition-opacity ${isActive ? 'text-white' : 'text-white/50'} ${isEndurance ? 'text-amber-100' : ''}`}>
+          <div
+            className={`text-sm font-medium flex-1 text-center truncate pointer-events-none transition-opacity ${isActive ? 'text-white' : 'text-white/50'} ${isEndurance ? 'text-amber-100' : ''}`}
+          >
             {displayName}
           </div>
 

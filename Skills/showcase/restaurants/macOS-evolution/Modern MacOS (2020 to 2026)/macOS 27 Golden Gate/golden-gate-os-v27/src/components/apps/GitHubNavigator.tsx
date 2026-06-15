@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
 import { AppIcon } from '../common/AppIcon';
-import { 
-  File01Icon, 
-  Search01Icon,
-  ArrowLeft01Icon as ChevronLeft
-} from 'hugeicons-react';
+import { File01Icon, Search01Icon, ArrowLeft01Icon as ChevronLeft } from 'hugeicons-react';
 
 interface GitHubItem {
   name: string;
@@ -29,15 +25,22 @@ export const GitHubNavigator: React.FC = () => {
     setLoading(true);
     try {
       // Check for dangerous repos
-      if (path.toLowerCase().includes('virus') || path.toLowerCase().includes('chaos') || path.toLowerCase().includes('malware')) {
+      if (
+        path.toLowerCase().includes('virus') ||
+        path.toLowerCase().includes('chaos') ||
+        path.toLowerCase().includes('malware')
+      ) {
         triggerSystemError();
-        showAlert("This repository contains unsigned kernel extensions. Opening may cause system instability.", "Security Warning");
+        showAlert(
+          'This repository contains unsigned kernel extensions. Opening may cause system instability.',
+          'Security Warning',
+        );
       }
 
       const response = await fetch(`https://api.github.com/repos/${path}/contents/${dir}`);
       if (!response.ok) throw new Error('Repo not found or API limit reached');
       const data = await response.json();
-      
+
       if (Array.isArray(data)) {
         setContents(data);
         setCurrentDir(dir);
@@ -45,7 +48,7 @@ export const GitHubNavigator: React.FC = () => {
         throw new Error('Not a directory');
       }
     } catch (err: any) {
-      showAlert(err.message, "GitHub Error");
+      showAlert(err.message, 'GitHub Error');
     } finally {
       setLoading(false);
     }
@@ -70,13 +73,13 @@ export const GitHubNavigator: React.FC = () => {
         try {
           const res = await fetch(file.download_url);
           const text = await res.text();
-          updateSystemState({ 
+          updateSystemState({
             currentFileContent: text,
-            currentFileName: file.name
+            currentFileName: file.name,
           } as any);
           launchApp('codeviewer');
         } catch {
-          showAlert("Could not fetch file content", "Error");
+          showAlert('Could not fetch file content', 'Error');
         } finally {
           setLoading(false);
         }
@@ -98,10 +101,10 @@ export const GitHubNavigator: React.FC = () => {
       {/* Search Header */}
       <div className="h-14 border-b border-gray-100 flex items-center justify-between px-4 bg-gray-50/50 backdrop-blur-md">
         <div className="flex items-center gap-4">
-          <ChevronLeft 
-            size={20} 
+          <ChevronLeft
+            size={20}
             onClick={goBack}
-            className={`cursor-pointer transition-colors ${history.length > 0 ? 'text-gray-600 hover:text-black' : 'text-gray-200 pointer-events-none'}`} 
+            className={`cursor-pointer transition-colors ${history.length > 0 ? 'text-gray-600 hover:text-black' : 'text-gray-200 pointer-events-none'}`}
           />
           <div className="flex flex-col">
             <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">GitHub Navigator</h2>
@@ -113,7 +116,7 @@ export const GitHubNavigator: React.FC = () => {
 
         <form onSubmit={handleSearch} className="relative w-64">
           <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input 
+          <input
             type="text"
             placeholder="Search (e.g. facebook/react)"
             value={repoPath}
@@ -133,15 +136,15 @@ export const GitHubNavigator: React.FC = () => {
 
         {!repoPath && contents.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-4">
-             <img src={`${base}icons/github.png`} className="w-16 h-16 opacity-10 grayscale" alt="GitHub" />
-             <span className="text-xs font-bold uppercase tracking-[0.2em]">Repository Explorer</span>
+            <img src={`${base}icons/github.png`} className="w-16 h-16 opacity-10 grayscale" alt="GitHub" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em]">Repository Explorer</span>
           </div>
         )}
 
         {contents.length > 0 && (
           <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
             {contents.map((item) => (
-              <div 
+              <div
                 key={item.path}
                 onDoubleClick={() => handleFileClick(item)}
                 className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gray-100 transition-all cursor-default group"
@@ -150,7 +153,12 @@ export const GitHubNavigator: React.FC = () => {
                   {item.type === 'dir' ? (
                     <AppIcon id="folder" size={48} />
                   ) : (
-                    <File01Icon size={40} strokeWidth={1} className="text-gray-400 fill-gray-50 object-contain" style={{ objectFit: 'contain' }} />
+                    <File01Icon
+                      size={40}
+                      strokeWidth={1}
+                      className="text-gray-400 fill-gray-50 object-contain"
+                      style={{ objectFit: 'contain' }}
+                    />
                   )}
                 </div>
                 <span className="text-[11px] font-medium text-center truncate w-full px-1 text-gray-700">

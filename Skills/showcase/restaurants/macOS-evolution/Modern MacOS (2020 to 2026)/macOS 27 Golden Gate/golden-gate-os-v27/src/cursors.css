@@ -7,19 +7,28 @@
   --cursor-crosshair: url('/assets/cursors/crosshair.png') 16 16, crosshair;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   cursor: var(--cursor-pointer);
 }
 
-a, button, [role="button"], .cursor-pointer {
+a,
+button,
+[role='button'],
+.cursor-pointer {
   cursor: var(--cursor-hand) !important;
 }
 
-input[type="text"], input[type="password"], textarea, .cursor-text {
+input[type='text'],
+input[type='password'],
+textarea,
+.cursor-text {
   cursor: var(--cursor-ibeam) !important;
 }
 
-.cursor-wait, .is-busy {
+.cursor-wait,
+.is-busy {
   cursor: var(--cursor-busy) !important;
 }
 

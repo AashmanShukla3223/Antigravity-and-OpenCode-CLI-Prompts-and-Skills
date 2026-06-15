@@ -39,7 +39,7 @@ export const useTelemetry = () => {
 
       if (time - lastFpsTimeRef.current >= 1000) {
         const currentFps = Math.round((frameCountRef.current * 1000) / (time - lastFpsTimeRef.current));
-        
+
         let heapUse = 0;
         let heapLim = 1;
         if ((performance as any).memory) {

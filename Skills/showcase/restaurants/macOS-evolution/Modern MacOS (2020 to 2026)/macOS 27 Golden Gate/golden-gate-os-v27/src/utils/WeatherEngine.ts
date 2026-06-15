@@ -52,7 +52,7 @@ export class WeatherEngine {
     try {
       const response = await fetch(
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${targetLocation}&aqi=no`,
-        { signal: this.abortController.signal }
+        { signal: this.abortController.signal },
       );
 
       if (!response.ok) {

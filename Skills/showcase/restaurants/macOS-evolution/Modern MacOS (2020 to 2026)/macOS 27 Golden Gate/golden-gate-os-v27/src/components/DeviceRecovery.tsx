@@ -8,7 +8,7 @@ import { useFileSystem } from '../contexts/FileSystemContext';
  * Provides quick recovery and setup bypass functionality
  */
 export const DeviceRecovery: React.FC = () => {
-  const { systemState, updateSystemState, setBootState } = useSystem();
+  const { systemState, updateSystemState, setBootState, activeUser } = useSystem();
   const { restoreSystemNodes } = useFileSystem();
   const [showRecoveryUI, setShowRecoveryUI] = useState(false);
 
@@ -34,14 +34,17 @@ export const DeviceRecovery: React.FC = () => {
     console.log('⚡ Quick Setup Bypass...');
     try {
       restoreSystemNodes();
+      const userId = crypto.randomUUID();
       updateSystemState({
         setup_complete: true,
-        user: { 
+        users: [{
+          id: userId,
           fullName: 'Architect',
           accountName: 'architect',
           password: '',
-          avatar: '🏗️'
-        }
+          avatar: '🏗️',
+        }],
+        activeUserId: userId,
       });
       setBootState('desktop');
       setShowRecoveryUI(false);
@@ -129,9 +132,16 @@ export const DeviceRecovery: React.FC = () => {
         </div>
 
         <div className="bg-white/5 p-4 rounded-lg text-xs text-white/70 space-y-2 font-mono">
-          <p><span className="text-blue-400">Current Setup:</span> {systemState.setup_complete ? '✅ Complete' : '❌ Pending'}</p>
-          <p><span className="text-blue-400">User:</span> {systemState.user.fullName}</p>
-          <p><span className="text-blue-400">Appearance:</span> {systemState.appearance}</p>
+          <p>
+            <span className="text-blue-400">Current Setup:</span>{' '}
+            {systemState.setup_complete ? '✅ Complete' : '❌ Pending'}
+          </p>
+          <p>
+            <span className="text-blue-400">User:</span> {activeUser.fullName}
+          </p>
+          <p>
+            <span className="text-blue-400">Appearance:</span> {systemState.appearance}
+          </p>
           <p className="text-white/40 mt-3">Tip: Use localStorage commands in console for more control</p>
         </div>
 

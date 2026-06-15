@@ -4,12 +4,17 @@ const COLS = 26;
 const ROWS = 50;
 const COL_LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 type CellKey = string;
-interface CellData { value: string; formula?: string; }
+interface CellData {
+  value: string;
+  formula?: string;
+}
 type SheetCells = Record<CellKey, CellData>;
 
 const STORAGE_KEY = 'golden_gate_numbers_unlocked';
 
-function cellKey(col: number, row: number): CellKey { return `${COL_LABELS[col]}${row + 1}`; }
+function cellKey(col: number, row: number): CellKey {
+  return `${COL_LABELS[col]}${row + 1}`;
+}
 function parseCellKey(key: CellKey): { col: number; row: number } | null {
   const m = key.match(/^([A-Z])(\d+)$/);
   if (!m) return null;
@@ -21,7 +26,8 @@ function evalFormula(formula: string, cells: SheetCells): string {
   if (upper.startsWith('SUM(')) {
     const range = upper.match(/SUM\(([A-Z]\d+):([A-Z]\d+)\)/i);
     if (range) {
-      const start = parseCellKey(range[1]); const end = parseCellKey(range[2]);
+      const start = parseCellKey(range[1]);
+      const end = parseCellKey(range[2]);
       if (start && end) {
         let total = 0;
         for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
@@ -37,13 +43,18 @@ function evalFormula(formula: string, cells: SheetCells): string {
   if (upper.startsWith('AVG(')) {
     const range = upper.match(/AVG\(([A-Z]\d+):([A-Z]\d+)\)/i);
     if (range) {
-      const start = parseCellKey(range[1]); const end = parseCellKey(range[2]);
+      const start = parseCellKey(range[1]);
+      const end = parseCellKey(range[2]);
       if (start && end) {
-        let total = 0, count = 0;
+        let total = 0,
+          count = 0;
         for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
           for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
             const v = parseFloat(cells[cellKey(c, r)]?.value || '0');
-            if (!isNaN(v)) { total += v; count++; }
+            if (!isNaN(v)) {
+              total += v;
+              count++;
+            }
           }
         }
         return count > 0 ? String(total / count) : '0';
@@ -53,7 +64,8 @@ function evalFormula(formula: string, cells: SheetCells): string {
   if (upper.startsWith('COUNT(')) {
     const range = upper.match(/COUNT\(([A-Z]\d+):([A-Z]\d+)\)/i);
     if (range) {
-      const start = parseCellKey(range[1]); const end = parseCellKey(range[2]);
+      const start = parseCellKey(range[1]);
+      const end = parseCellKey(range[2]);
       if (start && end) {
         let count = 0;
         for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
@@ -68,7 +80,8 @@ function evalFormula(formula: string, cells: SheetCells): string {
   if (upper.startsWith('MAX(')) {
     const range = upper.match(/MAX\(([A-Z]\d+):([A-Z]\d+)\)/i);
     if (range) {
-      const start = parseCellKey(range[1]); const end = parseCellKey(range[2]);
+      const start = parseCellKey(range[1]);
+      const end = parseCellKey(range[2]);
       if (start && end) {
         let max = -Infinity;
         for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
@@ -84,7 +97,8 @@ function evalFormula(formula: string, cells: SheetCells): string {
   if (upper.startsWith('MIN(')) {
     const range = upper.match(/MIN\(([A-Z]\d+):([A-Z]\d+)\)/i);
     if (range) {
-      const start = parseCellKey(range[1]); const end = parseCellKey(range[2]);
+      const start = parseCellKey(range[1]);
+      const end = parseCellKey(range[2]);
       if (start && end) {
         let min = Infinity;
         for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
@@ -105,7 +119,9 @@ export const Numbers: React.FC = () => {
     try {
       const saved = localStorage.getItem('golden_gate_numbers_cells');
       return saved ? JSON.parse(saved) : {};
-    } catch { return {}; }
+    } catch {
+      return {};
+    }
   });
   const [selectedCell, setSelectedCell] = useState<CellKey | null>(null);
   const [editingCell, setEditingCell] = useState<CellKey | null>(null);
@@ -125,28 +141,34 @@ export const Numbers: React.FC = () => {
     }
   }, [editingCell]);
 
-  const handleCellClick = useCallback((key: CellKey) => {
-    if (selectedCell === key) {
-      setEditingCell(key);
-      setFormulaBar(cells[key]?.value || '');
-    } else {
-      setSelectedCell(key);
-      setEditingCell(null);
-      setFormulaBar(cells[key]?.value || '');
-    }
-  }, [selectedCell, cells]);
+  const handleCellClick = useCallback(
+    (key: CellKey) => {
+      if (selectedCell === key) {
+        setEditingCell(key);
+        setFormulaBar(cells[key]?.value || '');
+      } else {
+        setSelectedCell(key);
+        setEditingCell(null);
+        setFormulaBar(cells[key]?.value || '');
+      }
+    },
+    [selectedCell, cells],
+  );
 
-  const handleFormulaSubmit = useCallback((formula: string) => {
-    if (!selectedCell) return;
-    if (formula.startsWith('=')) {
-      const result = evalFormula(formula.substring(1), cells);
-      setCells(prev => ({ ...prev, [selectedCell!]: { value: result, formula } }));
-    } else {
-      setCells(prev => ({ ...prev, [selectedCell!]: { value: formula } }));
-    }
-    setFormulaBar(formula);
-    setEditingCell(null);
-  }, [selectedCell, cells]);
+  const handleFormulaSubmit = useCallback(
+    (formula: string) => {
+      if (!selectedCell) return;
+      if (formula.startsWith('=')) {
+        const result = evalFormula(formula.substring(1), cells);
+        setCells((prev) => ({ ...prev, [selectedCell!]: { value: result, formula } }));
+      } else {
+        setCells((prev) => ({ ...prev, [selectedCell!]: { value: formula } }));
+      }
+      setFormulaBar(formula);
+      setEditingCell(null);
+    },
+    [selectedCell, cells],
+  );
 
   const selectedData = selectedCell ? cells[selectedCell] : null;
 
@@ -159,7 +181,13 @@ export const Numbers: React.FC = () => {
         <h2 className="text-2xl font-bold">Numbers</h2>
         <p className="text-white/50 text-sm">Create powerful spreadsheets.</p>
         <div className="flex gap-3">
-          <button onClick={() => { localStorage.setItem(STORAGE_KEY, 'true'); setPaid(true); }} className="px-6 py-2.5 bg-green-500 hover:bg-green-600 rounded-xl font-medium text-sm transition">
+          <button
+            onClick={() => {
+              localStorage.setItem(STORAGE_KEY, 'true');
+              setPaid(true);
+            }}
+            className="px-6 py-2.5 bg-green-500 hover:bg-green-600 rounded-xl font-medium text-sm transition"
+          >
             Continue
           </button>
         </div>
@@ -173,13 +201,22 @@ export const Numbers: React.FC = () => {
         <span className="text-xs font-mono text-white/40 w-16">{selectedCell || ''}</span>
         <div className="w-px h-5 bg-white/10 mx-1" />
         <input
-          value={selectedCell && editingCell !== selectedCell ? (selectedData?.value || '') : formulaBar}
+          value={selectedCell && editingCell !== selectedCell ? selectedData?.value || '' : formulaBar}
           onChange={(e) => !editingCell && setFormulaBar(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { handleFormulaSubmit(formulaBar); } }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleFormulaSubmit(formulaBar);
+            }
+          }}
           placeholder="Enter value or formula (=SUM(A1:A10))"
           className="flex-1 bg-white/5 border border-white/10 rounded-md px-3 py-1 text-sm outline-none"
         />
-        <button onClick={() => handleFormulaSubmit(formulaBar)} className="px-3 py-1 bg-blue-500 hover:bg-blue-600 rounded-md text-xs font-medium transition">OK</button>
+        <button
+          onClick={() => handleFormulaSubmit(formulaBar)}
+          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 rounded-md text-xs font-medium transition"
+        >
+          OK
+        </button>
       </div>
 
       <div className="flex-1 overflow-auto scrollbar-hide" ref={gridRef}>
@@ -187,7 +224,10 @@ export const Numbers: React.FC = () => {
           <div className="grid" style={{ gridTemplateColumns: `60px repeat(${COLS}, 100px)` }}>
             <div className="h-8 bg-zinc-800 border-r border-b border-white/10 sticky top-0 z-10" />
             {COL_LABELS.slice(0, COLS).map((label, ci) => (
-              <div key={ci} className="h-8 bg-zinc-800 border-r border-b border-white/10 flex items-center justify-center text-xs font-bold text-white/60 sticky top-0 z-10">
+              <div
+                key={ci}
+                className="h-8 bg-zinc-800 border-r border-b border-white/10 flex items-center justify-center text-xs font-bold text-white/60 sticky top-0 z-10"
+              >
                 {label}
               </div>
             ))}
@@ -205,7 +245,10 @@ export const Numbers: React.FC = () => {
                     <div
                       key={key}
                       onClick={() => handleCellClick(key)}
-                      onDoubleClick={() => { setEditingCell(key); setFormulaBar(cell?.value || ''); }}
+                      onDoubleClick={() => {
+                        setEditingCell(key);
+                        setFormulaBar(cell?.value || '');
+                      }}
                       className={`h-8 border-r border-b border-white/5 flex items-center px-2 text-sm cursor-cell transition-colors ${isSelected ? 'bg-blue-500/20 border-blue-500' : 'hover:bg-white/5'}`}
                     >
                       {isEditing ? (
@@ -213,8 +256,13 @@ export const Numbers: React.FC = () => {
                           ref={editRef}
                           value={formulaBar}
                           onChange={(e) => setFormulaBar(e.target.value)}
-                          onBlur={() => { handleFormulaSubmit(formulaBar); }}
-                          onKeyDown={(e) => { if (e.key === 'Enter') handleFormulaSubmit(formulaBar); if (e.key === 'Escape') setEditingCell(null); }}
+                          onBlur={() => {
+                            handleFormulaSubmit(formulaBar);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleFormulaSubmit(formulaBar);
+                            if (e.key === 'Escape') setEditingCell(null);
+                          }}
                           className="bg-transparent outline-none w-full text-sm"
                         />
                       ) : (

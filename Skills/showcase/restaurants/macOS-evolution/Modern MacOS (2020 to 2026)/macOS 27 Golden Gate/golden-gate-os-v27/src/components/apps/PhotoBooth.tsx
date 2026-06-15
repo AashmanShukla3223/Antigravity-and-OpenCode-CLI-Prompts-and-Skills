@@ -37,7 +37,7 @@ function beep(freq: number, duration: number, vol: number) {
     osc.start();
     osc.stop(ctx.currentTime + duration);
     setTimeout(() => ctx.close(), duration * 1000 + 100);
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 function shutterSound() {
@@ -55,7 +55,7 @@ function shutterSound() {
     osc.start();
     osc.stop(ctx.currentTime + 0.2);
     setTimeout(() => ctx.close(), 400);
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 export const PhotoBooth: React.FC = () => {
@@ -86,7 +86,7 @@ export const PhotoBooth: React.FC = () => {
     const start = async () => {
       try {
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach(t => t.stop());
+          streamRef.current.getTracks().forEach((t) => t.stop());
           streamRef.current = null;
         }
         const s = await navigator.mediaDevices.getUserMedia({
@@ -94,7 +94,7 @@ export const PhotoBooth: React.FC = () => {
           audio: true,
         });
         if (!active) {
-          s.getTracks().forEach(t => t.stop());
+          s.getTracks().forEach((t) => t.stop());
           return;
         }
         streamRef.current = s;
@@ -103,7 +103,7 @@ export const PhotoBooth: React.FC = () => {
         if (videoRef.current) {
           videoRef.current.srcObject = s;
         }
-      } catch (e) {
+      } catch {
         if (active) {
           setError('Camera access denied or not available');
           setStream(null);
@@ -116,7 +116,7 @@ export const PhotoBooth: React.FC = () => {
     return () => {
       active = false;
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
       }
     };
@@ -146,7 +146,7 @@ export const PhotoBooth: React.FC = () => {
     ctx.filter = FILTERS[currentFilter].style;
     ctx.drawImage(video, 0, 0, dw, dh);
     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-    setCapturedPhotos(prev => [dataUrl, ...prev]);
+    setCapturedPhotos((prev) => [dataUrl, ...prev]);
     const ts = new Date();
     const filename = `Photo Booth ${ts.getFullYear()}-${String(ts.getMonth() + 1).padStart(2, '0')}-${String(ts.getDate()).padStart(2, '0')} ${String(ts.getHours()).padStart(2, '0')}-${String(ts.getMinutes()).padStart(2, '0')}-${String(ts.getSeconds()).padStart(2, '0')}.jpg`;
     saveToVFS(createNode, dataUrl, filename, 'pictures');
@@ -157,7 +157,7 @@ export const PhotoBooth: React.FC = () => {
     setCountdown(3);
     beep(880, 0.15, 0.15);
     countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev === null) return null;
         const next = prev - 1;
         if (next <= 0) {
@@ -192,7 +192,7 @@ export const PhotoBooth: React.FC = () => {
         saveToVFS(createNode, dataUrl, filename, 'pictures');
       };
       reader.readAsDataURL(blob);
-      setRecordedChunks(prev => [...prev, ...chunks]);
+      setRecordedChunks((prev) => [...prev, ...chunks]);
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
       setRecordingTime(0);
@@ -202,7 +202,7 @@ export const PhotoBooth: React.FC = () => {
     setIsRecording(true);
     setRecordingTime(0);
     timerRef.current = setInterval(() => {
-      setRecordingTime(t => t + 1);
+      setRecordingTime((t) => t + 1);
     }, 1000);
   }, [stream, createNode]);
 
@@ -211,7 +211,7 @@ export const PhotoBooth: React.FC = () => {
     setCountdown(3);
     beep(880, 0.15, 0.15);
     countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev === null) return null;
         const next = prev - 1;
         if (next <= 0) {
@@ -253,7 +253,7 @@ export const PhotoBooth: React.FC = () => {
   }, []);
 
   const deletePhoto = useCallback((index: number) => {
-    setCapturedPhotos(prev => prev.filter((_, i) => i !== index));
+    setCapturedPhotos((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   return (
@@ -261,11 +261,7 @@ export const PhotoBooth: React.FC = () => {
       <div className="p-4 md:p-6">
         <h1 className="text-xl font-bold mb-4">Photo Booth</h1>
 
-        {error && (
-          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-4 text-sm">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-4 text-sm">{error}</div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
@@ -304,7 +300,10 @@ export const PhotoBooth: React.FC = () => {
             </div>
 
             <div className="flex gap-2 flex-wrap">
-              <button onClick={capturePhoto} className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition flex items-center gap-2">
+              <button
+                onClick={capturePhoto}
+                className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition flex items-center gap-2"
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <circle cx="12" cy="12" r="3" />
@@ -313,19 +312,28 @@ export const PhotoBooth: React.FC = () => {
               </button>
 
               {!isRecording ? (
-                <button onClick={startRecording} className="px-5 py-2 bg-red-600/60 hover:bg-red-600/80 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                <button
+                  onClick={startRecording}
+                  className="px-5 py-2 bg-red-600/60 hover:bg-red-600/80 rounded-xl text-sm font-medium transition flex items-center gap-2"
+                >
                   <div className="w-2.5 h-2.5 bg-white rounded-full" />
                   Record
                 </button>
               ) : (
-                <button onClick={stopRecording} className="px-5 py-2 bg-red-600 rounded-xl text-sm font-medium transition flex items-center gap-2 animate-pulse">
+                <button
+                  onClick={stopRecording}
+                  className="px-5 py-2 bg-red-600 rounded-xl text-sm font-medium transition flex items-center gap-2 animate-pulse"
+                >
                   <div className="w-2.5 h-2.5 bg-white rounded-sm" />
                   Stop
                 </button>
               )}
 
               <div className="relative">
-                <button onClick={() => setShowFilters(!showFilters)} className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition"
+                >
                   Filters • {FILTERS[currentFilter].name}
                 </button>
                 {showFilters && (
@@ -333,7 +341,10 @@ export const PhotoBooth: React.FC = () => {
                     {FILTERS.map((f, i) => (
                       <button
                         key={f.name}
-                        onClick={() => { setCurrentFilter(i); setShowFilters(false); }}
+                        onClick={() => {
+                          setCurrentFilter(i);
+                          setShowFilters(false);
+                        }}
                         className={`px-3 py-1.5 rounded-lg text-xs transition ${i === currentFilter ? 'bg-blue-600 text-white' : 'bg-white/10 hover:bg-white/20'}`}
                       >
                         {f.name}
@@ -344,15 +355,21 @@ export const PhotoBooth: React.FC = () => {
               </div>
 
               <div className="relative">
-                <button onClick={() => setShowResolutions(!showResolutions)} className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition">
+                <button
+                  onClick={() => setShowResolutions(!showResolutions)}
+                  className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-medium transition"
+                >
                   {resolution}
                 </button>
                 {showResolutions && (
                   <div className="absolute top-full mt-2 left-0 bg-zinc-800 border border-white/10 rounded-xl p-3 flex flex-col gap-1 z-50 shadow-2xl">
-                    {(Object.keys(RESOLUTIONS) as ResolutionKey[]).map(r => (
+                    {(Object.keys(RESOLUTIONS) as ResolutionKey[]).map((r) => (
                       <button
                         key={r}
-                        onClick={() => { setResolution(r); setShowResolutions(false); }}
+                        onClick={() => {
+                          setResolution(r);
+                          setShowResolutions(false);
+                        }}
                         className={`px-4 py-1.5 rounded-lg text-xs text-left transition ${r === resolution ? 'bg-blue-600 text-white' : 'hover:bg-white/10'}`}
                       >
                         {r} ({RESOLUTIONS[r].width}×{RESOLUTIONS[r].height})
@@ -366,10 +383,16 @@ export const PhotoBooth: React.FC = () => {
             {recordedChunks.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-white/40">{recordedChunks.length} recording(s) available</span>
-                <button onClick={downloadVideo} className="px-4 py-1.5 bg-green-600/60 hover:bg-green-600/80 rounded-xl text-xs transition">
+                <button
+                  onClick={downloadVideo}
+                  className="px-4 py-1.5 bg-green-600/60 hover:bg-green-600/80 rounded-xl text-xs transition"
+                >
                   Download Video
                 </button>
-                <button onClick={() => setRecordedChunks([])} className="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs transition">
+                <button
+                  onClick={() => setRecordedChunks([])}
+                  className="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs transition"
+                >
                   Clear
                 </button>
               </div>
@@ -382,22 +405,31 @@ export const PhotoBooth: React.FC = () => {
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {capturedPhotos.length === 0 && (
-                <div className="col-span-2 text-white/20 text-xs text-center py-8">
-                  No photos yet
-                </div>
+                <div className="col-span-2 text-white/20 text-xs text-center py-8">No photos yet</div>
               )}
               {capturedPhotos.map((photo, i) => (
-                <div key={i} className="relative group rounded-xl overflow-hidden border border-white/10 aspect-square bg-black">
+                <div
+                  key={i}
+                  className="relative group rounded-xl overflow-hidden border border-white/10 aspect-square bg-black"
+                >
                   <img src={photo} alt={`Capture ${i + 1}`} className="w-full h-full object-contain" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                    <button onClick={() => downloadPhoto(photo)} className="p-1.5 bg-white/20 hover:bg-white/40 rounded-lg transition" title="Download">
+                    <button
+                      onClick={() => downloadPhoto(photo)}
+                      className="p-1.5 bg-white/20 hover:bg-white/40 rounded-lg transition"
+                      title="Download"
+                    >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="7 10 12 15 17 10" />
                         <line x1="12" y1="15" x2="12" y2="3" />
                       </svg>
                     </button>
-                    <button onClick={() => deletePhoto(i)} className="p-1.5 bg-red-500/40 hover:bg-red-500/60 rounded-lg transition" title="Delete">
+                    <button
+                      onClick={() => deletePhoto(i)}
+                      className="p-1.5 bg-red-500/40 hover:bg-red-500/60 rounded-lg transition"
+                      title="Delete"
+                    >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />

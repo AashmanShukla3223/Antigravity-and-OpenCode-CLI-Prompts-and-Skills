@@ -6,15 +6,16 @@ type WallpaperStage = 'light' | 'dark';
 function getCurrentStage(): WallpaperStage {
   const now = new Date();
   const mins = now.getHours() * 60 + now.getMinutes();
-  return (mins >= 300 && mins < 1050) ? 'light' : 'dark';
+  return mins >= 300 && mins < 1050 ? 'light' : 'dark';
 }
 
 function getWallpaper(stage: WallpaperStage, mode: 'static' | 'dynamic') {
   if (mode === 'dynamic') {
     return {
-      url: stage === 'light'
-        ? '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4'
-        : 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4',
+      url:
+        stage === 'light'
+          ? '/wallpapers/Golden%20Gate%20Dynamic%20Wallpaper.mp4'
+          : 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4',
       type: 'video' as const,
     };
   }

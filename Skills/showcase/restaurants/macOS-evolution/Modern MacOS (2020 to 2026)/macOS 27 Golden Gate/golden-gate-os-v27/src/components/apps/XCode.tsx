@@ -54,15 +54,20 @@ export const XCode: React.FC = () => {
   const engineRef = useRef<AIEngine | null>(null);
   const fileShaCache = useRef<Map<string, string>>(new Map());
 
-  const dropHandlers = useFileDrop(createNode, 'documents', '.txt,.js,.ts,.tsx,.jsx,.json,.md,.css,.html,.py,.swift,.rs,.go,.yml,.yaml,.toml,.xml,.sh,.env,.gitignore', (file, dataUrl) => {
-    setFileContent(dataUrl);
-    setSelectedFilePath(file.name);
-    setFileLanguage(detectLanguage(file.name));
-    const localNode = nodes.find(n => n.name === file.name && n.parentId === 'documents');
-    if (!localNode) {
-      createNode({ name: file.name, type: 'file', parentId: 'documents', content: dataUrl, size: file.size });
-    }
-  });
+  const dropHandlers = useFileDrop(
+    createNode,
+    'documents',
+    '.txt,.js,.ts,.tsx,.jsx,.json,.md,.css,.html,.py,.swift,.rs,.go,.yml,.yaml,.toml,.xml,.sh,.env,.gitignore',
+    (file, dataUrl) => {
+      setFileContent(dataUrl);
+      setSelectedFilePath(file.name);
+      setFileLanguage(detectLanguage(file.name));
+      const localNode = nodes.find((n) => n.name === file.name && n.parentId === 'documents');
+      if (!localNode) {
+        createNode({ name: file.name, type: 'file', parentId: 'documents', content: dataUrl, size: file.size });
+      }
+    },
+  );
 
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
@@ -83,7 +88,7 @@ export const XCode: React.FC = () => {
   };
 
   const localFiles = useMemo(() => {
-    return nodes.filter(n => n.type === 'file' && n.parentId === 'documents' && n.content);
+    return nodes.filter((n) => n.type === 'file' && n.parentId === 'documents' && n.content);
   }, [nodes]);
 
   const flattenTree = (node: FileNode): FileNode[] => {
@@ -93,17 +98,22 @@ export const XCode: React.FC = () => {
 
   const gitChanges = useMemo((): GitChange[] => {
     const changes: GitChange[] = [];
-    const ghPaths = new Set(fileTree.flatMap(n => { const f = flattenTree(n); return f.map(x => x.path); }));
-    const localNames = new Set(localFiles.map(n => n.name));
+    const ghPaths = new Set(
+      fileTree.flatMap((n) => {
+        const f = flattenTree(n);
+        return f.map((x) => x.path);
+      }),
+    );
+    const localNames = new Set(localFiles.map((n) => n.name));
 
-    localFiles.forEach(n => {
+    localFiles.forEach((n) => {
       if (!ghPaths.has(n.name)) {
         changes.push({ file: n.name, status: 'A' });
       }
     });
-    fileTree.forEach(n => {
+    fileTree.forEach((n) => {
       const items = flattenTree(n);
-      items.forEach(item => {
+      items.forEach((item) => {
         if (item.type === 'file' && !localNames.has(item.name)) {
           changes.push({ file: item.path, status: 'D' });
         } else if (item.type === 'file' && localNames.has(item.name)) {
@@ -113,7 +123,6 @@ export const XCode: React.FC = () => {
     });
     return changes.slice(0, 20);
   }, [fileTree, localFiles]);
-
 
   const fetchDir = useCallback(async (path: string): Promise<GitHubItem[]> => {
     const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=main`;
@@ -132,37 +141,45 @@ export const XCode: React.FC = () => {
     return atob(data.content);
   }, []);
 
-  const expandDir = useCallback(async (node: FileNode) => {
-    if (node.children) return;
-    try {
-      const items = await fetchDir(node.path);
-      node.children = items.filter(i => i.type === 'dir' || i.type === 'file') as FileNode[];
-      items.forEach(i => { if (i.sha) fileShaCache.current.set(i.path, i.sha); });
-      setFileTree(prev => [...prev]);
-    } catch {
-      node.children = [];
-      setFileTree(prev => [...prev]);
-    }
-  }, [fetchDir]);
-
-  const loadFile = useCallback(async (path: string) => {
-    setLoadingFile(true);
-    setSelectedFilePath(path);
-    try {
-      const local = localFiles.find(n => n.name === path);
-      if (local?.content) {
-        setFileContent(local.content);
-        setFileLanguage(detectLanguage(path));
-      } else {
-        const content = await fetchFile(path);
-        setFileContent(content);
-        setFileLanguage(detectLanguage(path));
+  const expandDir = useCallback(
+    async (node: FileNode) => {
+      if (node.children) return;
+      try {
+        const items = await fetchDir(node.path);
+        node.children = items.filter((i) => i.type === 'dir' || i.type === 'file') as FileNode[];
+        items.forEach((i) => {
+          if (i.sha) fileShaCache.current.set(i.path, i.sha);
+        });
+        setFileTree((prev) => [...prev]);
+      } catch {
+        node.children = [];
+        setFileTree((prev) => [...prev]);
       }
-    } catch {
-      setFileContent(`// ${path}\n// Could not load file. Import it locally to edit.`);
-    }
-    setLoadingFile(false);
-  }, [fetchFile, localFiles]);
+    },
+    [fetchDir],
+  );
+
+  const loadFile = useCallback(
+    async (path: string) => {
+      setLoadingFile(true);
+      setSelectedFilePath(path);
+      try {
+        const local = localFiles.find((n) => n.name === path);
+        if (local?.content) {
+          setFileContent(local.content);
+          setFileLanguage(detectLanguage(path));
+        } else {
+          const content = await fetchFile(path);
+          setFileContent(content);
+          setFileLanguage(detectLanguage(path));
+        }
+      } catch {
+        setFileContent(`// ${path}\n// Could not load file. Import it locally to edit.`);
+      }
+      setLoadingFile(false);
+    },
+    [fetchFile, localFiles],
+  );
 
   const loadTree = useCallback(async () => {
     setLoading(true);
@@ -183,12 +200,12 @@ export const XCode: React.FC = () => {
           readmePath = item.path;
         }
       }
-      const localNodes: FileNode[] = localFiles.map(f => ({
+      const localNodes: FileNode[] = localFiles.map((f) => ({
         name: f.name,
         path: f.name,
         type: 'file' as const,
       }));
-      const merged = [...treeNodes, ...localNodes.filter(ln => !treeNodes.find(tn => tn.name === ln.name))];
+      const merged = [...treeNodes, ...localNodes.filter((ln) => !treeNodes.find((tn) => tn.name === ln.name))];
       setFileTree(merged);
       if (readmePath) {
         const content = await fetchFile(readmePath);
@@ -205,8 +222,10 @@ export const XCode: React.FC = () => {
       }
     } catch {
       if (localFiles.length > 0) {
-        const root: FileNode[] = localFiles.map(f => ({
-          name: f.name, path: f.name, type: 'file' as const,
+        const root: FileNode[] = localFiles.map((f) => ({
+          name: f.name,
+          path: f.name,
+          type: 'file' as const,
         }));
         setFileTree(root);
         const first = localFiles[0];
@@ -218,13 +237,21 @@ export const XCode: React.FC = () => {
       } else {
         const welcomeContent = `// GoldenGate — macOS 27 AI-Powered App Suite\n//\n// Welcome to Xcode for Golden Gate OS.\n// Import or drop files to start editing.\n\nimport SwiftUI\n\n@main\nstruct GoldenGateApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n    }\n}\n\nstruct ContentView: View {\n    var body: some View {\n        VStack {\n            Text("Hello, Golden Gate!")\n                .font(.largeTitle)\n                .padding()\n            Text("Drop files or use Import to begin.")\n                .foregroundColor(.secondary)\n        }\n    }\n}\n`;
         const root: FileNode[] = [
-          { name: 'GoldenGate', path: 'GoldenGate', type: 'dir', children: [
-            { name: 'GoldenGateApp.swift', path: 'GoldenGateApp.swift', type: 'file' },
-            { name: 'ContentView.swift', path: 'ContentView.swift', type: 'file' },
-          ]},
-          { name: 'GoldenGate.xcodeproj', path: 'GoldenGate.xcodeproj', type: 'dir', children: [
-            { name: 'project.pbxproj', path: 'project.pbxproj', type: 'file' },
-          ]},
+          {
+            name: 'GoldenGate',
+            path: 'GoldenGate',
+            type: 'dir',
+            children: [
+              { name: 'GoldenGateApp.swift', path: 'GoldenGateApp.swift', type: 'file' },
+              { name: 'ContentView.swift', path: 'ContentView.swift', type: 'file' },
+            ],
+          },
+          {
+            name: 'GoldenGate.xcodeproj',
+            path: 'GoldenGate.xcodeproj',
+            type: 'dir',
+            children: [{ name: 'project.pbxproj', path: 'project.pbxproj', type: 'file' }],
+          },
           { name: 'Package.swift', path: 'Package.swift', type: 'file' },
           { name: 'README.md', path: 'README.md', type: 'file' },
         ];
@@ -242,68 +269,74 @@ export const XCode: React.FC = () => {
     loadTree();
   }, [loadTree]);
 
-  const toggleDir = useCallback((node: FileNode) => {
-    setExpandedDirs(prev => {
-      const next = new Set(prev);
-      next.has(node.path) ? next.delete(node.path) : next.add(node.path);
-      return next;
-    });
-    if (!node.children) expandDir(node);
-  }, [expandDir]);
+  const toggleDir = useCallback(
+    (node: FileNode) => {
+      setExpandedDirs((prev) => {
+        const next = new Set(prev);
+        if (next.has(node.path)) next.delete(node.path); else next.add(node.path);
+        return next;
+      });
+      if (!node.children) expandDir(node);
+    },
+    [expandDir],
+  );
 
-  const commitToGitHub = useCallback(async (message: string) => {
-    const changedFiles = gitChanges.filter(c => c.status === 'A' || c.status === 'M');
-    if (changedFiles.length === 0) return;
+  const commitToGitHub = useCallback(
+    async (message: string) => {
+      const changedFiles = gitChanges.filter((c) => c.status === 'A' || c.status === 'M');
+      if (changedFiles.length === 0) return;
 
-    setTerminalHistory(prev => [...prev, '', `▸ git commit -m "${message}"`]);
+      setTerminalHistory((prev) => [...prev, '', `▸ git commit -m "${message}"`]);
 
-    for (const change of changedFiles) {
-      const localNode = localFiles.find(n => n.name === change.file);
-      if (!localNode?.content) continue;
+      for (const change of changedFiles) {
+        const localNode = localFiles.find((n) => n.name === change.file);
+        if (!localNode?.content) continue;
 
-      const path = change.file;
-      const sha = fileShaCache.current.get(path) || undefined;
+        const path = change.file;
+        const sha = fileShaCache.current.get(path) || undefined;
 
-      try {
-        const base64Content = localNode.content.startsWith('data:')
-          ? await dataUrlToBase64(localNode.content)
-          : btoa(unescape(encodeURIComponent(localNode.content)));
+        try {
+          const base64Content = localNode.content.startsWith('data:')
+            ? await dataUrlToBase64(localNode.content)
+            : btoa(unescape(encodeURIComponent(localNode.content)));
 
-        const body: Record<string, unknown> = {
-          message,
-          content: base64Content,
-          branch: 'main',
-        };
-        if (sha) body.sha = sha;
+          const body: Record<string, unknown> = {
+            message,
+            content: base64Content,
+            branch: 'main',
+          };
+          if (sha) body.sha = sha;
 
-        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
-          method: 'PUT',
-          headers: { ...headersRef.current, 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
+          const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+            method: 'PUT',
+            headers: { ...headersRef.current, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.content?.sha) fileShaCache.current.set(path, data.content.sha);
-          setTerminalHistory(prev => [...prev, `  ✅ ${path}`]);
-        } else {
-          const err = await res.json();
-          setTerminalHistory(prev => [...prev, `  ⚠️ ${path}: ${err.message || res.status}`]);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.content?.sha) fileShaCache.current.set(path, data.content.sha);
+            setTerminalHistory((prev) => [...prev, `  ✅ ${path}`]);
+          } else {
+            const err = await res.json();
+            setTerminalHistory((prev) => [...prev, `  ⚠️ ${path}: ${err.message || res.status}`]);
+          }
+        } catch {
+          setTerminalHistory((prev) => [...prev, `  ⚠️ ${path}: Network error`]);
         }
-      } catch (e) {
-        setTerminalHistory(prev => [...prev, `  ⚠️ ${path}: Network error`]);
       }
-    }
 
-    setCommits(prev => [`${new Date().toLocaleDateString()} — ${message}`, ...prev]);
-    setTerminalHistory(prev => [...prev, `✅ Committed ${changedFiles.length} file(s)`]);
-  }, [gitChanges, localFiles]);
+      setCommits((prev) => [`${new Date().toLocaleDateString()} — ${message}`, ...prev]);
+      setTerminalHistory((prev) => [...prev, `✅ Committed ${changedFiles.length} file(s)`]);
+    },
+    [gitChanges, localFiles],
+  );
 
   const pullFromGitHub = useCallback(async () => {
-    setTerminalHistory(prev => [...prev, '', '▸ git pull origin main']);
+    setTerminalHistory((prev) => [...prev, '', '▸ git pull origin main']);
     fileShaCache.current.clear();
     await loadTree();
-    setTerminalHistory(prev => [...prev, '  ✅ Up to date']);
+    setTerminalHistory((prev) => [...prev, '  ✅ Up to date']);
   }, [loadTree]);
 
   const fetchCommitLog = useCallback(async () => {
@@ -313,26 +346,32 @@ export const XCode: React.FC = () => {
       });
       if (!res.ok) return;
       const data = await res.json();
-      const logLines = data.map((c: { commit: { message: string; author: { name: string } } }) =>
-        `  ${c.commit.message.split('\n')[0]} (${c.commit.author.name})`
+      const logLines = data.map(
+        (c: { commit: { message: string; author: { name: string } } }) =>
+          `  ${c.commit.message.split('\n')[0]} (${c.commit.author.name})`,
       );
-      setTerminalHistory(prev => [...prev, '', '▸ git log --oneline -10', ...logLines]);
+      setTerminalHistory((prev) => [...prev, '', '▸ git log --oneline -10', ...logLines]);
     } catch {
-      setTerminalHistory(prev => [...prev, '  ⚠️ Failed to fetch commit log']);
+      setTerminalHistory((prev) => [...prev, '  ⚠️ Failed to fetch commit log']);
     }
   }, []);
 
   const handleBuild = useCallback(() => {
     setIsBuilding(true);
-    setTerminalHistory(prev => [...prev, '', `▸ Build GoldenGate (${new Date().toLocaleTimeString()})`]);
+    setTerminalHistory((prev) => [...prev, '', `▸ Build GoldenGate (${new Date().toLocaleTimeString()})`]);
     setTimeout(() => {
       setIsBuilding(false);
-      setTerminalHistory(prev => [...prev, '  Compile Swift source files', '  Link GoldenGate', '  ✅ Build Succeeded (0.8s)']);
+      setTerminalHistory((prev) => [
+        ...prev,
+        '  Compile Swift source files',
+        '  Link GoldenGate',
+        '  ✅ Build Succeeded (0.8s)',
+      ]);
     }, 1200);
   }, []);
 
   const handleRun = useCallback(() => {
-    setTerminalHistory(prev => [...prev, '', `▸ Run GoldenGate on ${device}`, '  Process launched [PID: 48291]']);
+    setTerminalHistory((prev) => [...prev, '', `▸ Run GoldenGate on ${device}`, '  Process launched [PID: 48291]']);
   }, [device]);
 
   const handleCommit = useCallback(() => {
@@ -342,93 +381,151 @@ export const XCode: React.FC = () => {
   }, [gitCommitMsg, commitToGitHub]);
 
   const handlePush = useCallback(() => {
-    setTerminalHistory(prev => [...prev, '', '▸ git push origin main', '  ✅ Already up-to-date (commits are pushed directly via API)']);
+    setTerminalHistory((prev) => [
+      ...prev,
+      '',
+      '▸ git push origin main',
+      '  ✅ Already up-to-date (commits are pushed directly via API)',
+    ]);
   }, []);
 
-  const sendToAI = useCallback(async (message: string) => {
-    if (!message.trim() || aiLoading) return;
-    setAiMessages(prev => [...prev, { role: 'user', content: message }]);
-    setAiInput('');
-    setAiLoading(true);
-    try {
-      if (!engineRef.current) {
-        engineRef.current = new AIEngine({ launchApp: () => {}, updateSystemState: () => {}, setPowerMode: () => {} });
+  const sendToAI = useCallback(
+    async (message: string) => {
+      if (!message.trim() || aiLoading) return;
+      setAiMessages((prev) => [...prev, { role: 'user', content: message }]);
+      setAiInput('');
+      setAiLoading(true);
+      try {
+        if (!engineRef.current) {
+          engineRef.current = new AIEngine({
+            launchApp: () => {},
+            updateSystemState: () => {},
+            setPowerMode: () => {},
+          });
+        }
+        const provider = getActiveProvider();
+        const apiKey = localStorage.getItem(`golden_gate_siri_${provider}_key`) || '';
+        if (apiKey) {
+          const msgs = aiMessages.concat({ role: 'user', content: message });
+          const res = await engineRef.current.sendMessage(
+            msgs.map((m) => ({
+              role: m.role === 'user' ? ('user' as const) : ('assistant' as const),
+              content: m.content,
+            })),
+            provider,
+            apiKey,
+          );
+          setAiMessages((prev) => [...prev, { role: 'assistant', content: res.text }]);
+        } else {
+          const res = await engineRef.current.executeCommand(message);
+          setAiMessages((prev) => [...prev, { role: 'assistant', content: res }]);
+        }
+      } catch (e: any) {
+        setAiMessages((prev) => [...prev, { role: 'assistant', content: `Error: ${e.message}` }]);
       }
-      const provider = getActiveProvider();
-      const apiKey = localStorage.getItem(`golden_gate_siri_${provider}_key`) || '';
-      if (apiKey) {
-        const msgs = aiMessages.concat({ role: 'user', content: message });
-        const res = await engineRef.current.sendMessage(
-          msgs.map(m => ({ role: m.role === 'user' ? 'user' as const : 'assistant' as const, content: m.content })),
-          provider,
-          apiKey,
-        );
-        setAiMessages(prev => [...prev, { role: 'assistant', content: res.text }]);
-      } else {
-        const res = await engineRef.current.executeCommand(message);
-        setAiMessages(prev => [...prev, { role: 'assistant', content: res }]);
-      }
-    } catch (e: any) {
-      setAiMessages(prev => [...prev, { role: 'assistant', content: `Error: ${e.message}` }]);
-    }
-    setAiLoading(false);
-  }, [aiMessages, aiLoading]);
+      setAiLoading(false);
+    },
+    [aiMessages, aiLoading],
+  );
 
   const includeCodeContext = useCallback(() => {
     if (!selectedFilePath || !fileContent) return;
     const context = `File: ${selectedFilePath}\n\`\`\`\n${fileContent.slice(0, 3000)}\n\`\`\`\n\n`;
-    setAiInput(prev => prev + context);
+    setAiInput((prev) => prev + context);
   }, [selectedFilePath, fileContent]);
 
   useEffect(() => {
     if (aiRef.current) aiRef.current.scrollTop = aiRef.current.scrollHeight;
   }, [aiMessages]);
 
-  const handleTerminalCommand = useCallback((cmd: string) => {
-    setTerminalHistory(prev => [...prev, `$ ${cmd}`]);
-    const lower = cmd.trim().toLowerCase();
-    if (lower === 'clear') { setTerminalHistory([]); return; }
-    if (lower === 'help') {
-      setTerminalHistory(prev => [...prev, '  Commands: clear, ls, pwd, cd, git status, git commit, git push, git pull, git log, swift --version, make, echo']);
-      return;
-    }
-    if (lower === 'ls') {
-      setTerminalHistory(prev => [...prev, '  GoldenGate/  GoldenGate.xcodeproj/  GoldenGateTests/', '  Package.swift  README.md  .gitignore']);
-      return;
-    }
-    if (lower === 'pwd') {
-      setTerminalHistory(prev => [...prev, '  /Users/aashman/Developer/GoldenGate']);
-      return;
-    }
-    if (lower === 'git status') {
-      setTerminalHistory(prev => [...prev, '  On branch main']);
-      if (gitChanges.length === 0) {
-        setTerminalHistory(prev => [...prev, '  nothing to commit, working tree clean']);
-      } else {
-        const adds = gitChanges.filter(c => c.status === 'A');
-        const mods = gitChanges.filter(c => c.status === 'M');
-        const dels = gitChanges.filter(c => c.status === 'D');
-        if (mods.length > 0) setTerminalHistory(prev => [...prev, '  Changes not staged for commit:', ...mods.map(c => `    modified:   ${c.file}`)]);
-        if (adds.length > 0) setTerminalHistory(prev => [...prev, '  Untracked files (local VFS):', ...adds.map(c => `    new file:   ${c.file}`)]);
-        if (dels.length > 0) setTerminalHistory(prev => [...prev, '  Deleted from tree:', ...dels.map(c => `    deleted:    ${c.file}`)]);
+  const handleTerminalCommand = useCallback(
+    (cmd: string) => {
+      setTerminalHistory((prev) => [...prev, `$ ${cmd}`]);
+      const lower = cmd.trim().toLowerCase();
+      if (lower === 'clear') {
+        setTerminalHistory([]);
+        return;
       }
-      return;
-    }
-    if (lower === 'git log') { fetchCommitLog(); return; }
-    if (lower === 'git pull') { pullFromGitHub(); return; }
-    if (lower === 'git push') { handlePush(); return; }
-    if (cmd.trim().toLowerCase().startsWith('git commit -m ')) {
-      const msg = cmd.trim().slice('git commit -m '.length).replace(/^["']|["']$/g, '');
-      if (msg) commitToGitHub(msg);
-      return;
-    }
-    if (lower === 'make' || lower === 'build') { handleBuild(); return; }
-    if (cmd.trim().startsWith('echo ')) {
-      setTerminalHistory(prev => [...prev, `  ${cmd.slice(5)}`]);
-      return;
-    }
-    setTerminalHistory(prev => [...prev, `  zsh: command not found: ${cmd.split(' ')[0]}`]);
-  }, [handleBuild, gitChanges, fetchCommitLog, pullFromGitHub, commitToGitHub, handlePush]);
+      if (lower === 'help') {
+        setTerminalHistory((prev) => [
+          ...prev,
+          '  Commands: clear, ls, pwd, cd, git status, git commit, git push, git pull, git log, swift --version, make, echo',
+        ]);
+        return;
+      }
+      if (lower === 'ls') {
+        setTerminalHistory((prev) => [
+          ...prev,
+          '  GoldenGate/  GoldenGate.xcodeproj/  GoldenGateTests/',
+          '  Package.swift  README.md  .gitignore',
+        ]);
+        return;
+      }
+      if (lower === 'pwd') {
+        setTerminalHistory((prev) => [...prev, '  /Users/aashman/Developer/GoldenGate']);
+        return;
+      }
+      if (lower === 'git status') {
+        setTerminalHistory((prev) => [...prev, '  On branch main']);
+        if (gitChanges.length === 0) {
+          setTerminalHistory((prev) => [...prev, '  nothing to commit, working tree clean']);
+        } else {
+          const adds = gitChanges.filter((c) => c.status === 'A');
+          const mods = gitChanges.filter((c) => c.status === 'M');
+          const dels = gitChanges.filter((c) => c.status === 'D');
+          if (mods.length > 0)
+            setTerminalHistory((prev) => [
+              ...prev,
+              '  Changes not staged for commit:',
+              ...mods.map((c) => `    modified:   ${c.file}`),
+            ]);
+          if (adds.length > 0)
+            setTerminalHistory((prev) => [
+              ...prev,
+              '  Untracked files (local VFS):',
+              ...adds.map((c) => `    new file:   ${c.file}`),
+            ]);
+          if (dels.length > 0)
+            setTerminalHistory((prev) => [
+              ...prev,
+              '  Deleted from tree:',
+              ...dels.map((c) => `    deleted:    ${c.file}`),
+            ]);
+        }
+        return;
+      }
+      if (lower === 'git log') {
+        fetchCommitLog();
+        return;
+      }
+      if (lower === 'git pull') {
+        pullFromGitHub();
+        return;
+      }
+      if (lower === 'git push') {
+        handlePush();
+        return;
+      }
+      if (cmd.trim().toLowerCase().startsWith('git commit -m ')) {
+        const msg = cmd
+          .trim()
+          .slice('git commit -m '.length)
+          .replace(/^["']|["']$/g, '');
+        if (msg) commitToGitHub(msg);
+        return;
+      }
+      if (lower === 'make' || lower === 'build') {
+        handleBuild();
+        return;
+      }
+      if (cmd.trim().startsWith('echo ')) {
+        setTerminalHistory((prev) => [...prev, `  ${cmd.slice(5)}`]);
+        return;
+      }
+      setTerminalHistory((prev) => [...prev, `  zsh: command not found: ${cmd.split(' ')[0]}`]);
+    },
+    [handleBuild, gitChanges, fetchCommitLog, pullFromGitHub, commitToGitHub, handlePush],
+  );
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -442,7 +539,7 @@ export const XCode: React.FC = () => {
       return a.name.localeCompare(b.name);
     });
 
-    return sorted.map(node => {
+    return sorted.map((node) => {
       const isExpanded = expandedDirs.has(node.path);
 
       if (node.type === 'dir') {
@@ -487,11 +584,23 @@ export const XCode: React.FC = () => {
         </div>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <div className="flex items-center gap-1">
-          <button onClick={handleBuild} disabled={isBuilding} className="px-3 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-40 transition">Build</button>
-          <button onClick={handleRun} className="px-3 py-1 rounded text-xs bg-blue-600 hover:bg-blue-500 transition">▶ Run</button>
+          <button
+            onClick={handleBuild}
+            disabled={isBuilding}
+            className="px-3 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] disabled:opacity-40 transition"
+          >
+            Build
+          </button>
+          <button onClick={handleRun} className="px-3 py-1 rounded text-xs bg-blue-600 hover:bg-blue-500 transition">
+            ▶ Run
+          </button>
         </div>
         <div className="flex items-center gap-1">
-          <ImportFileButton createNode={createNode} parentId="documents" accept=".txt,.js,.ts,.tsx,.jsx,.json,.md,.css,.html,.py,.swift,.rs" />
+          <ImportFileButton
+            createNode={createNode}
+            parentId="documents"
+            accept=".txt,.js,.ts,.tsx,.jsx,.json,.md,.css,.html,.py,.swift,.rs"
+          />
           <div className="w-px h-5 bg-[#3c3c3c]" />
           <button
             onClick={() => {
@@ -525,11 +634,15 @@ export const XCode: React.FC = () => {
             <button
               onClick={() => setSidebarTab('navigator')}
               className={`flex-1 py-2 text-[10px] font-medium uppercase tracking-wider transition ${sidebarTab === 'navigator' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-            >📁 Files</button>
+            >
+              📁 Files
+            </button>
             <button
               onClick={() => setSidebarTab('git')}
               className={`flex-1 py-2 text-[10px] font-medium uppercase tracking-wider transition ${sidebarTab === 'git' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-gray-500 hover:text-gray-300'}`}
-            >🔀 Git</button>
+            >
+              🔀 Git
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto">
             {sidebarTab === 'navigator' ? (
@@ -540,13 +653,17 @@ export const XCode: React.FC = () => {
               )
             ) : (
               <div className="p-3 space-y-3">
-                <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Changes ({gitChanges.length})</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
+                  Changes ({gitChanges.length})
+                </div>
                 {gitChanges.length === 0 ? (
                   <div className="text-xs text-gray-500 py-2">Working tree clean</div>
                 ) : (
-                  gitChanges.map(change => (
+                  gitChanges.map((change) => (
                     <div key={change.file} className="flex items-center gap-2 text-xs">
-                      <span className={`${statusColors[change.status]} font-mono text-[10px] w-8`}>{statusLabels[change.status]}</span>
+                      <span className={`${statusColors[change.status]} font-mono text-[10px] w-8`}>
+                        {statusLabels[change.status]}
+                      </span>
                       <span className="truncate text-gray-300">{change.file.split('/').pop()}</span>
                     </div>
                   ))
@@ -564,15 +681,28 @@ export const XCode: React.FC = () => {
                     className="w-full h-16 bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-xs text-white placeholder-gray-500 resize-none outline-none focus:border-blue-500"
                   />
                   <div className="flex gap-2 mt-2">
-                    <button onClick={handleCommit} disabled={!gitCommitMsg.trim() || gitChanges.length === 0} className="flex-1 py-1.5 rounded text-xs bg-blue-600 hover:bg-blue-500 disabled:opacity-30 transition">Commit & Push</button>
-                    <button onClick={pullFromGitHub} className="flex-1 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">Pull</button>
+                    <button
+                      onClick={handleCommit}
+                      disabled={!gitCommitMsg.trim() || gitChanges.length === 0}
+                      className="flex-1 py-1.5 rounded text-xs bg-blue-600 hover:bg-blue-500 disabled:opacity-30 transition"
+                    >
+                      Commit & Push
+                    </button>
+                    <button
+                      onClick={pullFromGitHub}
+                      className="flex-1 py-1.5 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition"
+                    >
+                      Pull
+                    </button>
                   </div>
                 </div>
                 {commits.length > 0 && (
                   <div className="pt-2 border-t border-[#333]">
                     <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-2">Recent</div>
                     {commits.slice(0, 5).map((msg, i) => (
-                      <div key={i} className="text-[10px] text-gray-400 py-1 border-b border-[#2a2a2a] last:border-0">{msg}</div>
+                      <div key={i} className="text-[10px] text-gray-400 py-1 border-b border-[#2a2a2a] last:border-0">
+                        {msg}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -591,12 +721,27 @@ export const XCode: React.FC = () => {
               loadingFile ? (
                 <div className="flex items-center justify-center h-full text-xs text-gray-500">Loading...</div>
               ) : (
-                <Editor height="100%" language={fileLanguage} value={fileContent} theme="vs-dark" onChange={(val: string | undefined) => setFileContent(val || '')}
-                  options={{ readOnly: false, minimap: { enabled: true }, fontSize: 13, lineNumbers: 'on', scrollBeyondLastLine: false, automaticLayout: true, padding: { top: 12 } }}
+                <Editor
+                  height="100%"
+                  language={fileLanguage}
+                  value={fileContent}
+                  theme="vs-dark"
+                  onChange={(val: string | undefined) => setFileContent(val || '')}
+                  options={{
+                    readOnly: false,
+                    minimap: { enabled: true },
+                    fontSize: 13,
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    padding: { top: 12 },
+                  }}
                 />
               )
             ) : (
-              <div className="flex items-center justify-center h-full text-sm text-gray-500">Drop files here or use Import button</div>
+              <div className="flex items-center justify-center h-full text-sm text-gray-500">
+                Drop files here or use Import button
+              </div>
             )}
           </div>
         </div>
@@ -605,15 +750,48 @@ export const XCode: React.FC = () => {
       {showTerminal && (
         <div className="h-44 bg-[#1a1a1a] border-t border-[#3c3c3c] flex flex-col shrink-0">
           <div className="h-8 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 shrink-0 gap-3">
-            <button onClick={() => setBottomTab('terminal')} className={`text-xs transition ${bottomTab === 'terminal' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'text-gray-500 hover:text-gray-300'}`}>Terminal</button>
-            <button onClick={() => setBottomTab('ai')} className={`text-xs transition ${bottomTab === 'ai' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'text-gray-500 hover:text-gray-300'}`}>AI</button>
+            <button
+              onClick={() => setBottomTab('terminal')}
+              className={`text-xs transition ${bottomTab === 'terminal' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              Terminal
+            </button>
+            <button
+              onClick={() => setBottomTab('ai')}
+              className={`text-xs transition ${bottomTab === 'ai' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              AI
+            </button>
             <div className="flex-1" />
-            <button onClick={() => setShowTerminal(false)} className="text-[10px] text-gray-500 hover:text-gray-300">✕</button>
+            <button onClick={() => setShowTerminal(false)} className="text-[10px] text-gray-500 hover:text-gray-300">
+              ✕
+            </button>
           </div>
           {bottomTab === 'terminal' ? (
-            <div ref={terminalRef} className="flex-1 overflow-y-auto p-3 font-mono text-xs leading-relaxed" style={{ backgroundColor: '#1a1a1a' }}>
+            <div
+              ref={terminalRef}
+              className="flex-1 overflow-y-auto p-3 font-mono text-xs leading-relaxed"
+              style={{ backgroundColor: '#1a1a1a' }}
+            >
               {terminalHistory.map((line, i) => (
-                <div key={i} className={line.startsWith('✅') ? 'text-green-400' : line.startsWith('⚠️') ? 'text-yellow-400' : line.startsWith('▸') ? 'text-blue-400' : line.startsWith('$') ? 'text-green-300' : line.startsWith('  ✅') ? 'text-green-400' : 'text-gray-300'}>{line}</div>
+                <div
+                  key={i}
+                  className={
+                    line.startsWith('✅')
+                      ? 'text-green-400'
+                      : line.startsWith('⚠️')
+                        ? 'text-yellow-400'
+                        : line.startsWith('▸')
+                          ? 'text-blue-400'
+                          : line.startsWith('$')
+                            ? 'text-green-300'
+                            : line.startsWith('  ✅')
+                              ? 'text-green-400'
+                              : 'text-gray-300'
+                  }
+                >
+                  {line}
+                </div>
               ))}
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-green-300">$</span>
@@ -640,8 +818,13 @@ export const XCode: React.FC = () => {
                   <div className="text-xs text-gray-500 text-center py-8">Ask the AI about your code...</div>
                 )}
                 {aiMessages.map((msg, i) => (
-                  <div key={i} className={`text-xs leading-relaxed ${msg.role === 'user' ? 'text-blue-300' : 'text-gray-200'}`}>
-                    <span className="font-bold text-[10px] uppercase tracking-wider opacity-60">{msg.role === 'user' ? 'You' : 'AI'}</span>
+                  <div
+                    key={i}
+                    className={`text-xs leading-relaxed ${msg.role === 'user' ? 'text-blue-300' : 'text-gray-200'}`}
+                  >
+                    <span className="font-bold text-[10px] uppercase tracking-wider opacity-60">
+                      {msg.role === 'user' ? 'You' : 'AI'}
+                    </span>
                     <div className="mt-0.5 whitespace-pre-wrap">{msg.content}</div>
                   </div>
                 ))}
@@ -701,12 +884,34 @@ async function dataUrlToBase64(dataUrl: string): Promise<string> {
 function detectLanguage(path: string): string {
   const ext = path.split('.').pop()?.toLowerCase();
   const map: Record<string, string> = {
-    ts: 'typescript', tsx: 'typescript', js: 'javascript', jsx: 'javascript',
-    json: 'json', md: 'markdown', html: 'html', css: 'css', scss: 'scss',
-    py: 'python', rs: 'rust', go: 'go', java: 'java', kt: 'kotlin',
-    swift: 'swift', c: 'c', cpp: 'cpp', h: 'c', yml: 'yaml', yaml: 'yaml',
-    xml: 'xml', sh: 'shell', bash: 'shell', sql: 'sql', graphql: 'graphql',
-    swiftinterface: 'swift', plist: 'xml', xcscheme: 'xml',
+    ts: 'typescript',
+    tsx: 'typescript',
+    js: 'javascript',
+    jsx: 'javascript',
+    json: 'json',
+    md: 'markdown',
+    html: 'html',
+    css: 'css',
+    scss: 'scss',
+    py: 'python',
+    rs: 'rust',
+    go: 'go',
+    java: 'java',
+    kt: 'kotlin',
+    swift: 'swift',
+    c: 'c',
+    cpp: 'cpp',
+    h: 'c',
+    yml: 'yaml',
+    yaml: 'yaml',
+    xml: 'xml',
+    sh: 'shell',
+    bash: 'shell',
+    sql: 'sql',
+    graphql: 'graphql',
+    swiftinterface: 'swift',
+    plist: 'xml',
+    xcscheme: 'xml',
   };
   return map[ext || ''] || 'plaintext';
 }
@@ -714,16 +919,43 @@ function detectLanguage(path: string): string {
 function getFileIcon(name: string): string {
   const ext = name.split('.').pop()?.toLowerCase();
   const iconMap: Record<string, string> = {
-    ts: '🟦', tsx: '⚛️', js: '🟨', jsx: '⚛️', json: '📋', md: '📝',
-    html: '🌐', css: '🎨', py: '🐍', rs: '🦀', go: '🔷', java: '☕',
-    swift: '🕊️', c: '⚙️', cpp: '⚙️', yml: '⚙️', sh: '💻', sql: '🗃️',
-    xml: '📰', plist: '📋', swiftinterface: '🕊️',
+    ts: '🟦',
+    tsx: '⚛️',
+    js: '🟨',
+    jsx: '⚛️',
+    json: '📋',
+    md: '📝',
+    html: '🌐',
+    css: '🎨',
+    py: '🐍',
+    rs: '🦀',
+    go: '🔷',
+    java: '☕',
+    swift: '🕊️',
+    c: '⚙️',
+    cpp: '⚙️',
+    yml: '⚙️',
+    sh: '💻',
+    sql: '🗃️',
+    xml: '📰',
+    plist: '📋',
+    swiftinterface: '🕊️',
   };
   const dirIcons: Record<string, string> = {
-    node_modules: '📦', 'dist': '📦', build: '🔨', src: '📁', public: '🌍',
-    assets: '🖼️', components: '🧩', hooks: '🪝', utils: '🔧', contexts: '🌐',
-    GoldenGate: '📱', 'GoldenGate.xcodeproj': '📁', 'GoldenGateTests': '🧪',
-    'GoldenGateUITests': '🧪',
+    node_modules: '📦',
+    dist: '📦',
+    build: '🔨',
+    src: '📁',
+    public: '🌍',
+    assets: '🖼️',
+    components: '🧩',
+    hooks: '🪝',
+    utils: '🔧',
+    contexts: '🌐',
+    GoldenGate: '📱',
+    'GoldenGate.xcodeproj': '📁',
+    GoldenGateTests: '🧪',
+    GoldenGateUITests: '🧪',
   };
   if (dirIcons[name]) return dirIcons[name];
   return iconMap[ext || ''] || '📄';

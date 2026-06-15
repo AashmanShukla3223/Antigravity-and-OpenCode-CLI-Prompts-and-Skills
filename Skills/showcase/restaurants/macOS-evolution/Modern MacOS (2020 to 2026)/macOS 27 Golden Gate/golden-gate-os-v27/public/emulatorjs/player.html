@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmulatorJS Player</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    #game { width: 100%; height: 100%; }
+    #overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #111; color: #fff;
+      gap: 20px; transition: opacity 0.4s;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+    .icon { font-size: 48px; }
+    h2 { font-size: 20px; font-weight: 700; }
+    .status-text {
+      font-size: 14px; color: rgba(255,255,255,0.6);
+      min-height: 20px;
+    }
+    .bar-track {
+      width: 300px; height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px; overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
+      border-radius: 3px; transition: width 0.15s linear;
+    }
+    .pct {
+      font-size: 13px; color: rgba(255,255,255,0.35);
+      font-variant-numeric: tabular-nums;
+    }
+    .btn {
+      padding: 12px 32px; border: none; border-radius: 10px;
+      background: #6366f1; color: #fff; font-size: 14px;
+      font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .btn:hover { background: #4f46e5; }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="overlay">
+    <div class="icon" id="stateIcon">⬇️</div>
+    <h2 id="titleText">Loading Emulator...</h2>
+    <div class="status-text" id="statusText"></div>
+    <div id="progressGroup">
+      <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+      <div class="pct" id="pctText">0%</div>
+    </div>
+    <button class="btn" id="browseBtn" onclick="openFilePicker()" style="display:none">Browse Files</button>
+  </div>
+
+  <script>
+    const CDN = 'https://cdn.emulatorjs.org';
+    let knownUrls = new Set();
+    let pollTimer = null;
+    let fallbackTimer = null;
+    let safeGuard = false;
+    let gameTimer = null;
+
+    const log = (msg, data) => console.log(`[Emu] ${msg}`, data !== undefined ? data : '');
+    const err = (msg, data) => console.error(`[Emu] ❌ ${msg}`, data !== undefined ? data : '');
+
+    const $ = id => document.getElementById(id);
+    const status = $('statusText');
+    const barFill = $('barFill');
+    const pct = $('pctText');
+    const icon = $('stateIcon');
+    const title = $('titleText');
+    const progressGroup = $('progressGroup');
+    const browseBtn = $('browseBtn');
+
+    log('Page loaded, system:', new URLSearchParams(window.location.search).get('system') || 'psx');
+    log('crossOriginIsolated:', window.crossOriginIsolated);
+    log('SharedArrayBuffer:', typeof SharedArrayBuffer);
+    log('User agent:', navigator.userAgent);
+
+    function setStatus(txt) { status.textContent = txt; }
+
+    function setProgress(pctVal) {
+      const capped = Math.min(pctVal, 100);
+      barFill.style.width = capped + '%';
+      pct.textContent = Math.floor(capped) + '%';
+      if (capped < 30) setStatus('Good Things are on your way');
+      else if (capped < 65) setStatus('Just Take your Patience');
+      else setStatus('Almost Ready to launch!');
+    }
+
+    function showReadyState(source) {
+      if (safeGuard) return;
+      log('showReadyState triggered by:', source || 'EJS_onLoad');
+      safeGuard = true;
+      clearInterval(pollTimer);
+      clearTimeout(fallbackTimer);
+      progressGroup.style.display = 'none';
+      icon.textContent = '🎮';
+      title.textContent = 'Emulator Ready';
+      setStatus('Select your ROM file to play');
+      browseBtn.style.display = 'inline-block';
+    }
+
+    function showGameLoading() {
+      log('showGameLoading');
+      progressGroup.style.display = 'block';
+      icon.textContent = '⏳';
+      title.textContent = 'Loading Game...';
+      browseBtn.style.display = 'none';
+      setProgress(80);
+      let p = 80;
+      gameTimer = setInterval(() => {
+        p += Math.random() * 0.5;
+        if (p >= 99) p = 99;
+        setProgress(p);
+      }, 400);
+    }
+
+    function finishUp() {
+      log('finishUp - game started');
+      if (gameTimer) clearInterval(gameTimer);
+      setProgress(100);
+      setTimeout(() => $('overlay').classList.add('hidden'), 400);
+    }
+
+    function openFilePicker() {
+      log('openFilePicker - user clicked Browse Files');
+      showGameLoading();
+      $('overlay').classList.add('hidden');
+      setTimeout(() => {
+        const game = document.getElementById('game');
+        const allInteractive = game.querySelectorAll('button, [tabindex]:not([tabindex="-1"]), a, [role="button"], input, [onclick]');
+        log('Interactive elements:', allInteractive.length);
+        allInteractive.forEach((el, i) => {
+          const text = (el.textContent || '').trim().slice(0, 50);
+          const id = el.id || '';
+          const cls = (el.className || '').slice(0, 40);
+          if (text || id) log(`  #${i}:`, el.tagName, `id="${id}"`, `class="${cls}"`, `text="${text}"`);
+        });
+      }, 500);
+    }
+
+    function pollResources() {
+      if (safeGuard) return;
+      const resources = performance.getEntriesByType('resource');
+      for (const r of resources) {
+        if (r.name.startsWith(CDN) || r.name.includes('emulatorjs')) {
+          knownUrls.add(r.name);
+        }
+      }
+      const count = knownUrls.size;
+      if (count > 0) {
+        if (count <= 5) log('CDN resources discovered:', count);
+        setProgress(Math.min(count * 16, 80));
+      }
+    }
+
+    const system = new URLSearchParams(window.location.search).get('system') || 'psx';
+
+    window.EJS_player = '#game';
+    window.EJS_core = system;
+    window.EJS_gameID = 'golden-gate-v27';
+    window.EJS_pathtodata = CDN + '/stable/data/';
+    window.EJS_oldShell = false;
+    window.EJS_startOnLoaded = false;
+    window.EJS_threads = true;
+    window.EJS_onLoad = () => { log('EJS_onLoad fired'); showReadyState('EJS_onLoad'); };
+    window.EJS_onGameStart = () => { log('EJS_onGameStart fired'); finishUp(); };
+
+    setProgress(0);
+    log('Starting EmulatorJS loader for system:', system);
+
+    const script = document.createElement('script');
+    script.src = CDN + '/stable/data/loader.js';
+    script.onload = () => {
+      log('CDN loader.js loaded');
+      pollTimer = setInterval(pollResources, 400);
+      fallbackTimer = setTimeout(() => { log('Fallback timer fired'); showReadyState('fallback'); }, 60000);
+    };
+    script.onerror = (e) => {
+      err('CDN loader.js failed:', e);
+      setStatus('Failed to connect to CDN.');
+      status.style.color = '#ef4444';
+      setTimeout(() => showReadyState('CDN_error'), 3000);
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

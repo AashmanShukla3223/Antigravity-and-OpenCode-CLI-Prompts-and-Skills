@@ -73,7 +73,7 @@ export function setActiveProvider(provider: AIProvider): void {
 }
 
 export function hasAnyApiKey(): boolean {
-  return PROVIDERS.some(p => !!getStoredApiKey(p.key));
+  return PROVIDERS.some((p) => !!getStoredApiKey(p.key));
 }
 
 export class AIEngine {
@@ -89,11 +89,7 @@ export class AIEngine {
     if (!apiKey) {
       return await this.localAnswer(prompt);
     }
-    const response = await this.sendMessage(
-      [{ role: 'user', content: prompt }],
-      provider,
-      apiKey,
-    );
+    const response = await this.sendMessage([{ role: 'user', content: prompt }], provider, apiKey);
     return response.text;
   }
 
@@ -101,7 +97,9 @@ export class AIEngine {
     try {
       let lat: number, lon: number, city: string;
       if (location) {
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`);
+        const geoRes = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`,
+        );
         if (!geoRes.ok) return `Unable to find location "${location}".`;
         const geoData = await geoRes.json();
         if (!geoData.results?.length) return `Location "${location}" not found.`;
@@ -117,7 +115,7 @@ export class AIEngine {
         city = ipData.city;
       }
       const weatherRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`,
       );
       if (!weatherRes.ok) return 'Unable to fetch weather data.';
       const data = await weatherRes.json();
@@ -126,17 +124,34 @@ export class AIEngine {
       const wind = Math.round(data.current.wind_speed_10m);
       const code = data.current.weather_code;
       const conditions: Record<number, string> = {
-        0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-        45: 'Foggy', 48: 'Depositing rime fog',
-        51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
-        56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
-        61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
-        66: 'Light freezing rain', 67: 'Heavy freezing rain',
-        71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
+        0: 'Clear sky',
+        1: 'Mainly clear',
+        2: 'Partly cloudy',
+        3: 'Overcast',
+        45: 'Foggy',
+        48: 'Depositing rime fog',
+        51: 'Light drizzle',
+        53: 'Moderate drizzle',
+        55: 'Dense drizzle',
+        56: 'Light freezing drizzle',
+        57: 'Dense freezing drizzle',
+        61: 'Slight rain',
+        63: 'Moderate rain',
+        65: 'Heavy rain',
+        66: 'Light freezing rain',
+        67: 'Heavy freezing rain',
+        71: 'Slight snow',
+        73: 'Moderate snow',
+        75: 'Heavy snow',
         77: 'Snow grains',
-        80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
-        85: 'Slight snow showers', 86: 'Heavy snow showers',
-        95: 'Thunderstorm', 96: 'Thunderstorm with slight hail', 99: 'Thunderstorm with heavy hail',
+        80: 'Slight rain showers',
+        81: 'Moderate rain showers',
+        82: 'Violent rain showers',
+        85: 'Slight snow showers',
+        86: 'Heavy snow showers',
+        95: 'Thunderstorm',
+        96: 'Thunderstorm with slight hail',
+        99: 'Thunderstorm with heavy hail',
       };
       const condition = conditions[code] || 'Unknown conditions';
       return `Weather in ${city}: ${condition}, ${temp}°C (feels like ${feelsLike}°C), Wind ${wind} km/h.`;
@@ -153,7 +168,7 @@ export class AIEngine {
     }
 
     if (/^(what|who|when|where|why|how)\b/.test(lower) && lower.includes('you')) {
-      return 'I\'m Siri, your macOS 27 Golden Gate assistant. I can open apps, search the web, answer questions, and control system settings. Configure an API key in Siri settings for full AI capabilities.';
+      return "I'm Siri, your macOS 27 Golden Gate assistant. I can open apps, search the web, answer questions, and control system settings. Configure an API key in Siri settings for full AI capabilities.";
     }
 
     if (lower.includes('time')) {
@@ -167,12 +182,14 @@ export class AIEngine {
     if (/\b(\d+\s*[+\-*/×÷]\s*\d+)/.test(lower)) {
       try {
         const sanitized = lower.replace(/×/g, '*').replace(/÷/g, '/');
-        const match = sanitized.match(/(\d+\s*[+\-*\/]\s*\d+)/);
+        const match = sanitized.match(/(\d+\s*[+\-*/]\s*\d+)/);
         if (match) {
           const result = Function(`"use strict"; return (${match[1]})`)();
           return `The answer is ${result}.`;
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     if (/(define|meaning of|what is)\s+/i.test(lower)) {
@@ -181,9 +198,10 @@ export class AIEngine {
 
     if (lower.includes('weather')) {
       const locationMatch = lower.match(/(?:weather|in)\s+(\w+(?:\s+\w+)?)\s*(?:\?|$)/);
-      const location = locationMatch && !['today', 'tomorrow', 'now', 'like'].includes(locationMatch[1].toLowerCase())
-        ? locationMatch[1]
-        : undefined;
+      const location =
+        locationMatch && !['today', 'tomorrow', 'now', 'like'].includes(locationMatch[1].toLowerCase())
+          ? locationMatch[1]
+          : undefined;
       return await this.fetchWeather(location);
     }
 
@@ -234,12 +252,8 @@ Available apps: finder, safari, messages, music, tv, photos, calendar, notes, se
 If no system action is needed, respond conversationally as a helpful AI assistant. Keep responses concise.`;
   }
 
-  async sendMessage(
-    messages: ChatMessage[],
-    provider: AIProvider,
-    apiKey: string,
-  ): Promise<AIResponse> {
-    const config = PROVIDERS.find(p => p.key === provider);
+  async sendMessage(messages: ChatMessage[], provider: AIProvider, apiKey: string): Promise<AIResponse> {
+    const config = PROVIDERS.find((p) => p.key === provider);
     if (!config) throw new Error(`Unknown provider: ${provider}`);
 
     const systemMsg: ChatMessage = { role: 'system', content: this.buildSystemPrompt() };
@@ -275,14 +289,15 @@ If no system action is needed, respond conversationally as a helpful AI assistan
   }
 
   private async callGemini(messages: ChatMessage[], apiKey: string, _config: AIProviderConfig): Promise<string> {
+    void _config;
     const contents = messages
-      .filter(m => m.role !== 'system')
-      .map(m => ({
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
       }));
 
-    const systemInstruction = messages.find(m => m.role === 'system')?.content || '';
+    const systemInstruction = messages.find((m) => m.role === 'system')?.content || '';
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     const res = await fetch(url, {
@@ -305,11 +320,12 @@ If no system action is needed, respond conversationally as a helpful AI assistan
   }
 
   private async callGroq(messages: ChatMessage[], apiKey: string, _config: AIProviderConfig): Promise<string> {
+    void _config;
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
@@ -329,11 +345,12 @@ If no system action is needed, respond conversationally as a helpful AI assistan
   }
 
   private async callOpenRouter(messages: ChatMessage[], apiKey: string, _config: AIProviderConfig): Promise<string> {
+    void _config;
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'HTTP-Referer': window.location.origin,
         'X-Title': 'macOS 27 Golden Gate - Siri AI',
       },

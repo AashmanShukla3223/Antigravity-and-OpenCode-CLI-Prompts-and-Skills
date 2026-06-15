@@ -28,26 +28,32 @@ export const AppleMusic: React.FC = () => {
   }, []);
 
   const vfsAudioFiles = useMemo(() => {
-    return nodes.filter(n => {
+    return nodes.filter((n) => {
       if (n.type !== 'file' || !n.content) return false;
       const ext = n.name.split('.').pop()?.toLowerCase() || '';
       return AUDIO_EXTS.includes(ext);
     });
   }, [nodes]);
 
-  const playVfsTrack = useCallback((id: string, dataUrl: string) => {
-    if (!unlocked) return;
-    if (isPlaying) pauseSong();
-    if (vfsAudioRef.current) vfsAudioRef.current.pause();
-    const audio = new Audio(dataUrl);
-    audio.play().catch(() => {});
-    audio.onended = () => setVfsPlaying(null);
-    vfsAudioRef.current = audio;
-    setVfsPlaying(id);
-  }, [unlocked, isPlaying, pauseSong]);
+  const playVfsTrack = useCallback(
+    (id: string, dataUrl: string) => {
+      if (!unlocked) return;
+      if (isPlaying) pauseSong();
+      if (vfsAudioRef.current) vfsAudioRef.current.pause();
+      const audio = new Audio(dataUrl);
+      audio.play().catch(() => {});
+      audio.onended = () => setVfsPlaying(null);
+      vfsAudioRef.current = audio;
+      setVfsPlaying(id);
+    },
+    [unlocked, isPlaying, pauseSong],
+  );
 
   const stopVfsTrack = useCallback(() => {
-    if (vfsAudioRef.current) { vfsAudioRef.current.pause(); vfsAudioRef.current = null; }
+    if (vfsAudioRef.current) {
+      vfsAudioRef.current.pause();
+      vfsAudioRef.current = null;
+    }
     setVfsPlaying(null);
   }, []);
 
@@ -63,12 +69,16 @@ export const AppleMusic: React.FC = () => {
 
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div className="relative mb-8 group">
-           <img
+          <img
             src={currentSong.cover}
             alt="Cover"
             className={`w-56 h-56 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-700 ${isPlaying ? 'scale-105' : 'scale-95'} ${unlocked ? '' : 'blur-2xl opacity-40 grayscale'}`}
-           />
-           {!unlocked && <div className="absolute inset-0 flex items-center justify-center text-red-500 font-black text-3xl drop-shadow-lg">$0.99</div>}
+          />
+          {!unlocked && (
+            <div className="absolute inset-0 flex items-center justify-center text-red-500 font-black text-3xl drop-shadow-lg">
+              $0.99
+            </div>
+          )}
         </div>
 
         <div className="text-center mb-8">
@@ -77,49 +87,64 @@ export const AppleMusic: React.FC = () => {
         </div>
 
         <div className="w-full max-w-sm mb-8 px-4">
-           <input
-             type="range"
-             min="0"
-             max="100"
-             step="0.1"
-             value={playbackProgress}
-             onChange={(e) => updatePlaybackProgress(parseFloat(e.target.value))}
-             disabled={!unlocked}
-             className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-red-500"
-           />
-           <div className="flex justify-between mt-2 text-[10px] font-bold text-zinc-400 tabular-nums">
-              <span>0:00</span>
-              <span>3:45</span>
-           </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={playbackProgress}
+            onChange={(e) => updatePlaybackProgress(parseFloat(e.target.value))}
+            disabled={!unlocked}
+            className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-red-500"
+          />
+          <div className="flex justify-between mt-2 text-[10px] font-bold text-zinc-400 tabular-nums">
+            <span>0:00</span>
+            <span>3:45</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-8 mb-12">
-          <button onClick={prevSong} className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors" disabled={!unlocked}>
+          <button
+            onClick={prevSong}
+            className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+            disabled={!unlocked}
+          >
             <ArrowLeft01Icon size={24} />
           </button>
           <button
-            onClick={() => { if (vfsPlaying) stopVfsTrack(); isPlaying ? pauseSong() : playSong(); }}
+            onClick={() => {
+              if (vfsPlaying) stopVfsTrack();
+              if (isPlaying) pauseSong(); else playSong();
+            }}
             className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${unlocked ? 'bg-red-500 text-white shadow-red-500/40' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400'}`}
             disabled={!unlocked}
           >
-            {isPlaying ? <PauseIcon size={32} fill="currentColor" /> : <PlayIcon size={32} fill="currentColor" className="ml-1" />}
+            {isPlaying ? (
+              <PauseIcon size={32} fill="currentColor" />
+            ) : (
+              <PlayIcon size={32} fill="currentColor" className="ml-1" />
+            )}
           </button>
-          <button onClick={nextSong} className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors" disabled={!unlocked}>
+          <button
+            onClick={nextSong}
+            className="p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+            disabled={!unlocked}
+          >
             <ArrowRight01Icon size={24} />
           </button>
         </div>
 
         <div className="flex items-center gap-3 w-full max-w-[200px] opacity-60 hover:opacity-100 transition-opacity">
-           <VolumeHighIcon size={16} />
-           <input
-             type="range"
-             min="0"
-             max="1"
-             step="0.01"
-             value={volume}
-             onChange={(e) => setVolume(parseFloat(e.target.value))}
-             className="flex-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-zinc-500"
-           />
+          <VolumeHighIcon size={16} />
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            className="flex-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none cursor-pointer accent-zinc-500"
+          />
         </div>
       </div>
 
@@ -131,45 +156,59 @@ export const AppleMusic: React.FC = () => {
         {songs.map((s, i) => (
           <div
             key={s.id}
-            onClick={() => { if (unlocked) { stopVfsTrack(); playSong(i); } }}
+            onClick={() => {
+              if (unlocked) {
+                stopVfsTrack();
+                playSong(i);
+              }
+            }}
             className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer transition-all ${currentSongIndex === i && isPlaying ? 'bg-red-500/10 text-red-500' : 'hover:bg-white dark:hover:bg-zinc-800'}`}
           >
-             <img src={s.cover} className="w-8 h-8 rounded-lg shadow-sm" alt={s.title} />
-             <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold truncate">{s.title}</div>
-                <div className="text-[10px] opacity-50 truncate">{s.artist}</div>
-             </div>
-             {currentSongIndex === i && isPlaying && (
-               <div className="flex gap-0.5 items-end h-3">
-                  {[1, 2, 3].map(i => (
-                    <motion.div
-                       key={i}
-                       animate={{ height: [4, 12, 6, 10, 4] }}
-                       transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
-                       className="w-0.5 bg-red-500 rounded-full"
-                    />
-                  ))}
-               </div>
-             )}
+            <img src={s.cover} className="w-8 h-8 rounded-lg shadow-sm" alt={s.title} />
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-bold truncate">{s.title}</div>
+              <div className="text-[10px] opacity-50 truncate">{s.artist}</div>
+            </div>
+            {currentSongIndex === i && isPlaying && (
+              <div className="flex gap-0.5 items-end h-3">
+                {[1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ height: [4, 12, 6, 10, 4] }}
+                    transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                    className="w-0.5 bg-red-500 rounded-full"
+                  />
+                ))}
+              </div>
+            )}
           </div>
         ))}
         {vfsAudioFiles.length > 0 && (
           <>
-            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 pt-3 pb-1">Your Library</div>
-            {vfsAudioFiles.map(n => (
+            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 pt-3 pb-1">
+              Your Library
+            </div>
+            {vfsAudioFiles.map((n) => (
               <div
                 key={n.id}
                 onClick={() => playVfsTrack(n.id, n.content!)}
                 className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer transition-all ${vfsPlaying === n.id ? 'bg-blue-500/10 text-blue-500' : 'hover:bg-white dark:hover:bg-zinc-800'}`}
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm shadow-sm">🎵</div>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm shadow-sm">
+                  🎵
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-bold truncate">{n.name}</div>
                 </div>
                 {vfsPlaying === n.id && (
                   <div className="flex gap-0.5 items-end h-3">
-                    {[1, 2, 3].map(i => (
-                      <motion.div key={i} animate={{ height: [4, 12, 6, 10, 4] }} transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }} className="w-0.5 bg-blue-500 rounded-full" />
+                    {[1, 2, 3].map((i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ height: [4, 12, 6, 10, 4] }}
+                        transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                        className="w-0.5 bg-blue-500 rounded-full"
+                      />
                     ))}
                   </div>
                 )}

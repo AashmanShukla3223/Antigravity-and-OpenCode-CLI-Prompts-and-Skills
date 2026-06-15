@@ -14,24 +14,24 @@ export const MacOSActivation: React.FC = () => {
 
       <SystemMenuBar mode="Activation Lock" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="relative z-10 flex flex-col items-center max-w-md w-full p-12 text-center"
       >
         <div className="w-32 h-32 mb-8 drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-          <img 
-            src="/icons/finder.png" 
-            alt="Activation" 
+          <img
+            src="/icons/finder.png"
+            alt="Activation"
             className="w-full h-full object-contain"
             style={{ willChange: 'transform' }}
           />
         </div>
-        
+
         <h1 className="text-4xl font-semibold mb-2 tracking-tight">macOS Activation</h1>
         <p className="text-white/40 mb-12 text-lg">Activation Lock ensures your Mac is secure.</p>
-        
-        <button 
+
+        <button
           onClick={() => setBootState('setup')}
           className="w-48 py-3 bg-white text-black rounded-xl font-bold text-lg hover:bg-white/90 active:scale-95 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
           style={{ willChange: 'transform' }}

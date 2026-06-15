@@ -3,17 +3,19 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 
 export const TerminalApp: React.FC = () => {
-  const { bootState, systemState, launchApp, setBootState, battery, hardware, uptime } = useSystem();
+  const { bootState, systemState, launchApp, setBootState, battery, hardware, uptime, activeUser } = useSystem();
   const { getDirectoryContents, nodes } = useFileSystem();
-  
+
   const isRecovery = bootState === 'recovery';
-  const username = isRecovery ? 'root' : (systemState.user.accountName || systemState.user.fullName || 'Architect');
+  const username = isRecovery ? 'root' : activeUser.accountName || activeUser.fullName || 'Architect';
   const [currentDirId, setCurrentDirId] = useState<string | null>(isRecovery ? 'root' : 'user-home');
   const [history, setHistory] = useState<{ command: string; output: string }[]>([
-    { command: '', output: isRecovery 
-      ? `macOS Recovery Terminal (zsh)\n# Secure enclave active. Neural architecture identified.`
-      : `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Golden Gate (Version 27.0.0) simulated.` 
-    }
+    {
+      command: '',
+      output: isRecovery
+        ? `macOS Recovery Terminal (zsh)\n# Secure enclave active. Neural architecture identified.`
+        : `Last login: ${new Date().toString().split(' ').slice(0, 4).join(' ')} on ttys000\nmacOS Golden Gate (Version 27.0.0) simulated.`,
+    },
   ]);
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -24,8 +26,8 @@ export const TerminalApp: React.FC = () => {
 
   const getCurrentDirPath = () => {
     if (currentDirId === 'root') return '/';
-    const node = nodes.find(n => n.id === currentDirId);
-    return node ? (isRecovery ? `/${node.name}` : `~/${node.name}`) : (isRecovery ? '/' : '~');
+    const node = nodes.find((n) => n.id === currentDirId);
+    return node ? (isRecovery ? `/${node.name}` : `~/${node.name}`) : isRecovery ? '/' : '~';
   };
 
   const handleCommand = (e: React.FormEvent) => {
@@ -59,9 +61,10 @@ export const TerminalApp: React.FC = () => {
         break;
       case 'ls': {
         const contents = getDirectoryContents(currentDirId);
-        output = contents.length > 0 
-          ? contents.map(n => `${n.type === 'folder' ? 'd' : '-'} ${n.name}`).join('\n')
-          : 'total 0';
+        output =
+          contents.length > 0
+            ? contents.map((n) => `${n.type === 'folder' ? 'd' : '-'} ${n.name}`).join('\n')
+            : 'total 0';
         break;
       }
       case 'cd': {
@@ -69,11 +72,13 @@ export const TerminalApp: React.FC = () => {
         if (!targetDir || targetDir === '~' || (isRecovery && targetDir === '/')) {
           setCurrentDirId(isRecovery ? 'root' : 'user-home');
         } else if (targetDir === '..') {
-          const current = nodes.find(n => n.id === currentDirId);
+          const current = nodes.find((n) => n.id === currentDirId);
           if (current && current.parentId) setCurrentDirId(current.parentId);
           else if (isRecovery) setCurrentDirId('root');
         } else {
-          const found = getDirectoryContents(currentDirId).find(n => n.name.toLowerCase() === targetDir.toLowerCase() && n.type === 'folder');
+          const found = getDirectoryContents(currentDirId).find(
+            (n) => n.name.toLowerCase() === targetDir.toLowerCase() && n.type === 'folder',
+          );
           if (found) {
             setCurrentDirId(found.id);
           } else {
@@ -86,18 +91,18 @@ export const TerminalApp: React.FC = () => {
         const appName = args[0]?.toLowerCase();
         if (appName) {
           const appMap: Record<string, string> = {
-            'safari': 'safari',
-            'finder': 'finder',
-            'settings': 'settings',
-            'messages': 'messages',
-            'photos': 'photos',
-            'maps': 'maps',
-            'mail': 'mail',
-            'appstore': 'appstore',
-            'books': 'books',
-            'wallet': 'wallet',
-            'terminal': 'terminal',
-            'activity': 'activitymonitor'
+            safari: 'safari',
+            finder: 'finder',
+            settings: 'settings',
+            messages: 'messages',
+            photos: 'photos',
+            maps: 'maps',
+            mail: 'mail',
+            appstore: 'appstore',
+            books: 'books',
+            wallet: 'wallet',
+            terminal: 'terminal',
+            activity: 'activitymonitor',
           };
           const appId = appMap[appName];
           if (appId) {
@@ -131,7 +136,7 @@ export const TerminalApp: React.FC = () => {
         if (fullArgs === 'rm -rf /localStorage' || fullArgs === 'system_reset') {
           localStorage.removeItem('golden_gate_infected');
           localStorage.removeItem('golden_gate_v27_state');
-          output = "System reset initiated. Clearing neural infection... Recovery complete. Restarting...";
+          output = 'System reset initiated. Clearing neural infection... Recovery complete. Restarting...';
           setTimeout(() => {
             window.location.reload();
           }, 2000);
@@ -144,7 +149,12 @@ export const TerminalApp: React.FC = () => {
         setBootState('booting');
         return;
       case 'date':
-        output = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        output = new Date().toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
         break;
       case 'time':
         output = new Date().toLocaleTimeString('en-US');
@@ -169,7 +179,9 @@ export const TerminalApp: React.FC = () => {
         <div key={i} className="mb-2">
           {entry.command && (
             <div className="flex gap-2">
-              <span className="text-[#32d74b] font-bold">{username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}</span>
+              <span className="text-[#32d74b] font-bold">
+                {username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
+              </span>
               <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
               <span className="text-white">{entry.command}</span>
             </div>
@@ -177,9 +189,11 @@ export const TerminalApp: React.FC = () => {
           {entry.output && <div className="whitespace-pre-wrap mt-1 text-gray-300">{entry.output}</div>}
         </div>
       ))}
-      
+
       <form onSubmit={handleCommand} className="flex gap-2 mt-2">
-        <span className="text-[#32d74b] font-bold">{username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}</span>
+        <span className="text-[#32d74b] font-bold">
+          {username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
+        </span>
         <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
         <input
           type="text"

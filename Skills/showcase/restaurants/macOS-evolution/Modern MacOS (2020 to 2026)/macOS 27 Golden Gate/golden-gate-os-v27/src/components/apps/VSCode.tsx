@@ -11,7 +11,11 @@ interface RepoOption {
 }
 
 const REPO_OPTIONS: RepoOption[] = [
-  { label: 'Antigravity-and-OpenCode-CLI-Prompts-and-Skills', value: `${OWNER}/Antigravity-and-OpenCode-CLI-Prompts-and-Skills`, type: 'repo' },
+  {
+    label: 'Antigravity-and-OpenCode-CLI-Prompts-and-Skills',
+    value: `${OWNER}/Antigravity-and-OpenCode-CLI-Prompts-and-Skills`,
+    type: 'repo',
+  },
   { label: 'Samsung-LCD-TV-Simulator', value: `${OWNER}/Samsung-LCD-TV-Simulator`, type: 'repo' },
   { label: 'AashmanShukla3223 (Profile)', value: OWNER, type: 'profile' },
 ];
@@ -54,13 +58,15 @@ export const VSCode: React.FC = () => {
 
   const isProfileMode = !selectedRepo.includes('/');
 
-  const currentOption = REPO_OPTIONS.find(r => r.value === selectedRepo) || REPO_OPTIONS[0];
+  const currentOption = REPO_OPTIONS.find((r) => r.value === selectedRepo) || REPO_OPTIONS[0];
 
   const headersRef = useRef<Record<string, string>>({ Accept: 'application/vnd.github.v3+json' });
-  headersRef.current = {
-    Accept: 'application/vnd.github.v3+json',
-    ...(systemState.apiKey ? { Authorization: `Bearer ${systemState.apiKey}` } : {}),
-  };
+  useEffect(() => {
+    headersRef.current = {
+      Accept: 'application/vnd.github.v3+json',
+      ...(systemState.apiKey ? { Authorization: `Bearer ${systemState.apiKey}` } : {}),
+    };
+  }, [systemState.apiKey]);
 
   const fetchDir = useCallback(async (owner: string, repo: string, path: string): Promise<GitHubItem[]> => {
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=main`;
@@ -78,32 +84,38 @@ export const VSCode: React.FC = () => {
     return atob(data.content);
   }, []);
 
-  const expandDir = useCallback(async (node: FileNode) => {
-    if (node.children) return;
-    const [owner, repo] = selectedRepo.split('/');
-    try {
-      const items = await fetchDir(owner, repo, node.path);
-      node.children = items.filter(i => i.type === 'dir' || i.type === 'file');
-      setFileTree(prev => [...prev]);
-    } catch {
-      node.children = [];
-      setFileTree(prev => [...prev]);
-    }
-  }, [selectedRepo, fetchDir]);
+  const expandDir = useCallback(
+    async (node: FileNode) => {
+      if (node.children) return;
+      const [owner, repo] = selectedRepo.split('/');
+      try {
+        const items = await fetchDir(owner, repo, node.path);
+        node.children = items.filter((i) => i.type === 'dir' || i.type === 'file');
+        setFileTree((prev) => [...prev]);
+      } catch {
+        node.children = [];
+        setFileTree((prev) => [...prev]);
+      }
+    },
+    [selectedRepo, fetchDir],
+  );
 
-  const loadFile = useCallback(async (path: string) => {
-    const [owner, repo] = selectedRepo.split('/');
-    setLoadingFile(true);
-    setSelectedFile(path);
-    try {
-      const content = await fetchFile(owner, repo, path);
-      setFileContent(content);
-      setFileLanguage(detectLanguage(path));
-    } catch (err: any) {
-      setFileContent(`// Error loading file: ${err.message}`);
-    }
-    setLoadingFile(false);
-  }, [selectedRepo, fetchFile]);
+  const loadFile = useCallback(
+    async (path: string) => {
+      const [owner, repo] = selectedRepo.split('/');
+      setLoadingFile(true);
+      setSelectedFile(path);
+      try {
+        const content = await fetchFile(owner, repo, path);
+        setFileContent(content);
+        setFileLanguage(detectLanguage(path));
+      } catch (err: any) {
+        setFileContent(`// Error loading file: ${err.message}`);
+      }
+      setLoadingFile(false);
+    },
+    [selectedRepo, fetchFile],
+  );
 
   const loadRepoTree = useCallback(async () => {
     const [owner, repo] = selectedRepo.split('/');
@@ -141,16 +153,20 @@ export const VSCode: React.FC = () => {
     setLoadingRepos(true);
     setUserRepos([]);
     try {
-      const res = await fetch(`https://api.github.com/users/${OWNER}/repos?sort=updated&per_page=30`, { headers: headersRef.current });
+      const res = await fetch(`https://api.github.com/users/${OWNER}/repos?sort=updated&per_page=30`, {
+        headers: headersRef.current,
+      });
       if (!res.ok) throw new Error(`Failed to load repos: ${res.status}`);
       const data = await res.json();
-      setUserRepos(data.map((r: any) => ({
-        name: r.name,
-        description: r.description || '',
-        language: r.language || '',
-        stars: r.stargazers_count,
-        forks: r.forks_count,
-      })));
+      setUserRepos(
+        data.map((r: any) => ({
+          name: r.name,
+          description: r.description || '',
+          language: r.language || '',
+          stars: r.stargazers_count,
+          forks: r.forks_count,
+        })),
+      );
     } catch (err: any) {
       console.error('Failed to load user repos:', err);
     }
@@ -159,6 +175,7 @@ export const VSCode: React.FC = () => {
 
   useEffect(() => {
     if (isProfileMode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadUserRepos();
     } else {
       loadRepoTree();
@@ -166,7 +183,7 @@ export const VSCode: React.FC = () => {
   }, [selectedRepo, isProfileMode, loadRepoTree, loadUserRepos]);
 
   const toggleDir = (node: FileNode) => {
-    setExpandedDirs(prev => {
+    setExpandedDirs((prev) => {
       const next = new Set(prev);
       if (next.has(node.path)) next.delete(node.path);
       else next.add(node.path);
@@ -183,7 +200,7 @@ export const VSCode: React.FC = () => {
       return a.name.localeCompare(b.name);
     });
 
-    return sorted.map(node => {
+    return sorted.map((node) => {
       const isExpanded = expandedDirs.has(node.path);
 
       if (node.type === 'dir') {
@@ -198,9 +215,7 @@ export const VSCode: React.FC = () => {
               <span className="text-white/60 shrink-0">📁</span>
               <span className="ml-1 truncate text-white/80">{node.name}</span>
             </div>
-            {isExpanded && node.children && (
-              renderTree(node.children, depth + 1)
-            )}
+            {isExpanded && node.children && renderTree(node.children, depth + 1)}
           </div>
         );
       }
@@ -236,7 +251,7 @@ export const VSCode: React.FC = () => {
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowRepoDropdown(false)} />
               <div className="absolute top-full left-0 mt-1 w-72 bg-[#252526] border border-[#3c3c3c] rounded-lg shadow-2xl z-20 py-1">
-                {REPO_OPTIONS.map(option => (
+                {REPO_OPTIONS.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => {
@@ -245,7 +260,9 @@ export const VSCode: React.FC = () => {
                     }}
                     className={`w-full text-left px-4 py-2 text-xs hover:bg-[#3c3c3c] transition flex items-center gap-2 ${selectedRepo === option.value ? 'text-blue-400 bg-blue-500/10' : 'text-white/80'}`}
                   >
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${option.type === 'profile' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 ${option.type === 'profile' ? 'bg-purple-500' : 'bg-blue-500'}`}
+                    />
                     <span className="truncate">{option.label}</span>
                   </button>
                 ))}
@@ -264,7 +281,7 @@ export const VSCode: React.FC = () => {
               loadingRepos ? (
                 <div className="flex items-center justify-center py-8 text-white/40 text-xs">Loading...</div>
               ) : (
-                userRepos.map(repo => (
+                userRepos.map((repo) => (
                   <div
                     key={repo.name}
                     onClick={() => setSelectedRepo(`${OWNER}/${repo.name}`)}
@@ -285,12 +302,10 @@ export const VSCode: React.FC = () => {
                   </div>
                 ))
               )
+            ) : loading ? (
+              <div className="flex items-center justify-center py-8 text-white/40 text-xs">Loading...</div>
             ) : (
-              loading ? (
-                <div className="flex items-center justify-center py-8 text-white/40 text-xs">Loading...</div>
-              ) : (
-                renderTree(fileTree)
-              )
+              renderTree(fileTree)
             )}
           </div>
         </div>
@@ -333,13 +348,38 @@ export const VSCode: React.FC = () => {
 function detectLanguage(path: string): string {
   const ext = path.split('.').pop()?.toLowerCase();
   const map: Record<string, string> = {
-    ts: 'typescript', tsx: 'typescript', js: 'javascript', jsx: 'javascript',
-    json: 'json', md: 'markdown', html: 'html', css: 'css', scss: 'scss',
-    py: 'python', rs: 'rust', go: 'go', java: 'java', kt: 'kotlin',
-    swift: 'swift', c: 'c', cpp: 'cpp', h: 'c', yml: 'yaml', yaml: 'yaml',
-    toml: 'plaintext', xml: 'xml', sh: 'shell', bash: 'shell', zsh: 'shell',
-    sql: 'sql', graphql: 'graphql', txt: 'plaintext', cfg: 'plaintext',
-    ini: 'plaintext', env: 'plaintext', gitignore: 'plaintext',
+    ts: 'typescript',
+    tsx: 'typescript',
+    js: 'javascript',
+    jsx: 'javascript',
+    json: 'json',
+    md: 'markdown',
+    html: 'html',
+    css: 'css',
+    scss: 'scss',
+    py: 'python',
+    rs: 'rust',
+    go: 'go',
+    java: 'java',
+    kt: 'kotlin',
+    swift: 'swift',
+    c: 'c',
+    cpp: 'cpp',
+    h: 'c',
+    yml: 'yaml',
+    yaml: 'yaml',
+    toml: 'plaintext',
+    xml: 'xml',
+    sh: 'shell',
+    bash: 'shell',
+    zsh: 'shell',
+    sql: 'sql',
+    graphql: 'graphql',
+    txt: 'plaintext',
+    cfg: 'plaintext',
+    ini: 'plaintext',
+    env: 'plaintext',
+    gitignore: 'plaintext',
   };
   return map[ext || ''] || 'plaintext';
 }
@@ -347,15 +387,43 @@ function detectLanguage(path: string): string {
 function getFileIcon(name: string): string {
   const ext = name.split('.').pop()?.toLowerCase();
   const iconMap: Record<string, string> = {
-    ts: '🟦', tsx: '⚛️', js: '🟨', jsx: '⚛️', json: '📋', md: '📝',
-    html: '🌐', css: '🎨', py: '🐍', rs: '🦀', go: '🔷', java: '☕',
-    swift: '🕊️', c: '⚙️', cpp: '⚙️', yml: '⚙️', toml: '⚙️', sh: '💻',
-    sql: '🗃️', xml: '📰', gitignore: '🙈', lock: '🔒', env: '🔐',
+    ts: '🟦',
+    tsx: '⚛️',
+    js: '🟨',
+    jsx: '⚛️',
+    json: '📋',
+    md: '📝',
+    html: '🌐',
+    css: '🎨',
+    py: '🐍',
+    rs: '🦀',
+    go: '🔷',
+    java: '☕',
+    swift: '🕊️',
+    c: '⚙️',
+    cpp: '⚙️',
+    yml: '⚙️',
+    toml: '⚙️',
+    sh: '💻',
+    sql: '🗃️',
+    xml: '📰',
+    gitignore: '🙈',
+    lock: '🔒',
+    env: '🔐',
   };
   const dirIcons: Record<string, string> = {
-    'node_modules': '📦', '.git': '🔀', 'dist': '📦', 'build': '🔨',
-    'src': '📁', 'public': '🌍', 'assets': '🖼️', 'components': '🧩',
-    'hooks': '🪝', 'utils': '🔧', 'contexts': '🌐', 'types': '📐',
+    node_modules: '📦',
+    '.git': '🔀',
+    dist: '📦',
+    build: '🔨',
+    src: '📁',
+    public: '🌍',
+    assets: '🖼️',
+    components: '🧩',
+    hooks: '🪝',
+    utils: '🔧',
+    contexts: '🌐',
+    types: '📐',
   };
   if (dirIcons[name]) return dirIcons[name];
   if (name === 'package.json') return '📦';

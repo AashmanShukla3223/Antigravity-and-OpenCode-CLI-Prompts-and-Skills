@@ -24,7 +24,7 @@ export function readFilesAndStore(
   parentId: string,
   onEachFile?: (file: File, dataUrl: string) => void,
 ) {
-  files.forEach(file => {
+  files.forEach((file) => {
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result as string;
@@ -43,7 +43,7 @@ export function readFilesAndStore(
 export function useImportFile(
   createNode: (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => void,
   parentId: string = 'documents',
-  accept: string = '*/*'
+  accept: string = '*/*',
 ) {
   return () => {
     const input = document.createElement('input');
@@ -54,7 +54,10 @@ export function useImportFile(
     document.body.appendChild(input);
     input.onchange = () => {
       const files = Array.from(input.files || []);
-      if (files.length === 0) { cleanup(input); return; }
+      if (files.length === 0) {
+        cleanup(input);
+        return;
+      }
       readFilesAndStore(files, createNode, parentId);
       cleanup(input);
     };
@@ -63,14 +66,18 @@ export function useImportFile(
 }
 
 function cleanup(input: HTMLInputElement) {
-  try { if (input.parentNode) document.body.removeChild(input); } catch {/* ignore */}
+  try {
+    if (input.parentNode) document.body.removeChild(input);
+  } catch {
+    /* ignore */
+  }
 }
 
 export function saveToVFS(
   createNode: (node: Omit<FileSystemNode, 'id' | 'modifiedAt'>) => void,
   content: string,
   name: string,
-  parentId: string = 'documents'
+  parentId: string = 'documents',
 ) {
   createNode({
     name,
@@ -106,16 +113,23 @@ export function ImportFileButton({
         document.body.appendChild(input);
         input.onchange = () => {
           const files = Array.from(input.files || []);
-          if (files.length === 0) { try { document.body.removeChild(input); } catch {} return; }
+          if (files.length === 0) {
+            try {
+              document.body.removeChild(input);
+            } catch { /* ignore */ }
+            return;
+          }
           readFilesAndStore(files, createNode, parentId, onImport);
-          try { document.body.removeChild(input); } catch {}
+          try {
+            document.body.removeChild(input);
+          } catch { /* ignore */ }
         };
         input.click();
       },
       className: `px-3 py-1.5 rounded text-xs transition ${className || 'bg-[#3c3c3c] hover:bg-[#4a4a4a] text-gray-300 hover:text-white'}`,
       title: 'Import files to VFS',
     },
-    '📂 Import'
+    '📂 Import',
   );
 }
 
@@ -130,15 +144,18 @@ export function useFileDrop(
     e.dataTransfer.dropEffect = 'copy';
   }, []);
 
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter(f => {
-      const ext = '.' + f.name.split('.').pop()?.toLowerCase();
-      return accept.split(',').some(a => ext === a.trim().toLowerCase());
-    });
-    if (files.length === 0) return;
-    readFilesAndStore(files, createNode, parentId, onEachFile);
-  }, [createNode, parentId, accept, onEachFile]);
+  const onDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const files = Array.from(e.dataTransfer.files).filter((f) => {
+        const ext = '.' + f.name.split('.').pop()?.toLowerCase();
+        return accept.split(',').some((a) => ext === a.trim().toLowerCase());
+      });
+      if (files.length === 0) return;
+      readFilesAndStore(files, createNode, parentId, onEachFile);
+    },
+    [createNode, parentId, accept, onEachFile],
+  );
 
   return { onDragOver, onDrop };
 }

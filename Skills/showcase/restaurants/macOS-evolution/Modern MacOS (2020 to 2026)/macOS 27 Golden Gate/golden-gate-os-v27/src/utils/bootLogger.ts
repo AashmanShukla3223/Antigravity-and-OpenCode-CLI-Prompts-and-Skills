@@ -19,7 +19,7 @@ export const bootLogger = {
       timestamp: performance.now() - startTime,
       stage,
       message,
-      data
+      data,
     };
     logs.push(entry);
     console.log(`[${stage}] ${message}`, data ? data : '');
@@ -30,7 +30,7 @@ export const bootLogger = {
       timestamp: performance.now() - startTime,
       stage,
       message: `ERROR: ${message}`,
-      data: { error: error?.message || error }
+      data: { error: error?.message || error },
     };
     logs.push(entry);
     console.error(`[${stage}] ${message}`, error);
@@ -40,7 +40,7 @@ export const bootLogger = {
 
   dump: () => {
     console.group('🥾 Golden Gate OS Boot Sequence');
-    logs.forEach(log => {
+    logs.forEach((log) => {
       const elapsed = `+${log.timestamp.toFixed(0)}ms`.padStart(8);
       const msg = `${elapsed} [${log.stage}] ${log.message}`;
       if (String(log.message).includes('ERROR')) {
@@ -50,7 +50,7 @@ export const bootLogger = {
       }
     });
     console.groupEnd();
-  }
+  },
 };
 
 declare global {

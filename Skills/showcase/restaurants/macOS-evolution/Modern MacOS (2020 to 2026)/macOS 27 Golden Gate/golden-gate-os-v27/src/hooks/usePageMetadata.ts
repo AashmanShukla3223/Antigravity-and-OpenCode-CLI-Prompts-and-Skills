@@ -21,7 +21,8 @@ const PAGE_META: Record<string, MetaConfig> = {
   },
   desktop: {
     title: 'macOS 27 Golden Gate',
-    description: 'Experience the future of desktop computing with macOS 27 Golden Gate — a silicon-native OS simulation with liquid glass aesthetics and 120fps physics.',
+    description:
+      'Experience the future of desktop computing with macOS 27 Golden Gate — a silicon-native OS simulation with liquid glass aesthetics and 120fps physics.',
   },
   recovery: {
     title: 'macOS 27 Golden Gate — Recovery',

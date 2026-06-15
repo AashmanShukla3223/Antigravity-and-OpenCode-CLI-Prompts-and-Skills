@@ -1,10 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
-import { 
-  Video01Icon,
-  ArrowRight01Icon,
-  SparklesIcon
-} from 'hugeicons-react';
+import { Video01Icon, ArrowRight01Icon, SparklesIcon } from 'hugeicons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
@@ -42,7 +38,12 @@ const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
       >
         <div className="flex items-center justify-between mb-4 px-2">
           <span className="text-sm font-bold text-white/50 uppercase tracking-widest">FACETIME GOLDEN GATE</span>
-          <img src={`${(import.meta as any).env?.BASE_URL || '/'}icons/facetime.png`} alt="FaceTime" className="w-4 h-4 object-contain" loading="lazy" />
+          <img
+            src={`${(import.meta as any).env?.BASE_URL || '/'}icons/facetime.png`}
+            alt="FaceTime"
+            className="w-4 h-4 object-contain"
+            loading="lazy"
+          />
         </div>
 
         <div className="max-h-[400px] overflow-y-auto pr-1 space-y-1 scrollbar-hide">
@@ -51,7 +52,9 @@ const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
               key={contact.id}
               onClick={() => !calling && handleCall(contact)}
               className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all ${
-                calling === contact.id ? 'bg-green-500/20 border border-green-500/30' : 'hover:bg-white/5 border border-transparent'
+                calling === contact.id
+                  ? 'bg-green-500/20 border border-green-500/30'
+                  : 'hover:bg-white/5 border border-transparent'
               }`}
             >
               <div className="flex flex-col">
@@ -81,23 +84,25 @@ const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const { launchApp, showAlert, updateSystemState, setPowerMode } = useSystem();
   const engineRef = useRef<AIEngine | null>(null);
 
-  if (!isOpen) return null;
-
-  const phrase = 'How Can I Help You Today?';
-  const wavys = phrase.split('');
+  const handleWeather = useCallback(async () => {
+    if (!engineRef.current) engineRef.current = new AIEngine({ launchApp, updateSystemState, setPowerMode });
+    const res = await engineRef.current.executeCommand("What's the weather today?");
+    await showAlert(res, 'Apple Intelligence');
+    onClose();
+  }, [launchApp, updateSystemState, setPowerMode, showAlert, onClose]);
 
   const suggestions = [
     { label: 'Open Safari', action: () => { launchApp('safari'); onClose(); } },
-    { label: 'What\'s the weather?', action: async () => { 
-      if (!engineRef.current) engineRef.current = new AIEngine({ launchApp, updateSystemState, setPowerMode });
-      const res = await engineRef.current.executeCommand("What's the weather today?");
-      await showAlert(res, 'Apple Intelligence');
-      onClose();
-    } },
+    { label: "What's the weather?", action: handleWeather },
     { label: 'Launch Terminal', action: () => { launchApp('terminal'); onClose(); } },
     { label: 'Open Calculator', action: () => { launchApp('calculator'); onClose(); } },
     { label: 'Open Siri', action: () => { launchApp('siriai'); onClose(); } },
   ];
+
+  if (!isOpen) return null;
+
+  const phrase = 'How Can I Help You Today?';
+  const wavys = phrase.split('');
 
   return (
     <>
@@ -144,6 +149,7 @@ const IntelligencePopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
         {/* Quick Actions */}
         <div className="space-y-1.5">
+          {/* eslint-disable-next-line react-hooks/refs */}
           {suggestions.map((s) => (
             <motion.button
               key={s.label}
@@ -185,35 +191,37 @@ const ForceQuit: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
         >
           <div className="p-4 flex flex-col items-center">
             <h2 className="text-lg font-bold mb-1">Force Quit Applications</h2>
-            <p className="text-[11px] opacity-60 mb-4 text-center">If an application isn't responding, select it and click Force Quit.</p>
-            
+            <p className="text-[11px] opacity-60 mb-4 text-center">
+              If an application isn't responding, select it and click Force Quit.
+            </p>
+
             <div className="w-full h-48 bg-white/50 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-lg overflow-y-auto mb-4">
-               {openApps.length === 0 ? (
-                 <div className="h-full flex items-center justify-center opacity-30 text-xs">No apps running</div>
-               ) : (
-                 openApps.map(appId => (
-                   <div 
-                     key={appId}
-                     onClick={() => setSelectedApp(appId)}
-                     className={`flex items-center gap-3 px-3 py-2 cursor-default transition-colors ${selectedApp === appId ? 'bg-blue-500 text-white' : 'hover:bg-blue-500/10'}`}
-                   >
-                     <div className="w-5 h-5">
-                       <AppIcon id={appId} size={20} />
-                     </div>
-                     <span className="text-sm font-medium capitalize">{appId}</span>
-                   </div>
-                 ))
-               )}
+              {openApps.length === 0 ? (
+                <div className="h-full flex items-center justify-center opacity-30 text-xs">No apps running</div>
+              ) : (
+                openApps.map((appId) => (
+                  <div
+                    key={appId}
+                    onClick={() => setSelectedApp(appId)}
+                    className={`flex items-center gap-3 px-3 py-2 cursor-default transition-colors ${selectedApp === appId ? 'bg-blue-500 text-white' : 'hover:bg-blue-500/10'}`}
+                  >
+                    <div className="w-5 h-5">
+                      <AppIcon id={appId} size={20} />
+                    </div>
+                    <span className="text-sm font-medium capitalize">{appId}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="flex justify-end w-full gap-3">
-              <button 
+              <button
                 onClick={onClose}
                 className="px-4 py-1.5 rounded-md bg-black/5 dark:bg-white/10 text-sm font-medium hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 disabled={!selectedApp}
                 onClick={() => {
                   if (selectedApp) {
@@ -233,9 +241,9 @@ const ForceQuit: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen,
   );
 };
 
-const MenuDropdown: React.FC<{ 
-  isOpen: boolean; 
-  onClose: () => void; 
+const MenuDropdown: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
   items: { label?: string; action?: () => void; disabled?: boolean; shortcut?: string; separator?: boolean }[];
   style?: React.CSSProperties;
 }> = ({ isOpen, onClose, items, style }) => {
@@ -251,35 +259,42 @@ const MenuDropdown: React.FC<{
         style={style}
         className="absolute top-8 w-64 bg-black/60 saturate-[190%] border border-white/20 rounded-[20px] shadow-2xl py-2 z-50 overflow-hidden backdrop-blur-[var(--glass-blur)]"
       >
-        {items.map((item, i) => (
+        {items.map((item, i) =>
           item.separator ? (
             <div key={i} className="border-b border-white/10 my-1 mx-2" />
           ) : (
-            <div 
-              key={i} 
-              className={`px-4 py-1.5 text-[13px] flex justify-between items-center transition-colors ${item.disabled ? 'text-white/30 cursor-default' : 'text-white hover:bg-blue-500 cursor-pointer'}`}
-              onClick={() => { if (!item.disabled && item.action) { item.action(); onClose(); } }}
+            <div
+              key={i}
+              className={`px-3 py-1 text-[12px] flex justify-between items-center transition-colors ${item.disabled ? 'text-white/30 cursor-default' : 'text-white hover:bg-blue-500 cursor-pointer'}`}
+              onClick={() => {
+                if (!item.disabled && item.action) {
+                  item.action();
+                  onClose();
+                }
+              }}
             >
               <span>{item.label}</span>
-              {item.shortcut && <span className="text-[10px] opacity-40 font-medium tracking-widest">{item.shortcut}</span>}
+              {item.shortcut && (
+                <span className="text-[10px] opacity-40 font-medium tracking-widest">{item.shortcut}</span>
+              )}
             </div>
-          )
-        ))}
+          ),
+        )}
       </motion.div>
     </>
   );
 };
 
-const BatteryDropdown: React.FC<{ 
-  isOpen: boolean; 
-  onClose: () => void; 
+const BatteryDropdown: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
   battery: { level: number; isCharging: boolean };
 }> = ({ isOpen, battery, onClose }) => {
   const { powerMode, setPowerMode, launchApp } = useSystem();
   const [chargeLimit, setChargeLimit] = useState(false);
-  
+
   if (!isOpen) return null;
-  
+
   const modes: ('Low Power' | 'Normal' | 'High Performance')[] = ['Low Power', 'Normal', 'High Performance'];
 
   return (
@@ -296,7 +311,7 @@ const BatteryDropdown: React.FC<{
           <span className="text-sm font-bold text-white/50 uppercase tracking-widest">Battery</span>
           <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-bold">Healthy</span>
         </div>
-        
+
         <div className="flex flex-col items-center mb-6">
           <div className="text-4xl font-black mb-1">{Math.round(battery.level * 100)}%</div>
           <div className="text-[10px] text-white/40 font-medium uppercase tracking-[0.2em]">
@@ -306,14 +321,18 @@ const BatteryDropdown: React.FC<{
 
         <div className="space-y-2 mb-4">
           <div className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1 px-1">Power Mode</div>
-          {modes.map(mode => (
-            <div 
+          {modes.map((mode) => (
+            <div
               key={mode}
               onClick={() => setPowerMode(mode)}
               className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-colors ${powerMode === mode ? 'bg-blue-500/20 border border-blue-500/30' : 'hover:bg-white/5 border border-transparent'}`}
             >
-              <span className={`text-xs font-medium ${powerMode === mode ? 'text-blue-400' : 'text-white/70'}`}>{mode}</span>
-              {powerMode === mode && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
+              <span className={`text-xs font-medium ${powerMode === mode ? 'text-blue-400' : 'text-white/70'}`}>
+                {mode}
+              </span>
+              {powerMode === mode && (
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              )}
             </div>
           ))}
         </div>
@@ -332,11 +351,11 @@ const BatteryDropdown: React.FC<{
               <span className="text-xs font-bold">Charge Limit: 80%</span>
               <span className="text-[10px] text-white/40">Optimized Battery Health</span>
             </div>
-            <button 
+            <button
               onClick={() => setChargeLimit(!chargeLimit)}
               className={`w-10 h-5 rounded-full transition-colors relative ${chargeLimit ? 'bg-blue-500' : 'bg-white/10'}`}
             >
-              <motion.div 
+              <motion.div
                 animate={{ x: chargeLimit ? 22 : 2 }}
                 className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
               />
@@ -345,9 +364,12 @@ const BatteryDropdown: React.FC<{
         </div>
 
         <div className="mt-4 pt-3 border-t border-white/10">
-          <div 
+          <div
             className="px-2 py-1.5 text-[11px] text-white/60 hover:text-white hover:bg-blue-500 rounded-lg cursor-pointer transition-colors font-medium"
-            onClick={() => { onClose(); launchApp('settings'); }}
+            onClick={() => {
+              onClose();
+              launchApp('settings');
+            }}
           >
             Battery Settings...
           </div>
@@ -358,17 +380,19 @@ const BatteryDropdown: React.FC<{
 };
 
 export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
-  const { 
-    activeApp, 
-    setShowAboutWindow, 
-    launchApp, 
-    setBootState, 
-    battery, 
-    setShowSpotlight, 
-    showSpotlight, 
-    clearSystemErrors, 
-    setShowRestartDialog, 
-    initiateRestart
+  const {
+    activeApp,
+    setShowAboutWindow,
+    launchApp,
+    setBootState,
+    battery,
+    setShowSpotlight,
+    showSpotlight,
+    clearSystemErrors,
+    setShowRestartDialog,
+    initiateRestart,
+    setShowNotificationCenter,
+    showNotificationCenter,
   } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
@@ -386,7 +410,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
       localStorage.getItem('golden_gate_siri_groq_key') ||
       localStorage.getItem('golden_gate_siri_openrouter_key')
     );
-  }, [intelligenceOpen]);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -413,7 +437,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
 
   const getAppSpecificMenus = () => {
     const app = activeApp || 'finder';
-    
+
     const baseMenus = {
       finder: {
         file: [
@@ -436,7 +460,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           { label: 'Applications', shortcut: '⇧⌘A' },
           { label: 'Documents', shortcut: '⇧⌘O' },
           { label: 'Desktop', shortcut: '⇧⌘D' },
-        ]
+        ],
       },
       safari: {
         file: [
@@ -461,7 +485,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           { label: 'Show Sidebar', shortcut: '⇧⌘L' },
           { separator: true },
           { label: 'Enter Full Screen', shortcut: '⌃⌘F' },
-        ]
+        ],
       },
       terminal: {
         file: [
@@ -475,33 +499,38 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           { label: 'Paste', shortcut: '⌘V' },
           { separator: true },
           { label: 'Clear Scrollback', shortcut: '⌘K' },
-        ]
-      }
+        ],
+      },
     };
 
     return (baseMenus as any)[app] || baseMenus.finder;
   };
 
   const appMenus = getAppSpecificMenus();
-  const menuKeys = Object.keys(appMenus).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+  const menuKeys = Object.keys(appMenus).map((k) => k.charAt(0).toUpperCase() + k.slice(1));
 
   return (
-    <header data-testid="menubar" role="banner" aria-label="Menu Bar" onClick={clearSystemErrors} className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none">
-      
-      <div className="flex items-center gap-1 pointer-events-auto h-full pr-10">
+    <header
+      data-testid="menubar"
+      role="banner"
+      aria-label="Menu Bar"
+      onClick={clearSystemErrors}
+      className="absolute top-0 left-0 right-0 h-[30px] flex justify-between items-center px-4 text-sm text-white z-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"
+    >
+      <div className="flex items-center gap-px pointer-events-auto h-full pr-10">
         <div className="relative h-full">
-          <div 
+          <div
             className={`cursor-pointer px-3 h-full flex items-center rounded transition ${appleMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
             onClick={() => setAppleMenuOpen(!appleMenuOpen)}
           >
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.057 10.774c-.024-2.615 2.135-3.87 2.233-3.93-1.215-1.777-3.105-2.019-3.778-2.046-1.61-.164-3.14.95-3.955.95-.815 0-2.09-.932-3.44-.905-1.777.027-3.413 1.034-4.326 2.62-1.84 3.195-.47 7.915 1.312 10.493.872 1.26 1.91 2.673 3.273 2.623 1.313-.05 1.81-.845 3.396-.845 1.586 0 2.033.845 3.421.82 1.412-.025 2.313-1.272 3.179-2.536 1-1.46 1.412-2.873 1.433-2.943-.03-.014-2.763-1.06-2.79-4.252zm-3.085-7.404c.725-.877 1.213-2.094 1.08-3.31-1.045.042-2.31.696-3.058 1.572-.673.782-1.262 2.023-1.102 3.213 1.166.09 2.355-.6 3.08-1.475z"/>
+              <path d="M17.057 10.774c-.024-2.615 2.135-3.87 2.233-3.93-1.215-1.777-3.105-2.019-3.778-2.046-1.61-.164-3.14.95-3.955.95-.815 0-2.09-.932-3.44-.905-1.777.027-3.413 1.034-4.326 2.62-1.84 3.195-.47 7.915 1.312 10.493.872 1.26 1.91 2.673 3.273 2.623 1.313-.05 1.81-.845 3.396-.845 1.586 0 2.033.845 3.421.82 1.412-.025 2.313-1.272 3.179-2.536 1-1.46 1.412-2.873 1.433-2.943-.03-.014-2.763-1.06-2.79-4.252zm-3.085-7.404c.725-.877 1.213-2.094 1.08-3.31-1.045.042-2.31.696-3.058 1.572-.673.782-1.262 2.023-1.102 3.213 1.166.09 2.355-.6 3.08-1.475z" />
             </svg>
           </div>
-          
-          <MenuDropdown 
-            isOpen={appleMenuOpen} 
-            onClose={() => setAppleMenuOpen(false)} 
+
+          <MenuDropdown
+            isOpen={appleMenuOpen}
+            onClose={() => setAppleMenuOpen(false)}
             items={[
               { label: 'About This Mac', action: () => setShowAboutWindow(true) },
               { separator: true },
@@ -522,21 +551,21 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
 
         <ForceQuit isOpen={showForceQuit} onClose={() => setShowForceQuit(false)} />
 
-        <div className="font-semibold cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition">
+        <div className="font-medium cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
           {getActiveAppName()}
         </div>
 
         {menuKeys.map((menu) => (
           <div key={menu} className="relative h-full hidden md:flex">
-            <div 
+            <div
               className={`cursor-pointer px-3 h-full flex items-center rounded transition ${activeMenu === menu ? 'bg-white/20' : 'hover:bg-white/10'}`}
               onClick={() => setActiveMenu(activeMenu === menu ? null : menu)}
             >
               {menu}
             </div>
-            <MenuDropdown 
-              isOpen={activeMenu === menu} 
-              onClose={() => setActiveMenu(null)} 
+            <MenuDropdown
+              isOpen={activeMenu === menu}
+              onClose={() => setActiveMenu(null)}
               items={appMenus[menu.toLowerCase()]}
               style={{ left: 0 }}
             />
@@ -544,63 +573,93 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
         ))}
       </div>
 
-      <div className="flex items-center gap-1 pointer-events-auto h-full pl-10">
+      <div className="flex items-center gap-px pointer-events-auto h-full pl-10">
         <div className="relative h-full">
-          <div 
+          <div
             className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-1 ${batteryMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
             onClick={() => setBatteryMenuOpen(!batteryMenuOpen)}
           >
             {battery.isCharging ? (
-              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-100-charging')}`} alt="Battery Charging" className="w-4 h-4" loading="lazy" />
+              <img
+                src={`${base}${FileSystemResolver.getStatusIcon('battery-100-charging')}`}
+                alt="Battery Charging"
+                className="w-4 h-4"
+                loading="lazy"
+              />
             ) : battery.level > 0.8 ? (
-              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-100')}`} alt="Battery Full" className="w-4 h-4" loading="lazy" />
+              <img
+                src={`${base}${FileSystemResolver.getStatusIcon('battery-100')}`}
+                alt="Battery Full"
+                className="w-4 h-4"
+                loading="lazy"
+              />
             ) : battery.level > 0.3 ? (
-              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-050')}`} alt="Battery Medium" className="w-4 h-4" loading="lazy" />
+              <img
+                src={`${base}${FileSystemResolver.getStatusIcon('battery-050')}`}
+                alt="Battery Medium"
+                className="w-4 h-4"
+                loading="lazy"
+              />
             ) : (
-              <img src={`${base}${FileSystemResolver.getStatusIcon('battery-020')}`} alt="Battery Low" className="w-4 h-4" loading="lazy" />
+              <img
+                src={`${base}${FileSystemResolver.getStatusIcon('battery-020')}`}
+                alt="Battery Low"
+                className="w-4 h-4"
+                loading="lazy"
+              />
             )}
             <span className="text-[11px] font-medium">{Math.round(battery.level * 100)}%</span>
           </div>
           <BatteryDropdown isOpen={batteryMenuOpen} battery={battery} onClose={() => setBatteryMenuOpen(false)} />
         </div>
         <div className="relative h-full">
-          <div 
+          <div
             className={`cursor-pointer px-2 h-full flex items-center rounded transition ${facetimeMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
             onClick={() => setFacetimeMenuOpen(!facetimeMenuOpen)}
           >
-            <img src={`${base}icons/facetime.png`} alt="FaceTime" className={`w-4 h-4 object-contain ${facetimeMenuOpen ? 'opacity-100' : 'opacity-80'}`} loading="lazy" />
+            <img
+              src={`${base}icons/facetime.png`}
+              alt="FaceTime"
+              className={`w-4 h-4 object-contain ${facetimeMenuOpen ? 'opacity-100' : 'opacity-80'}`}
+              loading="lazy"
+            />
           </div>
           <FaceTimeDropdown isOpen={facetimeMenuOpen} onClose={() => setFacetimeMenuOpen(false)} />
         </div>
         <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
           <img src={`${base}icons/Wifi.png`} alt="Wi-Fi" className="h-4 w-auto object-contain" loading="lazy" />
         </div>
-        <div 
+        <div
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"
           onClick={() => setShowSpotlight(!showSpotlight)}
         >
-          <img src={`${base}icons/Spotlight.png`} alt="Spotlight" className="h-4 w-auto object-contain" loading="lazy" />
+          <img
+            src={`${base}icons/Spotlight.png`}
+            alt="Spotlight"
+            className="h-4 w-auto object-contain"
+            loading="lazy"
+          />
         </div>
-        <div 
+        <div
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"
           onClick={toggleControlCenter}
         >
-          <img src={`${base}icons/Control Center.png`} alt="Control Center" className="h-4 w-auto object-contain" loading="lazy" />
+          <img
+            src={`${base}icons/Control Center.png`}
+            alt="Control Center"
+            className="h-4 w-auto object-contain"
+            loading="lazy"
+          />
         </div>
-        
+
         {/* Apple Intelligence Icon */}
         <div className="relative h-full">
-          <div 
+          <div
             className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-1 relative ${intelligenceOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
             onClick={() => setIntelligenceOpen(!intelligenceOpen)}
           >
             <div className="relative">
-              <img 
-                src={`${base}icons/Siri AI.png`} 
-                alt="Siri" 
-                className="w-4 h-4 object-contain"
-                loading="lazy"
-              />
+              <img src={`${base}icons/Siri AI.png`} alt="Siri" className="w-4 h-4 object-contain" loading="lazy" />
               {hasApiKeys && (
                 <motion.div
                   className="absolute inset-0 rounded-full"
@@ -626,7 +685,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
           <IntelligencePopup isOpen={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} />
         </div>
 
-        <div className="cursor-pointer px-3 h-full flex items-center hover:bg-white/10 rounded transition font-medium gap-1.5 text-[13px]">
+        <div
+          className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition font-normal gap-1 text-[12px]"
+          onClick={() => setShowNotificationCenter(!showNotificationCenter)}
+        >
           <span>{time.toLocaleDateString('en-US', { weekday: 'short' })}</span>
           <span>{time.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           <span>{time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>

@@ -4,16 +4,16 @@ import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const CrazyErrors: React.FC = () => {
-  const { closeCurrentWindow, systemState, triggerSystemError, updateSystemState } = useSystem();
+  const { closeCurrentWindow, systemState, triggerSystemError, updateSystemState, activeUser } = useSystem();
   const [stage, setStage] = useState<'stage1' | 'stage2' | 'storm'>('stage1');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
-  
+
   const base = (import.meta as any).env?.BASE_URL || '/';
 
   const playSound = (name: string) => {
     const audio = new Audio(`${base}sounds/${name}.mp3`);
-    audio.play().catch(e => console.warn('Audio play failed', e));
+    audio.play().catch((e) => console.warn('Audio play failed', e));
   };
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const CrazyErrors: React.FC = () => {
 
   const handleStage2Confirm = (e: React.FormEvent) => {
     e.preventDefault();
-    const correctPassword = systemState.user.password || '';
+    const correctPassword = activeUser.password || '';
     if (password === correctPassword) {
       setStage('storm');
       updateSystemState({ isSystemInfected: true });
@@ -58,7 +58,11 @@ export const CrazyErrors: React.FC = () => {
             style={{ backdropFilter: 'blur(20px)' }}
           >
             <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center border border-red-500/20">
-              <img src={`${base}${FileSystemResolver.getStatusIcon('dialog-warning')}`} className="w-10 h-10 object-contain" alt="Warning" />
+              <img
+                src={`${base}${FileSystemResolver.getStatusIcon('dialog-warning')}`}
+                className="w-10 h-10 object-contain"
+                alt="Warning"
+              />
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-bold text-white tracking-tight">System Instability</h3>
@@ -67,13 +71,13 @@ export const CrazyErrors: React.FC = () => {
               </p>
             </div>
             <div className="flex gap-3 w-full">
-              <button 
+              <button
                 onClick={() => closeCurrentWindow()}
                 className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs font-normal transition-all border border-white/10"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleStage1Confirm}
                 className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-xs font-normal transition-all shadow-lg shadow-red-500/20"
               >
@@ -92,16 +96,18 @@ export const CrazyErrors: React.FC = () => {
             style={{ backdropFilter: 'blur(20px)' }}
           >
             <div className="w-20 h-20 rounded-full border-2 border-white/10 p-1 bg-white/5">
-               <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-4xl shadow-inner">
-                 {systemState.user.avatar || '👤'}
-               </div>
+              <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-4xl shadow-inner">
+                {activeUser.avatar || '👤'}
+              </div>
             </div>
             <div className="space-y-1">
-              <h3 className="text-md font-bold text-white">{systemState.user.fullName || systemState.user.accountName || 'Administrator'}</h3>
+              <h3 className="text-md font-bold text-white">
+                {activeUser.fullName || activeUser.accountName || 'Administrator'}
+              </h3>
               <p className="text-[10px] text-white/40 uppercase tracking-widest font-black">Enter Admin Password</p>
             </div>
             <form onSubmit={handleStage2Confirm} className="w-full space-y-4">
-              <motion.input 
+              <motion.input
                 animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
                 type="password"
                 placeholder="Password"
@@ -111,19 +117,19 @@ export const CrazyErrors: React.FC = () => {
                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl px-4 text-white text-center focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
               />
               <div className="flex gap-3">
-                 <button 
-                   type="button"
-                    onClick={() => closeCurrentWindow()}
-                    className="flex-1 h-11 text-white/40 text-xs font-normal hover:text-white transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                   className="flex-1 h-11 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-normal transition-all border border-white/10"
-                 >
-                   OK
-                 </button>
+                <button
+                  type="button"
+                  onClick={() => closeCurrentWindow()}
+                  className="flex-1 h-11 text-white/40 text-xs font-normal hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 h-11 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-normal transition-all border border-white/10"
+                >
+                  OK
+                </button>
               </div>
             </form>
           </motion.div>

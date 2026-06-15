@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  GlobalIcon, 
-  Mail01Icon, 
-  Message01Icon, 
-  Settings01Icon, 
+import {
+  GlobalIcon,
+  Mail01Icon,
+  Message01Icon,
+  Settings01Icon,
   Delete02Icon,
   MusicNote01Icon,
   ComputerTerminal01Icon,
   UserIcon,
-  SmartPhone01Icon
-  } from 'hugeicons-react';
+  SmartPhone01Icon,
+} from 'hugeicons-react';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 interface AppIconProps {
@@ -20,15 +20,21 @@ interface AppIconProps {
   folderColor?: string;
 }
 
-export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32, isFull = false, folderColor = "blue" }) => {
+export const AppIcon: React.FC<AppIconProps> = ({
+  id,
+  className = '',
+  size = 32,
+  isFull = false,
+  folderColor = 'blue',
+}) => {
   const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({});
-  const iconProps = { size: size * 0.6, className: "z-10 text-white drop-shadow-lg hugeicon-golden-gate" };
+  const iconProps = { size: size * 0.6, className: 'z-10 text-white drop-shadow-lg hugeicon-golden-gate' };
 
   const base = (import.meta as any).env?.BASE_URL || '/';
 
   const getFolderPath = (iconId: string, color: string) => {
     const mappings: Record<string, string> = {
-      'folder': 'folder.png',
+      folder: 'folder.png',
       'folder-user-home': 'user-home.png',
       'folder-desktop': 'user-desktop.png',
       'folder-documents': 'folder-documents.png',
@@ -40,81 +46,82 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       'folder-system': 'folder.png',
       'folder-library': 'folder.png',
       'folder-public': 'folder-public.png',
-      'folder-templates': 'folder-templates.png'
+      'folder-templates': 'folder-templates.png',
     };
-    
+
     const fileName = mappings[iconId] || 'folder.png';
     return `${base}folder icons/${color}/${fileName}`;
   };
 
   const localIcons: Record<string, string> = {
-    'safari': `${base}icons/safari.png`,
-    'settings': `${base}icons/settings.png`,
-    'music': `${base}icons/music.png`,
-    'messages': `${base}icons/messages.png`,
-    'facetime': `${base}icons/facetime.png`,
-    'finder': `${base}icons/finder.png`,
-    'systemsettings': `${base}icons/settings.png`,
-    'itunes': `${base}icons/itunes.png`,
-    'appstore': `${base}icons/appstore.png`,
-    'mail': `${base}icons/mail.png`,
-    'maps': `${base}icons/maps.png`,
-    'photos': `${base}icons/photos.png`,
-    'files': `${base}icons/files.png`,
-    'downloads': `${base}folder icons/blue/folder-download.png`,
-    'soundtest': `${base}icons/garageband.png`,
-    'trash': isFull ? `${base}icons/trash_full.png` : `${base}icons/trash_empty.png`,
-    'calendar': `${base}icons/calendar.png`,
-    'clock': `${base}icons/clock.png`,
-    'contacts': `${base}icons/contacts.png`,
-    'reminders': `${base}icons/reminders.png`,
-    'stickies': `${base}icons/stickies.png`,
-    'notes': `${base}icons/notes.png`,
-    'installer': `${base}icons/golden-gate-installer.png`,
-    'terminal': `${base}icons/terminal.png`,
-    'activitymonitor': `${base}icons/activity.png`,
-    'calculator': `${base}icons/calculator.png`,
-    'phone': `${base}icons/phone.png`,
-    'keynote': `${base}icons/keynote.png`,
-    'pages': `${base}icons/pages.png`,
-    'numbers': `${base}icons/numbers.png`,
-    'tv': `${base}icons/tv.png`,
-    'applearcade': `${base}icons/arcade.png`,
-    'iphonemirroring': `${base}icons/iPhone Mirroring.png`,
-    'console': `${base}icons/console.png`,
-    'controlcenter': `${base}icons/controlcenter.png`,
-    'keychainaccess': `${base}icons/keychain.png`,
-    'apps': `${base}icons/apps.png`,
-    'weather': `${base}icons/weather.png`,
-    'camera': `${base}icons/camera.png`,
-    'books': `${base}icons/books.png`,
-    'wallet': `${base}icons/wallet.png`,
-    'github': `${base}icons/github.png`,
-    'timemachine': `${base}icons/time-machine.png`,
-    'diskutility': `${base}icons/disk-utility.png`,
-    'crazyerrors': `${base}assets/mimes/application-x-executable.png`,
-    'socialize': `${base}icons/socialize.png`,
-    'developer': `${base}icons/developer.png`,
-    'utility': `${base}icons/utility.png`,
-    'samsunglcdtv': `${base}icons/Samsung LCD TV Simulator.png`,
-    'siriai': `${base}icons/Siri AI.png`,
-    'aboutme': `${base}icons/aboutme.png`,
-    'code': `${base}icons/code.png`,
-    'vmware': `${base}icons/VMware Fusion Pro.png`,
-    'launchpad': `${base}icons/apps.png`,
-    'games': `${base}icons/games.png`,
-    'freeform': `${base}icons/freeform.png`,
-    'motion': `${base}icons/motion.png`,
-    'xcode': `${base}icons/XCode.png`,
-    'pixelmatorpro': `${base}icons/pixelmator-pro.png`,
-    'finalcutpro': `${base}icons/final-cut-pro.png`,
-    'logicpro': `${base}icons/logic-pro.png`,
-    'photobooth': `${base}icons/photo-booth.png`,
-    'chess': `${base}icons/chess.png`,
+    safari: `${base}icons/safari.png`,
+    settings: `${base}icons/settings.png`,
+    music: `${base}icons/music.png`,
+    messages: `${base}icons/messages.png`,
+    facetime: `${base}icons/facetime.png`,
+    finder: `${base}icons/finder.png`,
+    systemsettings: `${base}icons/settings.png`,
+    itunes: `${base}icons/itunes.png`,
+    appstore: `${base}icons/appstore.png`,
+    mail: `${base}icons/mail.png`,
+    maps: `${base}icons/maps.png`,
+    photos: `${base}icons/photos.png`,
+    files: `${base}icons/files.png`,
+    downloads: `${base}folder icons/blue/folder-download.png`,
+    soundtest: `${base}icons/garageband.png`,
+    trash: isFull ? `${base}icons/trash_full.png` : `${base}icons/trash_empty.png`,
+    calendar: `${base}icons/calendar.png`,
+    clock: `${base}icons/clock.png`,
+    contacts: `${base}icons/contacts.png`,
+    reminders: `${base}icons/reminders.png`,
+    stickies: `${base}icons/stickies.png`,
+    notes: `${base}icons/notes.png`,
+    installer: `${base}icons/golden-gate-installer.png`,
+    terminal: `${base}icons/terminal.png`,
+    activitymonitor: `${base}icons/activity.png`,
+    calculator: `${base}icons/calculator.png`,
+    phone: `${base}icons/phone.png`,
+    keynote: `${base}icons/keynote.png`,
+    pages: `${base}icons/pages.png`,
+    numbers: `${base}icons/numbers.png`,
+    tv: `${base}icons/tv.png`,
+    applearcade: `${base}icons/arcade.png`,
+    iphonemirroring: `${base}icons/iPhone Mirroring.png`,
+    console: `${base}icons/console.png`,
+    controlcenter: `${base}icons/controlcenter.png`,
+    keychainaccess: `${base}icons/keychain.png`,
+    apps: `${base}icons/apps.png`,
+    weather: `${base}icons/weather.png`,
+    camera: `${base}icons/camera.png`,
+    books: `${base}icons/books.png`,
+    wallet: `${base}icons/wallet.png`,
+    github: `${base}icons/github.png`,
+    timemachine: `${base}icons/time-machine.png`,
+    diskutility: `${base}icons/disk-utility.png`,
+    crazyerrors: `${base}assets/mimes/application-x-executable.png`,
+    socialize: `${base}icons/socialize.png`,
+    developer: `${base}icons/developer.png`,
+    utility: `${base}icons/utility.png`,
+    samsunglcdtv: `${base}icons/Samsung LCD TV Simulator.png`,
+    siriai: `${base}icons/Siri AI.png`,
+    aboutme: `${base}icons/aboutme.png`,
+    code: `${base}icons/code.png`,
+    vmware: `${base}icons/VMware Fusion Pro.png`,
+    launchpad: `${base}icons/apps.png`,
+    games: `${base}icons/games.png`,
+    freeform: `${base}icons/freeform.png`,
+    motion: `${base}icons/motion.png`,
+    xcode: `${base}icons/XCode.png`,
+    pixelmatorpro: `${base}icons/pixelmator-pro.png`,
+    finalcutpro: `${base}icons/final-cut-pro.png`,
+    logicpro: `${base}icons/logic-pro.png`,
+    photobooth: `${base}icons/photo-booth.png`,
+    chess: `${base}icons/chess.png`,
+    minecraft: `${base}icons/Minecraft.png`,
   };
 
   const handleImageError = (iconId: string) => {
-    setImageLoadError(prev => ({ ...prev, [iconId]: true }));
+    setImageLoadError((prev) => ({ ...prev, [iconId]: true }));
   };
 
   const renderIcon = () => {
@@ -136,19 +143,19 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
     } else if (!localIcon && id.startsWith('pref-')) {
       localIcon = `${base}${FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''))}`;
     }
-    
+
     if (localIcon && !hasError) {
       return (
         <div className="relative w-full h-full rounded-[22%] overflow-hidden flex items-center justify-center">
-          <img 
-            src={localIcon} 
-            alt={id} 
-            className="w-full h-full object-contain" 
+          <img
+            src={localIcon}
+            alt={id}
+            className="w-full h-full object-contain"
             onError={() => handleImageError(idLower)}
             loading="lazy"
           />
           {overlay && (
-            <img 
+            <img
               src={overlay}
               alt="Emblem"
               className="absolute inset-0 w-[45%] h-[45%] object-contain m-auto translate-y-1.5 opacity-90"
@@ -163,10 +170,10 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       case 'weather':
         return (
           <div className="w-full h-full rounded-[22%] overflow-hidden bg-gradient-to-b from-blue-400 to-blue-600 shadow-lg border border-white/20">
-            <img 
-              src={localIcons['weather']} 
-              alt="Weather" 
-              className="w-full h-full object-cover scale-110" 
+            <img
+              src={localIcons['weather']}
+              alt="Weather"
+              className="w-full h-full object-cover scale-110"
               onError={() => handleImageError('weather')}
             />
           </div>
@@ -186,11 +193,11 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-[#5AC8FA] to-[#007AFF] shadow-inner overflow-hidden border border-white/20">
             <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
-               <div className="flex gap-2.5">
-                 <div className="w-2 h-4 bg-white/90 rounded-full" />
-                 <div className="w-2 h-4 bg-white/90 rounded-full" />
-               </div>
-               <div className="w-10 h-3 border-b-4 border-white/90 rounded-[50%] mt-1" />
+              <div className="flex gap-2.5">
+                <div className="w-2 h-4 bg-white/90 rounded-full" />
+                <div className="w-2 h-4 bg-white/90 rounded-full" />
+              </div>
+              <div className="w-10 h-3 border-b-4 border-white/90 rounded-[50%] mt-1" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-50" />
           </div>
@@ -206,74 +213,81 @@ export const AppIcon: React.FC<AppIconProps> = ({ id, className = "", size = 32,
       case 'mail':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-sky-400 to-blue-500 border border-white/30 shadow-lg overflow-hidden">
-             <div className="absolute top-0 w-full h-1/2 bg-white/10" />
-             <Mail01Icon {...iconProps} />
+            <div className="absolute top-0 w-full h-1/2 bg-white/10" />
+            <Mail01Icon {...iconProps} />
           </div>
         );
       case 'messages':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-green-400 to-green-600 border border-white/30 shadow-lg overflow-hidden">
-             <Message01Icon {...iconProps} />
-             <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
+            <Message01Icon {...iconProps} />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
           </div>
         );
       case 'photos':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white border border-white/20 shadow-lg overflow-hidden p-1.5">
-             <div className="grid grid-cols-2 grid-rows-2 gap-0.5 w-full h-full rounded-sm overflow-hidden">
-                <div className="bg-pink-400 rounded-tl-sm" />
-                <div className="bg-blue-400 rounded-tr-sm" />
-                <div className="bg-yellow-400 rounded-bl-sm" />
-                <div className="bg-green-400 rounded-br-sm" />
-             </div>
-             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <div className="grid grid-cols-2 grid-rows-2 gap-0.5 w-full h-full rounded-sm overflow-hidden">
+              <div className="bg-pink-400 rounded-tl-sm" />
+              <div className="bg-blue-400 rounded-tr-sm" />
+              <div className="bg-yellow-400 rounded-bl-sm" />
+              <div className="bg-green-400 rounded-br-sm" />
+            </div>
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
           </div>
         );
       case 'settings':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-gray-400 to-gray-600 border border-white/30 shadow-lg overflow-hidden">
-             <Settings01Icon {...iconProps} />
-             <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
+            <Settings01Icon {...iconProps} />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
           </div>
         );
       case 'trash':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white/5 backdrop-blur-md border border-white/10 shadow-lg overflow-hidden">
-             <Delete02Icon {...iconProps} className={`${isFull ? 'text-white' : 'text-white/40'} hugeicon-golden-gate`} />
+            <Delete02Icon
+              {...iconProps}
+              className={`${isFull ? 'text-white' : 'text-white/40'} hugeicon-golden-gate`}
+            />
           </div>
         );
       case 'music':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-gradient-to-br from-pink-500 to-red-500 border border-white/30 shadow-lg overflow-hidden">
-             <MusicNote01Icon {...iconProps} />
+            <MusicNote01Icon {...iconProps} />
           </div>
         );
       case 'terminal':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-zinc-800 border border-white/20 shadow-lg overflow-hidden">
-             <ComputerTerminal01Icon {...iconProps} className="text-green-400 hugeicon-golden-gate" />
+            <ComputerTerminal01Icon {...iconProps} className="text-green-400 hugeicon-golden-gate" />
           </div>
         );
       case 'iphonemirroring':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-zinc-900 border border-white/20 shadow-lg overflow-hidden">
-             <SmartPhone01Icon {...iconProps} className="text-white hugeicon-golden-gate" />
-             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
+            <SmartPhone01Icon {...iconProps} className="text-white hugeicon-golden-gate" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
           </div>
         );
       case 'contacts':
         return (
           <div className="relative flex items-center justify-center w-full h-full rounded-[22%] bg-white border border-white/30 shadow-lg overflow-hidden">
-             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100 rounded-b-[22%]" />
-             <UserIcon {...iconProps} className="text-gray-600 hugeicon-golden-gate" />
-             <div className="absolute top-2 right-2 flex gap-0.5">
-                <div className="w-1 h-4 bg-red-400 rounded-full shadow-sm" />
-                <div className="w-1 h-4 bg-blue-400 rounded-full shadow-sm" />
-             </div>
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100 rounded-b-[22%]" />
+            <UserIcon {...iconProps} className="text-gray-600 hugeicon-golden-gate" />
+            <div className="absolute top-2 right-2 flex gap-0.5">
+              <div className="w-1 h-4 bg-red-400 rounded-full shadow-sm" />
+              <div className="w-1 h-4 bg-blue-400 rounded-full shadow-sm" />
+            </div>
           </div>
         );
       default:
-        return <div className="bg-white/10 backdrop-blur-md w-full h-full rounded-[22%] flex items-center justify-center text-white text-xs">{id}</div>;
+        return (
+          <div className="bg-white/10 backdrop-blur-md w-full h-full rounded-[22%] flex items-center justify-center text-white text-xs">
+            {id}
+          </div>
+        );
     }
   };
 

@@ -2,23 +2,24 @@ export class FileSystemResolver {
   static getMimeIcon(filename: string): string {
     const ext = filename.split('.').pop()?.toLowerCase();
     if (!ext || ext === filename) return 'assets/mimes/unknown.png';
-    
+
     // Dynamic mapping engine for mimes
     const imageExts = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg', 'tiff', 'ico'];
     const textExts = ['txt', 'css', 'html', 'js', 'json', 'md', 'ts', 'xml', 'csv', 'yaml', 'toml'];
     const audioExts = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'];
     const videoExts = ['mp4', 'mkv', 'avi', 'mov', 'webm'];
-    
+
     if (ext === 'pdf') return 'assets/mimes/application-pdf.png';
-    if (ext === 'zip' || ext === 'tar' || ext === 'gz' || ext === 'rar' || ext === '7z') return 'assets/mimes/application-x-zip.png';
+    if (ext === 'zip' || ext === 'tar' || ext === 'gz' || ext === 'rar' || ext === '7z')
+      return 'assets/mimes/application-x-zip.png';
     if (ext === 'exe' || ext === 'msi') return 'assets/mimes/application-x-ms-dos-executable.png';
     if (ext === 'dmg' || ext === 'pkg') return 'assets/mimes/application-x-apple-diskimage.png';
-    
+
     if (imageExts.includes(ext)) return `assets/mimes/image-${ext}.png`;
     if (textExts.includes(ext)) return `assets/mimes/text-${ext}.png`;
     if (audioExts.includes(ext)) return `assets/mimes/audio-x-generic.png`;
     if (videoExts.includes(ext)) return `assets/mimes/video-x-generic.png`;
-    
+
     return `assets/mimes/application-${ext}.png`;
   }
 

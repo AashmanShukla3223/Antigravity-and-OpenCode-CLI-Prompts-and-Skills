@@ -40,7 +40,9 @@ function App() {
   }, [bootState]);
 
   return (
-    <div className={`h-full w-full ${isShuttingDown && shutdownStep >= 4 ? 'cursor-none' : isShuttingDown && shutdownStep >= 3 ? 'is-busy' : ''}`}>
+    <div
+      className={`h-full w-full ${isShuttingDown && shutdownStep >= 4 ? 'cursor-none' : isShuttingDown && shutdownStep >= 3 ? 'is-busy' : ''}`}
+    >
       <DeviceRecovery />
       <StructuredData id="ld-webapp-dynamic" data={SCHEMA_WEBAPP} />
       <AnimatePresence mode="wait">
@@ -52,9 +54,7 @@ function App() {
         {bootState === 'activation' && <MacOSActivation key="activation" />}
       </AnimatePresence>
 
-      {isShuttingDown && shutdownStep >= 4 && (
-        <ShutdownCursor />
-      )}
+      {isShuttingDown && shutdownStep >= 4 && <ShutdownCursor />}
     </div>
   );
 }
@@ -73,7 +73,7 @@ const ShutdownCursor = () => {
       src="/assets/cursors/busy.png"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
-      transition={{ duration: 1.5, ease: "easeIn" }}
+      transition={{ duration: 1.5, ease: 'easeIn' }}
       style={{
         position: 'fixed',
         left: pos.x,
@@ -82,7 +82,7 @@ const ShutdownCursor = () => {
         height: 32,
         pointerEvents: 'none',
         zIndex: 99999,
-        transform: 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)',
       }}
     />
   );

@@ -6,7 +6,9 @@ import { useTelemetry } from '../../hooks/useTelemetry';
 const generateInitialProcesses = () => {
   return Array.from({ length: 15 }).map((_, i) => ({
     id: 1000 + i,
-    name: ['WindowServer', 'kernel_task', 'Google Chrome', 'React', 'Framer Motion', 'Terminal'][i % 6] + (i > 5 ? ` Helper ${i}` : ''),
+    name:
+      ['WindowServer', 'kernel_task', 'Google Chrome', 'React', 'Framer Motion', 'Terminal'][i % 6] +
+      (i > 5 ? ` Helper ${i}` : ''),
     cpu: (Math.random() * 15).toFixed(1),
     memory: (Math.random() * 500 + 10).toFixed(0),
     threads: Math.floor(Math.random() * 50 + 5),
@@ -16,7 +18,7 @@ const generateInitialProcesses = () => {
 export const ActivityMonitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CPU' | 'Memory' | 'Network'>('CPU');
   const telemetry = useTelemetry();
-  
+
   const [processes, setProcesses] = useState(generateInitialProcesses);
 
   // Simulate updating stats, but scale cpu load with our telemetry
@@ -26,7 +28,7 @@ export const ActivityMonitor: React.FC = () => {
         prev.map((p) => ({
           ...p,
           cpu: (Math.random() * 15 + telemetry.cpuPressure * 20).toFixed(1),
-        }))
+        })),
       );
     }, 2000);
     return () => clearInterval(timer);
@@ -47,14 +49,14 @@ export const ActivityMonitor: React.FC = () => {
             </button>
           ))}
         </div>
-        
+
         <div className="flex-1" />
-        
+
         <div className="flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 text-sm">
           <input type="text" placeholder="Search" className="border-none focus:outline-none w-32" />
         </div>
       </div>
-      
+
       {/* Process Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm text-left">
@@ -67,21 +69,23 @@ export const ActivityMonitor: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {[...processes].sort((a, b) => parseFloat(b.cpu) - parseFloat(a.cpu)).map((p, i) => (
-              <tr key={i} className="border-b border-gray-100 hover:bg-blue-50">
-                <td className="px-4 py-1 flex items-center gap-2">
-                  <Activity01Icon size={14} className="text-gray-500 hugeicon-golden-gate" />
-                  {p.name}
-                </td>
-                <td className="px-4 py-1 text-right">{p.cpu}</td>
-                <td className="px-4 py-1 text-right text-gray-500">{p.threads}</td>
-                <td className="px-4 py-1 text-right text-gray-500">{p.memory} MB</td>
-              </tr>
-            ))}
+            {[...processes]
+              .sort((a, b) => parseFloat(b.cpu) - parseFloat(a.cpu))
+              .map((p, i) => (
+                <tr key={i} className="border-b border-gray-100 hover:bg-blue-50">
+                  <td className="px-4 py-1 flex items-center gap-2">
+                    <Activity01Icon size={14} className="text-gray-500 hugeicon-golden-gate" />
+                    {p.name}
+                  </td>
+                  <td className="px-4 py-1 text-right">{p.cpu}</td>
+                  <td className="px-4 py-1 text-right text-gray-500">{p.threads}</td>
+                  <td className="px-4 py-1 text-right text-gray-500">{p.memory} MB</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
-      
+
       {/* Bottom Graph Area */}
       <div className="h-32 bg-[#f6f6f6] border-t border-gray-300 flex p-4 gap-8">
         <div className="flex-1 flex flex-col justify-center">

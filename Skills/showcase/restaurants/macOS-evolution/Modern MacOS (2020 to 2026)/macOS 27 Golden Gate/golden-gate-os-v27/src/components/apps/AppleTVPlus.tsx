@@ -1,19 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Tv, 
-  Play, 
-  Lock, 
-  ShieldCheck,
-  Zap,
-  Radio,
-  MonitorPlay,
-  CheckCircle2
-} from 'lucide-react';
+import { Tv, Play, Lock, ShieldCheck, Zap, Radio, MonitorPlay, CheckCircle2 } from 'lucide-react';
 import { useSystem } from '../../contexts/SystemContext';
 import { motion } from 'framer-motion';
 
 // External HLS.js CDN
-const HLS_CDN = "https://cdn.jsdelivr.net/npm/hls.js@latest";
+const HLS_CDN = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
 
 import { ApplePayFramework } from './AppleWallet';
 
@@ -27,43 +18,271 @@ interface VideoItem {
 }
 
 const VIDEOS: VideoItem[] = [
-  { id: 'live-aajtak', title: 'AajTak Live', url: 'https://feeds.intoday.in/aajtak/api/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://feeds.intoday.in/aajtak/api/master.m3u8' },
-  { id: 'live-indiatoday', title: 'India Today Live', url: 'https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8' },
-  { id: 'live-ndtv', title: 'NDTV India Live', url: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8' },
-  { id: 'live-ndtv24x7', title: 'NDTV 24x7 Live', url: 'https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8' },
-    { id: 'live-indiatv', title: 'IndiaTV Live', url: 'https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index.m3u8' },
-    { id: 'live-republic', title: 'Republic Bharat Live', url: 'https://d1rc86nwwc9fag.cloudfront.net/out/v1/vglive-sk-561573/534f6684a9824ef894260909ab46b4f1/main_2.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://d1rc86nwwc9fag.cloudfront.net/out/v1/vglive-sk-561573/534f6684a9824ef894260909ab46b4f1/main_2.m3u8' },
-    { id: 'live-9xm', title: '9XM Live', url: 'https://epiconvh.akamaized.net/live/9XM/master.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://epiconvh.akamaized.net/live/9XM/master.m3u8' },
-    { id: 'live-kal', title: 'Sony Kal Live', url: 'https://e77bef9b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctY2FfU29ueUtBTF9ITFM/playlist.m3u8', type: 'hls', category: 'Live TV', thumbnail: 'https://e77bef9b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctY2FfU29ueUtBTF9ITFM/playlist.m3u8' },
-  { id: 'v1', title: 'AajTak Source 1', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v2', title: 'AajTak Source 2', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source2.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v3', title: 'AajTak Source 3', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source3.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v4', title: 'AajTak Source 4', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source4.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v5', title: 'AajTak Source 5', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source5.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v6', title: 'AajTak Source 6', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source6.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v7', title: 'AajTak Source 7', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.1/dishtv_source7.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v8', title: 'AajTak Source 8', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/dishtv_source8.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v9', title: 'AajTak Source 9', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/dishtv_source9.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v10', title: 'AajTak Source 10', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/dishtv_source10.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v11', title: 'AajTak Source 11', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/dishtv_source11.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v12', title: 'AajTak Source 12', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.4/dishtv_source12.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v13', title: 'AajTak Source 13', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.7/dishtv_source13.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v14', title: 'AajTak Source 14', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source14.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v15', title: 'AajTak Source 15', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source15.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v16', title: 'AajTak Source 16', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source16.mp4', type: 'mp4', category: 'AajTak Special', thumbnail: '' },
-  { id: 'v17', title: 'Nick Junior Source 1', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/pawpatrol_1.mp4', type: 'mp4', category: 'Nick Junior Special', thumbnail: '' },
-  { id: 'v18', title: 'Nick Junior Source 2', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/pawpatrol_2.mp4', type: 'mp4', category: 'Nick Junior Special', thumbnail: '' },
-  { id: 'v19', title: 'Nick Junior Source 3', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/peppa_samundar.mp4', type: 'mp4', category: 'Nick Junior Special', thumbnail: '' },
-  { id: 'v20', title: 'Nick Junior Source 4', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/peppa_shopping.mp4', type: 'mp4', category: 'Nick Junior Special', thumbnail: '' },
-  { id: 'v21', title: 'Nick Source 1', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/chikoo_bunty_1.mp4', type: 'mp4', category: 'Nick Special', thumbnail: '' },
-  { id: 'v22', title: 'Nick Source 2', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/chikoo_bunty_2.mp4', type: 'mp4', category: 'Nick Special', thumbnail: '' },
-  { id: 'v23', title: 'Nick Source 3', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/motu_patlu_1.mp4', type: 'mp4', category: 'Nick Special', thumbnail: '' },
-  { id: 'v24', title: 'Nick Source 4', url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/motu_patlu_2.mp4', type: 'mp4', category: 'Nick Special', thumbnail: '' },
+  {
+    id: 'live-aajtak',
+    title: 'AajTak Live',
+    url: 'https://feeds.intoday.in/aajtak/api/master.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://feeds.intoday.in/aajtak/api/master.m3u8',
+  },
+  {
+    id: 'live-indiatoday',
+    title: 'India Today Live',
+    url: 'https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://indiatodaylive.akamaized.net/hls/live/2014320/indiatoday/indiatodaylive/playlist.m3u8',
+  },
+  {
+    id: 'live-ndtv',
+    title: 'NDTV India Live',
+    url: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679/ndtvindia/master.m3u8',
+  },
+  {
+    id: 'live-ndtv24x7',
+    title: 'NDTV 24x7 Live',
+    url: 'https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://ndtv24x7elemarchana.akamaized.net/hls/live/2003678/ndtv24x7/master.m3u8',
+  },
+  {
+    id: 'live-indiatv',
+    title: 'IndiaTV Live',
+    url: 'https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index.m3u8',
+  },
+  {
+    id: 'live-republic',
+    title: 'Republic Bharat Live',
+    url: 'https://d1rc86nwwc9fag.cloudfront.net/out/v1/vglive-sk-561573/534f6684a9824ef894260909ab46b4f1/main_2.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail:
+      'https://d1rc86nwwc9fag.cloudfront.net/out/v1/vglive-sk-561573/534f6684a9824ef894260909ab46b4f1/main_2.m3u8',
+  },
+  {
+    id: 'live-9xm',
+    title: '9XM Live',
+    url: 'https://epiconvh.akamaized.net/live/9XM/master.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail: 'https://epiconvh.akamaized.net/live/9XM/master.m3u8',
+  },
+  {
+    id: 'live-kal',
+    title: 'Sony Kal Live',
+    url: 'https://e77bef9b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctY2FfU29ueUtBTF9ITFM/playlist.m3u8',
+    type: 'hls',
+    category: 'Live TV',
+    thumbnail:
+      'https://e77bef9b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctY2FfU29ueUtBTF9ITFM/playlist.m3u8',
+  },
+  {
+    id: 'v1',
+    title: 'AajTak Source 1',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v2',
+    title: 'AajTak Source 2',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source2.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v3',
+    title: 'AajTak Source 3',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source3.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v4',
+    title: 'AajTak Source 4',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source4.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v5',
+    title: 'AajTak Source 5',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source5.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v6',
+    title: 'AajTak Source 6',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0/dishtv_source6.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v7',
+    title: 'AajTak Source 7',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.1/dishtv_source7.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v8',
+    title: 'AajTak Source 8',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/dishtv_source8.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v9',
+    title: 'AajTak Source 9',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.2/dishtv_source9.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v10',
+    title: 'AajTak Source 10',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/dishtv_source10.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v11',
+    title: 'AajTak Source 11',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.3/dishtv_source11.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v12',
+    title: 'AajTak Source 12',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.4/dishtv_source12.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v13',
+    title: 'AajTak Source 13',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.0.7/dishtv_source13.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v14',
+    title: 'AajTak Source 14',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source14.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v15',
+    title: 'AajTak Source 15',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source15.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v16',
+    title: 'AajTak Source 16',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.13/dishtv_source16.mp4',
+    type: 'mp4',
+    category: 'AajTak Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v17',
+    title: 'Nick Junior Source 1',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/pawpatrol_1.mp4',
+    type: 'mp4',
+    category: 'Nick Junior Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v18',
+    title: 'Nick Junior Source 2',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/pawpatrol_2.mp4',
+    type: 'mp4',
+    category: 'Nick Junior Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v19',
+    title: 'Nick Junior Source 3',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/peppa_samundar.mp4',
+    type: 'mp4',
+    category: 'Nick Junior Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v20',
+    title: 'Nick Junior Source 4',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.11/peppa_shopping.mp4',
+    type: 'mp4',
+    category: 'Nick Junior Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v21',
+    title: 'Nick Source 1',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/chikoo_bunty_1.mp4',
+    type: 'mp4',
+    category: 'Nick Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v22',
+    title: 'Nick Source 2',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/chikoo_bunty_2.mp4',
+    type: 'mp4',
+    category: 'Nick Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v23',
+    title: 'Nick Source 3',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/motu_patlu_1.mp4',
+    type: 'mp4',
+    category: 'Nick Special',
+    thumbnail: '',
+  },
+  {
+    id: 'v24',
+    title: 'Nick Source 4',
+    url: 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.12/motu_patlu_2.mp4',
+    type: 'mp4',
+    category: 'Nick Special',
+    thumbnail: '',
+  },
 ];
 
 export const AppleTVPlus: React.FC = () => {
   const { showAlert } = useSystem();
-  const [isSubscribed, setIsSubscribed] = useState(() => localStorage.getItem('golden_gate_tv_plus_subscribed') === 'true');
+  const [isSubscribed, setIsSubscribed] = useState(
+    () => localStorage.getItem('golden_gate_tv_plus_subscribed') === 'true',
+  );
   const [showPaywall, setShowPaywall] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<VideoItem | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,7 +306,7 @@ export const AppleTVPlus: React.FC = () => {
     localStorage.setItem('golden_gate_tv_plus_subscribed', 'true');
     setIsSubscribed(true);
     setShowPaywall(false);
-    showAlert("Welcome to Apple TV+! All content is now unlocked.", "Success");
+    showAlert('Welcome to Apple TV+! All content is now unlocked.', 'Success');
   };
 
   const playVideo = (video: VideoItem) => {
@@ -120,11 +339,11 @@ export const AppleTVPlus: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-black text-white overflow-hidden relative">
       {showPaywall && (
-        <ApplePayFramework 
-          amount="$20.00 / month" 
-          itemName="Apple TV+ Golden Gate" 
-          onSuccess={handleSubscribeSuccess} 
-          onCancel={() => setShowPaywall(false)} 
+        <ApplePayFramework
+          amount="$20.00 / month"
+          itemName="Apple TV+ Golden Gate"
+          onSuccess={handleSubscribeSuccess}
+          onCancel={() => setShowPaywall(false)}
         />
       )}
       {/* Header */}
@@ -137,7 +356,7 @@ export const AppleTVPlus: React.FC = () => {
           <h1 className="text-xl font-bold tracking-tight">Apple TV+</h1>
         </div>
         {!isSubscribed && (
-          <button 
+          <button
             onClick={() => setShowPaywall(true)}
             className="px-4 py-1.5 bg-white text-black text-sm font-semibold rounded-full hover:bg-zinc-200 transition-colors"
           >
@@ -149,18 +368,13 @@ export const AppleTVPlus: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-10 custom-scrollbar pb-32">
         {currentVideo && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="w-full aspect-video bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl relative border border-white/10"
           >
-            <video 
-              ref={videoRef} 
-              className="w-full h-full object-contain" 
-              controls 
-              autoPlay
-            />
-            <button 
+            <video ref={videoRef} className="w-full h-full object-contain" controls autoPlay />
+            <button
               onClick={() => setCurrentVideo(null)}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition-colors"
             >
@@ -176,7 +390,7 @@ export const AppleTVPlus: React.FC = () => {
             <h2 className="text-lg font-bold">Live TV</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {VIDEOS.filter(v => v.category === 'Live TV').map(video => (
+            {VIDEOS.filter((v) => v.category === 'Live TV').map((video) => (
               <VideoCard key={video.id} video={video} onPlay={() => playVideo(video)} isLocked={!isSubscribed} />
             ))}
           </div>
@@ -189,7 +403,7 @@ export const AppleTVPlus: React.FC = () => {
             <h2 className="text-lg font-bold">AajTak Specials</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {VIDEOS.filter(v => v.category === 'AajTak Special').map(video => (
+            {VIDEOS.filter((v) => v.category === 'AajTak Special').map((video) => (
               <VideoCard key={video.id} video={video} onPlay={() => playVideo(video)} isLocked={!isSubscribed} />
             ))}
           </div>
@@ -202,7 +416,7 @@ export const AppleTVPlus: React.FC = () => {
             <h2 className="text-lg font-bold">Nick Junior Specials</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {VIDEOS.filter(v => v.category === 'Nick Junior Special').map(video => (
+            {VIDEOS.filter((v) => v.category === 'Nick Junior Special').map((video) => (
               <VideoCard key={video.id} video={video} onPlay={() => playVideo(video)} isLocked={!isSubscribed} />
             ))}
           </div>
@@ -215,7 +429,7 @@ export const AppleTVPlus: React.FC = () => {
             <h2 className="text-lg font-bold">Nick Specials</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {VIDEOS.filter(v => v.category === 'Nick Special').map(video => (
+            {VIDEOS.filter((v) => v.category === 'Nick Special').map((video) => (
               <VideoCard key={video.id} video={video} onPlay={() => playVideo(video)} isLocked={!isSubscribed} />
             ))}
           </div>
@@ -250,8 +464,8 @@ export const AppleTVPlus: React.FC = () => {
   );
 };
 
-const VideoCard = ({ video, onPlay, isLocked }: { video: VideoItem, onPlay: () => void, isLocked: boolean }) => (
-  <motion.div 
+const VideoCard = ({ video, onPlay, isLocked }: { video: VideoItem; onPlay: () => void; isLocked: boolean }) => (
+  <motion.div
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     className="relative aspect-video rounded-xl bg-zinc-900 border border-white/5 overflow-hidden group cursor-pointer"

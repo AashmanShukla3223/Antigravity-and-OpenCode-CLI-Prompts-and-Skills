@@ -57,30 +57,40 @@ export const FinalCutPro: React.FC = () => {
 
   const fps = 30;
 
-  const activeClipAtFrame = clips.find(c => c.track === 0 && currentFrame >= c.start && currentFrame < c.start + c.duration);
+  const activeClipAtFrame = clips.find(
+    (c) => c.track === 0 && currentFrame >= c.start && currentFrame < c.start + c.duration,
+  );
 
-  const addClipFromFile = useCallback((name: string, dataUrl?: string) => {
-    const ext = name.split('.').pop()?.toLowerCase() || '';
-    const isVideo = ['mp4', 'mov', 'webm'].includes(ext);
-    const isAudio = ['mp3', 'wav'].includes(ext);
-    const type: Clip['type'] = isVideo ? 'video' : isAudio ? 'audio' : 'title';
-    const newClip: Clip = {
-      id: nextClipId(),
-      name: name.replace(/\.[^.]+$/, '').slice(0, 20),
-      start: 0,
-      duration: type === 'audio' ? TIMELINE_DURATION : 60,
-      track: type === 'video' ? 0 : type === 'audio' ? 1 : 2,
-      color: TRACK_COLORS[clips.length % TRACK_COLORS.length],
-      type,
-      contentUrl: dataUrl,
-    };
-    setClips(prev => [...prev, newClip]);
-    setMediaItems(prev => [...prev, { name, type: ext === 'mp3' || ext === 'wav' ? 'audio' : 'image' }]);
-  }, [clips.length]);
+  const addClipFromFile = useCallback(
+    (name: string, dataUrl?: string) => {
+      const ext = name.split('.').pop()?.toLowerCase() || '';
+      const isVideo = ['mp4', 'mov', 'webm'].includes(ext);
+      const isAudio = ['mp3', 'wav'].includes(ext);
+      const type: Clip['type'] = isVideo ? 'video' : isAudio ? 'audio' : 'title';
+      const newClip: Clip = {
+        id: nextClipId(),
+        name: name.replace(/\.[^.]+$/, '').slice(0, 20),
+        start: 0,
+        duration: type === 'audio' ? TIMELINE_DURATION : 60,
+        track: type === 'video' ? 0 : type === 'audio' ? 1 : 2,
+        color: TRACK_COLORS[clips.length % TRACK_COLORS.length],
+        type,
+        contentUrl: dataUrl,
+      };
+      setClips((prev) => [...prev, newClip]);
+      setMediaItems((prev) => [...prev, { name, type: ext === 'mp3' || ext === 'wav' ? 'audio' : 'image' }]);
+    },
+    [clips.length],
+  );
 
-  const dropHandlers = useFileDrop(createNode, 'movies', '.mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav', (file, dataUrl) => {
-    addClipFromFile(file.name, dataUrl);
-  });
+  const dropHandlers = useFileDrop(
+    createNode,
+    'movies',
+    '.mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav',
+    (file, dataUrl) => {
+      addClipFromFile(file.name, dataUrl);
+    },
+  );
 
   useEffect(() => {
     if (isPlaying) {
@@ -90,16 +100,21 @@ export const FinalCutPro: React.FC = () => {
         const delta = time - lastTime;
         if (delta >= frameInterval) {
           lastTime = time;
-          setCurrentFrame(prev => {
+          setCurrentFrame((prev) => {
             const next = prev + 1;
-            if (next >= TIMELINE_DURATION) { setIsPlaying(false); return 0; }
+            if (next >= TIMELINE_DURATION) {
+              setIsPlaying(false);
+              return 0;
+            }
             return next;
           });
         }
         animRef.current = requestAnimationFrame(animate);
       };
       animRef.current = requestAnimationFrame(animate);
-      return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+      return () => {
+        if (animRef.current) cancelAnimationFrame(animRef.current);
+      };
     }
   }, [isPlaying, fps]);
 
@@ -166,7 +181,11 @@ export const FinalCutPro: React.FC = () => {
 
     ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.font = '12px monospace';
-    ctx.fillText(`${Math.floor(currentFrame / fps)}:${String(Math.floor(currentFrame % fps)).padStart(2, '0')}`, 20, previewResolution.h - 20);
+    ctx.fillText(
+      `${Math.floor(currentFrame / fps)}:${String(Math.floor(currentFrame % fps)).padStart(2, '0')}`,
+      20,
+      previewResolution.h - 20,
+    );
 
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.strokeRect(0, 0, previewResolution.w, previewResolution.h);
@@ -177,7 +196,7 @@ export const FinalCutPro: React.FC = () => {
     setExportProgress(0);
     setExportDone(false);
     const interval = setInterval(() => {
-      setExportProgress(prev => {
+      setExportProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsExporting(false);
@@ -206,7 +225,11 @@ export const FinalCutPro: React.FC = () => {
     ctx.fillText('Final Cut Pro Export', canvas.width / 2, canvas.height / 2);
     ctx.font = `${canvas.width * 0.02}px system-ui`;
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText(`${exportPreset.resolution} • ${exportPreset.label}`, canvas.width / 2, canvas.height / 2 + canvas.height * 0.08);
+    ctx.fillText(
+      `${exportPreset.resolution} • ${exportPreset.label}`,
+      canvas.width / 2,
+      canvas.height / 2 + canvas.height * 0.08,
+    );
 
     const link = document.createElement('a');
     link.download = `golden-gate-export-${exportPreset.label.toLowerCase()}.mp4`;
@@ -220,26 +243,48 @@ export const FinalCutPro: React.FC = () => {
     const s = Math.floor(frame / fps);
     const m = Math.floor(s / 60);
     const sec = s % 60;
-    return `${m}:${String(sec).padStart(2, '0')}.${String(Math.floor((frame % fps) / fps * 100)).padStart(2, '0')}`;
+    return `${m}:${String(sec).padStart(2, '0')}.${String(Math.floor(((frame % fps) / fps) * 100)).padStart(2, '0')}`;
   };
 
   return (
     <div className="flex flex-col h-full w-full bg-[#1a1a1a] text-white select-none">
       <div className="h-10 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 gap-3 shrink-0">
         <div className="flex items-center gap-2">
-          <button onClick={() => setCurrentFrame(0)} className="px-2 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition">|◁</button>
+          <button
+            onClick={() => setCurrentFrame(0)}
+            className="px-2 py-1 rounded text-xs bg-[#3c3c3c] hover:bg-[#4a4a4a] transition"
+          >
+            |◁
+          </button>
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className={`px-3 py-1 rounded text-xs font-bold transition ${isPlaying ? 'bg-red-500 text-white' : 'bg-[#3c3c3c] hover:bg-[#4a4a4a]'}`}
-          >{isPlaying ? '■' : '▶'}</button>
+          >
+            {isPlaying ? '■' : '▶'}
+          </button>
         </div>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <div className="flex items-center gap-1 text-xs">
-          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">−</button>
+          <button
+            onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+            className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]"
+          >
+            −
+          </button>
           <span className="text-gray-400 w-8 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]">+</button>
+          <button
+            onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
+            className="px-1.5 py-0.5 rounded bg-[#3c3c3c] hover:bg-[#4a4a4a]"
+          >
+            +
+          </button>
         </div>
-        <ImportFileButton createNode={createNode} parentId="movies" accept=".mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav" onImport={(file, dataUrl) => addClipFromFile(file.name, dataUrl)} />
+        <ImportFileButton
+          createNode={createNode}
+          parentId="movies"
+          accept=".mp4,.mov,.webm,.png,.jpeg,.jpg,.webp,.mp3,.wav"
+          onImport={(file, dataUrl) => addClipFromFile(file.name, dataUrl)}
+        />
         <button
           onClick={() => {
             const project = { clips, currentFrame, TIMELINE_DURATION, fps };
@@ -250,12 +295,20 @@ export const FinalCutPro: React.FC = () => {
           💾 Save
         </button>
         <div className="flex-1" />
-        <span className="text-xs text-gray-400">{timeStr(currentFrame)} / {timeStr(TIMELINE_DURATION)}</span>
+        <span className="text-xs text-gray-400">
+          {timeStr(currentFrame)} / {timeStr(TIMELINE_DURATION)}
+        </span>
         <div className="w-px h-5 bg-[#3c3c3c]" />
         <button
-          onClick={() => { setShowExport(true); setExportDone(false); setExportProgress(0); }}
+          onClick={() => {
+            setShowExport(true);
+            setExportDone(false);
+            setExportProgress(0);
+          }}
           className="px-3 py-1 rounded text-xs bg-orange-600 hover:bg-orange-500 transition font-medium"
-        >Export</button>
+        >
+          Export
+        </button>
       </div>
 
       <div className="flex-1 flex min-h-0">
@@ -267,8 +320,11 @@ export const FinalCutPro: React.FC = () => {
             {mediaItems.length === 0 ? (
               <div className="text-xs text-gray-500 text-center py-8">Drop files here</div>
             ) : (
-              mediaItems.map(item => (
-                <div key={item.name} className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] cursor-pointer text-xs">
+              mediaItems.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] cursor-pointer text-xs"
+                >
                   <span>{item.type === 'audio' ? '🎵' : item.type === 'image' ? '🖼️' : '🎬'}</span>
                   <span className="truncate">{item.name}</span>
                 </div>
@@ -279,20 +335,36 @@ export const FinalCutPro: React.FC = () => {
             Effects
           </div>
           <div className="p-3 space-y-1">
-            {mediaItems.length > 0 && ['Cross Dissolve', 'Fade', 'Blur', 'Chromatic'].map(effect => (
-              <div key={effect} className="text-xs text-gray-400 hover:text-white cursor-pointer py-0.5 px-2 rounded hover:bg-[#2a2a2a]">{effect}</div>
-            ))}
-            {mediaItems.length === 0 && <div className="text-xs text-gray-500 text-center py-4">Import media first</div>}
+            {mediaItems.length > 0 &&
+              ['Cross Dissolve', 'Fade', 'Blur', 'Chromatic'].map((effect) => (
+                <div
+                  key={effect}
+                  className="text-xs text-gray-400 hover:text-white cursor-pointer py-0.5 px-2 rounded hover:bg-[#2a2a2a]"
+                >
+                  {effect}
+                </div>
+              ))}
+            {mediaItems.length === 0 && (
+              <div className="text-xs text-gray-500 text-center py-4">Import media first</div>
+            )}
           </div>
         </div>
 
         <div className="flex-1 flex flex-col min-w-0">
           <div className="flex-1 flex items-center justify-center bg-black p-4">
-            <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/5" style={{ width: previewResolution.w, height: previewResolution.h }}>
+            <div
+              className="relative rounded-lg overflow-hidden shadow-2xl border border-white/5"
+              style={{ width: previewResolution.w, height: previewResolution.h }}
+            >
               {activeClipAtFrame?.contentUrl && (
                 <video ref={videoRef} className="absolute inset-0 w-full h-full object-contain" muted playsInline />
               )}
-              <canvas ref={canvasRef} width={previewResolution.w} height={previewResolution.h} className="absolute inset-0" />
+              <canvas
+                ref={canvasRef}
+                width={previewResolution.w}
+                height={previewResolution.h}
+                className="absolute inset-0"
+              />
               <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             </div>
           </div>
@@ -309,22 +381,28 @@ export const FinalCutPro: React.FC = () => {
             <div className="flex-1 relative overflow-x-auto">
               <div className="relative h-full" style={{ width: TIMELINE_DURATION * 5 * zoom }}>
                 {[...Array(3)].map((_, trackIdx) => (
-                  <div key={trackIdx} className="h-8 border-b border-[#2a2a2a] relative" style={{ backgroundColor: trackIdx % 2 === 0 ? '#1e1e1e' : '#222' }}>
-                    {clips.filter(c => c.track === trackIdx).map(clip => (
-                      <div
-                        key={clip.id}
-                        onClick={() => setSelectedClip(clip.id)}
-                        className={`absolute top-0.5 bottom-0.5 rounded flex items-center px-2 cursor-pointer text-[10px] font-medium truncate border-l-2 transition ${selectedClip === clip.id ? 'ring-1 ring-white' : ''}`}
-                        style={{
-                          left: clip.start * 5 * zoom,
-                          width: clip.duration * 5 * zoom,
-                          backgroundColor: clip.color + '44',
-                          borderLeftColor: clip.color,
-                        }}
-                      >
-                        {clip.name}
-                      </div>
-                    ))}
+                  <div
+                    key={trackIdx}
+                    className="h-8 border-b border-[#2a2a2a] relative"
+                    style={{ backgroundColor: trackIdx % 2 === 0 ? '#1e1e1e' : '#222' }}
+                  >
+                    {clips
+                      .filter((c) => c.track === trackIdx)
+                      .map((clip) => (
+                        <div
+                          key={clip.id}
+                          onClick={() => setSelectedClip(clip.id)}
+                          className={`absolute top-0.5 bottom-0.5 rounded flex items-center px-2 cursor-pointer text-[10px] font-medium truncate border-l-2 transition ${selectedClip === clip.id ? 'ring-1 ring-white' : ''}`}
+                          style={{
+                            left: clip.start * 5 * zoom,
+                            width: clip.duration * 5 * zoom,
+                            backgroundColor: clip.color + '44',
+                            borderLeftColor: clip.color,
+                          }}
+                        >
+                          {clip.name}
+                        </div>
+                      ))}
                   </div>
                 ))}
                 <div
@@ -339,11 +417,17 @@ export const FinalCutPro: React.FC = () => {
                 min={0}
                 max={TIMELINE_DURATION - 1}
                 value={currentFrame}
-                onChange={(e) => { setCurrentFrame(parseInt(e.target.value)); setIsPlaying(false); }}
+                onChange={(e) => {
+                  setCurrentFrame(parseInt(e.target.value));
+                  setIsPlaying(false);
+                }}
                 className="absolute inset-0 w-full opacity-0 cursor-pointer z-10"
               />
               <div className="flex-1 mx-2 h-1 bg-[#333] rounded relative">
-                <div className="h-full bg-blue-500 rounded" style={{ width: `${(currentFrame / TIMELINE_DURATION) * 100}%` }} />
+                <div
+                  className="h-full bg-blue-500 rounded"
+                  style={{ width: `${(currentFrame / TIMELINE_DURATION) * 100}%` }}
+                />
               </div>
             </div>
           </div>
@@ -351,12 +435,18 @@ export const FinalCutPro: React.FC = () => {
       </div>
 
       {showExport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => !isExporting && setShowExport(false)}>
-          <div className="bg-[#252525] rounded-2xl border border-[#444] shadow-2xl p-6 w-96" onClick={e => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => !isExporting && setShowExport(false)}
+        >
+          <div
+            className="bg-[#252525] rounded-2xl border border-[#444] shadow-2xl p-6 w-96"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-lg font-bold mb-4">Export</h2>
 
             <div className="space-y-3 mb-6">
-              {EXPORT_PRESETS.map(preset => (
+              {EXPORT_PRESETS.map((preset) => (
                 <button
                   key={preset.label}
                   onClick={() => setExportPreset(preset)}
@@ -371,7 +461,10 @@ export const FinalCutPro: React.FC = () => {
             {isExporting && (
               <div className="mb-4">
                 <div className="h-2 bg-[#333] rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full transition-all duration-200" style={{ width: `${exportProgress}%` }} />
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all duration-200"
+                    style={{ width: `${exportProgress}%` }}
+                  />
                 </div>
                 <p className="text-xs text-gray-400 mt-1 text-center">{exportProgress}%</p>
               </div>
@@ -387,17 +480,39 @@ export const FinalCutPro: React.FC = () => {
             <div className="flex gap-2">
               {!isExporting && !exportDone && (
                 <>
-                  <button onClick={handleExport} className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-medium transition">Export</button>
-                  <button onClick={() => setShowExport(false)} className="flex-1 py-2.5 rounded-xl bg-[#3c3c3c] hover:bg-[#4a4a4a] text-sm transition">Cancel</button>
+                  <button
+                    onClick={handleExport}
+                    className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-medium transition"
+                  >
+                    Export
+                  </button>
+                  <button
+                    onClick={() => setShowExport(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-[#3c3c3c] hover:bg-[#4a4a4a] text-sm transition"
+                  >
+                    Cancel
+                  </button>
                 </>
               )}
               {isExporting && (
-                <button disabled className="flex-1 py-2.5 rounded-xl bg-blue-600/50 text-sm cursor-not-allowed">Exporting...</button>
+                <button disabled className="flex-1 py-2.5 rounded-xl bg-blue-600/50 text-sm cursor-not-allowed">
+                  Exporting...
+                </button>
               )}
               {exportDone && (
                 <>
-                  <button onClick={handleDownloadMock} className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-sm font-medium transition">Download</button>
-                  <button onClick={() => setShowExport(false)} className="flex-1 py-2.5 rounded-xl bg-[#3c3c3c] hover:bg-[#4a4a4a] text-sm transition">Close</button>
+                  <button
+                    onClick={handleDownloadMock}
+                    className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-sm font-medium transition"
+                  >
+                    Download
+                  </button>
+                  <button
+                    onClick={() => setShowExport(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-[#3c3c3c] hover:bg-[#4a4a4a] text-sm transition"
+                  >
+                    Close
+                  </button>
                 </>
               )}
             </div>

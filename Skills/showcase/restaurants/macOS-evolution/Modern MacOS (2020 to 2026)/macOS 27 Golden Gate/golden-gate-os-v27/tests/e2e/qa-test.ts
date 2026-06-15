@@ -168,6 +168,7 @@ async function run() {
       fail('Responsiveness', vp.label, e.message);
     }
   }
+  void responsivePass;
 
   // ─── SECTION 8: Launch multiple apps ───
   const launchLimit = 4;

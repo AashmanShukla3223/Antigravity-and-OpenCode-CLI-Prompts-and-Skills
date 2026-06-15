@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  Search01Icon, 
-  ComputerTerminal01Icon, 
-  DashboardSquare01Icon, 
-  File01Icon, 
+import {
+  Search01Icon,
+  ComputerTerminal01Icon,
+  DashboardSquare01Icon,
+  File01Icon,
   Database01Icon,
   StarIcon,
   PlayIcon,
   Activity01Icon,
   Tick01Icon,
-  Wallet01Icon
+  Wallet01Icon,
 } from 'hugeicons-react';
 import { ApplePayFramework } from './AppleWallet';
 
@@ -24,13 +24,69 @@ interface AppItem {
 }
 
 const apps: AppItem[] = [
-  { id: 'xcode', name: 'Xcode', category: 'Developer Tools', icon: <ComputerTerminal01Icon size={40} />, color: 'bg-blue-600', price: 'Free', rating: 4.8 },
-  { id: 'wallet', name: 'Apple Wallet', category: 'Finance', icon: <Wallet01Icon size={40} />, color: 'bg-zinc-900', price: 'Free', rating: 4.9 },
-  { id: 'keynote', name: 'Keynote', category: 'Productivity', icon: <DashboardSquare01Icon size={40} />, color: 'bg-blue-500', price: 'Free', rating: 4.7 },
-  { id: 'pages', name: 'Pages', category: 'Productivity', icon: <File01Icon size={40} />, color: 'bg-orange-500', price: 'Free', rating: 4.6 },
-  { id: 'numbers', name: 'Numbers', category: 'Productivity', icon: <Database01Icon size={40} />, color: 'bg-green-500', price: 'Free', rating: 4.6 },
-  { id: 'finalcut', name: 'Final Cut Pro', category: 'Video', icon: <PlayIcon size={40} />, color: 'bg-black', price: '$299.99', rating: 4.9 },
-  { id: 'logic', name: 'Logic Pro', category: 'Music', icon: <Activity01Icon size={40} />, color: 'bg-gray-800', price: '$199.99', rating: 4.9 },
+  {
+    id: 'xcode',
+    name: 'Xcode',
+    category: 'Developer Tools',
+    icon: <ComputerTerminal01Icon size={40} />,
+    color: 'bg-blue-600',
+    price: 'Free',
+    rating: 4.8,
+  },
+  {
+    id: 'wallet',
+    name: 'Apple Wallet',
+    category: 'Finance',
+    icon: <Wallet01Icon size={40} />,
+    color: 'bg-zinc-900',
+    price: 'Free',
+    rating: 4.9,
+  },
+  {
+    id: 'keynote',
+    name: 'Keynote',
+    category: 'Productivity',
+    icon: <DashboardSquare01Icon size={40} />,
+    color: 'bg-blue-500',
+    price: 'Free',
+    rating: 4.7,
+  },
+  {
+    id: 'pages',
+    name: 'Pages',
+    category: 'Productivity',
+    icon: <File01Icon size={40} />,
+    color: 'bg-orange-500',
+    price: 'Free',
+    rating: 4.6,
+  },
+  {
+    id: 'numbers',
+    name: 'Numbers',
+    category: 'Productivity',
+    icon: <Database01Icon size={40} />,
+    color: 'bg-green-500',
+    price: 'Free',
+    rating: 4.6,
+  },
+  {
+    id: 'finalcut',
+    name: 'Final Cut Pro',
+    category: 'Video',
+    icon: <PlayIcon size={40} />,
+    color: 'bg-black',
+    price: '$299.99',
+    rating: 4.9,
+  },
+  {
+    id: 'logic',
+    name: 'Logic Pro',
+    category: 'Music',
+    icon: <Activity01Icon size={40} />,
+    color: 'bg-gray-800',
+    price: '$199.99',
+    rating: 4.9,
+  },
 ];
 
 export const AppStore: React.FC = () => {
@@ -60,16 +116,16 @@ export const AppStore: React.FC = () => {
         <div className="mb-6 px-2">
           <div className="relative">
             <Search01Icon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
-            <input 
-              type="text" 
-              placeholder="Search" 
+            <input
+              type="text"
+              placeholder="Search"
               className="w-full bg-zinc-200/50 dark:bg-white/10 border border-zinc-300 dark:border-white/10 rounded-md py-1 pl-8 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
-        
-        {['Discover', 'Arcade', 'Create', 'Work', 'Play', 'Develop', 'Categories', 'Updates'].map(tab => (
-          <div 
+
+        {['Discover', 'Arcade', 'Create', 'Work', 'Play', 'Develop', 'Categories', 'Updates'].map((tab) => (
+          <div
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-3 py-2 rounded-lg flex items-center gap-3 cursor-pointer transition-all ${activeTab === tab ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'hover:bg-zinc-200 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-400'}`}
@@ -87,19 +143,21 @@ export const AppStore: React.FC = () => {
           <div className="space-y-12">
             {/* Featured App */}
             <div className="relative w-full h-80 rounded-3xl overflow-hidden shadow-2xl group">
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-900" />
-               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1000')] bg-cover opacity-50 mix-blend-overlay group-hover:scale-105 transition-transform duration-1000" />
-               <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                  <div className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">Editor's Choice</div>
-                  <h2 className="text-5xl font-black text-white mb-4">Xcode 18</h2>
-                  <p className="text-white/80 text-lg max-w-md mb-6 leading-tight font-medium">Build the future of Golden Gate OS with Liquid Logic and Neural Autocomplete.</p>
-                  <button 
-                    onClick={() => handleBuyClick(apps[0])}
-                    className="w-32 h-10 bg-white text-blue-600 rounded-full font-bold text-sm hover:scale-105 transition shadow-xl flex items-center justify-center"
-                  >
-                    {purchasedApps.includes('xcode') ? <Tick01Icon size={20} /> : 'Get'}
-                  </button>
-               </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-900" />
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1000')] bg-cover opacity-50 mix-blend-overlay group-hover:scale-105 transition-transform duration-1000" />
+              <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                <div className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">Editor's Choice</div>
+                <h2 className="text-5xl font-black text-white mb-4">Xcode 18</h2>
+                <p className="text-white/80 text-lg max-w-md mb-6 leading-tight font-medium">
+                  Build the future of Golden Gate OS with Liquid Logic and Neural Autocomplete.
+                </p>
+                <button
+                  onClick={() => handleBuyClick(apps[0])}
+                  className="w-32 h-10 bg-white text-blue-600 rounded-full font-bold text-sm hover:scale-105 transition shadow-xl flex items-center justify-center"
+                >
+                  {purchasedApps.includes('xcode') ? <Tick01Icon size={20} /> : 'Get'}
+                </button>
+              </div>
             </div>
 
             {/* App Grid */}
@@ -109,9 +167,11 @@ export const AppStore: React.FC = () => {
                 <span className="text-blue-500 text-sm font-medium cursor-pointer hover:underline">See All</span>
               </div>
               <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                {apps.map(app => (
+                {apps.map((app) => (
                   <div key={app.id} className="flex items-center gap-4 group">
-                    <div className={`w-16 h-16 rounded-2xl ${app.color} flex items-center justify-center text-white shadow-lg border border-white/20 group-hover:scale-105 transition-transform`}>
+                    <div
+                      className={`w-16 h-16 rounded-2xl ${app.color} flex items-center justify-center text-white shadow-lg border border-white/20 group-hover:scale-105 transition-transform`}
+                    >
                       {app.icon}
                     </div>
                     <div className="flex-1">
@@ -119,19 +179,25 @@ export const AppStore: React.FC = () => {
                       <div className="text-xs text-zinc-500 dark:text-zinc-400 mb-1">{app.category}</div>
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <StarIcon key={i} size={8} className={i < Math.floor(app.rating) ? "text-blue-500 fill-blue-500" : "text-zinc-300"} />
+                          <StarIcon
+                            key={i}
+                            size={8}
+                            className={i < Math.floor(app.rating) ? 'text-blue-500 fill-blue-500' : 'text-zinc-300'}
+                          />
                         ))}
                         <span className="text-[10px] font-bold text-zinc-400 ml-1">45K</span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                       <button 
-                         onClick={() => handleBuyClick(app)}
-                         className="px-4 py-1 bg-zinc-200 dark:bg-white/10 rounded-full text-blue-500 dark:text-blue-400 font-bold text-xs hover:bg-zinc-300 dark:hover:bg-white/20 transition-colors uppercase tracking-wider min-w-[80px] flex justify-center"
-                       >
-                         {purchasedApps.includes(app.id) ? <Tick01Icon size={14} /> : app.price}
-                       </button>
-                       <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">In-App Purchases</span>
+                      <button
+                        onClick={() => handleBuyClick(app)}
+                        className="px-4 py-1 bg-zinc-200 dark:bg-white/10 rounded-full text-blue-500 dark:text-blue-400 font-bold text-xs hover:bg-zinc-300 dark:hover:bg-white/20 transition-colors uppercase tracking-wider min-w-[80px] flex justify-center"
+                      >
+                        {purchasedApps.includes(app.id) ? <Tick01Icon size={14} /> : app.price}
+                      </button>
+                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">
+                        In-App Purchases
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -142,7 +208,7 @@ export const AppStore: React.FC = () => {
       </div>
 
       {showApplePay && selectedApp && (
-        <ApplePayFramework 
+        <ApplePayFramework
           amount={selectedApp.price}
           itemName={selectedApp.name}
           onSuccess={handlePaymentSuccess}

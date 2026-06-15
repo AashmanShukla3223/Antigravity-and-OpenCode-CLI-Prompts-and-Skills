@@ -17,14 +17,17 @@ export const Calculator: React.FC = () => {
     return str;
   };
 
-  const inputDigit = useCallback((digit: string) => {
-    if (waitingForOperand) {
-      setDisplay(digit);
-      setWaitingForOperand(false);
-    } else {
-      setDisplay(prev => prev === '0' ? digit : prev + digit);
-    }
-  }, [waitingForOperand]);
+  const inputDigit = useCallback(
+    (digit: string) => {
+      if (waitingForOperand) {
+        setDisplay(digit);
+        setWaitingForOperand(false);
+      } else {
+        setDisplay((prev) => (prev === '0' ? digit : prev + digit));
+      }
+    },
+    [waitingForOperand],
+  );
 
   const inputDecimal = useCallback(() => {
     if (waitingForOperand) {
@@ -33,7 +36,7 @@ export const Calculator: React.FC = () => {
       return;
     }
     if (!display.includes('.')) {
-      setDisplay(prev => prev + '.');
+      setDisplay((prev) => prev + '.');
     }
   }, [display, waitingForOperand]);
 
@@ -45,7 +48,7 @@ export const Calculator: React.FC = () => {
   }, []);
 
   const toggleSign = useCallback(() => {
-    setDisplay(prev => {
+    setDisplay((prev) => {
       if (prev === '0') return prev;
       return prev.startsWith('-') ? prev.slice(1) : '-' + prev;
     });
@@ -56,33 +59,45 @@ export const Calculator: React.FC = () => {
     setDisplay(formatNumber(value / 100));
   }, [display]);
 
-  const performOperation = useCallback((nextOperator: Operator) => {
-    const currentValue = parseFloat(display);
+  const performOperation = useCallback(
+    (nextOperator: Operator) => {
+      const currentValue = parseFloat(display);
 
-    if (prevValue !== null && operator && !waitingForOperand) {
-      let result: number;
-      switch (operator) {
-        case '+': result = prevValue + currentValue; break;
-        case '-': result = prevValue - currentValue; break;
-        case '×': result = prevValue * currentValue; break;
-        case '÷': result = prevValue / currentValue; break;
-        default: result = currentValue;
+      if (prevValue !== null && operator && !waitingForOperand) {
+        let result: number;
+        switch (operator) {
+          case '+':
+            result = prevValue + currentValue;
+            break;
+          case '-':
+            result = prevValue - currentValue;
+            break;
+          case '×':
+            result = prevValue * currentValue;
+            break;
+          case '÷':
+            result = prevValue / currentValue;
+            break;
+          default:
+            result = currentValue;
+        }
+        setDisplay(formatNumber(result));
+        setPrevValue(result);
+      } else {
+        setPrevValue(currentValue);
       }
-      setDisplay(formatNumber(result));
-      setPrevValue(result);
-    } else {
-      setPrevValue(currentValue);
-    }
 
-    if (nextOperator === '=') {
-      setOperator(null);
-      setPrevValue(null);
-      setWaitingForOperand(true);
-    } else {
-      setOperator(nextOperator);
-      setWaitingForOperand(true);
-    }
-  }, [display, prevValue, operator, waitingForOperand]);
+      if (nextOperator === '=') {
+        setOperator(null);
+        setPrevValue(null);
+        setWaitingForOperand(true);
+      } else {
+        setOperator(nextOperator);
+        setWaitingForOperand(true);
+      }
+    },
+    [display, prevValue, operator, waitingForOperand],
+  );
 
   const btnClass = (type: 'number' | 'operator' | 'function') => {
     switch (type) {
@@ -122,9 +137,24 @@ export const Calculator: React.FC = () => {
           ÷
         </button>
 
-        <button onClick={() => inputDigit('7')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>7</button>
-        <button onClick={() => inputDigit('8')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>8</button>
-        <button onClick={() => inputDigit('9')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>9</button>
+        <button
+          onClick={() => inputDigit('7')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          7
+        </button>
+        <button
+          onClick={() => inputDigit('8')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          8
+        </button>
+        <button
+          onClick={() => inputDigit('9')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          9
+        </button>
         <button
           onClick={() => performOperation('×')}
           className={`${btnClass('operator')} h-[72px] rounded-full text-3xl font-medium ${isActiveOp('×') ? 'bg-white text-[#ff9f0a]' : ''}`}
@@ -132,9 +162,24 @@ export const Calculator: React.FC = () => {
           ×
         </button>
 
-        <button onClick={() => inputDigit('4')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>4</button>
-        <button onClick={() => inputDigit('5')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>5</button>
-        <button onClick={() => inputDigit('6')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>6</button>
+        <button
+          onClick={() => inputDigit('4')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          4
+        </button>
+        <button
+          onClick={() => inputDigit('5')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          5
+        </button>
+        <button
+          onClick={() => inputDigit('6')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          6
+        </button>
         <button
           onClick={() => performOperation('-')}
           className={`${btnClass('operator')} h-[72px] rounded-full text-3xl font-medium ${isActiveOp('-') ? 'bg-white text-[#ff9f0a]' : ''}`}
@@ -142,9 +187,24 @@ export const Calculator: React.FC = () => {
           −
         </button>
 
-        <button onClick={() => inputDigit('1')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>1</button>
-        <button onClick={() => inputDigit('2')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>2</button>
-        <button onClick={() => inputDigit('3')} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>3</button>
+        <button
+          onClick={() => inputDigit('1')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          1
+        </button>
+        <button
+          onClick={() => inputDigit('2')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          2
+        </button>
+        <button
+          onClick={() => inputDigit('3')}
+          className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}
+        >
+          3
+        </button>
         <button
           onClick={() => performOperation('+')}
           className={`${btnClass('operator')} h-[72px] rounded-full text-3xl font-medium ${isActiveOp('+') ? 'bg-white text-[#ff9f0a]' : ''}`}
@@ -152,8 +212,15 @@ export const Calculator: React.FC = () => {
           +
         </button>
 
-        <button onClick={() => inputDigit('0')} className={`${btnClass('number')} col-span-2 h-[72px] rounded-full text-3xl font-medium text-left pl-7`}>0</button>
-        <button onClick={inputDecimal} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>.</button>
+        <button
+          onClick={() => inputDigit('0')}
+          className={`${btnClass('number')} col-span-2 h-[72px] rounded-full text-3xl font-medium text-left pl-7`}
+        >
+          0
+        </button>
+        <button onClick={inputDecimal} className={`${btnClass('number')} h-[72px] rounded-full text-3xl font-medium`}>
+          .
+        </button>
         <button
           onClick={() => performOperation('=')}
           className={`${btnClass('operator')} h-[72px] rounded-full text-3xl font-medium ${isActiveOp('=') ? 'bg-white text-[#ff9f0a]' : ''}`}

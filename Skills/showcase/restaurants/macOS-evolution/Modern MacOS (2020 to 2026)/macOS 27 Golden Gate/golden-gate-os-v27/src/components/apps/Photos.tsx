@@ -15,7 +15,7 @@ export const Photos: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const imageFiles = useMemo(() => {
-    return nodes.filter(n => {
+    return nodes.filter((n) => {
       if (n.type !== 'file' || !n.content) return false;
       const ext = n.name.split('.').pop()?.toLowerCase() || '';
       return IMAGE_EXTS.includes(ext);
@@ -24,8 +24,8 @@ export const Photos: React.FC = () => {
 
   const albums = useMemo(() => {
     const names = new Set<string>();
-    imageFiles.forEach(n => {
-      const parent = nodes.find(p => p.id === n.parentId);
+    imageFiles.forEach((n) => {
+      const parent = nodes.find((p) => p.id === n.parentId);
       names.add(parent?.name || 'Other');
     });
     return Array.from(names).sort();
@@ -34,12 +34,12 @@ export const Photos: React.FC = () => {
   const filtered = useMemo(() => {
     let items = imageFiles;
     if (selectedAlbum) {
-      const parentIds = nodes.filter(p => p.name === selectedAlbum).map(p => p.id);
-      items = items.filter(n => parentIds.includes(n.parentId || ''));
+      const parentIds = nodes.filter((p) => p.name === selectedAlbum).map((p) => p.id);
+      items = items.filter((n) => parentIds.includes(n.parentId || ''));
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      items = items.filter(n => n.name.toLowerCase().includes(q));
+      items = items.filter((n) => n.name.toLowerCase().includes(q));
     }
     return items;
   }, [imageFiles, selectedAlbum, searchQuery, nodes]);
@@ -50,7 +50,7 @@ export const Photos: React.FC = () => {
     }
   }, [viewer]);
 
-  const viewerIndex = viewer ? filtered.findIndex(m => m.content === viewer.content) : -1;
+  const viewerIndex = viewer ? filtered.findIndex((m) => m.content === viewer.content) : -1;
 
   const navigateViewer = (dir: number) => {
     const next = viewerIndex + dir;
@@ -98,7 +98,7 @@ export const Photos: React.FC = () => {
                       All Photos
                     </span>
                   </div>
-                  {albums.map(album => (
+                  {albums.map((album) => (
                     <div
                       key={album}
                       onClick={() => setSelectedAlbum(album)}
@@ -143,7 +143,12 @@ export const Photos: React.FC = () => {
                   onClick={() => setViewer({ content: item.content!, title: item.name })}
                   className="aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/10 group cursor-pointer relative"
                 >
-                  <img src={getNodeContent(item.content)} alt={item.name} className="w-full h-full object-contain" loading="lazy" />
+                  <img
+                    src={getNodeContent(item.content)}
+                    alt={item.name}
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
                   <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="text-xs font-bold text-white drop-shadow-lg">{item.name}</span>
                   </div>
@@ -176,18 +181,41 @@ export const Photos: React.FC = () => {
             </button>
 
             {viewerIndex > 0 && (
-              <button onClick={(e) => { e.stopPropagation(); navigateViewer(-1); }} className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateViewer(-1);
+                }}
+                className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
               </button>
             )}
 
-            <div className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center p-8" onClick={(e) => e.stopPropagation()}>
-              <img src={getNodeContent(viewer.content)} alt={viewer.title} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl" />
+            <div
+              className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={getNodeContent(viewer.content)}
+                alt={viewer.title}
+                className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+              />
             </div>
 
             {viewerIndex < filtered.length - 1 && (
-              <button onClick={(e) => { e.stopPropagation(); navigateViewer(1); }} className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateViewer(1);
+                }}
+                className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
               </button>
             )}
 

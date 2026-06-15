@@ -39,49 +39,72 @@ const ALL_APPS = [
   { id: 'logicpro', name: 'Logic Pro' },
   { id: 'photobooth', name: 'Photo Booth' },
   { id: 'chess', name: 'Chess' },
+  { id: 'minecraft', name: 'Minecraft' },
+  { id: 'books', name: 'Books' },
+  { id: 'wallet', name: 'Wallet' },
+  { id: 'calculator', name: 'Calculator' },
+  { id: 'clock', name: 'Clock' },
+  { id: 'itunes', name: 'iTunes Store' },
+  { id: 'crazyerrors', name: 'Crazy Errors' },
+  { id: 'soundtest', name: 'Sound Test' },
+  { id: 'weather', name: 'Weather' },
+  { id: 'reminders', name: 'Reminders' },
+  { id: 'stickies', name: 'Stickies' },
+  { id: 'terminal', name: 'Terminal' },
+  { id: 'activitymonitor', name: 'Activity Monitor' },
+  { id: 'timemachine', name: 'Time Machine' },
+  { id: 'diskutility', name: 'Disk Utility' },
+  { id: 'installer', name: 'Installer' },
 ];
 
 export const Dock: React.FC = () => {
-  const { launchApp, activeApp, unminimizeWindow, minimizedWindows, openWindows, launchingApp, systemState, setContextMenu } = useSystem();
+  const {
+    launchApp,
+    activeApp,
+    unminimizeWindow,
+    minimizedWindows,
+    openWindows,
+    launchingApp,
+    systemState,
+    userPinnedApps,
+    setContextMenu,
+  } = useSystem();
   const [reveal, setReveal] = useState(false);
   const { getDirectoryContents } = useFileSystem();
-  
+
   const trashContents = getDirectoryContents('trash');
   const isTrashFull = trashContents.length > 0;
 
-  const dockAppsIds = Array.from(new Set([...systemState.pinnedApps, ...systemState.runningApps]));
-  const dockApps = dockAppsIds
-    .map(id => ALL_APPS.find(a => a.id === id))
-    .filter(Boolean) as { id: string, name: string }[];
+  const dockAppsIds = Array.from(new Set([...userPinnedApps, ...systemState.runningApps]));
+  const dockApps = dockAppsIds.map((id) => ALL_APPS.find((a) => a.id === id)).filter(Boolean) as {
+    id: string;
+    name: string;
+  }[];
 
-  const finalApps = [
-    { id: 'finder', name: 'Finder' },
-    ...dockApps,
-    { id: 'github', name: 'GitHub' }
-  ].filter((app, index, self) => 
-    index === self.findIndex((t) => t.id === app.id)
+  const finalApps = [{ id: 'finder', name: 'Finder' }, { id: 'launchpad', name: 'Launchpad' }, ...dockApps, { id: 'github', name: 'GitHub' }].filter(
+    (app, index, self) => index === self.findIndex((t) => t.id === app.id),
   );
 
   const mouseX = useMotionValue(Infinity);
-  
+
   const handleAppClick = (appId: string) => {
     if (appId === 'github') {
-      window.location.href = 'https://github.com/AashmanShukla3223';
+      window.location.assign('https://github.com/AashmanShukla3223');
       return;
     }
     if (appId === 'finder') {
-        launchApp('finder');
-        return;
+      launchApp('finder');
+      return;
     }
     if (appId === 'trash') {
-       launchApp('finder');
-       window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'trash' }));
-       return;
+      launchApp('finder');
+      window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'trash' }));
+      return;
     }
     if (appId === 'downloads') {
-       launchApp('finder');
-       window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'downloads' }));
-       return;
+      launchApp('finder');
+      window.dispatchEvent(new CustomEvent('finder-navigate', { detail: 'downloads' }));
+      return;
     }
     launchApp(appId);
   };
@@ -97,122 +120,124 @@ export const Dock: React.FC = () => {
   return (
     <nav
       className="absolute bottom-0 w-full flex justify-center z-40 pointer-events-none"
-      onMouseEnter={() => { if (systemState.dockHidden) setReveal(true); }}
-      onMouseLeave={() => { if (systemState.dockHidden) setReveal(false); }}
+      onMouseEnter={() => {
+        if (systemState.dockHidden) setReveal(true);
+      }}
+      onMouseLeave={() => {
+        if (systemState.dockHidden) setReveal(false);
+      }}
     >
       {isHidden ? (
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
-      <div 
-        data-testid="dock"
-        role="navigation"
-        aria-label="Application Dock"
-        className="mb-4 flex items-end gap-0.5 px-1.5 py-1.5 rounded-2xl bg-white/10 dark:bg-black/20 backdrop-blur-[var(--glass-blur)] border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide"
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-      >
-        {finalApps.map((app) => (
-          app.id === 'github' ? (
-            <a
-              key={app.id}
-              href="https://github.com/AashmanShukla3223"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pointer-events-auto"
-            >
+        <div
+          data-testid="dock"
+          role="navigation"
+          aria-label="Application Dock"
+          className="mb-4 flex items-end gap-px px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] backdrop-blur-[var(--glass-blur)] border border-white/[0.12] shadow-[0_15px_40px_rgba(0,0,0,0.6),0_0_1px_rgba(255,255,255,0.1)] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent"
+          onMouseMove={(e) => mouseX.set(e.pageX)}
+          onMouseLeave={() => mouseX.set(Infinity)}
+        >
+          {finalApps.map((app) =>
+            app.id === 'github' ? (
+              <a
+                key={app.id}
+                href="https://github.com/AashmanShukla3223"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pointer-events-auto"
+              >
+                <DockIcon
+                  app={app}
+                  mouseX={mouseX}
+                  isRunning={false}
+                  isMinimized={false}
+                  isActive={false}
+                  isLaunching={false}
+                  magnifierEnabled={systemState.dockMagnifier}
+                  dockSpeed={systemState.dockSpeed}
+                  dockSize={systemState.dockSize}
+                  onClick={() => {}}
+                  onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
+                />
+              </a>
+            ) : (
               <DockIcon
+                key={app.id}
                 app={app}
                 mouseX={mouseX}
-                isRunning={false}
+                isRunning={systemState.runningApps.includes(app.id)}
                 isMinimized={false}
-                isActive={false}
-                isLaunching={false}
+                isActive={activeApp === app.id}
+                isLaunching={launchingApp === app.id}
                 magnifierEnabled={systemState.dockMagnifier}
                 dockSpeed={systemState.dockSpeed}
                 dockSize={systemState.dockSize}
-                onClick={() => {}}
+                onClick={() => handleAppClick(app.id)}
                 onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
               />
-            </a>
-          ) : (
-          <DockIcon 
-            key={app.id} 
-            app={app} 
-            mouseX={mouseX} 
-            isRunning={systemState.runningApps.includes(app.id)}
+            ),
+          )}
+
+          <div className="w-[1px] h-8 bg-white/15 mx-1 self-center" />
+
+          <AnimatePresence mode="popLayout">
+            {minimizedWindows.map((wId) => {
+              const win = openWindows.find((w) => w.id === wId);
+              const appName = win?.appId || wId;
+              return (
+                <motion.div
+                  key={`minimized-${wId}`}
+                  initial={{ width: 0, opacity: 0, scale: 0.5 }}
+                  animate={{ width: 'auto', opacity: 1, scale: 1 }}
+                  exit={{ width: 0, opacity: 0, scale: 0 }}
+                  className="flex items-center overflow-hidden"
+                >
+                  <div className="mx-0.5">
+                    <DockIcon
+                      app={{ id: appName, name: appName }}
+                      mouseX={mouseX}
+                      isOpen={true}
+                      isMinimized={false}
+                      isActive={false}
+                      magnifierEnabled={systemState.dockMagnifier}
+                      dockSpeed={systemState.dockSpeed}
+                      dockSize={systemState.dockSize}
+                      onClick={() => unminimizeWindow(wId)}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+
+          {minimizedWindows.length > 0 && <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />}
+
+          <DockIcon
+            app={{ id: 'downloads', name: 'Downloads' }}
+            mouseX={mouseX}
+            isOpen={false}
             isMinimized={false}
-            isActive={activeApp === app.id}
-            isLaunching={launchingApp === app.id}
+            isActive={activeApp === 'downloads'}
             magnifierEnabled={systemState.dockMagnifier}
             dockSpeed={systemState.dockSpeed}
             dockSize={systemState.dockSize}
-            onClick={() => handleAppClick(app.id)}
-            onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
+            onClick={() => handleAppClick('downloads')}
           />
-          )
-        ))}
-        
-        <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
 
-        <AnimatePresence mode="popLayout">
-          {minimizedWindows.map((wId) => {
-            const win = openWindows.find(w => w.id === wId);
-            const appName = win?.appId || wId;
-            return (
-              <motion.div
-                key={`minimized-${wId}`}
-                initial={{ width: 0, opacity: 0, scale: 0.5 }}
-                animate={{ width: 'auto', opacity: 1, scale: 1 }}
-                exit={{ width: 0, opacity: 0, scale: 0 }}
-                className="flex items-center overflow-hidden"
-              >
-                <div className="mx-0.5">
-                  <DockIcon 
-                    app={{ id: appName, name: appName }} 
-                    mouseX={mouseX} 
-                    isOpen={true}
-                    isMinimized={false}
-                    isActive={false}
-                    magnifierEnabled={systemState.dockMagnifier}
-                    dockSpeed={systemState.dockSpeed}
-                    dockSize={systemState.dockSize}
-                    onClick={() => unminimizeWindow(wId)}
-                  />
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        {minimizedWindows.length > 0 && (
-          <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />
-        )}
-        
-        <DockIcon 
-          app={{ id: 'downloads', name: 'Downloads' }} 
-          mouseX={mouseX} 
-          isOpen={false}
-          isMinimized={false}
-          isActive={activeApp === 'downloads'}
-          magnifierEnabled={systemState.dockMagnifier}
-          dockSpeed={systemState.dockSpeed}
-          dockSize={systemState.dockSize}
-          onClick={() => handleAppClick('downloads')}
-        />
-
-        <DockIcon 
-          app={{ id: 'trash', name: 'Trash' }} 
-          mouseX={mouseX} 
-          isOpen={false}
-          isMinimized={false}
-          isFull={isTrashFull}
-          isActive={activeApp === 'trash'}
-          magnifierEnabled={systemState.dockMagnifier}
-          dockSpeed={systemState.dockSpeed}
-          dockSize={systemState.dockSize}
-          onClick={() => handleAppClick('trash')}
-        />
-      </div>
+          <DockIcon
+            app={{ id: 'trash', name: 'Trash' }}
+            mouseX={mouseX}
+            isOpen={false}
+            isMinimized={false}
+            isFull={isTrashFull}
+            isActive={activeApp === 'trash'}
+            magnifierEnabled={systemState.dockMagnifier}
+            dockSpeed={systemState.dockSpeed}
+            dockSize={systemState.dockSize}
+            onClick={() => handleAppClick('trash')}
+          />
+        </div>
       )}
     </nav>
   );
@@ -228,7 +253,20 @@ const SIZE_CONFIGS: Record<string, { base: number; hover: number }> = {
   large: { base: 48, hover: 72 },
 };
 
-const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLaunching, magnifierEnabled, dockSpeed, dockSize, onClick, onContextMenu }: any) => {
+const DockIcon = ({
+  app,
+  mouseX,
+  isRunning,
+  isMinimized,
+  isFull,
+  isActive,
+  isLaunching,
+  magnifierEnabled,
+  dockSpeed,
+  dockSize,
+  onClick,
+  onContextMenu,
+}: any) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const sizeConfig = SIZE_CONFIGS[dockSize] || SIZE_CONFIGS.large;
@@ -242,7 +280,9 @@ const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLau
   const widthSync = useTransform(
     distance,
     [-150, 0, 150],
-    magnifierEnabled ? [sizeConfig.base, sizeConfig.hover, sizeConfig.base] : [sizeConfig.base, sizeConfig.base, sizeConfig.base]
+    magnifierEnabled
+      ? [sizeConfig.base, sizeConfig.hover, sizeConfig.base]
+      : [sizeConfig.base, sizeConfig.base, sizeConfig.base],
   );
   const width = useSpring(widthSync, springConfig);
 
@@ -258,10 +298,14 @@ const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLau
       <motion.div
         ref={ref}
         style={{ width, height: width }}
-        animate={isLaunching ? { 
-          y: [0, -20, 0],
-          transition: { repeat: Infinity, duration: 0.5, ease: "easeOut" }
-        } : { y: 0 }}
+        animate={
+          isLaunching
+            ? {
+                y: [0, -20, 0],
+                transition: { repeat: Infinity, duration: 0.5, ease: 'easeOut' },
+              }
+            : { y: 0 }
+        }
         className={`relative flex items-center justify-center cursor-pointer
           ${isActive ? 'bg-white/20 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
@@ -275,9 +319,11 @@ const DockIcon = ({ app, mouseX, isRunning, isMinimized, isFull, isActive, isLau
       >
         <AppIcon id={app.id} size={sizeConfig.base} isFull={isFull} />
       </motion.div>
-      
+
       {isRunning && (
-        <div className={`absolute -bottom-1.5 w-1 h-1 bg-white/80 rounded-full shadow-[0_0_5px_white] transition-opacity ${isMinimized ? 'opacity-30' : 'opacity-100'}`} />
+        <div
+          className={`absolute -bottom-1.5 w-1 h-1 bg-white/80 rounded-full shadow-[0_0_5px_white] transition-opacity ${isMinimized ? 'opacity-30' : 'opacity-100'}`}
+        />
       )}
     </div>
   );

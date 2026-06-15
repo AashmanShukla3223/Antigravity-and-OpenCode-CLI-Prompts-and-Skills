@@ -27,7 +27,7 @@ export const EKGCanvas: React.FC = () => {
 
       // Map telemetry to EKG values
       const skipBeat = telemetry.isStuttering;
-      const frequency = 0.05 + (telemetry.cpuPressure * 0.1); // Wave frequency
+      const frequency = 0.05 + telemetry.cpuPressure * 0.1; // Wave frequency
       const amplitudeMultiplier = skipBeat ? 0 : 1 + (telemetry.heapUsage / (telemetry.heapLimit || 1)) * 2;
 
       // Update xOffset based on delta and fps (simulate pulse movement)
@@ -39,15 +39,19 @@ export const EKGCanvas: React.FC = () => {
       // EKG formula
       const t = xOffsetRef.current * frequency;
       const baseY = height / 2;
-      
+
       // Simple EKG shape simulation
       let yOffset = 0;
       const period = t % 10;
       if (!skipBeat) {
-        if (period > 1 && period < 1.5) yOffset = -10 * amplitudeMultiplier; // P wave
-        else if (period > 2 && period < 2.5) yOffset = 5 * amplitudeMultiplier; // Q dip
-        else if (period >= 2.5 && period < 3) yOffset = -40 * amplitudeMultiplier; // R spike
-        else if (period >= 3 && period < 3.5) yOffset = 15 * amplitudeMultiplier; // S dip
+        if (period > 1 && period < 1.5)
+          yOffset = -10 * amplitudeMultiplier; // P wave
+        else if (period > 2 && period < 2.5)
+          yOffset = 5 * amplitudeMultiplier; // Q dip
+        else if (period >= 2.5 && period < 3)
+          yOffset = -40 * amplitudeMultiplier; // R spike
+        else if (period >= 3 && period < 3.5)
+          yOffset = 15 * amplitudeMultiplier; // S dip
         else if (period > 5 && period < 6) yOffset = -15 * amplitudeMultiplier; // T wave
       }
 
@@ -57,7 +61,7 @@ export const EKGCanvas: React.FC = () => {
       pathRef.current.push({ x: x + xOffsetRef.current, y });
 
       // Keep only points that fit in width
-      pathRef.current = pathRef.current.filter(p => (p.x - xOffsetRef.current) > 0);
+      pathRef.current = pathRef.current.filter((p) => p.x - xOffsetRef.current > 0);
 
       // Clear canvas
       ctx.clearRect(0, 0, width, height);
@@ -66,11 +70,13 @@ export const EKGCanvas: React.FC = () => {
       ctx.strokeStyle = 'rgba(0, 255, 0, 0.1)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      for(let i = 0; i < width; i+=20) {
-        ctx.moveTo(i, 0); ctx.lineTo(i, height);
+      for (let i = 0; i < width; i += 20) {
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, height);
       }
-      for(let i = 0; i < height; i+=20) {
-        ctx.moveTo(0, i); ctx.lineTo(width, i);
+      for (let i = 0; i < height; i += 20) {
+        ctx.moveTo(0, i);
+        ctx.lineTo(width, i);
       }
       ctx.stroke();
 
@@ -103,13 +109,7 @@ export const EKGCanvas: React.FC = () => {
       <div className="absolute top-2 left-2 text-[10px] font-mono text-green-500 z-10 opacity-70">
         FPS: {telemetry.fps} | HEAP: {telemetry.heapUsage}MB | DELTA: {Math.round(telemetry.frameDelta)}ms
       </div>
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full"
-        width={400}
-        height={100}
-        style={{ display: 'block' }}
-      />
+      <canvas ref={canvasRef} className="w-full h-full" width={400} height={100} style={{ display: 'block' }} />
     </div>
   );
 };

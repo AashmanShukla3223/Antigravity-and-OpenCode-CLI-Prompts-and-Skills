@@ -15,7 +15,7 @@ export const RestartDialog: React.FC = () => {
     let timer: any;
     if (showRestartDialog) {
       timer = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             handleRestart();
             return 0;
@@ -50,38 +50,36 @@ export const RestartDialog: React.FC = () => {
           style={{ backdropFilter: 'blur(40px)' }}
         >
           <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-8 border border-white/10 shadow-inner">
-            <ReloadIcon 
-              size={40} 
-              className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" 
-            />
+            <ReloadIcon size={40} className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]" />
           </div>
-          
+
           <h2 className="text-2xl font-black mb-3 tracking-tight">Restart Mac</h2>
           <p className="text-white/50 text-sm leading-relaxed mb-10 px-4">
-            Are you sure you want to restart your computer now? It will restart automatically in <span className="text-white font-bold">{countdown}</span> seconds.
+            Are you sure you want to restart your computer now? It will restart automatically in{' '}
+            <span className="text-white font-bold">{countdown}</span> seconds.
           </p>
 
           <div className="flex flex-col gap-4 w-full">
             <div className="flex gap-3 w-full">
               {!systemState.isSystemInfected && (
-                <button 
+                <button
                   onClick={() => setShowRestartDialog(false)}
                   className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border border-white/10"
                 >
                   Cancel
                 </button>
               )}
-              <button 
+              <button
                 onClick={handleRestart}
                 className="flex-1 h-12 bg-white text-black hover:bg-white/90 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-white/10"
               >
                 Restart Now
               </button>
             </div>
-            
+
             <div className="h-[1px] w-full bg-white/10 my-2" />
 
-            <button 
+            <button
               onClick={handleRecovery}
               className="w-full h-12 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-red-500/10"
             >

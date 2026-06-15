@@ -18,7 +18,7 @@ export const contacts: Contact[] = [
     phone: '+91 88743 XXXXX',
     email: 'chairman@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'chairman@icloud.com'
+    faceTime: 'chairman@icloud.com',
   },
   // --- C-Suite & SVPs (Teachers) ---
   {
@@ -29,7 +29,7 @@ export const contacts: Contact[] = [
     phone: '+91 88408 XXXXX',
     email: 'sonia.bajpai@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'sonia.bajpai@icloud.com'
+    faceTime: 'sonia.bajpai@icloud.com',
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'devyani.trivedi@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'devyani.trivedi@icloud.com'
+    faceTime: 'devyani.trivedi@icloud.com',
   },
   {
     id: 4,
@@ -49,7 +49,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'green.pandey@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'green.pandey@icloud.com'
+    faceTime: 'green.pandey@icloud.com',
   },
   {
     id: 5,
@@ -59,7 +59,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'nishi.garg@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'nishi.garg@icloud.com'
+    faceTime: 'nishi.garg@icloud.com',
   },
   {
     id: 6,
@@ -69,7 +69,7 @@ export const contacts: Contact[] = [
     phone: '+91 97944 XXXXX',
     email: 'shalu.bhatia@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'shalu.bhatia@icloud.com'
+    faceTime: 'shalu.bhatia@icloud.com',
   },
   {
     id: 7,
@@ -79,7 +79,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'aaditya.kumar@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'aaditya.kumar@icloud.com'
+    faceTime: 'aaditya.kumar@icloud.com',
   },
   {
     id: 8,
@@ -89,7 +89,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'iti.bhattarchrjee@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'iti.bhattarchrjee@icloud.com'
+    faceTime: 'iti.bhattarchrjee@icloud.com',
   },
   {
     id: 9,
@@ -99,7 +99,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'abhishiri.agrawal@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'abhishiri.agrawal@icloud.com'
+    faceTime: 'abhishiri.agrawal@icloud.com',
   },
   {
     id: 10,
@@ -109,7 +109,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'ekta.bhudwani@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'ekta.bhudwani@icloud.com'
+    faceTime: 'ekta.bhudwani@icloud.com',
   },
   {
     id: 11,
@@ -119,7 +119,7 @@ export const contacts: Contact[] = [
     phone: '+91 88088 XXXXX',
     email: 'neeta.garg@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'neeta.garg@icloud.com'
+    faceTime: 'neeta.garg@icloud.com',
   },
   // --- Department Leads & VPs (Students) ---
   {
@@ -130,7 +130,7 @@ export const contacts: Contact[] = [
     phone: '+91 82996 XXXXX',
     email: 'kritharth.tiwari@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'kritharth.tiwari@icloud.com'
+    faceTime: 'kritharth.tiwari@icloud.com',
   },
   {
     id: 12,
@@ -140,7 +140,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'reyansh.rampuria@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'reyansh.rampuria@icloud.com'
+    faceTime: 'reyansh.rampuria@icloud.com',
   },
   {
     id: 13,
@@ -150,7 +150,7 @@ export const contacts: Contact[] = [
     phone: '+91 87560 XXXXX',
     email: 'afifa.khan@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'afifa.khan@icloud.com'
+    faceTime: 'afifa.khan@icloud.com',
   },
   {
     id: 14,
@@ -160,7 +160,7 @@ export const contacts: Contact[] = [
     phone: '+91 73768 XXXXX',
     email: 'vanya.chaudhary@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'vanya.chaudhary@icloud.com'
+    faceTime: 'vanya.chaudhary@icloud.com',
   },
   {
     id: 15,
@@ -170,7 +170,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'reyansh.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'reyansh.gupta@icloud.com'
+    faceTime: 'reyansh.gupta@icloud.com',
   },
   {
     id: 16,
@@ -180,7 +180,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'shivoy.malodia@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'shivoy.malodia@icloud.com'
+    faceTime: 'shivoy.malodia@icloud.com',
   },
   {
     id: 17,
@@ -190,7 +190,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'ginni.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'ginni.gupta@icloud.com'
+    faceTime: 'ginni.gupta@icloud.com',
   },
   {
     id: 18,
@@ -200,7 +200,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'yusuf.swami@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'yusuf.swami@icloud.com'
+    faceTime: 'yusuf.swami@icloud.com',
   },
   {
     id: 19,
@@ -210,7 +210,7 @@ export const contacts: Contact[] = [
     phone: '+91 91409 XXXXX',
     email: 'aaradhay.shukla@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'aaradhay.shukla@icloud.com'
+    faceTime: 'aaradhay.shukla@icloud.com',
   },
   {
     id: 20,
@@ -220,7 +220,7 @@ export const contacts: Contact[] = [
     phone: '+91 97951 XXXXX',
     email: 'samriddhi.verma@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'samriddhi.verma@icloud.com'
+    faceTime: 'samriddhi.verma@icloud.com',
   },
   {
     id: 21,
@@ -230,7 +230,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'shreya.verma@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'shreya.verma@icloud.com'
+    faceTime: 'shreya.verma@icloud.com',
   },
   {
     id: 22,
@@ -240,7 +240,7 @@ export const contacts: Contact[] = [
     phone: '+91 97920 XXXXX',
     email: 'diya.tandon@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'diya.tandon@icloud.com'
+    faceTime: 'diya.tandon@icloud.com',
   },
   {
     id: 23,
@@ -250,7 +250,7 @@ export const contacts: Contact[] = [
     phone: '+91 79824 XXXXX',
     email: 'mishthi.sharma@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'mishthi.sharma@icloud.com'
+    faceTime: 'mishthi.sharma@icloud.com',
   },
   {
     id: 24,
@@ -260,7 +260,7 @@ export const contacts: Contact[] = [
     phone: '+91 88876 XXXXX',
     email: 'rudra.kumar@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'rudra.kumar@icloud.com'
+    faceTime: 'rudra.kumar@icloud.com',
   },
   {
     id: 25,
@@ -270,7 +270,7 @@ export const contacts: Contact[] = [
     phone: '+91 73101 XXXXX',
     email: 'poorvika.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'poorvika.gupta@icloud.com'
+    faceTime: 'poorvika.gupta@icloud.com',
   },
   {
     id: 26,
@@ -280,7 +280,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'abdul.kabeer@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'abdul.kabeer@icloud.com'
+    faceTime: 'abdul.kabeer@icloud.com',
   },
   {
     id: 27,
@@ -290,7 +290,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'abdul.abaan@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'abdul.abaan@icloud.com'
+    faceTime: 'abdul.abaan@icloud.com',
   },
   {
     id: 28,
@@ -300,7 +300,7 @@ export const contacts: Contact[] = [
     phone: '+91 87956 XXXXX',
     email: 'aarav.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'aarav.gupta@icloud.com'
+    faceTime: 'aarav.gupta@icloud.com',
   },
   {
     id: 29,
@@ -310,7 +310,7 @@ export const contacts: Contact[] = [
     phone: '+91 63941 XXXXX',
     email: 'arnab.singh@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'arnab.singh@icloud.com'
+    faceTime: 'arnab.singh@icloud.com',
   },
   {
     id: 30,
@@ -320,7 +320,7 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'hassan.noor@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'hassan.noor@icloud.com'
+    faceTime: 'hassan.noor@icloud.com',
   },
   {
     id: 31,
@@ -330,15 +330,15 @@ export const contacts: Contact[] = [
     phone: '+91 98XXX XXXXX',
     email: 'swarn.gupta@icloud.com',
     work: 'Apple Park, Cupertino / Golden Gate Digital HQ',
-    faceTime: 'swarn.gupta@icloud.com'
-  }
+    faceTime: 'swarn.gupta@icloud.com',
+  },
 ];
 
 export const getAppContacts = (fullName?: string): Contact[] => {
   if (fullName) {
-    const matchedContact = contacts.find(c => c.name.toLowerCase() === fullName.toLowerCase());
+    const matchedContact = contacts.find((c) => c.name.toLowerCase() === fullName.toLowerCase());
     if (matchedContact) {
-      const rest = contacts.filter(c => c.id !== matchedContact.id);
+      const rest = contacts.filter((c) => c.id !== matchedContact.id);
       return [matchedContact, ...rest];
     }
   }

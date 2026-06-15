@@ -47,7 +47,10 @@ export const VMwareFusionPro: React.FC = () => {
         <>
           <div className="h-10 bg-[#2d2d2d] border-b border-[#3c3c3c] flex items-center px-4 gap-3 shrink-0">
             <button
-              onClick={() => { setActiveVM(null); setShowUpgrade(false); }}
+              onClick={() => {
+                setActiveVM(null);
+                setShowUpgrade(false);
+              }}
               className="flex items-center gap-1.5 px-3 py-1 bg-[#3c3c3c] hover:bg-[#4a4a4a] rounded text-xs font-medium transition"
             >
               <ArrowLeft01Icon size={14} />
@@ -81,7 +84,9 @@ export const VMwareFusionPro: React.FC = () => {
               <div className="bg-[#2d2d2d] border border-[#3c3c3c] rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
                 <div className="text-4xl mb-4 text-center">🌉</div>
                 <h2 className="text-xl font-bold text-center mb-2">macOS Golden Gate</h2>
-                <p className="text-sm text-white/60 text-center mb-6">Version 27.0 — A new era of silicon-native glass.</p>
+                <p className="text-sm text-white/60 text-center mb-6">
+                  Version 27.0 — A new era of silicon-native glass.
+                </p>
                 <div className="space-y-3">
                   <div className="bg-white/5 rounded-xl p-4 text-sm space-y-2">
                     <div className="flex items-center gap-3">
@@ -118,13 +123,17 @@ export const VMwareFusionPro: React.FC = () => {
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <div className="mb-8 text-center">
             <div className="w-16 h-16 rounded-2xl bg-[#3c3c3c] flex items-center justify-center text-2xl mx-auto mb-4 border border-[#4a4a4a]">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
             </div>
             <h1 className="text-2xl font-bold">VMware Fusion Pro</h1>
             <p className="text-white/40 text-sm mt-1">Select a virtual machine to start</p>
           </div>
           <div className="flex gap-6">
-            {VMS.map(vm => (
+            {VMS.map((vm) => (
               <button
                 key={vm.id}
                 onClick={() => launchVM(vm)}
