@@ -67,34 +67,19 @@ const EmulatorGameCard = ({ game, onClick }: { game: string; onClick: () => void
   );
 };
 
-const EmulatorView: React.FC<{ game: EmulatorGame; onBack: () => void }> = ({ game, onBack }) => {
+function openEmulatorPopup(game: string) {
   const g = EMULATOR_GAMES[game];
-  return (
-    <div className="flex flex-col h-full w-full bg-zinc-900">
-      <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-lg text-xs transition text-white/70 hover:text-white"
-        >
-          <ArrowLeft01Icon size={14} /> Back to Emulator
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-white/40">{g.system}</span>
-          <h3 className="text-sm font-bold">{g.title}</h3>
-        </div>
-        <div className="text-xs text-white/30 italic">Load your own ROM</div>
-      </div>
-      <div className="flex-1 bg-black/50 relative">
-        <iframe
-          src={g.url}
-          className="w-full h-full border-0"
-          title={g.title}
-          allow="autoplay; clipboard-write; encrypted-media; gamepad; pointer-lock"
-        />
-      </div>
-    </div>
+  if (!g) return;
+  const w = Math.min(1024, window.screen.availWidth * 0.9);
+  const h = Math.min(720, window.screen.availHeight * 0.9);
+  const left = (window.screen.availWidth - w) / 2;
+  const top = (window.screen.availHeight - h) / 2;
+  window.open(
+    g.url,
+    'EmulatorJS',
+    `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no,resizable=yes`
   );
-};
+}
 
 const SnakeGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const GRID = 20;
@@ -391,7 +376,6 @@ const TicTacToe: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 export const Games: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<GameType>(null);
   const [activeTab, setActiveTab] = useState<'native' | 'emulator'>('native');
-  const [activeEmulator, setActiveEmulator] = useState<EmulatorGame | null>(null);
   const [paid, setPaid] = useState(() => localStorage.getItem(STORAGE_KEY) === 'true');
 
   if (!paid) {
@@ -413,10 +397,6 @@ export const Games: React.FC = () => {
         </button>
       </div>
     );
-  }
-
-  if (activeEmulator) {
-    return <EmulatorView game={activeEmulator} onBack={() => setActiveEmulator(null)} />;
   }
 
   if (selectedGame === 'snake') return <SnakeGame onBack={() => setSelectedGame(null)} />;
@@ -496,9 +476,9 @@ export const Games: React.FC = () => {
               Load your own game ROMs and play them in browser-based emulators
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
-              <EmulatorGameCard game="ps2" onClick={() => setActiveEmulator('ps2')} />
-              <EmulatorGameCard game="psp" onClick={() => setActiveEmulator('psp')} />
-              <EmulatorGameCard game="ps1" onClick={() => setActiveEmulator('ps1')} />
+              <EmulatorGameCard game="ps2" onClick={() => openEmulatorPopup('ps2')} />
+              <EmulatorGameCard game="psp" onClick={() => openEmulatorPopup('psp')} />
+              <EmulatorGameCard game="ps1" onClick={() => openEmulatorPopup('ps1')} />
             </div>
           </motion.div>
         )}
