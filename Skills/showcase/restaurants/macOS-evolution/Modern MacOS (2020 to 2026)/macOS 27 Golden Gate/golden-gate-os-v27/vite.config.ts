@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-const COOP_HEADERS = {
+const EMU_HEADERS = {
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Embedder-Policy': 'credentialless',
 };
@@ -12,8 +12,8 @@ const emulatorHeadersPlugin = () => ({
   configureServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
       if (req.url?.startsWith('/emulatorjs/')) {
-        res.setHeader('Cross-Origin-Opener-Policy', COOP_HEADERS['Cross-Origin-Opener-Policy']);
-        res.setHeader('Cross-Origin-Embedder-Policy', COOP_HEADERS['Cross-Origin-Embedder-Policy']);
+        res.setHeader('Cross-Origin-Opener-Policy', EMU_HEADERS['Cross-Origin-Opener-Policy']);
+        res.setHeader('Cross-Origin-Embedder-Policy', EMU_HEADERS['Cross-Origin-Embedder-Policy']);
       }
       next();
     });
@@ -21,8 +21,8 @@ const emulatorHeadersPlugin = () => ({
   configurePreviewServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
       if (req.url?.startsWith('/emulatorjs/')) {
-        res.setHeader('Cross-Origin-Opener-Policy', COOP_HEADERS['Cross-Origin-Opener-Policy']);
-        res.setHeader('Cross-Origin-Embedder-Policy', COOP_HEADERS['Cross-Origin-Embedder-Policy']);
+        res.setHeader('Cross-Origin-Opener-Policy', EMU_HEADERS['Cross-Origin-Opener-Policy']);
+        res.setHeader('Cross-Origin-Embedder-Policy', EMU_HEADERS['Cross-Origin-Embedder-Policy']);
       }
       next();
     });
@@ -42,8 +42,5 @@ const cacheAssetsPlugin = () => ({
 });
 
 export default defineConfig({
-  server: {
-    headers: COOP_HEADERS,
-  },
   plugins: [react(), tailwindcss(), emulatorHeadersPlugin(), cacheAssetsPlugin()],
 });

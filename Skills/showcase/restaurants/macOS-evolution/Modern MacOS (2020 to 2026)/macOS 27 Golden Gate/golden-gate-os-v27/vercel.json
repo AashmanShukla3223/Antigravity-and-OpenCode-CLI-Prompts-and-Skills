@@ -1,28 +1,4 @@
 {
-  "headers": [
-    {
-      "source": "/version.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Embedder-Policy",
-          "value": "credentialless"
-        }
-      ]
-    }
-  ],
   "rewrites": [
     { "source": "/version.json", "destination": "/version.json" },
     { "source": "/_vercel/(.*)", "destination": "/_vercel/$1" },

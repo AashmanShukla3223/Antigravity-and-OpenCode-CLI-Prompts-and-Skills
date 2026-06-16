@@ -8,6 +8,8 @@ type EmulatorGame = 'ps2' | 'psp' | 'ps1';
 
 const STORAGE_KEY = 'golden_gate_games_unlocked';
 
+const EMULATOR_BASE = import.meta.env.VITE_EMULATOR_BASE_URL ?? '/emulatorjs';
+
 const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: string; icon: string; url: string; color: string }> = {
   ps2: {
     title: 'Space Shooter (PS2)',
@@ -22,7 +24,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Cars 2 via EmulatorJS — load your own PSP ISO in the emulator',
     system: 'PSP',
     icon: '🏎️',
-    url: '/emulatorjs/player.html?system=psp&v=12',
+    url: `${EMULATOR_BASE}/player.html?system=psp&v=12`,
     color: 'from-blue-900/50 to-blue-700/30',
   },
   ps1: {
@@ -30,7 +32,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Gran Turismo 2 via EmulatorJS — load your own PS1 ROM in the emulator',
     system: 'PlayStation',
     icon: '🏁',
-    url: '/emulatorjs/player.html?system=psx&v=12',
+    url: `${EMULATOR_BASE}/player.html?system=psx&v=12`,
     color: 'from-emerald-900/50 to-emerald-700/30',
   },
 };
@@ -87,7 +89,7 @@ const EmulatorView: React.FC<{ game: EmulatorGame; onBack: () => void }> = ({ ga
           src={g.url}
           className="w-full h-full border-0"
           title={g.title}
-          allow="autoplay; clipboard-write; encrypted-media; gamepad; pointer-lock; cross-origin-isolated"
+          allow="autoplay; clipboard-write; encrypted-media; gamepad; pointer-lock"
         />
       </div>
     </div>
