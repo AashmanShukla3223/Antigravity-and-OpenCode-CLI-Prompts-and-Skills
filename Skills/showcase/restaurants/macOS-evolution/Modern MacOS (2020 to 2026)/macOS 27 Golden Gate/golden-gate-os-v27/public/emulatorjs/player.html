@@ -82,6 +82,11 @@
     log('SharedArrayBuffer:', typeof SharedArrayBuffer);
     log('User agent:', navigator.userAgent);
 
+    fetch(window.location.href).then(r => {
+      log('COOP header:', r.headers.get('cross-origin-opener-policy'));
+      log('COEP header:', r.headers.get('cross-origin-embedder-policy'));
+    });
+
     function setStatus(txt) { status.textContent = txt; }
 
     function setProgress(pctVal) {
@@ -128,21 +133,42 @@
       setTimeout(() => $('overlay').classList.add('hidden'), 400);
     }
 
-    function openFilePicker() {
-      log('openFilePicker - user clicked Browse Files');
+    function loadRomFromPicker(file) {
+      log('loadRomFromPicker:', file.name, (file.size / 1024 / 1024).toFixed(1) + 'MB');
+      const url = URL.createObjectURL(file);
+      window.EJS_gameUrl = url;
+      window.EJS_startOnLoaded = true;
+      log('EJS_gameUrl set to blob URL, fading overlay in 600ms');
       showGameLoading();
-      $('overlay').classList.add('hidden');
       setTimeout(() => {
-        const game = document.getElementById('game');
-        const allInteractive = game.querySelectorAll('button, [tabindex]:not([tabindex="-1"]), a, [role="button"], input, [onclick]');
-        log('Interactive elements:', allInteractive.length);
-        allInteractive.forEach((el, i) => {
-          const text = (el.textContent || '').trim().slice(0, 50);
-          const id = el.id || '';
-          const cls = (el.className || '').slice(0, 40);
-          if (text || id) log(`  #${i}:`, el.tagName, `id="${id}"`, `class="${cls}"`, `text="${text}"`);
-        });
-      }, 500);
+        $('overlay').classList.add('hidden');
+        setTimeout(() => {
+          log('Searching for triggerable emulator elements...');
+          const game = document.getElementById('game');
+          const buttons = game.querySelectorAll('.ejs_start, .ejs_play, [class*="start"], [onclick*="start"], [onclick*="play"]');
+          for (const b of buttons) {
+            const text = (b.textContent || '').trim();
+            if (text) {
+              log('  Found potential trigger:', b.tagName, text.slice(0, 40));
+              b.click();
+              break;
+            }
+          }
+        }, 500);
+      }, 600);
+    }
+
+    function openFilePicker() {
+      log('openFilePicker');
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.iso,.cso,.chd,.bin,.cue,.img,.pkg,.zip,.7z,.rom,.pbp,.elf,.prx';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        loadRomFromPicker(file);
+      };
+      input.click();
     }
 
     function pollResources() {
@@ -164,6 +190,7 @@
 
     window.EJS_player = '#game';
     window.EJS_core = system;
+    window.EJS_gameUrl = '';
     window.EJS_gameID = 'golden-gate-v27';
     window.EJS_pathtodata = CDN + '/stable/data/';
     window.EJS_oldShell = false;
