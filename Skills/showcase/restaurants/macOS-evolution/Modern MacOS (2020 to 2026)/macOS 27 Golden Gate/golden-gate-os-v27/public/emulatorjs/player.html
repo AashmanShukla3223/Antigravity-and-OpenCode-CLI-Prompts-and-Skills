@@ -133,28 +133,41 @@
       setTimeout(() => $('overlay').classList.add('hidden'), 400);
     }
 
+    let _EJS_gameUrl = '';
+    Object.defineProperty(window, 'EJS_gameUrl', {
+      get() {
+        const val = _EJS_gameUrl;
+        if (val && val.startsWith('blob:')) {
+          log('EJS_gameUrl READ (blob, length=' + val.length + ')');
+        } else {
+          log('EJS_gameUrl READ:', JSON.stringify(val));
+        }
+        return val;
+      },
+      set(v) {
+        log('EJS_gameUrl SET:', v ? (typeof v === 'string' ? JSON.stringify(v.slice(0, 60)) : typeof v) : 'null/undefined');
+        _EJS_gameUrl = v;
+      },
+      configurable: true,
+      enumerable: true
+    });
+
     function loadRomFromPicker(file) {
       log('loadRomFromPicker:', file.name, (file.size / 1024 / 1024).toFixed(1) + 'MB');
       const url = URL.createObjectURL(file);
+      log('blob URL created:', url.slice(0, 60) + '...');
+      fetch(url).then(r => {
+        log('Blob fetch OK:', r.status, r.headers.get('content-type'));
+      }).catch(e => {
+        err('Blob fetch FAILED:', e.message);
+      });
       window.EJS_gameUrl = url;
       window.EJS_startOnLoaded = true;
-      log('EJS_gameUrl set to blob URL, fading overlay in 600ms');
+      log('EJS_gameUrl set, fading overlay in 600ms');
       showGameLoading();
       setTimeout(() => {
+        log('Hiding overlay now');
         $('overlay').classList.add('hidden');
-        setTimeout(() => {
-          log('Searching for triggerable emulator elements...');
-          const game = document.getElementById('game');
-          const buttons = game.querySelectorAll('.ejs_start, .ejs_play, [class*="start"], [onclick*="start"], [onclick*="play"]');
-          for (const b of buttons) {
-            const text = (b.textContent || '').trim();
-            if (text) {
-              log('  Found potential trigger:', b.tagName, text.slice(0, 40));
-              b.click();
-              break;
-            }
-          }
-        }, 500);
       }, 600);
     }
 
@@ -192,6 +205,7 @@
     window.EJS_core = system;
     window.EJS_gameUrl = '';
     window.EJS_gameID = 'golden-gate-v27';
+    log('EJS_gameUrl proxied with getter/setter logging');
     window.EJS_pathtodata = CDN + '/stable/data/';
     window.EJS_oldShell = false;
     window.EJS_startOnLoaded = false;
