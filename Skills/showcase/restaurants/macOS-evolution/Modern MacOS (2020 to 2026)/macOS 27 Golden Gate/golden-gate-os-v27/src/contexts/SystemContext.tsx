@@ -32,7 +32,6 @@ export const DEFAULT_PINNED_APPS = [
   'xcode',
   'samsunglcdtv',
   'github',
-  'minecraft',
 ];
 
 export interface UserAccount {
