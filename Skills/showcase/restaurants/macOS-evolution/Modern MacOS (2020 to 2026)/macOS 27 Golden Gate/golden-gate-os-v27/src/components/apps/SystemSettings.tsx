@@ -11,7 +11,6 @@ import {
   ArrowRight01Icon,
   BatteryCharging01Icon,
   FlashIcon,
-  UserIcon,
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 import type { UserAccount } from '../../contexts/SystemContext';

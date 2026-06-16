@@ -662,6 +662,7 @@ function StopwatchTab() {
   const [laps, setLaps] = useState<number[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
+  const elapsedBeforeRef = useRef(0);
 
   const timeRef = useRef(0);
 

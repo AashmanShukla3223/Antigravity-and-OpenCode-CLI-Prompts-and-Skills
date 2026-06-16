@@ -27,7 +27,7 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Messages: React.FC = () => {
-  const { launchApp, systemState, activeUser } = useSystem();
+  const { launchApp, activeUser } = useSystem();
   const appContacts = getAppContacts(activeUser.fullName);
   const [selectedContact, setSelectedContact] = useState(appContacts[0]);
   const [inputText, setInputText] = useState('');

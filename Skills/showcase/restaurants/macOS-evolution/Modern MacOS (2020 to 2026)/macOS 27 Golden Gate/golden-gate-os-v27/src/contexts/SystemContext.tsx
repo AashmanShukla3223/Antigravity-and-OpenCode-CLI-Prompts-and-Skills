@@ -332,7 +332,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         state.pinnedApps = ['launchpad', ...state.pinnedApps];
       }
 
-      state.users = state.users.map((u) =>
+      state.users = state.users.map((u: UserAccount) =>
         u.pinnedApps ? u : { ...u, pinnedApps: [...state.pinnedApps] },
       );
       return state;

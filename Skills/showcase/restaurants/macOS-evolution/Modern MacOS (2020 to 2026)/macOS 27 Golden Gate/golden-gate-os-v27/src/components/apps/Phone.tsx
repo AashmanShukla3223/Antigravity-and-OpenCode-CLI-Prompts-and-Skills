@@ -37,7 +37,7 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Phone: React.FC = () => {
-  const { launchApp, setIncomingCall, systemState, activeUser } = useSystem();
+  const { launchApp, setIncomingCall, activeUser } = useSystem();
   const appContacts = getAppContacts(activeUser.fullName);
   const [selectedId, setSelectedId] = useState(appContacts[0].id);
   const [searchQuery, setSearchQuery] = useState('');

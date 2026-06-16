@@ -5,7 +5,7 @@ import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { Tick01Icon, Cancel01Icon, LockKeyIcon } from 'hugeicons-react';
 
 export const Installer: React.FC = () => {
-  const { closeCurrentWindow, updateSystemState, triggerSystemError, systemState, activeUser } = useSystem();
+  const { closeCurrentWindow, updateSystemState, triggerSystemError, activeUser } = useSystem();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);

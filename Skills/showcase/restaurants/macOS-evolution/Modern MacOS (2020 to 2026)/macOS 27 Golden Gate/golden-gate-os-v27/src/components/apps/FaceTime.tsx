@@ -37,7 +37,7 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const FaceTime: React.FC = () => {
-  const { updateSystemState, systemState, launchApp, setIncomingCall, activeUser } = useSystem();
+  const { updateSystemState, launchApp, setIncomingCall, activeUser } = useSystem();
   const appContacts = getAppContacts(activeUser.fullName);
   const videoRef = useRef<HTMLVideoElement>(null);
   const ringtoneRef = useRef<HTMLAudioElement | null>(null);

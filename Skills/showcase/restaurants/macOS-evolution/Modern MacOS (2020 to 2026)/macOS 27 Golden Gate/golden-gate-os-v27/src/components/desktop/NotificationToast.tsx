@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Notification } from '../contexts/SystemContext';
+import type { Notification } from '../../contexts/SystemContext';
 
 const APP_LABELS: Record<string, string> = {
   mail: 'MAIL',

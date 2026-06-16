@@ -43,7 +43,7 @@ export const SetupAssistant: React.FC = () => {
           restoreSystemNodes();
           updateSystemState({
             setup_complete: true,
-            user: userData,
+            users: [{ ...userData, id: crypto.randomUUID() }],
           });
           setBootState('desktop'); // Fade straight into the Desktop as per PRD
         } catch (e) {
@@ -508,7 +508,7 @@ export const SetupAssistant: React.FC = () => {
                     restoreSystemNodes();
                     updateSystemState({
                       setup_complete: true,
-                      user: { fullName, accountName, password, avatar: selectedEmoji },
+                      users: [{ fullName, accountName, password, avatar: selectedEmoji, id: crypto.randomUUID() }],
                     });
                     console.log('Setup: Transitioning to desktop');
                     setBootState('desktop');

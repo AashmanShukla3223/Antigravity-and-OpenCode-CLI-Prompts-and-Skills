@@ -4,7 +4,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const CrazyErrors: React.FC = () => {
-  const { closeCurrentWindow, systemState, triggerSystemError, updateSystemState, activeUser } = useSystem();
+  const { closeCurrentWindow, triggerSystemError, updateSystemState, activeUser } = useSystem();
   const [stage, setStage] = useState<'stage1' | 'stage2' | 'storm'>('stage1');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);

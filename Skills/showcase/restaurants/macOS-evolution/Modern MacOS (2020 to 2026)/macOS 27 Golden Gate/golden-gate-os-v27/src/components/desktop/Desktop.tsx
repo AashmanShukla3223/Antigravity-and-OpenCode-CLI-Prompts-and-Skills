@@ -59,6 +59,7 @@ export const Desktop: React.FC = () => {
     prevSong,
     activeUser,
     updateUser,
+    setShowNotificationCenter,
   } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -633,7 +634,7 @@ export const Desktop: React.FC = () => {
         onClick={() => {
           if (pendingToast) {
             launchApp(pendingToast.appId);
-            updateSystemState({ showNotificationCenter: true });
+                    setShowNotificationCenter(true);
             dismissToast();
           }
         }}

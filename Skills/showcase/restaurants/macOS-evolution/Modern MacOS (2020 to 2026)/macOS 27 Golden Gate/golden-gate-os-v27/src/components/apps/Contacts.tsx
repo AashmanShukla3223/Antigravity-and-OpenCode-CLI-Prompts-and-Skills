@@ -34,7 +34,7 @@ const colors = [
 const getContactColor = (id: number) => colors[id % colors.length];
 
 export const Contacts: React.FC = () => {
-  const { launchApp, systemState, activeUser } = useSystem();
+  const { launchApp, activeUser } = useSystem();
   const appContacts = getAppContacts(activeUser.fullName);
   const [selectedId, setSelectedId] = useState(appContacts[0].id);
   const selected = appContacts.find((c) => c.id === selectedId) || appContacts[0];

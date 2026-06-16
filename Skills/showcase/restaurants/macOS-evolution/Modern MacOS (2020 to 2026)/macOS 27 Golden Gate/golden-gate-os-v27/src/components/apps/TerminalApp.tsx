@@ -3,7 +3,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 
 export const TerminalApp: React.FC = () => {
-  const { bootState, systemState, launchApp, setBootState, battery, hardware, uptime, activeUser } = useSystem();
+  const { bootState, launchApp, setBootState, battery, hardware, uptime, activeUser } = useSystem();
   const { getDirectoryContents, nodes } = useFileSystem();
 
   const isRecovery = bootState === 'recovery';
