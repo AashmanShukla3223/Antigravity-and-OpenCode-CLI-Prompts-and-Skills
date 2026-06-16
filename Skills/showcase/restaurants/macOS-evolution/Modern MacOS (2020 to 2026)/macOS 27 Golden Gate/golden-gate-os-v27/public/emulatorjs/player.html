@@ -84,10 +84,8 @@
     log('crossOriginIsolated:', window.crossOriginIsolated);
     log('SharedArrayBuffer:', typeof SharedArrayBuffer);
 
-    fetch(window.location.href, { method: 'HEAD' }).then(r => {
-      log('COOP:', r.headers.get('cross-origin-opener-policy'));
-      log('COEP:', r.headers.get('cross-origin-embedder-policy'));
-    }).catch(e => log('Header check failed:', e.message));
+    log('COOP check: navigator.crossOriginIsolated =', window.crossOriginIsolated);
+    log('SAB check: typeof SharedArrayBuffer =', typeof SharedArrayBuffer);
 
     let _EJS_gameUrl = '';
     let _pendingGameUrl = null;
