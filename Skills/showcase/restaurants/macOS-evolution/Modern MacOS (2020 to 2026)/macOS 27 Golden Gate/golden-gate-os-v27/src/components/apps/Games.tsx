@@ -22,7 +22,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Cars 2 via EmulatorJS — load your own PSP ISO in the emulator',
     system: 'PSP',
     icon: '🏎️',
-    url: '/emulatorjs/player.html?system=psp&v=4',
+    url: '/emulatorjs/player.html?system=psp&v=6',
     color: 'from-blue-900/50 to-blue-700/30',
   },
   ps1: {
@@ -30,7 +30,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Gran Turismo 2 via EmulatorJS — load your own PS1 ROM in the emulator',
     system: 'PlayStation',
     icon: '🏁',
-    url: '/emulatorjs/player.html?system=psx&v=4',
+    url: '/emulatorjs/player.html?system=psx&v=6',
     color: 'from-emerald-900/50 to-emerald-700/30',
   },
 };

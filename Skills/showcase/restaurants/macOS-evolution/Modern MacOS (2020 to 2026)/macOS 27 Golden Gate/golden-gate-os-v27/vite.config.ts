@@ -9,6 +9,15 @@ const COOP_HEADERS = {
 
 const emulatorHeadersPlugin = () => ({
   name: 'emulator-headers',
+  configureServer(server: any) {
+    server.middlewares.use((req: any, res: any, next: any) => {
+      if (req.url?.startsWith('/emulatorjs/')) {
+        res.setHeader('Cross-Origin-Opener-Policy', COOP_HEADERS['Cross-Origin-Opener-Policy']);
+        res.setHeader('Cross-Origin-Embedder-Policy', COOP_HEADERS['Cross-Origin-Embedder-Policy']);
+      }
+      next();
+    });
+  },
   configurePreviewServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
       if (req.url?.startsWith('/emulatorjs/')) {

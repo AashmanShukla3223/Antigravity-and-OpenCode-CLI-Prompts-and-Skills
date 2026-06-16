@@ -80,7 +80,7 @@
     const progressGroup = $('progressGroup');
     const browseBtn = $('browseBtn');
 
-    log('v3 — Page loaded, system:', new URLSearchParams(window.location.search).get('system') || 'psx');
+    log('v6 — Page loaded, system:', new URLSearchParams(window.location.search).get('system') || 'psx');
     log('crossOriginIsolated:', window.crossOriginIsolated);
     log('SharedArrayBuffer:', typeof SharedArrayBuffer);
 
@@ -90,6 +90,7 @@
     });
 
     let _EJS_gameUrl = '';
+    let _pendingGameUrl = null;
     Object.defineProperty(window, 'EJS_gameUrl', {
       get() {
         const val = _EJS_gameUrl;
@@ -108,18 +109,6 @@
       configurable: true,
       enumerable: true
     });
-
-    const _origFetch = window.fetch.bind(window);
-    window.fetch = function(input, init) {
-      const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
-      const isEmpty = !url || url === '' || url === 'about:blank';
-      if (isEmpty && _EJS_gameUrl && _EJS_gameUrl.startsWith('blob:')) {
-        log('fetch-intercept: empty URL → blob URL');
-        return _origFetch(_EJS_gameUrl, init);
-      }
-      return _origFetch(input, init);
-    };
-    log('fetch interceptor installed');
 
     function setStatus(txt) { status.textContent = txt; }
 
@@ -179,14 +168,32 @@
       }).catch(e => {
         err('Blob fetch FAILED:', e.message);
       });
+      _pendingGameUrl = url;
+      if (window.EJS_emulator && window.EJS_emulator.config) {
+        window.EJS_emulator.config.gameUrl = url;
+        log('EJS_emulator.config.gameUrl set to blob URL');
+      } else {
+        log('EJS_emulator not ready yet, will retry on load');
+      }
       window.EJS_gameUrl = url;
-      window.EJS_startOnLoaded = true;
-      log('EJS_gameUrl set, waiting 800ms before hiding overlay');
+      log('Game URL set, hiding overlay and triggering start');
       showGameLoading();
       setTimeout(() => {
         log('Hiding overlay');
         const o = $('overlay');
         if (o) o.classList.add('hidden');
+        setTimeout(() => {
+          const btn = document.querySelector('.ejs_start_button');
+          if (btn) {
+            log('Triggering native start button click');
+            btn.click();
+          } else if (window.EJS_emulator && window.EJS_emulator.startButtonClicked) {
+            log('Triggering startButtonClicked directly');
+            window.EJS_emulator.startButtonClicked({pointerType: 'mouse'});
+          } else {
+            log('Start button not found');
+          }
+        }, 300);
       }, 800);
     }
 
@@ -224,18 +231,26 @@
     window.EJS_core = system;
     window.EJS_gameUrl = '';
     window.EJS_gameID = 'golden-gate-v27';
-    window.EJS_pathtodata = CDN + '/stable/data/';
+    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/nightly/data/';
     window.EJS_oldShell = false;
     window.EJS_startOnLoaded = false;
     window.EJS_threads = true;
-    window.EJS_onLoad = () => { log('EJS_onLoad fired'); showReadyState('EJS_onLoad'); };
+    window.EJS_defaultOptions = { shader_enable: 'disabled' };
+    window.EJS_onLoad = () => {
+      log('EJS_onLoad fired');
+      if (_pendingGameUrl && window.EJS_emulator && window.EJS_emulator.config) {
+        window.EJS_emulator.config.gameUrl = _pendingGameUrl;
+        log('Applied pending game URL to EJS_emulator.config.gameUrl');
+      }
+      showReadyState('EJS_onLoad');
+    };
     window.EJS_onGameStart = () => { log('EJS_onGameStart fired'); finishUp(); };
 
     setProgress(0);
     log('Starting EmulatorJS loader for system:', system);
 
     const script = document.createElement('script');
-    script.src = CDN + '/stable/data/loader.js';
+    script.src = 'https://cdn.emulatorjs.org/nightly/data/loader.js';
     script.onload = () => {
       log('CDN loader.js loaded');
       pollTimer = setInterval(pollResources, 400);
