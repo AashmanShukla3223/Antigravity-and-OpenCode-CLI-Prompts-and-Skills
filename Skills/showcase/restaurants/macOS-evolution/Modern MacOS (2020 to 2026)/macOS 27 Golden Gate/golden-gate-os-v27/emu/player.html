@@ -235,6 +235,7 @@
     window.EJS_startOnLoaded = false;
     log('crossOriginIsolated:', window.crossOriginIsolated, 'SharedArrayBuffer:', typeof SharedArrayBuffer);
     window.EJS_threads = true;
+    window.EJS_webgl2 = true;
     window.EJS_defaultOptions = { shader_enable: 'disabled', 'virtual-gamepad': 'enabled' };
     window.EJS_onLoad = () => {
       log('EJS_onLoad fired');
