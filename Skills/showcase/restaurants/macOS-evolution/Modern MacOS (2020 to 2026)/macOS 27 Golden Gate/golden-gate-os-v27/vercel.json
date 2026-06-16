@@ -10,7 +10,7 @@
       ]
     },
     {
-      "source": "/emulatorjs/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cross-Origin-Opener-Policy",

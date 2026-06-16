@@ -84,10 +84,10 @@
     log('crossOriginIsolated:', window.crossOriginIsolated);
     log('SharedArrayBuffer:', typeof SharedArrayBuffer);
 
-    fetch(window.location.href).then(r => {
+    fetch(window.location.href, { method: 'HEAD' }).then(r => {
       log('COOP:', r.headers.get('cross-origin-opener-policy'));
       log('COEP:', r.headers.get('cross-origin-embedder-policy'));
-    });
+    }).catch(e => log('Header check failed:', e.message));
 
     let _EJS_gameUrl = '';
     let _pendingGameUrl = null;
@@ -234,7 +234,12 @@
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/nightly/data/';
     window.EJS_oldShell = false;
     window.EJS_startOnLoaded = false;
-    window.EJS_threads = true;
+    if (typeof SharedArrayBuffer === 'undefined' && !window.crossOriginIsolated) {
+      log('SharedArrayBuffer not available — disabling threads');
+      window.EJS_threads = false;
+    } else {
+      window.EJS_threads = true;
+    }
     window.EJS_defaultOptions = { shader_enable: 'disabled' };
     window.EJS_onLoad = () => {
       log('EJS_onLoad fired');
