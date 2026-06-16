@@ -22,7 +22,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Cars 2 via EmulatorJS — load your own PSP ISO in the emulator',
     system: 'PSP',
     icon: '🏎️',
-    url: '/emulatorjs/player.html?system=psp&v=11',
+    url: '/emulatorjs/player.html?system=psp&v=12',
     color: 'from-blue-900/50 to-blue-700/30',
   },
   ps1: {
@@ -30,7 +30,7 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     desc: 'Play Gran Turismo 2 via EmulatorJS — load your own PS1 ROM in the emulator',
     system: 'PlayStation',
     icon: '🏁',
-    url: '/emulatorjs/player.html?system=psx&v=11',
+    url: '/emulatorjs/player.html?system=psx&v=12',
     color: 'from-emerald-900/50 to-emerald-700/30',
   },
 };
@@ -67,26 +67,29 @@ const EmulatorGameCard = ({ game, onClick }: { game: string; onClick: () => void
 
 const EmulatorView: React.FC<{ game: EmulatorGame; onBack: () => void }> = ({ game, onBack }) => {
   const g = EMULATOR_GAMES[game];
-  const handleLaunch = () => {
-    window.open(g.url, 'emulator', 'width=1024,height=768,popup=yes');
-  };
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-zinc-900 gap-6 p-8">
-      <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center text-5xl">{g.icon}</div>
-      <h2 className="text-2xl font-bold">{g.title}</h2>
-      <p className="text-white/50 text-sm max-w-md text-center">{g.desc}</p>
-      <button
-        onClick={handleLaunch}
-        className="px-8 py-3 bg-purple-500 hover:bg-purple-600 rounded-xl font-semibold text-sm transition"
-      >
-        Launch Emulator
-      </button>
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-lg text-xs transition text-white/50"
-      >
-        <ArrowLeft01Icon size={14} /> Back to Emulator Menu
-      </button>
+    <div className="flex flex-col h-full w-full bg-zinc-900">
+      <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-lg text-xs transition text-white/70 hover:text-white"
+        >
+          <ArrowLeft01Icon size={14} /> Back to Emulator
+        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-white/40">{g.system}</span>
+          <h3 className="text-sm font-bold">{g.title}</h3>
+        </div>
+        <div className="text-xs text-white/30 italic">Load your own ROM</div>
+      </div>
+      <div className="flex-1 bg-black/50 relative">
+        <iframe
+          src={g.url}
+          className="w-full h-full border-0"
+          title={g.title}
+          allow="autoplay; clipboard-write; encrypted-media; gamepad; pointer-lock; cross-origin-isolated"
+        />
+      </div>
     </div>
   );
 };
