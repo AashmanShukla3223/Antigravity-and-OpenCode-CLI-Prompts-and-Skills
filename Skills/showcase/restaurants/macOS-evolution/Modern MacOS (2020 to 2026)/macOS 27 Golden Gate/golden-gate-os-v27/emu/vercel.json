@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/data/cores/ppsspp-assets.zip",
+      "destination": "https://cdn.emulatorjs.org/nightly/data/cores/ppsspp-assets.zip",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
