@@ -4,8 +4,6 @@ import { ArrowLeft01Icon, GameController01Icon, ComputerIcon } from 'hugeicons-r
 
 type GameType = 'snake' | 'memory' | 'tictactoe' | null;
 
-type EmulatorGame = 'ps2' | 'psp' | 'ps1';
-
 const STORAGE_KEY = 'golden_gate_games_unlocked';
 
 const EMULATOR_BASE = import.meta.env.VITE_EMULATOR_BASE_URL ?? '/emulatorjs';
