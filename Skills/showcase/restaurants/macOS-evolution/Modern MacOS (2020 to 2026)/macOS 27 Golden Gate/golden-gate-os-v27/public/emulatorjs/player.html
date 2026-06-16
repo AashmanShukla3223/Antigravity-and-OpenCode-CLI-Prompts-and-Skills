@@ -109,6 +109,18 @@
       enumerable: true
     });
 
+    const _origFetch = window.fetch.bind(window);
+    window.fetch = function(input, init) {
+      const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
+      const isEmpty = !url || url === '' || url === 'about:blank';
+      if (isEmpty && _EJS_gameUrl && _EJS_gameUrl.startsWith('blob:')) {
+        log('fetch-intercept: empty URL → blob URL');
+        return _origFetch(_EJS_gameUrl, init);
+      }
+      return _origFetch(input, init);
+    };
+    log('fetch interceptor installed');
+
     function setStatus(txt) { status.textContent = txt; }
 
     function setProgress(pctVal) {
