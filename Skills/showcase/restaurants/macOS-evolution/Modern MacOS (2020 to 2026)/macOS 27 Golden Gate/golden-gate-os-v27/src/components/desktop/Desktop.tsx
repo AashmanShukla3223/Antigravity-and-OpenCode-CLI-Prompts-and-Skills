@@ -661,7 +661,7 @@ export const Desktop: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[9000] bg-white"
+            className="fixed inset-0 z-[9000] bg-white/40 backdrop-blur-2xl"
           >
             <Apps onClose={() => setShowApps(false)} />
           </motion.div>

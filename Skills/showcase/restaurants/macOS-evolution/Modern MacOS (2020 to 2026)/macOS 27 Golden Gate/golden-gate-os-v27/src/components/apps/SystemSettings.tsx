@@ -1335,6 +1335,39 @@ export const SystemSettings: React.FC = () => {
                     ))}
                   </div>
                 </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mt-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm">Upload Wallpaper</h4>
+                      <p className="text-xs text-white/50">Supports .png, .jpg, .jpeg, .webp, .mp4, .mov, .webm</p>
+                    </div>
+                    <label className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-xl text-sm font-bold cursor-pointer transition-colors">
+                      Choose File
+                      <input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.webp,.mp4,.mov,.webm"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const isVideo = file.type.startsWith('video/');
+                          if (isVideo) {
+                            const url = URL.createObjectURL(file);
+                            updateSystemState({ wallpaperUrl: url, wallpaperType: 'video' });
+                          } else {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                              const dataUrl = ev.target?.result as string;
+                              updateSystemState({ wallpaperUrl: dataUrl, wallpaperType: 'image' });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             )}
             {currentTab === 'Display' && (

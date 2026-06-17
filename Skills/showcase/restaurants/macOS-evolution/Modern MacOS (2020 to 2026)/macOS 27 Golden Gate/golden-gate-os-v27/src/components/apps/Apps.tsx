@@ -114,29 +114,29 @@ export const Apps: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       }}
     >
       {/* Header */}
-      <div className="w-full flex items-center justify-between px-8 py-5 border-b border-gray-200/60 shrink-0">
+      <div className="w-full flex items-center justify-between px-8 py-5 border-b border-white/20 shrink-0">
         {activeFolder ? (
           <button
             onClick={(e) => { e.stopPropagation(); setActiveFolder(null); }}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
           >
             <span className="text-xl leading-none">&larr;</span>
             <span className="text-sm font-semibold">All Applications</span>
           </button>
         ) : (
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Applications</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg">Applications</h1>
         )}
         <div className="flex items-center gap-3">
           <button
             onClick={() => { setShowSpotlight(true); onClose(); }}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md flex items-center justify-center transition-colors"
             title="Spotlight"
           >
-            <Search01Icon size={18} className="text-gray-600" />
+            <Search01Icon size={18} className="text-white/80" />
           </button>
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors text-gray-500 hover:text-gray-700 text-lg font-light leading-none"
+            className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-md flex items-center justify-center transition-colors text-white/70 hover:text-white text-lg font-light leading-none"
           >
             ✕
           </button>
@@ -145,13 +145,13 @@ export const Apps: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       {/* Search Bar */}
       <div className="relative w-full max-w-lg mt-8 mb-12 shrink-0" onClick={(e) => e.stopPropagation()}>
-        <Search01Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search01Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search Applications"
-          className="w-full h-12 bg-gray-100 border border-gray-200 rounded-2xl pl-12 pr-6 text-lg text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className="w-full h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl pl-12 pr-6 text-lg text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-blue-400 transition-all"
           autoFocus
         />
       </div>
@@ -184,7 +184,7 @@ export const Apps: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <div className="w-20 h-20 relative">
                 <AppIcon id={app.id} size={80} />
               </div>
-              <span className="text-[13px] font-semibold text-gray-800 text-center tracking-tight">
+              <span className="text-[13px] font-semibold text-white text-center tracking-tight drop-shadow">
                 {app.name}
               </span>
             </motion.div>
@@ -193,7 +193,7 @@ export const Apps: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </motion.div>
 
       {filteredApps.length === 0 && (
-        <div className="mt-16 text-gray-400 font-bold uppercase tracking-widest text-sm">No Applications Found</div>
+        <div className="mt-16 text-white/50 font-bold uppercase tracking-widest text-sm">No Applications Found</div>
       )}
     </div>
   );

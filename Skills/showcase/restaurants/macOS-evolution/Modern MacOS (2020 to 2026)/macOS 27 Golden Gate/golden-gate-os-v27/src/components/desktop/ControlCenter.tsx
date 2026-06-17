@@ -100,7 +100,7 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${systemState.airdrop ? 'bg-blue-500' : 'bg-gray-500/50'}`}
                   >
                     <img
-                      src={`${base}${FileSystemResolver.getDeviceIcon('network-wireless-hotspot')}`}
+                      src={`${base}icons/airdrop.png`}
                       alt="AirDrop"
                       className={`w-4 h-4 ${!systemState.airdrop && 'opacity-50 grayscale'}`}
                       loading="lazy"
@@ -115,7 +115,15 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
               <div className="flex-1 flex flex-col gap-4">
                 <div
                   className="flex-1 bg-white/10 rounded-2xl flex items-center justify-center p-4 gap-2 cursor-pointer hover:bg-white/20 transition-colors"
-                  onClick={() => updateSystemState({ appearance: systemState.appearance === 'dark' ? 'light' : 'dark' })}
+                  onClick={() => {
+                    const newAppearance = systemState.appearance === 'dark' ? 'light' : 'dark';
+                    updateSystemState({
+                      appearance: newAppearance,
+                      wallpaperUrl: newAppearance === 'dark' ? '/wallpapers/golden-gate-dark.png' : '/wallpapers/golden-gate-light.png',
+                      wallpaperType: 'image',
+                      iconModeSelection: newAppearance === 'dark' ? 'dark' : 'light',
+                    });
+                  }}
                 >
                   <img
                     src={`${base}${FileSystemResolver.getStatusIcon(systemState.appearance === 'dark' ? 'weather-clear' : 'weather-clear-night')}`}
