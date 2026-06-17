@@ -659,7 +659,7 @@ export const SystemSettings: React.FC = () => {
           />
           <SidebarItem
             name="Dock"
-            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-dock')}`}
+            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-theme-windowdecorations')}`}
             color="bg-gradient-to-br from-orange-500 to-yellow-600"
             active={currentTab === 'Dock'}
             onClick={() => {
