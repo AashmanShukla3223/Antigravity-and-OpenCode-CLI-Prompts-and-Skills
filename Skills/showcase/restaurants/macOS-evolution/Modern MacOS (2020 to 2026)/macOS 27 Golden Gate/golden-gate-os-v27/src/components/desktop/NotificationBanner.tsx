@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight01Icon } from 'hugeicons-react';
+import { ArrowRight01Icon, Cancel01Icon } from 'hugeicons-react';
 
 interface Props {
   isVisible: boolean;
@@ -36,6 +36,13 @@ export const NotificationBanner: React.FC<Props> = ({ isVisible, onDismiss, onUp
             >
               <ArrowRight01Icon size={14} />
               <span>Update</span>
+            </button>
+            <button
+              onClick={onDismiss}
+              className="text-white/40 hover:text-white/80 transition-colors"
+              aria-label="Close"
+            >
+              <Cancel01Icon size={16} />
             </button>
           </div>
         </motion.div>
