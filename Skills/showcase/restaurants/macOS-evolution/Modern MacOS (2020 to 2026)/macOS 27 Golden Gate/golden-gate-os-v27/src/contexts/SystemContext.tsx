@@ -124,6 +124,7 @@ export interface GoldenGateV27State {
   lowPowerMode: boolean;
   dockHidden: boolean;
   dockMagnifier: boolean;
+  autoHideDock: boolean;
   dockSize: number;
   dockCornerRadius: number;
   dockIconScaler: number;
@@ -163,6 +164,7 @@ const defaultState: GoldenGateV27State = {
   lowPowerMode: false,
   dockHidden: false,
   dockMagnifier: true,
+  autoHideDock: false,
   dockSize: 50,
   dockCornerRadius: 50,
   dockIconScaler: 50,

@@ -49,7 +49,7 @@ const emailsData = [
 ];
 
 export const Mail: React.FC = () => {
-  const { systemState, activeUser } = useSystem();
+  const { activeUser } = useSystem();
 
   // Reorder emails: if user matches a sender, put that email at the top
   const [emails] = useState(() => {

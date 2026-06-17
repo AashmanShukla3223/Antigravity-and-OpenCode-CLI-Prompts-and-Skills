@@ -313,7 +313,6 @@ const DockIcon = ({
   const [hovered, setHovered] = useState(false);
 
   const cornerRadius = 4 + dockCornerRadius * 0.32;
-  const depthShadow = `0_15px_40px_rgba(0,0,0,${0.2 + dockDepth * 0.005})`;
 
   return (
     <div className="relative flex flex-col items-center group">

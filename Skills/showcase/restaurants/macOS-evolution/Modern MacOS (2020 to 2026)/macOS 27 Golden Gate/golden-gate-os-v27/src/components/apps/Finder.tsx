@@ -105,7 +105,7 @@ export const Finder: React.FC = () => {
     emptyTrash,
     getNodeContent,
   } = useFileSystem();
-  const { setContextMenu, systemState, showPrompt, showConfirm } = useSystem();
+  const { setContextMenu, showPrompt, showConfirm } = useSystem();
 
   const [currentFolderId, setCurrentFolderId] = useState<string | null>('user-home');
   const [history, setHistory] = useState<string[]>(['user-home']);

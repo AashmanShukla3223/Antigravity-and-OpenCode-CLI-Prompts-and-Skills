@@ -128,7 +128,6 @@ export const AppIcon: React.FC<AppIconProps> = ({
     aboutme: `${base}icons/aboutme.png`,
     code: `${base}icons/code.png`,
     vmware: `${base}icons/VMware Fusion Pro.png`,
-    apps: `${base}icons/apps.png`,
     games: `${base}icons/games.png`,
     freeform: `${base}icons/freeform.png`,
     motion: `${base}icons/motion.png`,
