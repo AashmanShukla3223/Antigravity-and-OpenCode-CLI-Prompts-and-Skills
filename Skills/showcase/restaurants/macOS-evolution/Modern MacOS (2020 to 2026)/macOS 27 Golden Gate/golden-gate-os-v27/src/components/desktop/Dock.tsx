@@ -293,7 +293,7 @@ const DockIcon = ({
   const ref = useRef<HTMLDivElement>(null);
 
   const baseSize = 20 + dockSize * 0.24;
-  const hoverScale = 1 + dockIconScaler * 0.008;
+  const hoverScale = 1 + dockIconScaler * 0.018;
   const springConfig = getSpringConfig(dockHoverSmoothness);
 
   const distance = useTransform(mouseX, (val: number) => {
