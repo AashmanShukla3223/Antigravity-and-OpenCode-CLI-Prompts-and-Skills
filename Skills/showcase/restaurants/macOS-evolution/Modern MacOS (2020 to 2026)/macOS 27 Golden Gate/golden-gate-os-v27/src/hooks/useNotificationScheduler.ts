@@ -29,7 +29,7 @@ const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 function playNotificationSound() {
   try {
-    const audio = new Audio('/sounds/Tink.mp3');
+    const audio = new Audio('/sounds/Glass.mp3');
     audio.volume = 0.6;
     audio.play().catch(() => {});
   } catch {}
