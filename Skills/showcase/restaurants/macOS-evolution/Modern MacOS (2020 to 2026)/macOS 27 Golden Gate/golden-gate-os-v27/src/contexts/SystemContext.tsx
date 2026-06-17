@@ -165,7 +165,7 @@ const defaultState: GoldenGateV27State = {
   dockHidden: false,
   dockMagnifier: true,
   autoHideDock: false,
-  dockSize: 50,
+  dockSize: 25,
   dockCornerRadius: 50,
   dockIconScaler: 50,
   dockHoverSmoothness: 50,

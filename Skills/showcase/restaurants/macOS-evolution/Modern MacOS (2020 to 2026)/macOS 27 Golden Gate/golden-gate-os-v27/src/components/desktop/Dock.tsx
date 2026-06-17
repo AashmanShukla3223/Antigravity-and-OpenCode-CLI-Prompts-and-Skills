@@ -292,7 +292,7 @@ const DockIcon = ({
 }: any) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const baseSize = 28 + dockSize * 0.36;
+  const baseSize = 20 + dockSize * 0.24;
   const hoverScale = 1 + dockIconScaler * 0.008;
   const springConfig = getSpringConfig(dockHoverSmoothness);
 

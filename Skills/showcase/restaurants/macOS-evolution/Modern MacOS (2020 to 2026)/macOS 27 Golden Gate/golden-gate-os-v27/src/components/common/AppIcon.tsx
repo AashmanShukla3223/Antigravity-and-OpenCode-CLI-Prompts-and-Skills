@@ -29,6 +29,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
   folderColor = 'blue',
 }) => {
   const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({});
+  const [darkIconFailed, setDarkIconFailed] = useState<Record<string, boolean>>({});
   const iconProps = { size: size * 0.6, className: 'z-10 text-white drop-shadow-lg hugeicon-golden-gate' };
   const { systemState } = useSystem();
 
@@ -141,20 +142,24 @@ export const AppIcon: React.FC<AppIconProps> = ({
   };
 
   const handleImageError = (iconId: string) => {
-    setImageLoadError((prev) => ({ ...prev, [iconId]: true }));
+    if (useDarkIcons) {
+      setDarkIconFailed((prev) => ({ ...prev, [iconId]: true }));
+    } else {
+      setImageLoadError((prev) => ({ ...prev, [iconId]: true }));
+    }
   };
 
   const renderIcon = () => {
     const idLower = id.toLowerCase();
     let localIcon = localIcons[idLower];
     const hasError = imageLoadError[idLower];
+    const isDarkFailed = darkIconFailed[idLower];
     let overlay: string | null = null;
 
     // Special handling for folders
     if (idLower.startsWith('folder-') || idLower === 'folder') {
       localIcon = getFolderPath(idLower, folderColor);
     } else if (!localIcon && idLower.includes('.')) {
-      // Dynamic mime resolver
       localIcon = `${base}${FileSystemResolver.getMimeIcon(idLower)}`;
     } else if (!localIcon && id.startsWith('device-')) {
       localIcon = `${base}${FileSystemResolver.getDeviceIcon(id.replace('device-', ''))}`;
@@ -164,7 +169,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
       localIcon = `${base}${FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''))}`;
     }
 
-    if (useDarkIcons && localIcon && !hasError) {
+    if (useDarkIcons && localIcon && !hasError && !isDarkFailed) {
       const darkPath = getDarkIconPath(localIcon);
       if (darkPath) {
         localIcon = darkPath;
