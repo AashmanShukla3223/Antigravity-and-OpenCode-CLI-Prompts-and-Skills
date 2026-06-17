@@ -1,13 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import type { Notification } from '../contexts/SystemContext';
 import { useSystem } from '../contexts/SystemContext';
+import { contacts } from '../utils/contacts';
 
 const MAIL_DELAY = 10 * 60 * 1000;
 const MESSAGES_DELAY = 30 * 60 * 1000;
-const FACETIME_DELAY = 5 * 60 * 1000;
-const PHOTOBOOTH_DELAY = 2 * 60 * 1000;
 
-const SENDERS = ['Sonia Bajpai', 'James Gordon', 'Maria Chen', 'Alex Rivera', 'Priya Sharma'];
 const SUBJECTS = [
   'Golden Gate OS Review',
   'Q3 Project Timeline',
@@ -22,8 +20,6 @@ const MESSAGE_TEXTS = [
   'Check this out!',
   'Happy birthday!',
 ];
-const CALLERS = ['Sonia Bajpai', 'James Gordon', 'Maria Chen', 'Alex Rivera', 'Mom'];
-const CALL_TYPES = ['Missed FaceTime Audio', 'Declined FaceTime', 'FaceTime Accepted'];
 
 const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -61,19 +57,14 @@ export function useNotificationScheduler() {
   }, [addNotification]);
 
   useEffect(() => {
-    const sender = pick(SENDERS);
+    const contactNames = contacts.map((c) => c.name);
+    const sender = pick(contactNames);
     const subject = pick(SUBJECTS);
     schedule('mail', 'New Email', `${sender} — "${subject}"`, MAIL_DELAY);
 
-    const msgSender = pick(SENDERS);
+    const msgSender = pick(contactNames);
     const text = pick(MESSAGE_TEXTS);
     schedule('messages', `Message from ${msgSender}`, text, MESSAGES_DELAY);
-
-    const caller = pick(CALLERS);
-    const callType = pick(CALL_TYPES);
-    schedule('facetime', callType, `${caller}`, FACETIME_DELAY);
-
-    schedule('photos', 'One Photo Captured', 'Photo Booth — new photo added to your library.', PHOTOBOOTH_DELAY);
   }, [schedule]);
 
   return { pendingToast, dismissToast, launchApp };

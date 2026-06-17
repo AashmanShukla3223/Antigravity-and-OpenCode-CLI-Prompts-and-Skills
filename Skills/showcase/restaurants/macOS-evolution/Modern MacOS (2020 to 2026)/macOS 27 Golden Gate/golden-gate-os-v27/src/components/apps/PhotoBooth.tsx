@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useFileSystem } from '../../contexts/FileSystemContext';
+import { useSystem } from '../../contexts/SystemContext';
 import { saveToVFS } from '../../utils/vfs-ops';
 
 type ResolutionKey = '480p' | '720p' | '1080p' | '2K' | '4K';
@@ -60,6 +61,7 @@ function shutterSound() {
 
 export const PhotoBooth: React.FC = () => {
   const { createNode } = useFileSystem();
+  const { addNotification } = useSystem();
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [resolution, setResolution] = useState<ResolutionKey>('720p');
@@ -150,7 +152,8 @@ export const PhotoBooth: React.FC = () => {
     const ts = new Date();
     const filename = `Photo Booth ${ts.getFullYear()}-${String(ts.getMonth() + 1).padStart(2, '0')}-${String(ts.getDate()).padStart(2, '0')} ${String(ts.getHours()).padStart(2, '0')}-${String(ts.getMinutes()).padStart(2, '0')}-${String(ts.getSeconds()).padStart(2, '0')}.jpg`;
     saveToVFS(createNode, dataUrl, filename, 'pictures');
-  }, [currentFilter, createNode]);
+    addNotification({ appId: 'photos', title: 'One Photo Captured', message: 'Photo Booth — new photo added to your library.' });
+  }, [currentFilter, createNode, addNotification]);
 
   const capturePhoto = useCallback(() => {
     if (countdownRef.current) return;
@@ -190,6 +193,7 @@ export const PhotoBooth: React.FC = () => {
         const ts = new Date();
         const filename = `Photo Booth Recording ${ts.getFullYear()}-${String(ts.getMonth() + 1).padStart(2, '0')}-${String(ts.getDate()).padStart(2, '0')} ${String(ts.getHours()).padStart(2, '0')}-${String(ts.getMinutes()).padStart(2, '0')}-${String(ts.getSeconds()).padStart(2, '0')}.webm`;
         saveToVFS(createNode, dataUrl, filename, 'pictures');
+        addNotification({ appId: 'photos', title: 'One Video Captured', message: 'Photo Booth — new video added to your library.' });
       };
       reader.readAsDataURL(blob);
       setRecordedChunks((prev) => [...prev, ...chunks]);
@@ -204,7 +208,7 @@ export const PhotoBooth: React.FC = () => {
     timerRef.current = setInterval(() => {
       setRecordingTime((t) => t + 1);
     }, 1000);
-  }, [stream, createNode]);
+  }, [stream, createNode, addNotification]);
 
   const startRecording = useCallback(() => {
     if (countdownRef.current) return;
