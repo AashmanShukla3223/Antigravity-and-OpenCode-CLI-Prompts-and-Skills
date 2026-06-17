@@ -1,11 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoonIcon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
-const ViscousSlider = ({ iconSrc, defaultValue = 50 }: { iconSrc: string; defaultValue?: number }) => {
-  const [value, setValue] = useState(defaultValue);
+const ViscousSlider = ({ iconSrc, value, onValueChange }: { iconSrc: string; value: number; onValueChange: (val: number) => void }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -21,14 +19,14 @@ const ViscousSlider = ({ iconSrc, defaultValue = 50 }: { iconSrc: string; defaul
           if (containerRef.current) {
             const { width, left } = containerRef.current.getBoundingClientRect();
             const x = e.clientX - left;
-            setValue(Math.max(0, Math.min(100, (x / width) * 100)));
+            onValueChange(Math.max(0, Math.min(100, (x / width) * 100)));
           }
         }}
         onPointerMove={(e) => {
           if (e.buttons === 1 && containerRef.current) {
             const { width, left } = containerRef.current.getBoundingClientRect();
             const x = e.clientX - left;
-            setValue(Math.max(0, Math.min(100, (x / width) * 100)));
+            onValueChange(Math.max(0, Math.min(100, (x / width) * 100)));
           }
         }}
       />
@@ -43,14 +41,19 @@ const ViscousSlider = ({ iconSrc, defaultValue = 50 }: { iconSrc: string; defaul
 };
 
 export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { battery, wifi, setWifi, bluetooth, setBluetooth, systemState } = useSystem();
+  const { battery, wifi, setWifi, bluetooth, setBluetooth, systemState, updateSystemState, setVolume } = useSystem();
   const base = (import.meta as any).env?.BASE_URL || '/';
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-[9990]" onClick={onClose} />
+          <div
+            ref={backdropRef}
+            className="fixed inset-0 z-[9990]"
+            onClick={(e) => { if (e.target === backdropRef.current) onClose(); }}
+          />
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -92,11 +95,35 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
                     <div className="text-xs text-white/50">{bluetooth ? 'On' : 'Off'}</div>
                   </div>
                 </div>
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => updateSystemState({ airdrop: !systemState.airdrop })}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${systemState.airdrop ? 'bg-blue-500' : 'bg-gray-500/50'}`}
+                  >
+                    <img
+                      src={`${base}${FileSystemResolver.getDeviceIcon('network-wireless-hotspot')}`}
+                      alt="AirDrop"
+                      className={`w-4 h-4 ${!systemState.airdrop && 'opacity-50 grayscale'}`}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm">AirDrop</div>
+                    <div className="text-xs text-white/50">{systemState.airdrop ? 'Contacts Only' : 'Off'}</div>
+                  </div>
+                </div>
               </div>
               <div className="flex-1 flex flex-col gap-4">
-                <div className="flex-1 bg-white/10 rounded-2xl flex items-center justify-center p-4 gap-2 cursor-pointer hover:bg-white/20 transition-colors">
-                  <MoonIcon size={20} className="text-purple-400 hugeicon-golden-gate" />
-                  <span className="font-semibold text-sm">Focus</span>
+                <div
+                  className="flex-1 bg-white/10 rounded-2xl flex items-center justify-center p-4 gap-2 cursor-pointer hover:bg-white/20 transition-colors"
+                  onClick={() => updateSystemState({ appearance: systemState.appearance === 'dark' ? 'light' : 'dark' })}
+                >
+                  <img
+                    src={`${base}${FileSystemResolver.getStatusIcon(systemState.appearance === 'dark' ? 'weather-clear' : 'weather-clear-night')}`}
+                    alt="Appearance"
+                    className="w-5 h-5"
+                    loading="lazy"
+                  />
+                  <span className="font-semibold text-sm">{systemState.appearance === 'dark' ? 'Light' : 'Dark'}</span>
                 </div>
               </div>
             </div>
@@ -106,7 +133,8 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
               <div className="font-medium text-xs text-white/50 pl-1">Display</div>
               <ViscousSlider
                 iconSrc={`${base}${FileSystemResolver.getStatusIcon('video-display-brightness')}`}
-                defaultValue={66}
+                value={systemState.brightness}
+                onValueChange={(val) => updateSystemState({ brightness: val })}
               />
             </div>
 
@@ -114,7 +142,8 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
               <div className="font-medium text-xs text-white/50 pl-1">Sound</div>
               <ViscousSlider
                 iconSrc={`${base}${FileSystemResolver.getStatusIcon('audio-volume-high')}`}
-                defaultValue={50}
+                value={Math.round(systemState.music.volume * 100)}
+                onValueChange={(val) => setVolume(val / 100)}
               />
             </div>
 

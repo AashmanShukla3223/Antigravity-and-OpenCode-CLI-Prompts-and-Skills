@@ -29,6 +29,7 @@ import { NotificationToast } from './NotificationToast';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
+import { Apps } from '../apps/Apps';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
 import { readFilesAndStore, downloadDataURL } from '../../utils/vfs-ops';
@@ -63,6 +64,7 @@ export const Desktop: React.FC = () => {
   } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [showApps, setShowApps] = useState(false);
 
   // Initialize Hooks
   useDynamicWallpaper();
@@ -86,6 +88,12 @@ export const Desktop: React.FC = () => {
     setContextMenu({ x: e.pageX, y: e.pageY, type: 'desktop' });
     setControlCenterOpen(false); // Close CC if open
   };
+
+  useEffect(() => {
+    const handler = () => setShowApps(true);
+    window.addEventListener('open-apps', handler);
+    return () => window.removeEventListener('open-apps', handler);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -643,6 +651,22 @@ export const Desktop: React.FC = () => {
       <IncomingCallOverlay />
       <WidgetPicker />
       <NotificationCenter />
+
+      {/* Apps Overlay (replaces Launchpad) */}
+      <AnimatePresence>
+        {showApps && (
+          <motion.div
+            key="apps-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9000] bg-white"
+          >
+            <Apps onClose={() => setShowApps(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Custom Context Menu */}
       <AnimatePresence>

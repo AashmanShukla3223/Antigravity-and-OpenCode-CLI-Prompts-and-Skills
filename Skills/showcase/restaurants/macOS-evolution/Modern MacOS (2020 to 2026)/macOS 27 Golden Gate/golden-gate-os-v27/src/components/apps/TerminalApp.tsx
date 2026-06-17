@@ -3,7 +3,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 
 export const TerminalApp: React.FC = () => {
-  const { bootState, launchApp, setBootState, battery, hardware, uptime, activeUser } = useSystem();
+  const { bootState, launchApp, setBootState, battery, hardware, uptime, activeUser, systemState } = useSystem();
   const { getDirectoryContents, nodes } = useFileSystem();
 
   const isRecovery = bootState === 'recovery';
@@ -118,15 +118,15 @@ export const TerminalApp: React.FC = () => {
       }
       case 'neofetch':
         output = `        .       ${username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
-       .:.      ---------------------------
-      .:::.     OS: macOS Golden Gate 27.0.0 ${isRecovery ? '(Recovery Mode)' : ''}
-     .:::::.    Kernel: Darwin 27.0.0
-     :::::::    Uptime: ${Math.floor(uptime / 60)} mins, ${uptime % 60} secs
-     ':::::'    Battery: ${Math.round(battery.level * 100)}% (${battery.isCharging ? 'Charging' : 'Discharging'})
-      ':::'     Shell: zsh 5.9
-       ':'      Resolution: 2560x1600
-        '       CPU: Apple Silicon (${hardware.cores} cores)
-                Memory: ${hardware.memory}GB Unified Silicon`;
+        .:.      ---------------------------
+       .:::.     OS: macOS Golden Gate 27.0.0 ${isRecovery ? '(Recovery Mode)' : ''}
+      .:::::.    Kernel: Darwin 27.0.0
+      :::::::    Uptime: ${Math.floor(uptime / 60)} mins, ${uptime % 60} secs
+      ':::::'    Battery: ${Math.round(battery.level * 100)}% (${battery.isCharging ? 'Charging' : 'Discharging'})
+       ':::'     Shell: zsh 5.9
+        ':'      Resolution: 2560x1600
+         '       CPU: Apple Silicon (${hardware.cores} cores)
+                 Memory: ${hardware.memory}GB Unified Silicon`;
         break;
       case 'uptime':
         output = `up ${Math.floor(uptime / 60)} minutes, ${uptime % 60} seconds`;
@@ -141,7 +141,7 @@ export const TerminalApp: React.FC = () => {
             window.location.reload();
           }, 2000);
         } else {
-          output = `[sudo] password for ${username.toLowerCase()}: \nPassword accepted. Superuser privileges granted for Golden Gate Session.`;
+          output = `[sudo] password for ${username.toLowerCase()}:\nPassword accepted. Superuser privileges granted for Golden Gate Session.`;
         }
         break;
       }
@@ -174,36 +174,53 @@ export const TerminalApp: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full bg-black/90 text-[#a5a5a5] font-mono text-sm p-4 overflow-y-auto cursor-text scrollbar-hide">
-      {history.map((entry, i) => (
-        <div key={i} className="mb-2">
-          {entry.command && (
-            <div className="flex gap-2">
-              <span className="text-[#32d74b] font-bold">
-                {username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
-              </span>
-              <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
-              <span className="text-white">{entry.command}</span>
-            </div>
-          )}
-          {entry.output && <div className="whitespace-pre-wrap mt-1 text-gray-300">{entry.output}</div>}
+    <div className="h-full w-full flex flex-col">
+      <div className="h-9 flex-shrink-0 flex items-center px-4 gap-2" style={{ backgroundColor: systemState.terminalRibbonColor }}>
+        <div className="flex gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
+          <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+          <div className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
         </div>
-      ))}
+        <span className="text-[11px] font-medium text-white/60 ml-2">Terminal — zsh</span>
+      </div>
+      <div
+        className="flex-1 font-mono text-sm p-4 overflow-y-auto cursor-text scrollbar-hide"
+        style={{
+          backgroundColor: systemState.terminalBgColor,
+          opacity: systemState.terminalOpacity,
+          color: '#a5a5a5',
+        }}
+      >
+        {history.map((entry, i) => (
+          <div key={i} className="mb-2">
+            {entry.command && (
+              <div className="flex gap-2">
+                <span className="text-[#32d74b] font-bold">
+                  {username.toLowerCase()}@{isRecovery ? 'Recovery' : 'MacBook-Pro'}
+                </span>
+                <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
+                <span className="text-white">{entry.command}</span>
+              </div>
+            )}
+            {entry.output && <div className="whitespace-pre-wrap mt-1 text-gray-300">{entry.output}</div>}
+          </div>
+        ))}
 
-      <form onSubmit={handleCommand} className="flex gap-2 mt-2">
-        <span className="text-[#32d74b] font-bold">
-          {username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
-        </span>
-        <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 bg-transparent border-none focus:outline-none text-white font-mono"
-          autoFocus
-        />
-      </form>
-      <div ref={bottomRef} />
+        <form onSubmit={handleCommand} className="flex gap-2 mt-2">
+          <span className="text-[#32d74b] font-bold">
+            {username.toLowerCase()}@{isRecovery ? 'Recovery' : 'MacBook-Pro'}
+          </span>
+          <span className="text-[#0a84ff] font-bold">{getCurrentDirPath()} %</span>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 bg-transparent border-none focus:outline-none text-white font-mono"
+            autoFocus
+          />
+        </form>
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 };

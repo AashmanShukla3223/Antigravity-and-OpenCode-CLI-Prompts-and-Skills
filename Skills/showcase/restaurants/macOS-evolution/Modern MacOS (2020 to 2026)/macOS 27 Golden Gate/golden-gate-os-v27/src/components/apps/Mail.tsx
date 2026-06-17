@@ -78,7 +78,7 @@ export const Mail: React.FC = () => {
     <div className="flex h-full w-full bg-white dark:bg-[#1C1C1E] text-gray-800 dark:text-gray-200">
       {/* Sidebar - Pane 1 */}
       <div
-        className={`w-48 flex-shrink-0 border-r border-black/5 dark:border-white/10 flex flex-col z-10 transition-colors ${systemState.sidebarMaterial === 'clear' ? 'bg-white/10 dark:bg-black/10 backdrop-blur-[60px] saturate-[180%]' : 'bg-white/40 dark:bg-black/30 backdrop-blur-3xl'}`}
+        className="w-48 flex-shrink-0 border-r border-black/5 dark:border-white/10 flex flex-col z-10 transition-colors bg-white/10 dark:bg-black/10 backdrop-blur-[var(--glass-blur)] saturate-[180%]"
       >
         <div className="h-12 flex items-center px-4 pt-2">
           <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Favorites</span>

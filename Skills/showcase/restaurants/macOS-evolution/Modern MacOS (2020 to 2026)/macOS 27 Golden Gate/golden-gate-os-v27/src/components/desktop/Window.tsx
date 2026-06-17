@@ -28,7 +28,7 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   wallet: namedLazy(() => import('../apps/AppleWallet'), 'AppleWallet'),
   reminders: namedLazy(() => import('../apps/Reminders'), 'Reminders'),
   stickies: namedLazy(() => import('../apps/Stickies'), 'Stickies'),
-  launchpad: namedLazy(() => import('../apps/Launchpad'), 'Launchpad'),
+
   facetime: namedLazy(() => import('../apps/FaceTime'), 'FaceTime'),
   contacts: namedLazy(() => import('../apps/Contacts'), 'Contacts'),
   music: namedLazy(() => import('../apps/AppleMusic'), 'AppleMusic'),
@@ -135,7 +135,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     wallet: 'Wallet',
     reminders: 'Reminders',
     stickies: 'Stickies',
-    launchpad: 'Launchpad',
+
     facetime: 'FaceTime',
     contacts: 'Contacts',
     music: 'Music',
@@ -328,7 +328,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
           isEndurance
             ? {}
             : {
-                backdropFilter: `blur(${systemState.systemOpacity * 0.5}px) saturate(${100 + systemState.systemOpacity * 0.8}%)`,
+                backdropFilter: `blur(${(100 - systemState.glassMode) * 0.4}px) saturate(${100 + (100 - systemState.glassMode) * 0.8}%)`,
               }
         }
       />

@@ -387,7 +387,7 @@ If no system action is needed, respond conversationally as a helpful AI assistan
             if (cmd.mode) this.actions.setPowerMode(cmd.mode);
             break;
           case 'toggleGlass':
-            this.actions.updateSystemState({ glassBlurIntensity: cmd.enabled ? 50 : 0 });
+            this.actions.updateSystemState({ glassMode: cmd.enabled ? 50 : 0 });
             break;
         }
       } catch (e) {

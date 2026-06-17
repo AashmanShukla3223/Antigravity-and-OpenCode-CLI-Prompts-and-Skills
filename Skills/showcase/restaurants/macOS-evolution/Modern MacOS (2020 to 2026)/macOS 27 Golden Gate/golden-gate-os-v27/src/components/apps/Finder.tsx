@@ -279,7 +279,7 @@ export const Finder: React.FC = () => {
 
       {/* Sidebar */}
       <div
-        className={`w-48 border-r border-gray-200/50 p-2 flex flex-col gap-1 z-10 transition-colors ${systemState.sidebarMaterial === 'clear' ? 'bg-white/10 backdrop-blur-[60px] saturate-[180%]' : 'bg-gray-50/70 backdrop-blur-xl'}`}
+        className="w-48 border-r border-gray-200/50 p-2 flex flex-col gap-1 z-10 transition-colors bg-white/10 dark:bg-black/10 backdrop-blur-[var(--glass-blur)] saturate-[180%]"
       >
         <div className="text-[10px] font-bold text-gray-400 px-2 py-1 mb-1 mt-2 tracking-widest uppercase">
           Favorites

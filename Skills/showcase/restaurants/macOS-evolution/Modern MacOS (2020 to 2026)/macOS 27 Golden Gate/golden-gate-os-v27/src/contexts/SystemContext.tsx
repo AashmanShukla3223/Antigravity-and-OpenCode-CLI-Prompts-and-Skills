@@ -5,7 +5,7 @@ type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activ
 
 export const DEFAULT_PINNED_APPS = [
   'finder',
-  'launchpad',
+  'apps',
   'safari',
   'messages',
   'mail',
@@ -114,21 +114,29 @@ export interface GoldenGateV27State {
   activeUserId: string;
   notifications: Notification[];
   appearance: 'light' | 'dark' | 'auto';
-  sidebarMaterial: 'clear' | 'tinted';
   betaUpdates: boolean;
   wallpaperUrl: string;
   wallpaperType: 'image' | 'video';
   wallpaperMode: 'off' | 'static' | 'dynamic';
   isCameraOn: boolean;
   notchVisible: boolean;
-  glassBlurIntensity: number;
-  glassOpacity: number;
-  systemOpacity: number;
+  glassMode: number;
   lowPowerMode: boolean;
   dockHidden: boolean;
   dockMagnifier: boolean;
-  dockSpeed: 'slow' | 'fast';
-  dockSize: 'small' | 'large';
+  dockSize: number;
+  dockCornerRadius: number;
+  dockIconScaler: number;
+  dockHoverSmoothness: number;
+  dockDepth: number;
+  dockBlurStrength: number;
+  brightness: number;
+  airdrop: boolean;
+  terminalBgColor: string;
+  terminalRibbonColor: string;
+  terminalOpacity: number;
+  iconMode: 'off' | 'dynamic';
+  iconModeSelection: 'light' | 'dark';
   apiKey?: string;
   widgets: Widget[];
   reminders: Reminder[];
@@ -145,21 +153,29 @@ const defaultState: GoldenGateV27State = {
   activeUserId: 'default',
   notifications: [],
   appearance: 'auto',
-  sidebarMaterial: 'tinted',
   betaUpdates: false,
   wallpaperUrl: '/wallpapers/golden-gate-dark.png',
   wallpaperType: 'image',
   wallpaperMode: 'static',
   isCameraOn: false,
   notchVisible: true,
-  glassBlurIntensity: 50,
-  glassOpacity: 0.35,
-  systemOpacity: 70,
+  glassMode: 50,
   lowPowerMode: false,
   dockHidden: false,
   dockMagnifier: true,
-  dockSpeed: 'fast',
-  dockSize: 'small',
+  dockSize: 50,
+  dockCornerRadius: 50,
+  dockIconScaler: 50,
+  dockHoverSmoothness: 50,
+  dockDepth: 50,
+  dockBlurStrength: 50,
+  brightness: 80,
+  airdrop: false,
+  terminalBgColor: '#000000',
+  terminalRibbonColor: '#1a1a2e',
+  terminalOpacity: 90,
+  iconMode: 'off',
+  iconModeSelection: 'light',
   apiKey: '',
   widgets: [],
   reminders: [
@@ -327,8 +343,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!state.pinnedApps.includes('games')) {
         state.pinnedApps = [...state.pinnedApps, 'games'];
       }
-      if (!state.pinnedApps.includes('launchpad')) {
-        state.pinnedApps = ['launchpad', ...state.pinnedApps];
+      if (!state.pinnedApps.includes('apps')) {
+        state.pinnedApps = ['apps', ...state.pinnedApps];
       }
 
       state.users = state.users.map((u: UserAccount) =>
@@ -691,7 +707,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const launchApp = useCallback(
     (appId: string) => {
-      const SINGLE_INSTANCE_APPS = new Set(['launchpad', 'installer', 'siriai']);
+      const SINGLE_INSTANCE_APPS = new Set(['apps', 'installer', 'siriai']);
 
       if (SINGLE_INSTANCE_APPS.has(appId)) {
         const existing = openWindows.filter((w) => w.appId === appId);
@@ -795,6 +811,18 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setShowAboutWindow(false);
     setBootState(targetState);
   }, []);
+
+  // Sync glassMode to CSS custom properties
+  useEffect(() => {
+    const gm = systemState.glassMode;
+    const blur = 80 - gm * 0.7;
+    const alphaDark = 0.6 - gm * 0.0045;
+    const alphaLight = 0.35 - gm * 0.0027;
+    const root = document.documentElement;
+    root.style.setProperty('--glass-blur', `${Math.max(10, blur)}px`);
+    root.style.setProperty('--glass-bg-dark', `rgba(0,0,0,${Math.max(0.1, alphaDark)})`);
+    root.style.setProperty('--glass-bg-light', `rgba(255,255,255,${Math.max(0.05, alphaLight)})`);
+  }, [systemState.glassMode]);
 
   // Initialize Hardware APIs
   useEffect(() => {

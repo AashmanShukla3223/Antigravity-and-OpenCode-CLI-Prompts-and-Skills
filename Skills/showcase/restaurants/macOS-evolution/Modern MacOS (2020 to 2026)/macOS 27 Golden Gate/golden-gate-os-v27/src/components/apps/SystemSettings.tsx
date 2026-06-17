@@ -586,66 +586,7 @@ export const SystemSettings: React.FC = () => {
               ))}
             </div>
 
-            <h3 className="text-lg font-semibold mb-4">Dock</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                <div>
-                  <span className="text-sm font-medium">Magnification</span>
-                  <p className="text-xs text-white/40 mt-0.5">Icons enlarge when hovered</p>
-                </div>
-                <button
-                  onClick={() => updateSystemState({ dockMagnifier: !systemState.dockMagnifier })}
-                  className={`w-12 h-6 rounded-full relative transition-colors shrink-0 ${systemState.dockMagnifier ? 'bg-blue-500' : 'bg-white/10'}`}
-                >
-                  <motion.div
-                    animate={{ x: systemState.dockMagnifier ? 26 : 2 }}
-                    className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
-                  />
-                </button>
-              </div>
 
-              <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                <div>
-                  <span className="text-sm font-medium">Speed</span>
-                  <p className="text-xs text-white/40 mt-0.5">Animation responsiveness</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => updateSystemState({ dockSpeed: 'slow' })}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'slow' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                  >
-                    Slow
-                  </button>
-                  <button
-                    onClick={() => updateSystemState({ dockSpeed: 'fast' })}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSpeed === 'fast' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                  >
-                    Fast
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl">
-                <div>
-                  <span className="text-sm font-medium">Size</span>
-                  <p className="text-xs text-white/40 mt-0.5">Icon size in the Dock</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => updateSystemState({ dockSize: 'small' })}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'small' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                  >
-                    Small
-                  </button>
-                  <button
-                    onClick={() => updateSystemState({ dockSize: 'large' })}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${systemState.dockSize === 'large' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
-                  >
-                    Large
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         );
     }
@@ -714,6 +655,16 @@ export const SystemSettings: React.FC = () => {
             active={currentTab === 'Appearance'}
             onClick={() => {
               setCurrentTab('Appearance');
+              setResetStep(0);
+            }}
+          />
+          <SidebarItem
+            name="Dock"
+            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-dock')}`}
+            color="bg-gradient-to-br from-orange-500 to-yellow-600"
+            active={currentTab === 'Dock'}
+            onClick={() => {
+              setCurrentTab('Dock');
               setResetStep(0);
             }}
           />
@@ -813,97 +764,254 @@ export const SystemSettings: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-sm">Sidebar Material</h4>
-                    <p className="text-xs text-white/50">Use a Tinted or Clear refractive background for sidebars.</p>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+                  <div className="mb-5">
+                    <h3 className="font-medium text-lg text-white">Liquid Glass 2.0</h3>
+                    <p className="text-sm text-white/50">
+                      Single-axis control: Ultra Frosted to Ultra Glass.
+                    </p>
                   </div>
-                  <div className="flex bg-black/40 rounded-lg p-1">
-                    <button
-                      onClick={() => updateSystemState({ sidebarMaterial: 'tinted' })}
-                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${systemState.sidebarMaterial === 'tinted' ? 'bg-white/20 text-white shadow-md' : 'text-white/50 hover:text-white/80'}`}
-                    >
-                      Tinted
-                    </button>
-                    <button
-                      onClick={() => updateSystemState({ sidebarMaterial: 'clear' })}
-                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${systemState.sidebarMaterial === 'clear' ? 'bg-white/20 text-white shadow-md' : 'text-white/50 hover:text-white/80'}`}
-                    >
-                      Clear
-                    </button>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Glass Intensity</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.glassMode}%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] text-white/30 w-20 text-right">Ultra Frosted</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={systemState.glassMode}
+                        onChange={(e) => updateSystemState({ glassMode: parseInt(e.target.value) })}
+                        className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <span className="text-[10px] text-white/30 w-20">Ultra Glass</span>
+                    </div>
                   </div>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
                   <div className="mb-5">
-                    <h3 className="font-medium text-lg text-white">Liquid Glass</h3>
-                    <p className="text-sm text-white/50">
-                      Adjust transparency and blur intensity for the Liquid Glass aesthetic.
-                    </p>
+                    <h3 className="font-medium text-lg text-white">Icon Mode</h3>
+                    <p className="text-sm text-white/50">Choose between manual Dark/Light app icons or Dynamic time-based switching.</p>
                   </div>
+                  <div className="flex gap-2 mb-4">
+                    {(['off', 'dynamic'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => updateSystemState({ iconMode: mode })}
+                        className={`flex-1 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                          systemState.iconMode === mode
+                            ? 'bg-blue-500 text-white shadow-lg'
+                            : 'bg-white/5 text-white/60 hover:bg-white/10'
+                        }`}
+                      >
+                        {mode === 'off' ? 'Off (Manual)' : 'Dynamic (Auto)'}
+                      </button>
+                    ))}
+                  </div>
+                  {systemState.iconMode === 'off' && (
+                    <div className="flex gap-2">
+                      {(['light', 'dark'] as const).map((sel) => (
+                        <button
+                          key={sel}
+                          onClick={() => updateSystemState({ iconModeSelection: sel })}
+                          className={`flex-1 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                            systemState.iconModeSelection === sel
+                              ? 'bg-blue-500 text-white shadow-lg'
+                              : 'bg-white/5 text-white/60 hover:bg-white/10'
+                          }`}
+                        >
+                          {sel === 'light' ? 'Light Icons' : 'Dark Icons'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {systemState.iconMode === 'dynamic' && (
+                    <p className="text-xs text-white/40 mt-2">Icons switch automatically at 5:00 AM (light) and 5:30 PM (dark).</p>
+                  )}
+                </div>
 
-                  <div className="space-y-6">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+                  <div className="mb-5">
+                    <h3 className="font-medium text-lg text-white">Terminal</h3>
+                    <p className="text-sm text-white/50">Customize Terminal appearance.</p>
+                  </div>
+                  <div className="space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Blur Intensity</span>
-                        <span className="text-xs font-mono text-white/40">{systemState.glassBlurIntensity}px</span>
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Background Color</span>
+                        <span className="text-xs font-mono text-white/40">{systemState.terminalBgColor}</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-white/30 w-12 text-right">Opaque</span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={systemState.glassBlurIntensity}
-                          onChange={(e) => updateSystemState({ glassBlurIntensity: parseInt(e.target.value) })}
-                          className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                        />
-                        <span className="text-[10px] text-white/30 w-12">Glassy</span>
-                      </div>
+                      <input
+                        type="color"
+                        value={systemState.terminalBgColor}
+                        onChange={(e) => updateSystemState({ terminalBgColor: e.target.value })}
+                        className="w-full h-8 rounded-lg cursor-pointer bg-transparent"
+                      />
                     </div>
-
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Glass Opacity</span>
-                        <span className="text-xs font-mono text-white/40">
-                          {Math.round(systemState.glassOpacity * 100)}%
-                        </span>
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Ribbon Color</span>
+                        <span className="text-xs font-mono text-white/40">{systemState.terminalRibbonColor}</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-white/30 w-12 text-right">Opaque</span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={Math.round(systemState.glassOpacity * 100)}
-                          onChange={(e) => updateSystemState({ glassOpacity: parseInt(e.target.value) / 100 })}
-                          className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                        />
-                        <span className="text-[10px] text-white/30 w-12">Glassy</span>
+                      <input
+                        type="color"
+                        value={systemState.terminalRibbonColor}
+                        onChange={(e) => updateSystemState({ terminalRibbonColor: e.target.value })}
+                        className="w-full h-8 rounded-lg cursor-pointer bg-transparent"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Background Opacity</span>
+                        <span className="text-xs font-mono text-white/40">{Math.round(systemState.terminalOpacity * 100)}%</span>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Transit Opacity</span>
-                      <span className="text-xs font-mono text-white/40">{systemState.systemOpacity}%</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] text-white/30 w-16 text-right">Ultra-Clear</span>
                       <input
                         type="range"
                         min="0"
                         max="100"
-                        value={systemState.systemOpacity}
-                        onChange={(e) => updateSystemState({ systemOpacity: parseInt(e.target.value) })}
-                        className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                        value={Math.round(systemState.terminalOpacity * 100)}
+                        onChange={(e) => updateSystemState({ terminalOpacity: parseInt(e.target.value) / 100 })}
+                        className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
                       />
-                      <span className="text-[10px] text-white/30 w-16">Tinted Glass</span>
                     </div>
                   </div>
                 </div>
               </>
+            )}
+            {currentTab === 'Dock' && (
+              <div className="flex flex-col h-full overflow-y-auto pr-4 scrollbar-hide pb-12">
+                <h2 className="text-2xl font-semibold mb-6">Dock</h2>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6 space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Size</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockSize}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockSize}
+                      onChange={(e) => updateSystemState({ dockSize: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Corner Radius</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockCornerRadius}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockCornerRadius}
+                      onChange={(e) => updateSystemState({ dockCornerRadius: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Icon Scaler</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockIconScaler}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockIconScaler}
+                      onChange={(e) => updateSystemState({ dockIconScaler: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Hover Smoothness</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockHoverSmoothness}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockHoverSmoothness}
+                      onChange={(e) => updateSystemState({ dockHoverSmoothness: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Depth</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockDepth}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockDepth}
+                      onChange={(e) => updateSystemState({ dockDepth: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Blur Strength</span>
+                      <span className="text-xs font-mono text-white/40">{systemState.dockBlurStrength}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={systemState.dockBlurStrength}
+                      onChange={(e) => updateSystemState({ dockBlurStrength: parseInt(e.target.value) })}
+                      className="w-full accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-medium">Magnification</span>
+                      <p className="text-xs text-white/40 mt-0.5">Icons enlarge when hovered</p>
+                    </div>
+                    <button
+                      onClick={() => updateSystemState({ dockMagnifier: !systemState.dockMagnifier })}
+                      className={`w-12 h-6 rounded-full relative transition-colors shrink-0 ${systemState.dockMagnifier ? 'bg-blue-500' : 'bg-white/10'}`}
+                    >
+                      <motion.div
+                        animate={{ x: systemState.dockMagnifier ? 26 : 2 }}
+                        className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-medium">Auto-Hide Dock</span>
+                      <p className="text-xs text-white/40 mt-0.5">Dock hides when not in use</p>
+                    </div>
+                    <button
+                      onClick={() => updateSystemState({ autoHideDock: !systemState.autoHideDock })}
+                      className={`w-12 h-6 rounded-full relative transition-colors shrink-0 ${systemState.autoHideDock ? 'bg-blue-500' : 'bg-white/10'}`}
+                    >
+                      <motion.div
+                        animate={{ x: systemState.autoHideDock ? 26 : 2 }}
+                        className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
             {currentTab === 'General' && renderGeneralContent()}
             {currentTab === 'Users' && (

@@ -11,6 +11,7 @@ import {
   SmartPhone01Icon,
 } from 'hugeicons-react';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
+import { useSystem } from '../../contexts/SystemContext';
 
 interface AppIconProps {
   id: string;
@@ -29,8 +30,28 @@ export const AppIcon: React.FC<AppIconProps> = ({
 }) => {
   const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({});
   const iconProps = { size: size * 0.6, className: 'z-10 text-white drop-shadow-lg hugeicon-golden-gate' };
+  const { systemState } = useSystem();
 
   const base = (import.meta as any).env?.BASE_URL || '/';
+
+  const useDarkIcons = (() => {
+    try {
+      if (systemState.iconMode === 'off') return systemState.iconModeSelection === 'dark';
+      if (systemState.iconMode === 'dynamic') {
+        const h = new Date().getHours();
+        const m = new Date().getMinutes();
+        return h < 5 || (h === 5 && m < 30) || h >= 17 || (h === 17 && m >= 30);
+      }
+    } catch { }
+    return false;
+  })();
+
+  const getDarkIconPath = (lightPath: string): string | null => {
+    const match = lightPath.match(/\/icons\/([\w\- ]+)\.png$/i);
+    if (!match) return null;
+    const name = match[1];
+    return `${base}icons/dark mode/${name}-dark.png`;
+  };
 
   const getFolderPath = (iconId: string, color: string) => {
     const mappings: Record<string, string> = {
@@ -107,7 +128,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
     aboutme: `${base}icons/aboutme.png`,
     code: `${base}icons/code.png`,
     vmware: `${base}icons/VMware Fusion Pro.png`,
-    launchpad: `${base}icons/apps.png`,
+    apps: `${base}icons/apps.png`,
     games: `${base}icons/games.png`,
     freeform: `${base}icons/freeform.png`,
     motion: `${base}icons/motion.png`,
@@ -142,6 +163,13 @@ export const AppIcon: React.FC<AppIconProps> = ({
       localIcon = `${base}${FileSystemResolver.getCategoryIcon(id.replace('category-', ''))}`;
     } else if (!localIcon && id.startsWith('pref-')) {
       localIcon = `${base}${FileSystemResolver.getPreferenceIcon(id.replace('pref-', ''))}`;
+    }
+
+    if (useDarkIcons && localIcon && !hasError) {
+      const darkPath = getDarkIconPath(localIcon);
+      if (darkPath) {
+        localIcon = darkPath;
+      }
     }
 
     if (localIcon && !hasError) {
