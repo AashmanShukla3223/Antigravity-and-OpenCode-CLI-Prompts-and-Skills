@@ -69,11 +69,12 @@ export const Desktop: React.FC = () => {
   // Initialize Hooks
   useDynamicWallpaper();
   const { updateAvailable, dismissUpdate } = useSoftwareUpdate();
-  const { pendingToast, dismissToast } = useNotificationScheduler();
+  useNotificationScheduler();
   const [toastNotification, setToastNotification] = useState<Notification | null>(null);
   const seenToastIds = useRef<Set<string>>(new Set());
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Watch for new notifications from any source (PhotoBooth, FaceTime, etc.)
+  // Watch for new notifications from any source (scheduler, PhotoBooth, FaceTime, etc.)
   // and show them as a quick toast popup
   useEffect(() => {
     const notifs = systemState.notifications;
@@ -82,16 +83,10 @@ export const Desktop: React.FC = () => {
     if (!seenToastIds.current.has(latest.id)) {
       seenToastIds.current.add(latest.id);
       setToastNotification(latest);
-      setTimeout(() => setToastNotification(null), 5000);
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setToastNotification(null), 5000);
     }
   }, [systemState.notifications]);
-
-  // Track scheduled toast IDs so the watcher above skips them
-  useEffect(() => {
-    if (pendingToast) {
-      seenToastIds.current.add(pendingToast.id);
-    }
-  }, [pendingToast]);
 
   useEffect(() => {
     // Play the reveal shimmer sound when Dock starts animating
@@ -658,17 +653,6 @@ export const Desktop: React.FC = () => {
       <RestartDialog />
       <SystemDialog />
       <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} onUpdate={() => { window.location.href = 'https://macos-27-golden-gate.vercel.app'; }} />
-      <NotificationToast
-        notification={pendingToast}
-        onDismiss={dismissToast}
-        onClick={() => {
-          if (pendingToast) {
-            launchApp(pendingToast.appId);
-                    setShowNotificationCenter(true);
-            dismissToast();
-          }
-        }}
-      />
       <NotificationToast
         notification={toastNotification}
         onDismiss={() => setToastNotification(null)}

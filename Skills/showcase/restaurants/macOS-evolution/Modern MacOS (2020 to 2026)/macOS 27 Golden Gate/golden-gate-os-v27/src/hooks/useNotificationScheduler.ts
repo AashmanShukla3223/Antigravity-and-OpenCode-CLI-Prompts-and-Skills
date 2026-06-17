@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import type { Notification } from '../contexts/SystemContext';
+import { useEffect, useCallback, useRef } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 import { contacts } from '../utils/contacts';
 
@@ -33,10 +32,7 @@ function playNotificationSound() {
 
 export function useNotificationScheduler() {
   const { addNotification, launchApp } = useSystem();
-  const [pendingToast, setPendingToast] = useState<Notification | null>(null);
   const playedRef = useRef<Set<string>>(new Set());
-
-  const dismissToast = useCallback(() => setPendingToast(null), []);
 
   const schedule = useCallback((appId: string, title: string, message: string, delay: number) => {
     const key = `${appId}-${delay}`;
@@ -45,14 +41,6 @@ export function useNotificationScheduler() {
     setTimeout(() => {
       playNotificationSound();
       addNotification({ appId, title, message });
-      setPendingToast({
-        id: crypto.randomUUID(),
-        appId,
-        title,
-        message,
-        timestamp: Date.now(),
-        read: false,
-      });
     }, delay);
   }, [addNotification]);
 
@@ -67,5 +55,5 @@ export function useNotificationScheduler() {
     schedule('messages', `Message from ${msgSender}`, text, MESSAGES_DELAY);
   }, [schedule]);
 
-  return { pendingToast, dismissToast, launchApp };
+  return { launchApp };
 }
