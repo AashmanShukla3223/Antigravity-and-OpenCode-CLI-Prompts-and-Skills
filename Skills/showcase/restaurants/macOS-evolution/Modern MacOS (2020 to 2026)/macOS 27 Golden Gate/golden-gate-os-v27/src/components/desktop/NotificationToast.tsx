@@ -7,6 +7,7 @@ const APP_LABELS: Record<string, string> = {
   messages: 'MESSAGES',
   facetime: 'FACETIME',
   phone: 'PHONE',
+  photos: 'PHOTOS',
 };
 
 const APP_COLORS: Record<string, string> = {
@@ -14,6 +15,7 @@ const APP_COLORS: Record<string, string> = {
   messages: 'bg-green-500',
   facetime: 'bg-emerald-500',
   phone: 'bg-green-600',
+  photos: 'bg-pink-500',
 };
 
 export const NotificationToast: React.FC<{

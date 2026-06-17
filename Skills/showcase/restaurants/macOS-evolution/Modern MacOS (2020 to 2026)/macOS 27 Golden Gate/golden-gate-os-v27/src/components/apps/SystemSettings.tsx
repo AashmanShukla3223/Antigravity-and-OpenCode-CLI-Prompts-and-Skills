@@ -55,7 +55,6 @@ export const SystemSettings: React.FC = () => {
     battery,
     showConfirm,
     showAlert,
-    initiateRestart,
     activeUser,
     switchUser,
     addUser,
@@ -119,7 +118,7 @@ export const SystemSettings: React.FC = () => {
           );
           if (confirmed) {
             await showAlert('Downloading update and preparing system restart...', 'macOS Updater');
-            initiateRestart();
+            window.location.href = 'https://macos-27-golden-gate.vercel.app';
           }
         } else {
           await showAlert('Your Mac is up to date.', 'Software Update');

@@ -5,9 +5,10 @@ import { ArrowRight01Icon } from 'hugeicons-react';
 interface Props {
   isVisible: boolean;
   onDismiss: () => void;
+  onUpdate?: () => void;
 }
 
-export const NotificationBanner: React.FC<Props> = ({ isVisible, onDismiss }) => {
+export const NotificationBanner: React.FC<Props> = ({ isVisible, onDismiss, onUpdate }) => {
   return (
     <AnimatePresence>
       {isVisible && (
@@ -27,7 +28,10 @@ export const NotificationBanner: React.FC<Props> = ({ isVisible, onDismiss }) =>
             </div>
             <div className="h-4 w-[1px] bg-white/10" />
             <button
-              onClick={onDismiss}
+              onClick={() => {
+                if (onUpdate) onUpdate();
+                else onDismiss();
+              }}
               className="text-xs text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 transition-colors"
             >
               <ArrowRight01Icon size={14} />

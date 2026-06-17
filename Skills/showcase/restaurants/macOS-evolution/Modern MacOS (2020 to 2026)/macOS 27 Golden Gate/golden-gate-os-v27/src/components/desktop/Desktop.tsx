@@ -635,7 +635,7 @@ export const Desktop: React.FC = () => {
       <AboutThisMac />
       <RestartDialog />
       <SystemDialog />
-      <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} />
+      <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} onUpdate={() => { window.location.href = 'https://macos-27-golden-gate.vercel.app'; }} />
       <NotificationToast
         notification={pendingToast}
         onDismiss={dismissToast}
