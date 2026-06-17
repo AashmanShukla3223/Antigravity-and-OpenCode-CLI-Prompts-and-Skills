@@ -834,6 +834,27 @@ export const SystemSettings: React.FC = () => {
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <h3 className="font-medium text-lg text-white">Notch</h3>
+                      <p className="text-sm text-white/50">Show the hardware notch on Intel Mac and MacBook Air bezel builds.</p>
+                    </div>
+                    <button
+                      onClick={() => updateSystemState({ notchVisible: !systemState.notchVisible })}
+                      className={`relative w-12 h-6 rounded-full transition-all ${
+                        systemState.notchVisible ? 'bg-blue-500' : 'bg-white/10'
+                      }`}
+                    >
+                      <span
+                        className={`block w-4 h-4 bg-white rounded-full shadow transition-all ${
+                          systemState.notchVisible ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
                   <div className="mb-5">
                     <h3 className="font-medium text-lg text-white">Terminal</h3>
                     <p className="text-sm text-white/50">Customize Terminal appearance.</p>
