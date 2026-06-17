@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import { AppIcon } from '../common/AppIcon';
@@ -85,8 +85,6 @@ export const Dock: React.FC = () => {
     (app, index, self) => index === self.findIndex((t) => t.id === app.id),
   );
 
-  const mouseX = useMotionValue(Infinity);
-
   const handleAppClick = (appId: string) => {
     if (appId === 'github') {
       window.location.assign('https://github.com/AashmanShukla3223');
@@ -144,8 +142,6 @@ export const Dock: React.FC = () => {
             boxShadow: `0 15px 40px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.1)`,
             borderRadius: `${8 + systemState.dockCornerRadius * 0.28}px`,
           }}
-          onMouseMove={(e) => mouseX.set(e.pageX)}
-          onMouseLeave={() => mouseX.set(Infinity)}
         >
           {finalApps.map((app) =>
             app.id === 'github' ? (
@@ -155,10 +151,9 @@ export const Dock: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="pointer-events-auto"
-              >
+                >
                   <DockIcon
                   app={app}
-                  mouseX={mouseX}
                   isRunning={false}
                   isMinimized={false}
                   isActive={false}
@@ -177,7 +172,6 @@ export const Dock: React.FC = () => {
               <DockIcon
                 key={app.id}
                 app={app}
-                mouseX={mouseX}
                 isRunning={systemState.runningApps.includes(app.id)}
                 isMinimized={false}
                 isActive={activeApp === app.id}
@@ -211,7 +205,6 @@ export const Dock: React.FC = () => {
                   <div className="mx-0.5">
                     <DockIcon
                       app={{ id: appName, name: appName }}
-                      mouseX={mouseX}
                       isOpen={true}
                       isMinimized={false}
                       isActive={false}
@@ -233,7 +226,6 @@ export const Dock: React.FC = () => {
 
           <DockIcon
             app={{ id: 'downloads', name: 'Downloads' }}
-            mouseX={mouseX}
             isOpen={false}
             isMinimized={false}
             isActive={activeApp === 'downloads'}
@@ -248,7 +240,6 @@ export const Dock: React.FC = () => {
 
           <DockIcon
             app={{ id: 'trash', name: 'Trash' }}
-            mouseX={mouseX}
             isOpen={false}
             isMinimized={false}
             isFull={isTrashFull}
@@ -267,15 +258,8 @@ export const Dock: React.FC = () => {
   );
 };
 
-const getSpringConfig = (smoothness: number) => ({
-  mass: 0.5 - smoothness * 0.004,
-  stiffness: 300 - smoothness * 2.5,
-  damping: 30 - smoothness * 0.22,
-});
-
 const DockIcon = ({
   app,
-  mouseX,
   isRunning,
   isMinimized,
   isFull,
@@ -290,54 +274,45 @@ const DockIcon = ({
   onClick,
   onContextMenu,
 }: any) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
 
   const baseSize = 20 + dockSize * 0.24;
   const hoverScale = 1 + dockIconScaler * 0.018;
-  const springConfig = getSpringConfig(dockHoverSmoothness);
-
-  const distance = useTransform(mouseX, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
-  });
-
-  const widthSync = useTransform(
-    distance,
-    [-150, 0, 150],
-    magnifierEnabled
-      ? [baseSize, baseSize * hoverScale, baseSize]
-      : [baseSize, baseSize, baseSize],
-  );
-  const width = useSpring(widthSync, springConfig);
-
-  const [hovered, setHovered] = useState(false);
-
+  const targetSize = hovered && magnifierEnabled ? baseSize * hoverScale : baseSize;
   const cornerRadius = 4 + dockCornerRadius * 0.32;
+
+  const springTransition = {
+    type: 'spring' as const,
+    mass: 0.5 - dockHoverSmoothness * 0.004,
+    stiffness: 300 - dockHoverSmoothness * 2.5,
+    damping: 30 - dockHoverSmoothness * 0.22,
+  };
 
   return (
     <div className="relative flex flex-col items-center group">
       {hovered && (
-        <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap opacity-100 transition-opacity">
           {app.name}
         </div>
       )}
       <motion.div
-        ref={ref}
-        style={{ width, height: width, borderRadius: cornerRadius, boxShadow: `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})` }}
-        animate={
-          isLaunching
-            ? {
-                y: [0, -20, 0],
-                transition: { repeat: Infinity, duration: 0.5, ease: 'easeOut' },
-              }
-            : { y: 0 }
-        }
+        style={{ borderRadius: cornerRadius, boxShadow: `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})` }}
+        animate={{
+          width: isLaunching ? baseSize : targetSize,
+          height: isLaunching ? baseSize : targetSize,
+          y: isLaunching ? [0, -20, 0] : 0,
+        }}
+        transition={{
+          width: isLaunching ? { duration: 0.1 } : springTransition,
+          height: isLaunching ? { duration: 0.1 } : springTransition,
+          y: isLaunching ? { repeat: Infinity, duration: 0.5, ease: 'easeOut' } : { duration: 0.2 },
+        }}
         className={`relative flex items-center justify-center cursor-pointer
           ${isActive ? 'bg-white/20 border-white/40' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
         `}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onHoverStart={() => setHovered(true)}
+        onHoverEnd={() => setHovered(false)}
         onClick={onClick}
         onContextMenu={onContextMenu}
         whileTap={{ scale: 0.9 }}
