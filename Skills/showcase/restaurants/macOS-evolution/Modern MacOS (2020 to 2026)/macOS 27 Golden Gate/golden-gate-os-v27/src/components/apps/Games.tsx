@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft01Icon, GameController01Icon, ComputerIcon } from 'hugeicons-react';
+import { ArrowLeft01Icon, GameController01Icon, ComputerIcon, AlertDiamondIcon, ExternalLinkIcon } from 'hugeicons-react';
 
 type GameType = 'snake' | 'memory' | 'tictactoe' | null;
 
 const STORAGE_KEY = 'golden_gate_games_unlocked';
+const XFRAME_DISMISS_KEY = 'golden_gate_xframe_dismissed';
 
 const EMULATOR_BASE = import.meta.env.VITE_EMULATOR_BASE_URL ?? '/emulatorjs';
 
@@ -32,6 +33,14 @@ const EMULATOR_GAMES: Record<string, { title: string; desc: string; system: stri
     icon: '🏁',
     url: `${EMULATOR_BASE}/player.html?system=psx&v=12`,
     color: 'from-emerald-900/50 to-emerald-700/30',
+  },
+  any: {
+    title: 'Any Game ROM',
+    desc: 'Load any PlayStation ROM from your device — supports PSP, PS1, and PS2',
+    system: 'PSP / PS1 / PS2',
+    icon: '💿',
+    url: '#',
+    color: 'from-rose-900/50 to-rose-700/30',
   },
 };
 
@@ -72,8 +81,14 @@ function openEmulatorPopup(game: string) {
   const h = Math.min(720, window.screen.availHeight * 0.9);
   const left = (window.screen.availWidth - w) / 2;
   const top = (window.screen.availHeight - h) / 2;
+  let url = g.url;
+  if (game === 'any') {
+    const system = prompt('Enter system: psp, psx, or ps2');
+    if (!system || !['psp', 'psx', 'ps2'].includes(system)) return;
+    url = `${EMULATOR_BASE}/player.html?system=${system}&v=12`;
+  }
   window.open(
-    g.url,
+    url,
     'EmulatorJS',
     `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no,resizable=yes`
   );
@@ -371,6 +386,60 @@ const TicTacToe: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   );
 };
 
+const SafariWarning: React.FC = () => {
+  const [dismissed, setDismissed] = useState(() => localStorage.getItem(XFRAME_DISMISS_KEY) === 'true');
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+
+  const handleDismiss = useCallback(() => {
+    if (dontShowAgain) {
+      localStorage.setItem(XFRAME_DISMISS_KEY, 'true');
+    }
+    setDismissed(true);
+  }, [dontShowAgain]);
+
+  if (dismissed) return null;
+
+  return (
+    <div className="mb-6 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+          <AlertDiamondIcon size={16} className="text-amber-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold text-amber-300 mb-1">Compatibility Warning</div>
+          <p className="text-xs text-white/60 mb-3">
+            To overcome compatibility issues with emulators, install the <strong>Ignore X-Frame Headers</strong> extension in your browser.
+          </p>
+          <a
+            href="https://chromewebstore.google.com/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 underline mb-3"
+          >
+            <ExternalLinkIcon size={12} />
+            Ignore X-Frame Headers
+          </a>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="w-3.5 h-3.5 accent-amber-500"
+            />
+            <span className="text-[11px] text-white/40">Do not show this again</span>
+          </label>
+        </div>
+        <button
+          onClick={handleDismiss}
+          className="text-white/30 hover:text-white/60 text-xs shrink-0 mt-1"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const Games: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<GameType>(null);
   const [activeTab, setActiveTab] = useState<'native' | 'emulator'>('native');
@@ -473,10 +542,12 @@ export const Games: React.FC = () => {
             <p className="text-white/40 text-sm mb-8">
               Load your own game ROMs and play them in browser-based emulators
             </p>
+            <SafariWarning />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
               <EmulatorGameCard game="ps2" onClick={() => openEmulatorPopup('ps2')} />
               <EmulatorGameCard game="psp" onClick={() => openEmulatorPopup('psp')} />
               <EmulatorGameCard game="ps1" onClick={() => openEmulatorPopup('ps1')} />
+              <EmulatorGameCard game="any" onClick={() => openEmulatorPopup('any')} />
             </div>
           </motion.div>
         )}
