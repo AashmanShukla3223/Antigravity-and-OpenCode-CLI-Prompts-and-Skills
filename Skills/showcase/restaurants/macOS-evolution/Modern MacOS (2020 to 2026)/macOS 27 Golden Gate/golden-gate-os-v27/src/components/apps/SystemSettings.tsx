@@ -955,8 +955,13 @@ export const SystemSettings: React.FC = () => {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Hover Smoothness</span>
-                      <span className="text-xs font-mono text-white/40">{systemState.dockHoverSmoothness}%</span>
+                      <span className="text-xs font-mono text-white/40">
+                        {systemState.dockHoverSmoothness <= 10 ? 'Slow' :
+                         systemState.dockHoverSmoothness >= 90 ? 'Xtra Fast' :
+                         `${systemState.dockHoverSmoothness}%`}
+                      </span>
                     </div>
+                    <p className="text-[10px] text-white/30 mb-2 -mt-1">0 = Slow, 100 = Xtra Fast</p>
                     <input
                       type="range"
                       min="0"
