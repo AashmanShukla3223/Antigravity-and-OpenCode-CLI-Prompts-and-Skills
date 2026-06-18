@@ -9,6 +9,8 @@ import {
   Shield01Icon,
 } from 'hugeicons-react';
 
+const XFRAME_DISMISS_KEY = 'golden_gate_xframe_dismissed';
+
 export const Safari: React.FC = () => {
   const [url, setUrl] = useState('');
   const [showStartPage, setShowStartPage] = useState(true);
@@ -16,6 +18,8 @@ export const Safari: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [isProxied, setIsProxied] = useState(true);
   const [isNeuralMode, setIsNeuralMode] = useState(false);
+  const [xframeDismissed, setXframeDismissed] = useState(() => localStorage.getItem(XFRAME_DISMISS_KEY) === 'true');
+  const [xframeDontShow, setXframeDontShow] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,6 +206,49 @@ export const Safari: React.FC = () => {
                     </div>
                   </div>
                 </motion.div>
+
+                {/* Emulator/Webpage Compatibility Warning */}
+                {!xframeDismissed && (
+                  <div className="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-amber-400 text-xs font-bold">!</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold text-amber-400 mb-1">Compatibility Warning</div>
+                        <p className="text-xs text-gray-500 dark:text-white/50 mb-3 leading-relaxed">
+                          To overcome compatibility issues with <strong>Emulator/Webpage</strong> content, install the <strong>Ignore X-Frame Headers</strong> extension in your browser before launching any emulator or visiting embedded webpage content.
+                        </p>
+                        <a
+                          href="https://chromewebstore.google.com/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-500 hover:text-amber-400 underline mb-3"
+                        >
+                          Ignore X-Frame Headers
+                        </a>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={xframeDontShow}
+                            onChange={(e) => setXframeDontShow(e.target.checked)}
+                            className="w-3.5 h-3.5 accent-amber-500"
+                          />
+                          <span className="text-[11px] text-gray-400 dark:text-white/30">Do not show this again</span>
+                        </label>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (xframeDontShow) localStorage.setItem(XFRAME_DISMISS_KEY, 'true');
+                          setXframeDismissed(true);
+                        }}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-white/60 text-xs shrink-0 mt-1"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Favorites Grid */}
                 <div className="mb-12">
