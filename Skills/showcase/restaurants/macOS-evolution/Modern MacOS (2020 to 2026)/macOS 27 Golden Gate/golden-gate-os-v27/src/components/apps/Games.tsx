@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft01Icon, GameController01Icon, ComputerIcon, AlertDiamondIcon, ExportIcon } from 'hugeicons-react';
+import { ArrowLeft01Icon, GameController01Icon, ComputerIcon, AlertDiamondIcon, ArrowUpRight01Icon } from 'hugeicons-react';
 
 type GameType = 'snake' | 'memory' | 'tictactoe' | null;
 
@@ -416,7 +416,7 @@ const SafariWarning: React.FC = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 underline mb-3"
           >
-            <ExportIcon size={12} />
+            <ArrowUpRight01Icon size={12} />
             Ignore X-Frame Headers
           </a>
           <label className="flex items-center gap-2 cursor-pointer">
