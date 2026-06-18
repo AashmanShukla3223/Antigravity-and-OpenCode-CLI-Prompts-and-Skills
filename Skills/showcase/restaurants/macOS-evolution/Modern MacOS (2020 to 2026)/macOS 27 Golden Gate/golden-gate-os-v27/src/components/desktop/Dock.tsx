@@ -136,7 +136,7 @@ export const Dock: React.FC = () => {
           data-testid="dock"
           role="navigation"
           aria-label="Application Dock"
-          className="mb-4 flex items-end gap-px px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent"
+          className="mb-4 flex items-end gap-px px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto max-w-[85vw] overflow-visible scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent"
           style={{
             backdropFilter: `blur(${4 + systemState.dockBlurStrength * 0.2}px)`,
             boxShadow: `0 15px 40px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.1)`,
