@@ -296,11 +296,16 @@ const DockIcon = ({
         </div>
       )}
       <motion.div
-        style={{ borderRadius: cornerRadius, boxShadow: `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})` }}
+        style={{
+          borderRadius: cornerRadius,
+          boxShadow: hovered && magnifierEnabled
+            ? `0 30px 70px rgba(0,0,0,${0.5 + dockDepth * 0.005})`
+            : `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})`,
+        }}
         animate={{
           width: isLaunching ? baseSize : targetSize,
           height: isLaunching ? baseSize : targetSize,
-          y: isLaunching ? [0, -20, 0] : 0,
+          y: isLaunching ? [0, -20, 0] : (hovered && magnifierEnabled ? -(baseSize * 0.35) : 0),
         }}
         transition={{
           width: isLaunching ? { duration: 0.1 } : springTransition,
@@ -310,6 +315,7 @@ const DockIcon = ({
         className={`relative flex items-center justify-center cursor-pointer
           ${isActive ? 'bg-white/20 border-white/40' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
+          ${hovered && magnifierEnabled ? 'z-10' : ''}
         `}
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}
