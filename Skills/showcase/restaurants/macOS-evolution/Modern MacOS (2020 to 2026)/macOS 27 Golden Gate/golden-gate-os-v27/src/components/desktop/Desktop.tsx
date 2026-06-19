@@ -644,7 +644,11 @@ export const Desktop: React.FC = () => {
           y: { delay: isHandoff ? 0 : 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
           opacity: { delay: isHandoff ? 0 : 0.25, duration: 0.4 },
         }}
-        className={`fixed bottom-0 left-0 right-0 z-40 ${systemState.isSystemInfected ? 'pointer-events-none' : ''}`}
+        className={`${systemState.isSystemInfected ? 'pointer-events-none' : ''} ${
+          systemState.dockPosition === 'bottom'
+            ? 'fixed bottom-0 left-0 right-0 z-40'
+            : `fixed top-[30px] ${systemState.dockPosition === 'left' ? 'left-0' : 'right-0'} bottom-0 z-40 pointer-events-none`
+        }`}
         style={{ willChange: 'transform, opacity' }}
       >
         <Dock />

@@ -139,7 +139,7 @@ export const Dock: React.FC = () => {
       className={`z-40 pointer-events-none ${
         isHorizontal
           ? 'absolute bottom-0 w-full flex justify-center'
-          : `absolute ${dockPosition === 'left' ? 'left-0' : 'right-0'} top-[30px] flex items-start`
+          : 'flex items-start w-auto'
       }`}
       onMouseEnter={() => {
         if (systemState.dockHidden) setReveal(true);
