@@ -133,18 +133,14 @@ export const Dock: React.FC = () => {
 
   const dockPosition = systemState.dockPosition || 'bottom';
   const isHorizontal = dockPosition === 'bottom';
-  const navClasses = isHorizontal
-    ? 'absolute bottom-0 w-full flex justify-center'
-    : `absolute ${dockPosition === 'left' ? 'left-0' : 'right-0'} top-[30px] flex items-start`;
-  const dockClasses = isHorizontal
-    ? 'mb-4 flex-row items-end max-w-[85vw] overflow-x-auto'
-    : 'mt-2 flex-col items-center max-h-[85vh] overflow-y-auto';
-  const separatorClasses = isHorizontal ? 'w-[1px] h-8' : 'w-8 h-[1px]';
-  const separatorContainer = isHorizontal ? 'mx-1 self-center' : 'my-1 self-center';
 
   return (
-      <nav
-      className={`${navClasses} z-40 pointer-events-none`}
+    <nav
+      className={`z-40 pointer-events-none ${
+        isHorizontal
+          ? 'absolute bottom-0 w-full flex justify-center'
+          : `absolute ${dockPosition === 'left' ? 'left-0' : 'right-0'} top-[30px] flex items-start`
+      }`}
       onMouseEnter={() => {
         if (systemState.dockHidden) setReveal(true);
       }}
@@ -160,7 +156,11 @@ export const Dock: React.FC = () => {
             data-testid="dock"
           role="navigation"
           aria-label="Application Dock"
-          className={`flex items-end px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent ${dockClasses}`}
+          className={`flex items-end px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent ${
+            isHorizontal
+              ? 'mb-4 flex-row items-end max-w-[85vw] overflow-x-auto'
+              : 'mt-2 flex-col items-center max-h-[85vh] overflow-y-auto'
+          }`}
           style={{
             gap: `${iconGap}px`,
             backdropFilter: `blur(${4 + systemState.dockBlurStrength * 0.2}px)`,
@@ -188,7 +188,7 @@ export const Dock: React.FC = () => {
             />
           ))}
 
-          <div className={`${separatorClasses} bg-white/15 ${separatorContainer}`} />
+          <div className={isHorizontal ? 'w-[1px] h-8 bg-white/15 mx-1 self-center' : 'w-8 h-[1px] bg-white/15 my-1 self-center'} />
 
           <AnimatePresence mode="popLayout">
             {minimizedWindows.map((wId) => {
@@ -223,7 +223,7 @@ export const Dock: React.FC = () => {
             })}
           </AnimatePresence>
 
-          {minimizedWindows.length > 0 && <div className={`${separatorClasses} bg-white/20 ${separatorContainer}`} />}
+          {minimizedWindows.length > 0 && <div className={isHorizontal ? 'w-[1px] h-9 bg-white/20 mx-0.5 self-center' : 'w-8 h-[1px] bg-white/20 my-0.5 self-center'} />}
 
             <DockIcon
               app={{ id: 'downloads', name: 'Downloads' }}
