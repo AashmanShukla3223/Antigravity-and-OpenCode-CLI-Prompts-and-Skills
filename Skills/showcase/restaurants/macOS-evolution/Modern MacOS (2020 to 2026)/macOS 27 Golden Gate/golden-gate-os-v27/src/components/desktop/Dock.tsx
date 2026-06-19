@@ -273,20 +273,20 @@ export const Dock: React.FC = () => {
           </div>
 
           <AnimatePresence>
-            {hoveredApp && systemState.dockMagnifier && (
+            {hoveredApp && (
               <motion.div
                 key={hoveredApp.id}
-                initial={{ scale: 0.5, opacity: 0, y: 0 }}
-                animate={{ scale: 1, opacity: 1, y: -(popOutBaseSize * 0.35) }}
-                exit={{ scale: 0.5, opacity: 0, y: 0 }}
+                initial={{ opacity: 0, scale: systemState.dockMagnifier ? 0.5 : 0.8, y: 0 }}
+                animate={{ opacity: 1, scale: 1, y: systemState.dockMagnifier ? -(popOutBaseSize * 0.35) : 0 }}
+                exit={{ opacity: 0, scale: systemState.dockMagnifier ? 0.5 : 0.8, y: 0 }}
                 style={{
                   position: 'fixed',
-                  top: hoveredApp.rect.top,
-                  left: hoveredApp.rect.left,
-                  width: popOutTargetSize,
-                  height: popOutTargetSize,
-                  borderRadius: 4 + systemState.dockCornerRadius * 0.32,
-                  boxShadow: `0 30px 70px rgba(0,0,0,${0.5 + systemState.dockDepth * 0.005})`,
+                  top: systemState.dockMagnifier ? hoveredApp.rect.top : hoveredApp.rect.top - 8,
+                  left: systemState.dockMagnifier ? hoveredApp.rect.left : hoveredApp.rect.left + hoveredApp.rect.width / 2,
+                  width: systemState.dockMagnifier ? popOutTargetSize : 'auto',
+                  height: systemState.dockMagnifier ? popOutTargetSize : 'auto',
+                  borderRadius: systemState.dockMagnifier ? 4 + systemState.dockCornerRadius * 0.32 : 8,
+                  boxShadow: systemState.dockMagnifier ? `0 30px 70px rgba(0,0,0,${0.5 + systemState.dockDepth * 0.005})` : 'none',
                   zIndex: 50,
                 }}
                 transition={{
@@ -295,12 +295,20 @@ export const Dock: React.FC = () => {
                   stiffness: 300 - systemState.dockHoverSmoothness * 2.5,
                   damping: 30 - systemState.dockHoverSmoothness * 0.22,
                 }}
-                className="flex items-center justify-center"
+                className={systemState.dockMagnifier ? 'flex items-center justify-center' : '-translate-x-1/2 -translate-y-full'}
               >
-                <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap">
-                  {hoveredApp.name}
-                </div>
-                <AppIcon id={hoveredApp.id} size={popOutBaseSize} />
+                {systemState.dockMagnifier ? (
+                  <>
+                    <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap">
+                      {hoveredApp.name}
+                    </div>
+                    <AppIcon id={hoveredApp.id} size={popOutBaseSize} />
+                  </>
+                ) : (
+                  <div className="px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap">
+                    {hoveredApp.name}
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -359,11 +367,6 @@ const DockIcon = ({
 
   return (
     <div className="relative flex flex-col items-center group">
-      {hovered && !magnifierEnabled && (
-        <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap opacity-100 transition-opacity">
-          {app.name}
-        </div>
-      )}
       <motion.div
         ref={iconRef}
         style={{
