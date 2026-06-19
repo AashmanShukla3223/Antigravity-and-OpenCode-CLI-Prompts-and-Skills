@@ -118,7 +118,8 @@ const initialNodes: FileSystemNode[] = [
     content: '# Welcome to Golden Gate OS V27\n\nThe Unit 7 operating system.',
     modifiedAt: Date.now(),
     tags: ['blue'],
-],
+  },
+];
 const FileSystemContext = createContext<FileSystemContextProps | undefined>(undefined);
 
 export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
