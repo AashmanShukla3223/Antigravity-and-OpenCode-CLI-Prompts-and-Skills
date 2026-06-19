@@ -382,6 +382,7 @@ const BatteryDropdown: React.FC<{
 export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
   const {
     activeApp,
+    activeWindowId,
     setShowAboutWindow,
     launchApp,
     setBootState,
@@ -393,6 +394,15 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     setShowShutdownDialog,
     setShowNotificationCenter,
     showNotificationCenter,
+    closeCurrentWindow,
+    closeApp,
+    minimizeWindow,
+    toggleMaximizeWindow,
+    openWindows,
+    openApps,
+    minimizedWindows,
+    showAlert,
+    showConfirm,
   } = useSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
@@ -435,79 +445,204 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     }
   };
 
+  const getWindowMenu = () => {
+    const items: any[] = [
+      {
+        label: 'Minimize',
+        shortcut: '⌘M',
+        disabled: !activeWindowId,
+        action: () => { if (activeWindowId) minimizeWindow(activeWindowId); },
+      },
+      {
+        label: 'Zoom',
+        action: () => { if (activeWindowId) toggleMaximizeWindow(activeWindowId); },
+        disabled: !activeWindowId,
+      },
+      { separator: true },
+      {
+        label: 'Close Window',
+        shortcut: '⌘W',
+        disabled: !activeWindowId,
+        action: () => { if (activeWindowId) closeCurrentWindow(); },
+      },
+      {
+        label: 'Close All',
+        shortcut: '⌥⌘W',
+        disabled: !activeWindowId,
+        action: () => { closeApp(activeApp || ''); },
+      },
+      { separator: true },
+      { label: 'Bring All to Front', action: () => showAlert('Windows re-ordered', activeApp || 'Finder'), disabled: !activeApp },
+    ];
+
+    if (openWindows.length > 0) {
+      items.push({ separator: true });
+      openWindows.forEach((win) => {
+        const displayName = activeApp || win.appId;
+        const isActive = win.id === activeWindowId;
+        items.push({
+          label: `${isActive ? '✓ ' : ''}${displayName.charAt(0).toUpperCase() + displayName.slice(1)}`,
+          disabled: isActive,
+          action: () => showAlert(`Switched to ${displayName}`, 'Window'),
+        });
+      });
+    }
+
+    return items;
+  };
+
+  const getHelpMenu = () => {
+    return [
+      {
+        label: 'Search',
+        shortcut: '⌥⌘Space',
+        action: () => setShowSpotlight(true),
+      },
+      { separator: true },
+      {
+        label: 'macOS Help',
+        action: () => showAlert('Welcome to macOS Golden Gate v27. This is a web-based OS simulation.', 'macOS Help'),
+      },
+      {
+        label: `About ${getActiveAppName()}`,
+        action: () => showAlert(`${getActiveAppName()} — Golden Gate Edition`, 'About'),
+      },
+    ];
+  };
+
+  const getEditMenu = (app: string) => {
+    const standard: any[] = [
+      { label: 'Undo', shortcut: '⌘Z', action: () => showAlert('Undo not available', 'Edit') },
+      { label: 'Redo', shortcut: '⇧⌘Z', action: () => showAlert('Redo not available', 'Edit') },
+      { separator: true },
+      { label: 'Cut', shortcut: '⌘X', action: () => showAlert('Cut', 'Edit') },
+      { label: 'Copy', shortcut: '⌘C', action: () => showAlert('Copied to clipboard', 'Edit') },
+      { label: 'Paste', shortcut: '⌘V', action: () => showAlert('Paste', 'Edit') },
+      { label: 'Select All', shortcut: '⌘A', action: () => showAlert('Select All', 'Edit') },
+    ];
+    if (app !== 'terminal') {
+      standard.push(
+        { separator: true },
+        { label: 'Writing Tools', shortcut: '⇧⌘W', action: () => showAlert('Apple Intelligence Writing Tools', 'Edit') },
+        { label: 'Emoji & Symbols', shortcut: '⌃⌘Space', action: () => showAlert('Character Viewer', 'Edit') },
+      );
+    }
+    return standard;
+  };
+
+  const getViewMenu = (app: string) => {
+    switch (app) {
+      case 'safari':
+        return [
+          { label: 'Reload Page', shortcut: '⌘R', action: () => showAlert('Page reloaded', 'Safari') },
+          { label: 'Show Sidebar', shortcut: '⇧⌘L', action: () => showAlert('Sidebar toggled', 'Safari') },
+          { separator: true },
+          { label: 'Show Tab Bar', shortcut: '⇧⌘T', action: () => showAlert('Tab bar toggled', 'Safari') },
+          { separator: true },
+          { label: 'Enter Full Screen', shortcut: '⌃⌘F', action: () => { if (activeWindowId) toggleMaximizeWindow(activeWindowId); } },
+        ];
+      case 'finder':
+        return [
+          { label: 'Show Toolbar', shortcut: '⌥⌘T', action: () => showAlert('Toolbar toggled', 'Finder') },
+          { label: 'Show Sidebar', shortcut: '⌥⌘S', action: () => showAlert('Sidebar toggled', 'Finder') },
+          { label: 'Show Preview', shortcut: '⇧⌘P', action: () => showAlert('Preview toggled', 'Finder') },
+          { separator: true },
+          { label: 'Show Path Bar', shortcut: '⌥⌘P', action: () => showAlert('Path bar toggled', 'Finder') },
+          { separator: true },
+          { label: 'Enter Full Screen', shortcut: '⌃⌘F', action: () => { if (activeWindowId) toggleMaximizeWindow(activeWindowId); } },
+        ];
+      case 'terminal':
+        return [
+          { label: 'Show Tab Bar', action: () => showAlert('Tab bar toggled', 'Terminal') },
+          { separator: true },
+          { label: 'Allow Mouse Reporting', action: () => showAlert('Mouse reporting toggled', 'Terminal') },
+          { separator: true },
+          { label: 'Enter Full Screen', shortcut: '⌃⌘F', action: () => { if (activeWindowId) toggleMaximizeWindow(activeWindowId); } },
+        ];
+      default:
+        return [
+          { label: 'Enter Full Screen', shortcut: '⌃⌘F', action: () => { if (activeWindowId) toggleMaximizeWindow(activeWindowId); } },
+        ];
+    }
+  };
+
   const getAppSpecificMenus = () => {
     const app = activeApp || 'finder';
 
-    const baseMenus = {
+    const baseMenus: Record<string, Record<string, any>> = {
       finder: {
         file: [
-          { label: 'New Finder Window', shortcut: '⌘N' },
-          { label: 'New Folder', shortcut: '⇧⌘N' },
+          { label: 'New Finder Window', shortcut: '⌘N', action: () => launchApp('finder') },
+          { label: 'New Folder', shortcut: '⇧⌘N', action: () => showAlert('New Folder created', 'Finder') },
           { separator: true },
-          { label: 'Get Info', shortcut: '⌘I' },
-          { label: 'Empty Trash...', action: () => console.log('Empty Trash') },
-        ],
-        edit: [
-          { label: 'Undo', shortcut: '⌘Z' },
-          { label: 'Redo', shortcut: '⇧⌘Z' },
+          { label: 'Open...', shortcut: '⌘O', action: () => setShowSpotlight(true) },
           { separator: true },
-          { label: 'Select All', shortcut: '⌘A' },
+          { label: 'Close Window', shortcut: '⌘W', action: () => { closeCurrentWindow(); }, disabled: !activeWindowId },
+          { separator: true },
+          { label: 'Get Info', shortcut: '⌘I', action: () => showAlert('Finder Info: Golden Gate edition', 'Get Info') },
+          { label: 'Empty Trash...', action: () => showConfirm('Are you sure you want to permanently erase all items in the Trash?', 'Empty Trash').then((r) => { if (r) showAlert('Trash emptied', 'Finder'); }) },
         ],
+        edit: getEditMenu('finder'),
+        view: getViewMenu('finder'),
         go: [
-          { label: 'Back', shortcut: '⌘[' },
-          { label: 'Forward', shortcut: '⌘]' },
+          { label: 'Back', shortcut: '⌘[', action: () => showAlert('Navigated back', 'Finder') },
+          { label: 'Forward', shortcut: '⌘]', action: () => showAlert('Navigated forward', 'Finder') },
           { separator: true },
-          { label: 'Applications', shortcut: '⇧⌘A' },
-          { label: 'Documents', shortcut: '⇧⌘O' },
-          { label: 'Desktop', shortcut: '⇧⌘D' },
+          { label: 'Enclosing Folder', shortcut: '⌘↑', action: () => showAlert('Moved to enclosing folder', 'Finder') },
+          { separator: true },
+          { label: 'Applications', shortcut: '⇧⌘A', action: () => launchApp('apps') },
+          { label: 'Documents', shortcut: '⇧⌘O', action: () => showAlert('Documents folder', 'Finder') },
+          { label: 'Desktop', shortcut: '⇧⌘D', action: () => showAlert('Desktop folder', 'Finder') },
+          { separator: true },
+          { label: 'Recent Folders', disabled: true },
+          { label: 'Go to Folder...', shortcut: '⇧⌘G', action: () => setShowSpotlight(true) },
         ],
       },
       safari: {
         file: [
-          { label: 'New Tab', shortcut: '⌘T' },
-          { label: 'New Window', shortcut: '⌘N' },
-          { label: 'New Private Window', shortcut: '⇧⌘N' },
+          { label: 'New Tab', shortcut: '⌘T', action: () => showAlert('New tab opened', 'Safari') },
+          { label: 'New Window', shortcut: '⌘N', action: () => launchApp('safari') },
+          { label: 'New Private Window', shortcut: '⇧⌘N', action: () => showAlert('New private window', 'Safari') },
           { separator: true },
-          { label: 'Open Location...', shortcut: '⌘L' },
-          { label: 'Close Tab', shortcut: '⌘W' },
+          { label: 'Open Location...', shortcut: '⌘L', action: () => setShowSpotlight(true) },
+          { separator: true },
+          { label: 'Close Tab', shortcut: '⌘W', action: () => { closeCurrentWindow(); }, disabled: !activeWindowId },
+          { label: 'Close Window', shortcut: '⇧⌘W', action: () => { closeApp('safari'); } },
         ],
-        edit: [
-          { label: 'Undo', shortcut: '⌘Z' },
-          { label: 'Redo', shortcut: '⇧⌘Z' },
+        edit: getEditMenu('safari'),
+        view: getViewMenu('safari'),
+        go: [
+          { label: 'Back', shortcut: '⌘[', action: () => showAlert('Navigated back', 'Safari') },
+          { label: 'Forward', shortcut: '⌘]', action: () => showAlert('Navigated forward', 'Safari') },
+          { label: 'Home Page', shortcut: '⇧⌘H', action: () => showAlert('Home page', 'Safari') },
           { separator: true },
-          { label: 'Cut', shortcut: '⌘X' },
-          { label: 'Copy', shortcut: '⌘C' },
-          { label: 'Paste', shortcut: '⌘V' },
-          { label: 'Writing Tools', shortcut: '⇧⌘W', action: () => console.log('Writing Tools') },
-        ],
-        view: [
-          { label: 'Reload Page', shortcut: '⌘R' },
-          { label: 'Show Sidebar', shortcut: '⇧⌘L' },
-          { separator: true },
-          { label: 'Enter Full Screen', shortcut: '⌃⌘F' },
+          { label: 'History', action: () => showAlert('History', 'Safari') },
         ],
       },
       terminal: {
         file: [
-          { label: 'New Shell', shortcut: '⌘N' },
-          { label: 'New Tab', shortcut: '⌘T' },
+          { label: 'New Shell', shortcut: '⌘N', action: () => launchApp('terminal') },
+          { label: 'New Tab', shortcut: '⌘T', action: () => showAlert('New terminal tab', 'Terminal') },
           { separator: true },
-          { label: 'Close Window', shortcut: '⌘W' },
+          { label: 'Close Window', shortcut: '⌘W', action: () => { closeCurrentWindow(); }, disabled: !activeWindowId },
+          { label: 'Close Tab', shortcut: '⌥⌘W', action: () => showAlert('Tab closed', 'Terminal') },
         ],
-        edit: [
-          { label: 'Copy', shortcut: '⌘C' },
-          { label: 'Paste', shortcut: '⌘V' },
-          { separator: true },
-          { label: 'Clear Scrollback', shortcut: '⌘K' },
+        edit: getEditMenu('terminal'),
+        view: getViewMenu('terminal'),
+        go: [
+          { label: 'Go to Folder...', shortcut: '⇧⌘G', action: () => setShowSpotlight(true) },
         ],
       },
     };
 
-    return (baseMenus as any)[app] || baseMenus.finder;
+    const menus = (baseMenus as any)[app] || baseMenus.finder;
+    menus.window = getWindowMenu();
+    menus.help = getHelpMenu();
+    return menus;
   };
 
   const appMenus = getAppSpecificMenus();
-  const menuKeys = Object.keys(appMenus).map((k) => k.charAt(0).toUpperCase() + k.slice(1));
+  const menuKeys = ['File', 'Edit', 'View', 'Go', 'Window', 'Help'];
 
   return (
     <header
