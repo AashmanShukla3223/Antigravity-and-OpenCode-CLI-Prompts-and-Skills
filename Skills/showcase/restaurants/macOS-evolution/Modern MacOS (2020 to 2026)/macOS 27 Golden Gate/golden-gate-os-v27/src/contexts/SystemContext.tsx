@@ -236,6 +236,8 @@ interface SystemContextProps {
   setShowSpotlight: (show: boolean) => void;
   showRestartDialog: boolean;
   setShowRestartDialog: (show: boolean) => void;
+  showShutdownDialog: boolean;
+  setShowShutdownDialog: (show: boolean) => void;
   showWidgetPicker: boolean;
   setShowWidgetPicker: (show: boolean) => void;
   incomingCall: { contact: any; type: 'facetime' | 'phone' } | null;
@@ -260,6 +262,7 @@ interface SystemContextProps {
   isShuttingDown: boolean;
   shutdownStep: number;
   initiateRestart: () => void;
+  initiateShutdown: () => void;
   isHandoff: boolean;
   handoffTarget: BootState | null;
   initiateSystemHandoff: (target: BootState) => void;
@@ -355,6 +358,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
+  const [showShutdownDialog, setShowShutdownDialog] = useState(false);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [systemDialog, setSystemDialog] = useState<SystemDialogConfig | null>(null);
@@ -521,6 +525,34 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setShutdownStep(0);
     }, 1200);
   }, [clearSystemErrors, setBootState, pauseSong]);
+
+  const initiateShutdown = useCallback(() => {
+    setIsShuttingDown(true);
+    pauseSong();
+
+    setShowShutdownDialog(false);
+    setShowAboutWindow(false);
+    setShowSpotlight(false);
+    setShowWidgetPicker(false);
+    setSystemDialog(null);
+
+    setShutdownStep(1);
+    setTimeout(() => setShutdownStep(2), 300);
+    setTimeout(() => {
+      setShutdownStep(3);
+      clearSystemErrors();
+      setOpenWindows([]);
+      setMinimizedWindows([]);
+      setMaximizedWindows([]);
+      setActiveWindow(null);
+    }, 600);
+    setTimeout(() => setShutdownStep(4), 900);
+    setTimeout(() => {
+      window.location.href = 'about:blank';
+      setIsShuttingDown(false);
+      setShutdownStep(0);
+    }, 1200);
+  }, [clearSystemErrors, pauseSong]);
 
   const initiateSystemHandoff = useCallback(
     (target: BootState) => {
@@ -1022,6 +1054,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setShowSpotlight,
         showRestartDialog,
         setShowRestartDialog,
+        showShutdownDialog,
+        setShowShutdownDialog,
         showWidgetPicker,
         setShowWidgetPicker,
         incomingCall,
@@ -1048,6 +1082,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isShuttingDown,
         shutdownStep,
         initiateRestart,
+        initiateShutdown,
         isHandoff,
         handoffTarget,
         initiateSystemHandoff,
