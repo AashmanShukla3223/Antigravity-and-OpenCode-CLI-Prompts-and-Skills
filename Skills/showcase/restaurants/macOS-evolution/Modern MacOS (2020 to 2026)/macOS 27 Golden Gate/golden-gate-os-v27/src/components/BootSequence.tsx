@@ -172,8 +172,8 @@ export const BootSequence: React.FC = () => {
         </svg>
       </motion.div>
 
-      {/* Progress Bar Track */}
-      <div className="absolute mt-60 w-48 h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-md border border-white/10">
+      {/* Progress Bar Track — bottom of screen */}
+      <div className="absolute bottom-16 w-48 h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-md border border-white/10">
         <motion.div
           className="h-full bg-gradient-to-r from-white/80 to-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"
           initial={{ width: '0%' }}
