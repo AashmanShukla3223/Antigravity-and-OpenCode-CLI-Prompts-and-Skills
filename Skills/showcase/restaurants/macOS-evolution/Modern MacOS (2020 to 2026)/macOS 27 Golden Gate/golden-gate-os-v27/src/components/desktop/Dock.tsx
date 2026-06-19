@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
@@ -118,6 +118,19 @@ export const Dock: React.FC = () => {
   };
 
   const isHidden = systemState.dockHidden && !reveal;
+  const [hoveredApp, setHoveredApp] = useState<{ id: string; name: string; rect: DOMRect } | null>(null);
+
+  const handleIconHover = useCallback((appId: string, appName: string, hovering: boolean, rect?: DOMRect) => {
+    if (hovering && rect) {
+      setHoveredApp({ id: appId, name: appName, rect });
+    } else if (!hovering) {
+      setHoveredApp(null);
+    }
+  }, []);
+
+  const popOutBaseSize = 20 + systemState.dockSize * 0.24;
+  const popOutHoverScale = 1 + systemState.dockIconScaler * 0.018;
+  const popOutTargetSize = popOutBaseSize * popOutHoverScale;
 
   return (
     <nav
@@ -132,11 +145,12 @@ export const Dock: React.FC = () => {
       {isHidden ? (
         <div className="w-full h-1.5 pointer-events-auto cursor-default" />
       ) : (
-        <div
-          data-testid="dock"
+        <>
+          <div
+            data-testid="dock"
           role="navigation"
           aria-label="Application Dock"
-          className="mb-4 flex items-end gap-px px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto max-w-[85vw] overflow-visible scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent"
+          className="mb-4 flex items-end gap-px px-2 py-1 rounded-2xl bg-white/[0.07] dark:bg-black/[0.15] border border-white/[0.12] pointer-events-auto max-w-[85vw] overflow-x-auto scrollbar-hide relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent"
           style={{
             backdropFilter: `blur(${4 + systemState.dockBlurStrength * 0.2}px)`,
             boxShadow: `0 15px 40px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.1)`,
@@ -184,6 +198,7 @@ export const Dock: React.FC = () => {
                 dockDepth={systemState.dockDepth}
                 onClick={() => handleAppClick(app.id)}
                 onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
+                onHoverChange={handleIconHover}
               />
             ),
           )}
@@ -205,17 +220,18 @@ export const Dock: React.FC = () => {
                   <div className="mx-0.5">
                     <DockIcon
                       app={{ id: appName, name: appName }}
-                      isOpen={true}
-                      isMinimized={false}
-                      isActive={false}
-                      magnifierEnabled={systemState.dockMagnifier}
-                      dockSize={systemState.dockSize}
-                      dockCornerRadius={systemState.dockCornerRadius}
-                      dockIconScaler={systemState.dockIconScaler}
-                      dockHoverSmoothness={systemState.dockHoverSmoothness}
-                      dockDepth={systemState.dockDepth}
-                      onClick={() => unminimizeWindow(wId)}
-                    />
+                    isOpen={true}
+                    isMinimized={false}
+                    isActive={false}
+                    magnifierEnabled={systemState.dockMagnifier}
+                    dockSize={systemState.dockSize}
+                    dockCornerRadius={systemState.dockCornerRadius}
+                    dockIconScaler={systemState.dockIconScaler}
+                    dockHoverSmoothness={systemState.dockHoverSmoothness}
+                    dockDepth={systemState.dockDepth}
+                    onClick={() => unminimizeWindow(wId)}
+                    onHoverChange={handleIconHover}
+                  />
                   </div>
                 </motion.div>
               );
@@ -224,35 +240,71 @@ export const Dock: React.FC = () => {
 
           {minimizedWindows.length > 0 && <div className="w-[1px] h-9 bg-white/20 mx-0.5 self-center" />}
 
-          <DockIcon
-            app={{ id: 'downloads', name: 'Downloads' }}
-            isOpen={false}
-            isMinimized={false}
-            isActive={activeApp === 'downloads'}
-            magnifierEnabled={systemState.dockMagnifier}
-            dockSize={systemState.dockSize}
-            dockCornerRadius={systemState.dockCornerRadius}
-            dockIconScaler={systemState.dockIconScaler}
-            dockHoverSmoothness={systemState.dockHoverSmoothness}
-            dockDepth={systemState.dockDepth}
-            onClick={() => handleAppClick('downloads')}
-          />
+            <DockIcon
+              app={{ id: 'downloads', name: 'Downloads' }}
+              isOpen={false}
+              isMinimized={false}
+              isActive={activeApp === 'downloads'}
+              magnifierEnabled={systemState.dockMagnifier}
+              dockSize={systemState.dockSize}
+              dockCornerRadius={systemState.dockCornerRadius}
+              dockIconScaler={systemState.dockIconScaler}
+              dockHoverSmoothness={systemState.dockHoverSmoothness}
+              dockDepth={systemState.dockDepth}
+              onClick={() => handleAppClick('downloads')}
+              onHoverChange={handleIconHover}
+            />
 
-          <DockIcon
-            app={{ id: 'trash', name: 'Trash' }}
-            isOpen={false}
-            isMinimized={false}
-            isFull={isTrashFull}
-            isActive={activeApp === 'trash'}
-            magnifierEnabled={systemState.dockMagnifier}
-            dockSize={systemState.dockSize}
-            dockCornerRadius={systemState.dockCornerRadius}
-            dockIconScaler={systemState.dockIconScaler}
-            dockHoverSmoothness={systemState.dockHoverSmoothness}
-            dockDepth={systemState.dockDepth}
-            onClick={() => handleAppClick('trash')}
-          />
-        </div>
+            <DockIcon
+              app={{ id: 'trash', name: 'Trash' }}
+              isOpen={false}
+              isMinimized={false}
+              isFull={isTrashFull}
+              isActive={activeApp === 'trash'}
+              magnifierEnabled={systemState.dockMagnifier}
+              dockSize={systemState.dockSize}
+              dockCornerRadius={systemState.dockCornerRadius}
+              dockIconScaler={systemState.dockIconScaler}
+              dockHoverSmoothness={systemState.dockHoverSmoothness}
+              dockDepth={systemState.dockDepth}
+              onClick={() => handleAppClick('trash')}
+              onHoverChange={handleIconHover}
+            />
+          </div>
+
+          <AnimatePresence>
+            {hoveredApp && systemState.dockMagnifier && (
+              <motion.div
+                key={hoveredApp.id}
+                initial={{ scale: 0.5, opacity: 0, y: 0 }}
+                animate={{ scale: 1, opacity: 1, y: -(popOutBaseSize * 0.35) }}
+                exit={{ scale: 0.5, opacity: 0, y: 0 }}
+                style={{
+                  position: 'fixed',
+                  top: hoveredApp.rect.top,
+                  left: hoveredApp.rect.left,
+                  width: popOutTargetSize,
+                  height: popOutTargetSize,
+                  borderRadius: 4 + systemState.dockCornerRadius * 0.32,
+                  boxShadow: `0 30px 70px rgba(0,0,0,${0.5 + systemState.dockDepth * 0.005})`,
+                  zIndex: 50,
+                }}
+                transition={{
+                  type: 'spring' as const,
+                  mass: 0.5 - systemState.dockHoverSmoothness * 0.004,
+                  stiffness: 300 - systemState.dockHoverSmoothness * 2.5,
+                  damping: 30 - systemState.dockHoverSmoothness * 0.22,
+                }}
+                className="flex items-center justify-center"
+              >
+                <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap">
+                  {hoveredApp.name}
+                </div>
+                <AppIcon id={hoveredApp.id} size={popOutBaseSize} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
       )}
     </nav>
   );
@@ -273,8 +325,10 @@ const DockIcon = ({
   dockDepth,
   onClick,
   onContextMenu,
+  onHoverChange,
 }: any) => {
   const [hovered, setHovered] = useState(false);
+  const iconRef = useRef<HTMLDivElement>(null);
 
   const baseSize = 20 + dockSize * 0.24;
   const hoverScale = 1 + dockIconScaler * 0.018;
@@ -288,24 +342,38 @@ const DockIcon = ({
     damping: 30 - dockHoverSmoothness * 0.22,
   };
 
+  const handleHoverStart = () => {
+    setHovered(true);
+    if (onHoverChange && iconRef.current) {
+      const rect = iconRef.current.getBoundingClientRect();
+      onHoverChange(app.id, app.name, true, rect);
+    }
+  };
+
+  const handleHoverEnd = () => {
+    setHovered(false);
+    if (onHoverChange) {
+      onHoverChange(app.id, app.name, false);
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center group">
-      {hovered && (
+      {hovered && !magnifierEnabled && (
         <div className="absolute -top-10 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-xs rounded-lg border border-white/10 whitespace-nowrap opacity-100 transition-opacity">
           {app.name}
         </div>
       )}
       <motion.div
+        ref={iconRef}
         style={{
           borderRadius: cornerRadius,
-          boxShadow: hovered && magnifierEnabled
-            ? `0 30px 70px rgba(0,0,0,${0.5 + dockDepth * 0.005})`
-            : `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})`,
+          boxShadow: `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})`,
         }}
         animate={{
           width: isLaunching ? baseSize : targetSize,
           height: isLaunching ? baseSize : targetSize,
-          y: isLaunching ? [0, -20, 0] : (hovered && magnifierEnabled ? -(baseSize * 0.35) : 0),
+          y: isLaunching ? [0, -20, 0] : 0,
         }}
         transition={{
           width: isLaunching ? { duration: 0.1 } : springTransition,
@@ -315,10 +383,9 @@ const DockIcon = ({
         className={`relative flex items-center justify-center cursor-pointer
           ${isActive ? 'bg-white/20 border-white/40' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
-          ${hovered && magnifierEnabled ? 'z-10' : ''}
         `}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
+        onHoverStart={handleHoverStart}
+        onHoverEnd={handleHoverEnd}
         onClick={onClick}
         onContextMenu={onContextMenu}
         whileTap={{ scale: 0.9 }}
