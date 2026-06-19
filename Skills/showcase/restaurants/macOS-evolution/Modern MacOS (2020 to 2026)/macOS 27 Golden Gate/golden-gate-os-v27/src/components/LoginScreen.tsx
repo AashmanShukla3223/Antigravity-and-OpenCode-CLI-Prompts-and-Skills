@@ -5,7 +5,7 @@ import { BatteryCharging01Icon, BatteryFullIcon, BatteryMedium01Icon, BatteryLow
 import { WallpaperEngine } from './desktop/WallpaperEngine';
 
 export const LoginScreen: React.FC = () => {
-  const { setBootState, updateSystemState, systemState, battery, activeUser } = useSystem();
+  const { setBootState, updateSystemState, systemState, battery, activeUser, initiateShutdown } = useSystem();
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -47,8 +47,10 @@ export const LoginScreen: React.FC = () => {
   };
 
   const handlePowerAction = (action: string) => {
-    if (action === 'restart' || action === 'shutdown') {
+    if (action === 'restart') {
       setBootState('booting');
+    } else if (action === 'shutdown') {
+      initiateShutdown();
     }
   };
 
