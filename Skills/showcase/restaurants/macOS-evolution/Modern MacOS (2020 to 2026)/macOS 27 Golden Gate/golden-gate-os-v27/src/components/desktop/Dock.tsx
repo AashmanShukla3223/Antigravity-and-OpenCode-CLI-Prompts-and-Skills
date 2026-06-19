@@ -71,7 +71,7 @@ export const Dock: React.FC = () => {
     setContextMenu,
   } = useSystem();
   const [reveal, setReveal] = useState(false);
-  const { getDirectoryContents } = useFileSystem();
+  const { getDirectoryContents, deleteNode } = useFileSystem();
 
   const trashContents = getDirectoryContents('trash');
   const isTrashFull = trashContents.length > 0;
@@ -240,21 +240,30 @@ export const Dock: React.FC = () => {
               onHoverChange={handleIconHover}
             />
 
-            <DockIcon
-              app={{ id: 'trash', name: 'Trash' }}
-              isOpen={false}
-              isMinimized={false}
-              isFull={isTrashFull}
-              isActive={activeApp === 'trash'}
-              magnifierEnabled={systemState.dockMagnifier}
-              dockSize={systemState.dockSize}
-              dockCornerRadius={systemState.dockCornerRadius}
-              dockIconScaler={systemState.dockIconScaler}
-              dockHoverSmoothness={systemState.dockHoverSmoothness}
-              dockDepth={systemState.dockDepth}
-              onClick={() => handleAppClick('trash')}
-              onHoverChange={handleIconHover}
-            />
+            <div
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const nodeId = e.dataTransfer.getData('text/plain');
+                if (nodeId) deleteNode(nodeId);
+              }}
+            >
+              <DockIcon
+                app={{ id: 'trash', name: 'Trash' }}
+                isOpen={false}
+                isMinimized={false}
+                isFull={isTrashFull}
+                isActive={activeApp === 'trash'}
+                magnifierEnabled={systemState.dockMagnifier}
+                dockSize={systemState.dockSize}
+                dockCornerRadius={systemState.dockCornerRadius}
+                dockIconScaler={systemState.dockIconScaler}
+                dockHoverSmoothness={systemState.dockHoverSmoothness}
+                dockDepth={systemState.dockDepth}
+                onClick={() => handleAppClick('trash')}
+                onHoverChange={handleIconHover}
+              />
+            </div>
           </div>
 
           <AnimatePresence>

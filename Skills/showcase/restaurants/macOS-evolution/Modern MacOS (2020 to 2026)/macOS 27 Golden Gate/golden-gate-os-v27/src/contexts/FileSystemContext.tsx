@@ -68,6 +68,8 @@ interface FileSystemContextProps {
   removeTag: (id: string, tag: TagColor) => void;
   restoreSystemNodes: () => void;
   getNodeContent: (content: string | undefined) => string | undefined;
+  moveNode: (id: string, newParentId: string) => void;
+  findNode: (id: string) => FileSystemNode | undefined;
 }
 const initialNodes: FileSystemNode[] = [
   { id: 'root', name: 'Macintosh HD', type: 'folder', parentId: null, modifiedAt: Date.now() },
@@ -281,6 +283,16 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     );
   };
 
+  const moveNode = (id: string, newParentId: string) => {
+    setNodes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, parentId: newParentId, modifiedAt: Date.now() } : n)),
+    );
+  };
+
+  const findNode = (id: string): FileSystemNode | undefined => {
+    return nodes.find((n) => n.id === id);
+  };
+
   return (
     <FileSystemContext.Provider
       value={{
@@ -295,6 +307,8 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
         removeTag,
         restoreSystemNodes,
         getNodeContent,
+        moveNode,
+        findNode,
       }}
     >
       {children}

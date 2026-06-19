@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
+import { useFileSystem } from '../../contexts/FileSystemContext';
 import { Video01Icon, ArrowRight01Icon, SparklesIcon } from 'hugeicons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppIcon } from '../common/AppIcon';
@@ -401,7 +402,10 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     openWindows,
     showAlert,
     showConfirm,
+    clipboard,
+    clearClipboard,
   } = useSystem();
+  const { createNode, emptyTrash, findNode, moveNode } = useFileSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
@@ -441,6 +445,38 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     } else if (action === 'sleep' || action === 'lock' || action === 'logout') {
       setBootState('login');
     }
+  };
+
+  const handlePaste = () => {
+    if (!clipboard || clipboard.nodeIds.length === 0) {
+      showAlert('Nothing to paste', 'Paste');
+      return;
+    }
+    const targetParentId = 'desktop';
+    let count = 0;
+    clipboard.nodeIds.forEach((nodeId) => {
+      const node = findNode(nodeId);
+      if (!node) return;
+      if (clipboard.type === 'copy') {
+        createNode({
+          name: node.name,
+          type: node.type,
+          parentId: targetParentId,
+          content: node.content,
+          tags: node.tags,
+          customIcon: node.customIcon,
+          color: node.color,
+        });
+        count++;
+      } else {
+        moveNode(nodeId, targetParentId);
+        count++;
+      }
+    });
+    if (clipboard.type === 'cut') {
+      clearClipboard();
+    }
+    showAlert(`Pasted ${count} item(s)`, 'Paste');
   };
 
   const getWindowMenu = () => {
@@ -489,6 +525,43 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     return items;
   };
 
+  const getAppVersion = (appId: string): string => {
+    const versions: Record<string, string> = {
+      finder: '14.0',
+      safari: '18.0',
+      messages: '16.0',
+      mail: '14.0',
+      maps: '7.0',
+      photos: '11.0',
+      facetime: '9.0',
+      phone: '5.0',
+      calendar: '12.0',
+      contacts: '14.0',
+      notes: '10.0',
+      reminders: '12.0',
+      music: '2.0',
+      tv: '3.0',
+      appstore: '8.0',
+      settings: '11.0',
+      terminal: '8.0',
+      calculator: '2.0',
+      books: '7.0',
+      wallet: '5.0',
+      stickies: '3.0',
+      'crazy-errors': '1.0',
+      'iphonemirroring': '3.0',
+      siriai: '3.0',
+      keynote: '14.0',
+      numbers: '14.0',
+      pages: '14.0',
+      github: '1.0',
+      apps: '1.0',
+      games: '2.0',
+      activity: '3.0',
+    };
+    return versions[appId] || '1.0';
+  };
+
   const getHelpMenu = () => {
     return [
       {
@@ -503,7 +576,14 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
       },
       {
         label: `About ${getActiveAppName()}`,
-        action: () => showAlert(`${getActiveAppName()} — Golden Gate Edition`, 'About'),
+        action: () => {
+          const app = activeApp || 'finder';
+          const ver = getAppVersion(app);
+          showAlert(`${getActiveAppName()} ${ver}
+Golden Gate Edition
+Apple Silicon
+macOS Golden Gate v27.0`, `About ${getActiveAppName()}`);
+        },
       },
     ];
   };
@@ -513,9 +593,21 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
       { label: 'Undo', shortcut: '⌘Z', action: () => showAlert('Undo not available', 'Edit') },
       { label: 'Redo', shortcut: '⇧⌘Z', action: () => showAlert('Redo not available', 'Edit') },
       { separator: true },
-      { label: 'Cut', shortcut: '⌘X', action: () => showAlert('Cut', 'Edit') },
-      { label: 'Copy', shortcut: '⌘C', action: () => showAlert('Copied to clipboard', 'Edit') },
-      { label: 'Paste', shortcut: '⌘V', action: () => showAlert('Paste', 'Edit') },
+      { label: 'Cut', shortcut: '⌘X', action: () => {
+        if (clipboard && clipboard.nodeIds.length > 0) {
+          showAlert(`${clipboard.nodeIds.length} item(s) ready to paste`, 'Cut');
+        } else {
+          showAlert('Right-click a file and choose Cut, or use desktop context menu', 'Cut');
+        }
+      }},
+      { label: 'Copy', shortcut: '⌘C', action: () => {
+        if (clipboard && clipboard.nodeIds.length > 0) {
+          showAlert(`${clipboard.nodeIds.length} item(s) in clipboard`, 'Copy');
+        } else {
+          showAlert('Right-click a file and choose Copy, or use desktop context menu', 'Copy');
+        }
+      }},
+      { label: 'Paste', shortcut: '⌘V', action: handlePaste },
       { label: 'Select All', shortcut: '⌘A', action: () => showAlert('Select All', 'Edit') },
     ];
     if (app !== 'terminal') {
@@ -571,14 +663,31 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
       finder: {
         file: [
           { label: 'New Finder Window', shortcut: '⌘N', action: () => launchApp('finder') },
-          { label: 'New Folder', shortcut: '⇧⌘N', action: () => showAlert('New Folder created', 'Finder') },
+          { label: 'New Folder', shortcut: '⇧⌘N', action: () => {
+            createNode({ name: 'Untitled Folder', type: 'folder', parentId: 'desktop' });
+            showAlert('New folder created on Desktop', 'Finder');
+          } },
           { separator: true },
           { label: 'Open...', shortcut: '⌘O', action: () => setShowSpotlight(true) },
           { separator: true },
           { label: 'Close Window', shortcut: '⌘W', action: () => { closeCurrentWindow(); }, disabled: !activeWindowId },
           { separator: true },
-          { label: 'Get Info', shortcut: '⌘I', action: () => showAlert('Finder Info: Golden Gate edition', 'Get Info') },
-          { label: 'Empty Trash...', action: () => showConfirm('Are you sure you want to permanently erase all items in the Trash?', 'Empty Trash').then((r) => { if (r) showAlert('Trash emptied', 'Finder'); }) },
+          { label: 'Get Info', shortcut: '⌘I', action: () => {
+            const app = activeApp || 'finder';
+            showAlert(`Name: ${getActiveAppName()}
+Kind: Application
+Version: ${getAppVersion(app)}
+Architecture: Apple Silicon
+macOS Golden Gate v27.0`, 'Get Info');
+          } },
+          { label: 'Empty Trash...', action: () => {
+            showConfirm('Are you sure you want to permanently erase all items in the Trash?', 'Empty Trash').then((r) => {
+              if (r) {
+                emptyTrash();
+                showAlert('Trash emptied', 'Finder');
+              }
+            });
+          } },
         ],
         edit: getEditMenu('finder'),
         view: getViewMenu('finder'),

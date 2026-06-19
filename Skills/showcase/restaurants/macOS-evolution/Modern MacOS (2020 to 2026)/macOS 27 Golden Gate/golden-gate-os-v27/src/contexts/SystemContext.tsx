@@ -61,6 +61,11 @@ export interface Reminder {
   completed: boolean;
 }
 
+export interface ClipboardEntry {
+  type: 'copy' | 'cut';
+  nodeIds: string[];
+}
+
 export interface MusicState {
   currentSongIndex: number;
   isPlaying: boolean;
@@ -293,6 +298,10 @@ interface SystemContextProps {
   removeUser: (userId: string) => void;
   updateUser: (userId: string, updates: Partial<UserAccount>) => void;
   verifyPassword: (password: string) => boolean;
+  clipboard: ClipboardEntry | null;
+  copyToClipboard: (nodeIds: string[]) => void;
+  cutToClipboard: (nodeIds: string[]) => void;
+  clearClipboard: () => void;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -395,6 +404,16 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [openWindows]);
 
   const [systemErrors, setSystemErrors] = useState<ActiveError[]>([]);
+  const [clipboard, setClipboard] = useState<ClipboardEntry | null>(null);
+  const copyToClipboard = useCallback((nodeIds: string[]) => {
+    setClipboard({ type: 'copy', nodeIds });
+  }, []);
+  const cutToClipboard = useCallback((nodeIds: string[]) => {
+    setClipboard({ type: 'cut', nodeIds });
+  }, []);
+  const clearClipboard = useCallback(() => {
+    setClipboard(null);
+  }, []);
   const stormIntervalRef = React.useRef<any>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const infectionMusicRef = React.useRef<HTMLAudioElement | null>(null);
@@ -1110,6 +1129,10 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         removeUser,
         updateUser,
         verifyPassword,
+        clipboard,
+        copyToClipboard,
+        cutToClipboard,
+        clearClipboard,
       }}
     >
       {children}

@@ -62,8 +62,13 @@ export const Desktop: React.FC = () => {
     activeUser,
     updateUser,
     setShowNotificationCenter,
+    activeApp,
+    clipboard,
+    copyToClipboard,
+    cutToClipboard,
+    clearClipboard,
   } = useSystem();
-  const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes } = useFileSystem();
+  const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes, moveNode, findNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [showApps, setShowApps] = useState(false);
 
@@ -121,13 +126,52 @@ export const Desktop: React.FC = () => {
         setShowSpotlight(!showSpotlight);
         return;
       }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyQ') {
+        e.preventDefault();
+        if (activeApp) quitApp(activeApp);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyV') {
+        if (!clipboard || clipboard.nodeIds.length === 0) return;
+        e.preventDefault();
+        const targetParentId = 'desktop';
+        for (const nodeId of clipboard.nodeIds) {
+          const node = findNode(nodeId);
+          if (!node) continue;
+          if (clipboard.type === 'copy') {
+            createNode({
+              name: node.name,
+              type: node.type,
+              parentId: targetParentId,
+              content: node.content,
+              tags: node.tags,
+              customIcon: node.customIcon,
+              color: node.color,
+            });
+          } else {
+            moveNode(nodeId, targetParentId);
+          }
+        }
+        if (clipboard.type === 'cut') {
+          clearClipboard();
+        }
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyC') {
+        e.preventDefault();
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyX') {
+        e.preventDefault();
+        return;
+      }
       if (e.key === 'Escape') {
         clearSystemErrors();
       }
     };
     window.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [setShowSpotlight, clearSystemErrors, showSpotlight]);
+  }, [setShowSpotlight, clearSystemErrors, showSpotlight, activeApp, quitApp, clipboard, findNode, createNode, moveNode, clearClipboard]);
 
   useEffect(() => {
     const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -523,10 +567,35 @@ export const Desktop: React.FC = () => {
         }}
         className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
         style={{ willChange: 'opacity, transform' }}
+        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+        onDrop={(e) => {
+          e.preventDefault();
+          const draggedId = e.dataTransfer.getData('text/plain');
+          if (draggedId) moveNode(draggedId, 'desktop');
+        }}
       >
         {desktopItems.map((item) => (
           <motion.div
             key={item.id}
+            draggable
+            onDragStart={(e: any) => {
+              e.dataTransfer.setData('text/plain', item.id);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragOver={(e: any) => {
+              if (item.type === 'folder') {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }
+            }}
+            onDrop={(e: any) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const draggedId = e.dataTransfer.getData('text/plain');
+              if (draggedId && item.type === 'folder' && draggedId !== item.id) {
+                moveNode(draggedId, item.id);
+              }
+            }}
             onDoubleClick={() => {
               if (item.type === 'folder') launchApp('finder');
             }}
@@ -827,6 +896,60 @@ export const Desktop: React.FC = () => {
                   }}
                 >
                   Move to Trash
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) cutToClipboard([contextMenu.targetId]);
+                    setContextMenu(null);
+                  }}
+                >
+                  Cut
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) copyToClipboard([contextMenu.targetId]);
+                    setContextMenu(null);
+                  }}
+                >
+                  Copy
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    const targetParentId = contextMenu.targetId && nodes.find((n) => n.id === contextMenu.targetId)?.type === 'folder'
+                      ? contextMenu.targetId
+                      : 'desktop';
+                    if (!clipboard || clipboard.nodeIds.length === 0) {
+                      setContextMenu(null);
+                      return;
+                    }
+                    for (const nodeId of clipboard.nodeIds) {
+                      const node = findNode(nodeId);
+                      if (!node) continue;
+                      if (clipboard.type === 'copy') {
+                        createNode({
+                          name: node.name,
+                          type: node.type,
+                          parentId: targetParentId,
+                          content: node.content,
+                          tags: node.tags,
+                          customIcon: node.customIcon,
+                          color: node.color,
+                        });
+                      } else {
+                        moveNode(nodeId, targetParentId);
+                      }
+                    }
+                    if (clipboard.type === 'cut') clearClipboard();
+                    setContextMenu(null);
+                  }}
+                >
+                  {clipboard && clipboard.nodeIds.length > 0
+                    ? `Paste ${clipboard.type === 'cut' ? '& Move' : ''}`
+                    : 'Paste'}
                 </div>
                 {contextMenu.targetId &&
                   nodes.find((n) => n.id === contextMenu.targetId)?.type === 'file' &&
