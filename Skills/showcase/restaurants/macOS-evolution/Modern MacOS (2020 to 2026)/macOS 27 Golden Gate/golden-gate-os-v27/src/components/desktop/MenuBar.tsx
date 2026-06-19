@@ -391,7 +391,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     clearSystemErrors,
     setShowRestartDialog,
     setShowShutdownDialog,
-    initiateRestart,
     setShowNotificationCenter,
     showNotificationCenter,
   } = useSystem();
