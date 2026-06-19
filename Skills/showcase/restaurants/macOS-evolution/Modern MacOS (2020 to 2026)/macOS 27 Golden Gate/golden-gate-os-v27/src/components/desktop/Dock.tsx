@@ -135,10 +135,10 @@ export const Dock: React.FC = () => {
   const isHorizontal = dockPosition === 'bottom';
   const navClasses = isHorizontal
     ? 'absolute bottom-0 w-full flex justify-center'
-    : `absolute ${dockPosition === 'left' ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 flex items-center`;
+    : `absolute ${dockPosition === 'left' ? 'left-0' : 'right-0'} top-[30px] flex items-start`;
   const dockClasses = isHorizontal
     ? 'mb-4 flex-row items-end max-w-[85vw] overflow-x-auto'
-    : 'my-4 flex-col items-center max-h-[85vh] overflow-y-auto';
+    : 'mt-2 flex-col items-center max-h-[85vh] overflow-y-auto';
   const separatorClasses = isHorizontal ? 'w-[1px] h-8' : 'w-8 h-[1px]';
   const separatorContainer = isHorizontal ? 'mx-1 self-center' : 'my-1 self-center';
 

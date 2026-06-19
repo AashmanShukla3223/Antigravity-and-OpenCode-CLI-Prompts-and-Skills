@@ -118,16 +118,7 @@ const initialNodes: FileSystemNode[] = [
     content: '# Welcome to Golden Gate OS V27\n\nThe Unit 7 operating system.',
     modifiedAt: Date.now(),
     tags: ['blue'],
-  },
-  {
-    id: 'macintosh-hd',
-    name: 'Macintosh HD',
-    type: 'folder',
-    parentId: 'desktop',
-    customIcon: '/icons/disk.png',
-    modifiedAt: Date.now(),
-  },
-];
+],
 const FileSystemContext = createContext<FileSystemContextProps | undefined>(undefined);
 
 export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -136,11 +127,6 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
       const saved = localStorage.getItem('golden_gate_v27_fs');
       if (saved) {
         const parsed = JSON.parse(saved) as FileSystemNode[];
-        // Migration: Ensure macintosh-hd exists if missing from saved state
-        if (!parsed.find((n) => n.id === 'macintosh-hd')) {
-          const macHD = initialNodes.find((n) => n.id === 'macintosh-hd');
-          if (macHD) parsed.push(macHD);
-        }
         return parsed;
       }
     } catch (e) {
