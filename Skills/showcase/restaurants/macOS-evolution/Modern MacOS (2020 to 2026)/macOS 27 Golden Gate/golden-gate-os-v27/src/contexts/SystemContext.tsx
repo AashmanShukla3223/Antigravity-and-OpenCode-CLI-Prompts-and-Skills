@@ -125,6 +125,7 @@ export interface GoldenGateV27State {
   dockHoverSmoothness: number;
   dockDepth: number;
   dockBlurStrength: number;
+  dockPosition: 'bottom' | 'left' | 'right';
   brightness: number;
   airdrop: boolean;
   terminalBgColor: string;
@@ -165,6 +166,7 @@ const defaultState: GoldenGateV27State = {
   dockHoverSmoothness: 50,
   dockDepth: 50,
   dockBlurStrength: 50,
+  dockPosition: 'bottom',
   brightness: 80,
   airdrop: false,
   terminalBgColor: '#000000',

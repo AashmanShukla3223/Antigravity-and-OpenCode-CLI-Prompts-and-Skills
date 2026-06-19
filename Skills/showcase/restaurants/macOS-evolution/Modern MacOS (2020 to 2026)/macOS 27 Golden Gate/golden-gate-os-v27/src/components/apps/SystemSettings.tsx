@@ -1006,6 +1006,24 @@ export const SystemSettings: React.FC = () => {
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
+                      <span className="text-sm font-medium">Position</span>
+                      <p className="text-xs text-white/40 mt-0.5">Left, Bottom, or Right</p>
+                    </div>
+                    <div className="flex gap-1 bg-white/10 rounded-lg p-0.5">
+                      {(['left', 'bottom', 'right'] as const).map((pos) => (
+                        <button
+                          key={pos}
+                          onClick={() => updateSystemState({ dockPosition: pos })}
+                          className={`px-3 py-1 text-xs font-bold rounded-md capitalize transition-colors ${systemState.dockPosition === pos ? 'bg-blue-500 text-white' : 'text-white/50 hover:text-white'}`}
+                        >
+                          {pos}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
                       <span className="text-sm font-medium">Magnification</span>
                       <p className="text-xs text-white/40 mt-0.5">Icons enlarge when hovered</p>
                     </div>
