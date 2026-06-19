@@ -399,8 +399,6 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     minimizeWindow,
     toggleMaximizeWindow,
     openWindows,
-    openApps,
-    minimizedWindows,
     showAlert,
     showConfirm,
   } = useSystem();
