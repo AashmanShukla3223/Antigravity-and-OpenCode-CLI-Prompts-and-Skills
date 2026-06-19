@@ -8,6 +8,7 @@ import { ControlCenter } from './ControlCenter';
 import { Window } from './Window';
 import { AboutThisMac } from '../apps/AboutThisMac';
 import { RestartDialog } from './RestartDialog';
+import { ShutdownDialog } from './ShutdownDialog';
 import { SystemDialog } from './SystemDialog';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
@@ -651,6 +652,7 @@ export const Desktop: React.FC = () => {
 
       <AboutThisMac />
       <RestartDialog />
+      <ShutdownDialog />
       <SystemDialog />
       <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} onUpdate={() => { window.location.href = 'https://macos-27-golden-gate.vercel.app'; }} />
       <NotificationToast

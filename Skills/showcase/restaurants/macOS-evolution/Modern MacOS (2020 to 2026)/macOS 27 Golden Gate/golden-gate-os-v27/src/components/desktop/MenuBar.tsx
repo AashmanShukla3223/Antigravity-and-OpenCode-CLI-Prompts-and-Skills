@@ -390,6 +390,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     showSpotlight,
     clearSystemErrors,
     setShowRestartDialog,
+    setShowShutdownDialog,
     initiateRestart,
     setShowNotificationCenter,
     showNotificationCenter,
@@ -429,7 +430,7 @@ export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
     if (action === 'restart') {
       setShowRestartDialog(true);
     } else if (action === 'shutdown') {
-      initiateRestart(); // Immediate shutdown for now
+      setShowShutdownDialog(true);
     } else if (action === 'sleep' || action === 'lock' || action === 'logout') {
       setBootState('login');
     }
