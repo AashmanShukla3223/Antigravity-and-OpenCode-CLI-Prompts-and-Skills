@@ -100,6 +100,9 @@ export const Apps: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const handleLaunch = (app: AppItem) => {
     if (app.isFolder) {
       setActiveFolder(app.id);
+    } else if (app.id === 'github') {
+      window.open('https://github.com/AashmanShukla3223', '_blank');
+      onClose();
     } else {
       launchApp(app.id);
       onClose();

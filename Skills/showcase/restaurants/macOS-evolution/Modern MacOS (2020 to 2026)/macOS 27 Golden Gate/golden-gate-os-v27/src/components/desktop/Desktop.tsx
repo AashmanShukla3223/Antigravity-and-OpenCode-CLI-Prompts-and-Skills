@@ -909,8 +909,7 @@ export const Desktop: React.FC = () => {
                 {/* Pin/Unpin - Hidden for system apps */}
                 {contextMenu.targetId !== 'finder' &&
                   contextMenu.targetId !== 'launchpad' &&
-                  contextMenu.targetId !== 'apps' &&
-                  contextMenu.targetId !== 'github' && (
+                  contextMenu.targetId !== 'apps' && (
                     <>
                       <div className="border-b border-white/10 my-1 mx-3" />
                       <div

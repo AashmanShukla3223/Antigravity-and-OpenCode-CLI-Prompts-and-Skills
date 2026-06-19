@@ -55,6 +55,7 @@ const ALL_APPS = [
   { id: 'timemachine', name: 'Time Machine' },
   { id: 'diskutility', name: 'Disk Utility' },
   { id: 'installer', name: 'Installer' },
+  { id: 'github', name: 'GitHub' },
 ];
 
 export const Dock: React.FC = () => {
@@ -81,7 +82,7 @@ export const Dock: React.FC = () => {
     name: string;
   }[];
 
-  const finalApps = [{ id: 'finder', name: 'Finder' }, { id: 'apps', name: 'Apps' }, ...dockApps, { id: 'github', name: 'GitHub' }].filter(
+  const finalApps = [{ id: 'finder', name: 'Finder' }, { id: 'apps', name: 'Apps' }, ...dockApps].filter(
     (app, index, self) => index === self.findIndex((t) => t.id === app.id),
   );
 
@@ -156,51 +157,25 @@ export const Dock: React.FC = () => {
             borderRadius: `${8 + systemState.dockCornerRadius * 0.28}px`,
           }}
         >
-          {finalApps.map((app) =>
-            app.id === 'github' ? (
-              <a
-                key={app.id}
-                href="https://github.com/AashmanShukla3223"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pointer-events-auto"
-                >
-                  <DockIcon
-                  app={app}
-                  isRunning={false}
-                  isMinimized={false}
-                  isActive={false}
-                  isLaunching={false}
-                  magnifierEnabled={systemState.dockMagnifier}
-                  dockSize={systemState.dockSize}
-                  dockCornerRadius={systemState.dockCornerRadius}
-                  dockIconScaler={systemState.dockIconScaler}
-                  dockHoverSmoothness={systemState.dockHoverSmoothness}
-                  dockDepth={systemState.dockDepth}
-                  onClick={() => {}}
-                  onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
-                />
-              </a>
-            ) : (
-              <DockIcon
-                key={app.id}
-                app={app}
-                isRunning={systemState.runningApps.includes(app.id)}
-                isMinimized={false}
-                isActive={activeApp === app.id}
-                isLaunching={launchingApp === app.id}
-                magnifierEnabled={systemState.dockMagnifier}
-                dockSize={systemState.dockSize}
-                dockCornerRadius={systemState.dockCornerRadius}
-                dockIconScaler={systemState.dockIconScaler}
-                dockHoverSmoothness={systemState.dockHoverSmoothness}
-                dockDepth={systemState.dockDepth}
-                onClick={() => handleAppClick(app.id)}
-                onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
-                onHoverChange={handleIconHover}
-              />
-            ),
-          )}
+          {finalApps.map((app) => (
+            <DockIcon
+              key={app.id}
+              app={app}
+              isRunning={systemState.runningApps.includes(app.id)}
+              isMinimized={false}
+              isActive={activeApp === app.id}
+              isLaunching={launchingApp === app.id}
+              magnifierEnabled={systemState.dockMagnifier}
+              dockSize={systemState.dockSize}
+              dockCornerRadius={systemState.dockCornerRadius}
+              dockIconScaler={systemState.dockIconScaler}
+              dockHoverSmoothness={systemState.dockHoverSmoothness}
+              dockDepth={systemState.dockDepth}
+              onClick={() => handleAppClick(app.id)}
+              onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, app.id)}
+              onHoverChange={handleIconHover}
+            />
+          ))}
 
           <div className="w-[1px] h-8 bg-white/15 mx-1 self-center" />
 

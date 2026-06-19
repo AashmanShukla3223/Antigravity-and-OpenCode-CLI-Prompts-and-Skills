@@ -26,7 +26,6 @@ export const DEFAULT_PINNED_APPS = [
   'iphonemirroring',
   'siriai',
   'settings',
-  'github',
 ];
 
 export interface UserAccount {
