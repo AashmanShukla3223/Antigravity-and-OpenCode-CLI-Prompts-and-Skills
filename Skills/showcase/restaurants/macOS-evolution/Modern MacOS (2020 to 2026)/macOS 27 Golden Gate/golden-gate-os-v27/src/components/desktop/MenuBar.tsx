@@ -10,6 +10,7 @@ import { AIEngine } from '../../utils/AIEngine';
 
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
+  airdropPeers?: number;
 }
 
 const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
@@ -380,7 +381,7 @@ const BatteryDropdown: React.FC<{
   );
 };
 
-export const MenuBar: React.FC<MenuBarProps> = ({ toggleControlCenter }) => {
+export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropPeers = 0 }) => {
   const {
     activeApp,
     activeWindowId,
@@ -816,6 +817,16 @@ macOS Golden Gate v27.0`, 'Get Info');
       </div>
 
       <div className="flex items-center gap-px pointer-events-auto h-full pl-10">
+        {airdropPeers > 0 && (
+          <div className="relative h-full flex items-center px-2" title={`${airdropPeers} device${airdropPeers > 1 ? 's' : ''} nearby`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            <span className="text-[10px] text-blue-400 font-bold ml-0.5">{airdropPeers}</span>
+          </div>
+        )}
         <div className="relative h-full">
           <div
             className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-1 ${batteryMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
@@ -938,4 +949,4 @@ macOS Golden Gate v27.0`, 'Get Info');
       </div>
     </header>
   );
-};
+});

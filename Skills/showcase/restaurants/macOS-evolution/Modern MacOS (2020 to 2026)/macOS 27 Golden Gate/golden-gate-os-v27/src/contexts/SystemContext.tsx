@@ -133,6 +133,7 @@ export interface GoldenGateV27State {
   dockPosition: 'bottom' | 'left' | 'right';
   brightness: number;
   airdrop: boolean;
+  stageManagerEnabled: boolean;
   terminalBgColor: string;
   terminalRibbonColor: string;
   terminalOpacity: number;
@@ -145,6 +146,21 @@ export interface GoldenGateV27State {
   runningApps: string[];
   pinnedApps: string[];
   notes: Note[];
+}
+
+const persistQueue = new Map<string, string>();
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+function schedulePersist(key: string, value: string) {
+  persistQueue.set(key, value);
+  if (persistTimer === null) {
+    persistTimer = setTimeout(() => {
+      for (const [k, v] of persistQueue) {
+        try { localStorage.setItem(k, v); } catch { /* ignore */ }
+      }
+      persistQueue.clear();
+      persistTimer = null;
+    }, 300);
+  }
 }
 
 const defaultState: GoldenGateV27State = {
@@ -174,6 +190,7 @@ const defaultState: GoldenGateV27State = {
   dockPosition: 'bottom',
   brightness: 80,
   airdrop: false,
+  stageManagerEnabled: false,
   terminalBgColor: '#000000',
   terminalRibbonColor: '#1a1a2e',
   terminalOpacity: 90,
@@ -421,7 +438,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updateSystemState = useCallback((updates: Partial<GoldenGateV27State>) => {
     setSystemState((prev) => {
       const newState = { ...prev, ...updates };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(newState));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(newState));
       return newState;
     });
   }, []);
@@ -977,7 +994,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     setSystemState((prev) => {
       const next = { ...prev, notifications: [newNotif, ...prev.notifications].slice(0, 50) };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);
@@ -985,7 +1002,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const removeNotification = useCallback((id: string) => {
     setSystemState((prev) => {
       const next = { ...prev, notifications: prev.notifications.filter((n) => n.id !== id) };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);
@@ -993,7 +1010,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const clearNotifications = useCallback(() => {
     setSystemState((prev) => {
       const next = { ...prev, notifications: [] };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);
@@ -1014,7 +1031,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const newUser: UserAccount = { ...user, id: crypto.randomUUID(), pinnedApps: [...DEFAULT_PINNED_APPS] };
     setSystemState((prev) => {
       const next = { ...prev, users: [...prev.users, newUser] };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);
@@ -1024,7 +1041,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (prev.users.length <= 1) return prev;
       const next = { ...prev, users: prev.users.filter((u) => u.id !== userId) };
       if (next.activeUserId === userId) next.activeUserId = next.users[0].id;
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);
@@ -1035,7 +1052,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ...prev,
         users: prev.users.map((u) => (u.id === userId ? { ...u, ...updates } : u)),
       };
-      localStorage.setItem('golden_gate_v27_state', JSON.stringify(next));
+      schedulePersist('golden_gate_v27_state', JSON.stringify(next));
       return next;
     });
   }, []);

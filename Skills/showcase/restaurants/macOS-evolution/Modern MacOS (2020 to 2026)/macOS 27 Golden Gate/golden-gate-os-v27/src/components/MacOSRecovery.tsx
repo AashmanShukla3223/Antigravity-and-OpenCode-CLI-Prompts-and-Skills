@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Shield01Icon,
@@ -17,7 +17,7 @@ import {
 } from 'hugeicons-react';
 import { useSystem } from '../contexts/SystemContext';
 import { SystemMenuBar } from './common/SystemMenuBar';
-import { TerminalApp } from './apps/TerminalApp';
+const TerminalApp = lazy(() => import('./apps/TerminalApp').then((m) => ({ default: m.TerminalApp })));
 
 export const MacOSRecovery: React.FC = () => {
   const { setBootState, systemState, showAlert } = useSystem();
@@ -759,7 +759,9 @@ export const MacOSRecovery: React.FC = () => {
                 <div className="w-16" />
               </div>
               <div className="flex-1 overflow-hidden">
-                <TerminalApp />
+                <Suspense fallback={<div className="flex items-center justify-center h-full text-white/40 text-xs">Loading Terminal...</div>}>
+                  <TerminalApp />
+                </Suspense>
               </div>
             </motion.div>
           </div>

@@ -40,7 +40,7 @@ const ViscousSlider = ({ iconSrc, value, onValueChange }: { iconSrc: string; val
   );
 };
 
-export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+export const ControlCenter = React.memo<{ isOpen: boolean; onClose: () => void }>(({ isOpen, onClose }) => {
   const { battery, wifi, setWifi, bluetooth, setBluetooth, systemState, updateSystemState, setVolume } = useSystem();
   const base = (import.meta as any).env?.BASE_URL || '/';
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -114,6 +114,17 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
               </div>
               <div className="flex-1 flex flex-col gap-4">
                 <div
+                  className={`flex-1 bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${systemState.stageManagerEnabled ? 'bg-blue-500/30 ring-2 ring-blue-500' : 'hover:bg-white/20'}`}
+                  onClick={() => updateSystemState({ stageManagerEnabled: !systemState.stageManagerEnabled })}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={systemState.stageManagerEnabled ? 'text-blue-400' : 'text-white/50'}>
+                    <rect x="2" y="2" width="20" height="20" rx="3" />
+                    <line x1="2" y1="9" x2="22" y2="9" />
+                    <line x1="9" y1="2" x2="9" y2="22" />
+                  </svg>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Stage</span>
+                </div>
+                <div
                   className="flex-1 bg-white/10 rounded-2xl flex items-center justify-center p-4 gap-2 cursor-pointer hover:bg-white/20 transition-colors"
                   onClick={() => {
                     const newAppearance = systemState.appearance === 'dark' ? 'light' : 'dark';
@@ -184,4 +195,4 @@ export const ControlCenter: React.FC<{ isOpen: boolean; onClose: () => void }> =
       )}
     </AnimatePresence>
   );
-};
+});

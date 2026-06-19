@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem, type Notification } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
@@ -6,7 +6,7 @@ import { MenuBar } from './MenuBar';
 import { Dock } from './Dock';
 import { ControlCenter } from './ControlCenter';
 import { Window } from './Window';
-import { AboutThisMac } from '../apps/AboutThisMac';
+const AboutThisMac = lazy(() => import('../apps/AboutThisMac').then((m) => ({ default: m.AboutThisMac })));
 import { RestartDialog } from './RestartDialog';
 import { ShutdownDialog } from './ShutdownDialog';
 import { SystemDialog } from './SystemDialog';
@@ -25,12 +25,14 @@ import { AppIcon } from '../common/AppIcon';
 import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { useNotificationScheduler } from '../../hooks/useNotificationScheduler';
+import { useAirDrop } from '../../hooks/useAirDrop';
 import { NotificationCenter } from './NotificationCenter';
 import { NotificationToast } from './NotificationToast';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
-import { Apps } from '../apps/Apps';
+import { StageManager } from './StageManager';
+const Apps = lazy(() => import('../apps/Apps').then((m) => ({ default: m.Apps })));
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
 import { readFilesAndStore, downloadDataURL } from '../../utils/vfs-ops';
@@ -71,6 +73,7 @@ export const Desktop: React.FC = () => {
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes, moveNode, findNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [showApps, setShowApps] = useState(false);
+  const airdrop = useAirDrop();
 
   // Initialize Hooks
   useDynamicWallpaper();
@@ -661,6 +664,7 @@ export const Desktop: React.FC = () => {
         style={{ willChange: 'transform, opacity' }}
       >
         <MenuBar
+          airdropPeers={airdrop.peers.length}
           toggleControlCenter={(e) => {
             e.stopPropagation();
             setControlCenterOpen(!controlCenterOpen);
@@ -687,8 +691,10 @@ export const Desktop: React.FC = () => {
           filter: shutdownStep >= 3 ? 'blur(40px)' : 'blur(0px)',
         }}
         transition={{ duration: 0.6, ease: 'anticipate' }}
-        className="absolute inset-0 z-10 pt-8 pb-20 pointer-events-none"
+        className={`absolute inset-0 z-10 pt-8 pb-20 pointer-events-none ${systemState.stageManagerEnabled ? 'pl-24' : ''}`}
       >
+        <StageManager />
+
         <AnimatePresence>
           {openWindows
             .filter((w) => !minimizedWindows.includes(w.id))
@@ -723,7 +729,7 @@ export const Desktop: React.FC = () => {
         <Dock />
       </motion.div>
 
-      <AboutThisMac />
+      <Suspense fallback={null}><AboutThisMac /></Suspense>
       <RestartDialog />
       <ShutdownDialog />
       <SystemDialog />

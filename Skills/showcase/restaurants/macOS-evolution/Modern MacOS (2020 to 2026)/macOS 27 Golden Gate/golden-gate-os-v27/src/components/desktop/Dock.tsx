@@ -58,7 +58,7 @@ const ALL_APPS = [
   { id: 'github', name: 'GitHub' },
 ];
 
-export const Dock: React.FC = () => {
+export const Dock = React.memo(() => {
   const {
     launchApp,
     activeApp,
@@ -290,7 +290,7 @@ export const Dock: React.FC = () => {
       )}
     </nav>
   );
-};
+});
 
 const DockIcon = ({
   app,

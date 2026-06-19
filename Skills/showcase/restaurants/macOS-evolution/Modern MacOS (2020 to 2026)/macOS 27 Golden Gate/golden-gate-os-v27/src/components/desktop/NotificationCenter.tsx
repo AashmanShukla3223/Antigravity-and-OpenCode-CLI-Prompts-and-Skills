@@ -1,8 +1,9 @@
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { Cancel01Icon, Notification03Icon } from 'hugeicons-react';
 
-export const NotificationCenter: React.FC = () => {
+export const NotificationCenter = React.memo(() => {
   const { systemState, showNotificationCenter, setShowNotificationCenter, removeNotification, clearNotifications, activeUser } = useSystem();
 
   if (!showNotificationCenter) return null;
@@ -96,7 +97,7 @@ export const NotificationCenter: React.FC = () => {
       </motion.div>
     </motion.div>
   );
-};
+});
 
 function formatTime(ts: number): string {
   const diff = Date.now() - ts;

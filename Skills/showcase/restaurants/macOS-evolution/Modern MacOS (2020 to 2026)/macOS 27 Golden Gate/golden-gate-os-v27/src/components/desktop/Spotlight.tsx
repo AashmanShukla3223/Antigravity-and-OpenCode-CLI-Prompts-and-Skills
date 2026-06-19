@@ -1,104 +1,71 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Search01Icon,
-  GithubIcon,
-  GlobalIcon,
-  File01Icon,
-  BookOpen01Icon,
-  Wallet01Icon,
-  Store01Icon,
-  Message01Icon,
-  MagicWand01Icon,
-  SparklesIcon,
-} from 'hugeicons-react';
+import { Search01Icon, MagicWand01Icon } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
+import { useFileSystem } from '../../contexts/FileSystemContext';
 import { AIEngine } from '../../utils/AIEngine';
+import { contacts } from '../../utils/contacts';
+import { AppIcon } from '../common/AppIcon';
+
+interface SearchSection {
+  label: string;
+  results: SearchResult[];
+}
 
 interface SearchResult {
   id: string;
   name: string;
-  type: 'app' | 'file' | 'repo' | 'video' | 'image' | 'ai';
-  icon: React.ElementType;
-  url?: string;
+  description?: string;
+  type: 'app' | 'file' | 'contact' | 'action' | 'calc' | 'ai';
   appId?: string;
+  action?: () => void;
 }
 
-const APP_RESULTS: SearchResult[] = [
-  { id: '1', name: 'Safari', type: 'app', icon: GlobalIcon, appId: 'safari' },
-  { id: '2', name: 'Terminal', type: 'app', icon: GlobalIcon, appId: 'terminal' },
-  { id: '3', name: 'App Store', type: 'app', icon: Store01Icon, appId: 'appstore' },
-  { id: '4', name: 'Books', type: 'app', icon: BookOpen01Icon, appId: 'books' },
-  { id: '5', name: 'Wallet', type: 'app', icon: Wallet01Icon, appId: 'wallet' },
-  { id: '6', name: 'Messages', type: 'app', icon: Message01Icon, appId: 'messages' },
-  { id: '7', name: 'Siri', type: 'app', icon: SparklesIcon, appId: 'siriai' },
-  { id: '8', name: 'Settings', type: 'app', icon: GlobalIcon, appId: 'settings' },
-  { id: '9', name: 'Calculator', type: 'app', icon: GlobalIcon, appId: 'calculator' },
-  { id: '10', name: 'Finder', type: 'app', icon: GlobalIcon, appId: 'finder' },
-  { id: '11', name: 'Notes', type: 'app', icon: GlobalIcon, appId: 'notes' },
-  { id: '12', name: 'Weather', type: 'app', icon: GlobalIcon, appId: 'weather' },
-  {
-    id: 'gh-main',
-    name: 'Aashman Shukla (GitHub Profile)',
-    type: 'repo',
-    icon: GithubIcon,
-    url: 'https://github.com/AashmanShukla3223/',
-  },
-  {
-    id: 'gh-prompts',
-    name: 'Gemini CLI Prompts',
-    type: 'repo',
-    icon: GithubIcon,
-    url: 'https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/',
-  },
-  {
-    id: 'gh-fg',
-    name: 'Financial Golf',
-    type: 'repo',
-    icon: GithubIcon,
-    url: 'https://github.com/AashmanShukla3223/financial-golf',
-  },
-  {
-    id: 'gh-folder-skills',
-    name: 'GitHub: /Skills Folder',
-    type: 'repo',
-    icon: GithubIcon,
-    url: 'https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/tree/main/Skills',
-  },
-  {
-    id: 'gh-folder-prompts',
-    name: 'GitHub: /Prompts Folder',
-    type: 'repo',
-    icon: GithubIcon,
-    url: 'https://github.com/AashmanShukla3223/Gemini-CLI-Prompts-and-Skills/tree/main/Prompts',
-  },
-  { id: '13', name: 'Project Notes', type: 'file', icon: File01Icon },
+const SYSTEM_ACTIONS = [
+  { id: 'dark', name: 'Toggle Dark Mode', description: 'Switch between light and dark appearance' },
+  { id: 'wifi', name: 'Toggle Wi-Fi', description: 'Turn Wi-Fi on or off' },
+  { id: 'bluetooth', name: 'Toggle Bluetooth', description: 'Turn Bluetooth on or off' },
+  { id: 'airdrop', name: 'Toggle AirDrop', description: 'Enable or disable AirDrop' },
+  { id: 'lock', name: 'Lock Screen', description: 'Lock your screen' },
+  { id: 'restart', name: 'Restart', description: 'Restart macOS Golden Gate' },
+  { id: 'shutdown', name: 'Shut Down', description: 'Shut down macOS Golden Gate' },
+  { id: 'emptytrash', name: 'Empty Trash', description: 'Permanently delete all items in Trash' },
 ];
 
+const ALL_APPS_LIST = [
+  'finder', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone',
+  'calendar', 'contacts', 'notes', 'music', 'tv', 'appstore', 'settings', 'terminal',
+  'calculator', 'weather', 'clock', 'reminders', 'stickies', 'books', 'wallet',
+  'code', 'itunes', 'keynote', 'numbers', 'pages', 'chess', 'activitymonitor',
+  'diskutility', 'timemachine', 'photobooth', 'siriai', 'github', 'aboutme',
+  'vmware', 'samsunglcdtv', 'iphonemirroring', 'crazyerrors', 'soundtest',
+  'freeform', 'motion', 'xcode', 'pixelmatorpro', 'finalcutpro', 'logicpro',
+];
+
+const APP_NAMES: Record<string, string> = {
+  finder: 'Finder', safari: 'Safari', messages: 'Messages', mail: 'Mail',
+  maps: 'Maps', photos: 'Photos', facetime: 'FaceTime', phone: 'Phone',
+  calendar: 'Calendar', contacts: 'Contacts', notes: 'Notes', music: 'Music',
+  tv: 'Apple TV+', appstore: 'App Store', settings: 'System Settings',
+  terminal: 'Terminal', calculator: 'Calculator', weather: 'Weather',
+  clock: 'Clock', reminders: 'Reminders', stickies: 'Stickies',
+  books: 'Apple Books', wallet: 'Wallet', code: 'VS Code',
+  itunes: 'iTunes Store', keynote: 'Keynote', numbers: 'Numbers',
+  pages: 'Pages', chess: 'Chess', activitymonitor: 'Activity Monitor',
+  diskutility: 'Disk Utility', timemachine: 'Time Machine',
+  photobooth: 'Photo Booth', siriai: 'Siri AI', github: 'GitHub Navigator',
+  aboutme: 'About Me', vmware: 'VMware Fusion Pro',
+  samsunglcdtv: 'Samsung LCD TV', iphonemirroring: 'iPhone Mirroring',
+  crazyerrors: 'Crazy Errors', soundtest: 'Sound Test', freeform: 'Freeform',
+  motion: 'Motion', xcode: 'Xcode', pixelmatorpro: 'Pixelmator Pro',
+  finalcutpro: 'Final Cut Pro', logicpro: 'Logic Pro',
+  installer: 'Installer', games: 'Games',
+};
+
 const QUESTION_WORDS = new Set([
-  'what',
-  'who',
-  'where',
-  'when',
-  'why',
-  'how',
-  'is',
-  'are',
-  'can',
-  'could',
-  'would',
-  'should',
-  'do',
-  'does',
-  'did',
-  'tell',
-  'explain',
-  'define',
-  'meaning',
-  'search',
-  'find',
-  'show',
-  'list',
+  'what', 'who', 'where', 'when', 'why', 'how', 'is', 'are', 'can',
+  'could', 'would', 'should', 'do', 'does', 'did', 'tell', 'explain',
+  'define', 'meaning', 'search', 'find', 'show', 'list',
 ]);
 
 function isQuestion(q: string): boolean {
@@ -108,97 +75,186 @@ function isQuestion(q: string): boolean {
   return QUESTION_WORDS.has(first);
 }
 
+function isCalc(q: string): boolean {
+  return /^[\d\s+\-*/.()%^]+$/.test(q.trim()) && /[\d]/.test(q);
+}
+
 export const Spotlight: React.FC = () => {
-  const { showSpotlight, setShowSpotlight, launchApp, updateSystemState, setPowerMode, showAlert } = useSystem();
+  const { showSpotlight, setShowSpotlight, launchApp, updateSystemState, setPowerMode, showAlert, setBootState } = useSystem();
+  const { nodes, emptyTrash } = useFileSystem();
   const [query, setQuery] = useState('');
   const [index, setIndex] = useState(0);
+  const [sectionIndex, setSectionIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const engineRef = useRef<AIEngine | null>(null);
 
   useEffect(() => {
     if (showSpotlight) {
       inputRef.current?.focus();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery('');
       setIndex(0);
+      setSectionIndex(0);
     }
   }, [showSpotlight]);
 
-  const { results, isAsking } = useMemo(() => {
+  const sections: SearchSection[] = useMemo(() => {
     const trimmed = query.trim();
-    const upped = trimmed.toUpperCase();
-    if (!trimmed) return { results: [] as SearchResult[], isAsking: false };
+    if (!trimmed) return [];
 
-    if (upped === 'GH') {
-      window.open('https://github.com/AashmanShukla3223/', '_blank');
-      setShowSpotlight(false);
-      return { results: [] as SearchResult[], isAsking: false };
-    }
-    if (upped === 'SM') {
-      launchApp('messages');
-      setShowSpotlight(false);
-      return { results: [] as SearchResult[], isAsking: false };
-    }
-    if (upped === 'REMINDER') {
-      launchApp('reminders');
-      setShowSpotlight(false);
-      return { results: [] as SearchResult[], isAsking: false };
-    }
-    if (upped === 'STICKY') {
-      launchApp('stickies');
-      setShowSpotlight(false);
-      return { results: [] as SearchResult[], isAsking: false };
+    const result: SearchSection[] = [];
+
+    // Calculator
+    if (isCalc(trimmed)) {
+      try {
+        const calcResult = Function(`"use strict"; return (${trimmed})`)();
+        if (typeof calcResult === 'number' && isFinite(calcResult)) {
+          result.push({
+            label: 'Calculator',
+            results: [{ id: 'calc', name: `${trimmed} = ${calcResult}`, type: 'calc', action: () => { navigator.clipboard?.writeText(String(calcResult)); } }],
+          });
+        }
+      } catch { /* ignore */ }
     }
 
-    const matched = APP_RESULTS.filter((r) => r.name.toLowerCase().includes(trimmed.toLowerCase()));
-    if (matched.length > 0) return { results: matched, isAsking: false };
-
-    const isQuery = isQuestion(trimmed.toLowerCase());
-    return {
-      results: [
-        {
-          id: 'ai',
-          name: isQuery ? 'Ask Siri' : 'Search or Ask',
-          type: 'ai' as const,
-          icon: MagicWand01Icon,
-        },
-      ],
-      isAsking: true,
-    };
-  }, [query, launchApp, setShowSpotlight]);
-
-  const placeholder = useMemo(() => {
-    const trimmed = query.trim();
-    if (!trimmed) return 'Search or Ask';
-    return isQuestion(trimmed) ? 'Ask Siri' : 'Search or Ask';
-  }, [query]);
-
-  const handleAction = async (result?: SearchResult) => {
-    if (!result) return;
-    if (result.type === 'ai') {
-      if (!engineRef.current) engineRef.current = new AIEngine({ launchApp, updateSystemState, setPowerMode });
-      const res = await engineRef.current.executeCommand(query);
-      await showAlert(res, 'Apple Intelligence');
-      setShowSpotlight(false);
-    } else if (result.type === 'app' && result.appId) {
-      launchApp(result.appId);
-      setShowSpotlight(false);
-    } else if (result.url) {
-      window.open(result.url, '_blank');
-      setShowSpotlight(false);
+    // Match apps
+    const matchedApps = ALL_APPS_LIST.filter((id) => {
+      const name = APP_NAMES[id] || id;
+      return name.toLowerCase().includes(trimmed.toLowerCase()) || id.includes(trimmed.toLowerCase());
+    });
+    if (matchedApps.length > 0) {
+      result.push({
+        label: 'Applications',
+        results: matchedApps.map((id) => ({
+          id: `app-${id}`, name: APP_NAMES[id] || id, type: 'app' as const, appId: id,
+          action: () => { launchApp(id); setShowSpotlight(false); },
+        })),
+      });
     }
+
+    // Match files and folders from VFS
+    const matchedFiles = nodes.filter((n) => {
+      if (n.parentId === 'trash') return false;
+      return n.name.toLowerCase().includes(trimmed.toLowerCase());
+    });
+    if (matchedFiles.length > 0) {
+      result.push({
+        label: 'Files & Folders',
+        results: matchedFiles.slice(0, 5).map((n) => ({
+          id: `file-${n.id}`, name: n.name, description: n.type === 'folder' ? 'Folder' : 'File',
+          type: 'file' as const, appId: 'finder',
+          action: () => { launchApp('finder'); setShowSpotlight(false); },
+        })),
+      });
+    }
+
+    // Match contacts
+    const matchedContacts = contacts.filter((c) =>
+      c.name.toLowerCase().includes(trimmed.toLowerCase()) ||
+      c.department.toLowerCase().includes(trimmed.toLowerCase())
+    );
+    if (matchedContacts.length > 0) {
+      result.push({
+        label: 'Contacts',
+        results: matchedContacts.slice(0, 5).map((c) => ({
+          id: `contact-${c.id}`, name: c.name, description: c.department,
+          type: 'contact' as const, appId: 'contacts',
+          action: () => { launchApp('contacts'); setShowSpotlight(false); },
+        })),
+      });
+    }
+
+    // Match system actions
+    const matchedActions = SYSTEM_ACTIONS.filter((a) =>
+      a.name.toLowerCase().includes(trimmed.toLowerCase()) || a.description.toLowerCase().includes(trimmed.toLowerCase())
+    );
+    if (matchedActions.length > 0) {
+      result.push({
+        label: 'Actions',
+        results: matchedActions.map((a) => ({
+          id: `action-${a.id}`, name: a.name, description: a.description,
+          type: 'action' as const,
+          action: () => {
+            switch (a.id) {
+              case 'dark': updateSystemState({ appearance: document.documentElement.classList.contains('dark') ? 'light' : 'dark' }); break;
+              case 'wifi': updateSystemState({ airdrop: !navigator.onLine }); break;
+              case 'airdrop': updateSystemState({ airdrop: !navigator.onLine }); break;
+              case 'lock': setBootState('login'); break;
+              case 'restart': window.location.reload(); break;
+              case 'shutdown': window.location.href = 'about:blank'; break;
+              case 'emptytrash': emptyTrash(); break;
+            }
+            setShowSpotlight(false);
+          },
+        })),
+      });
+    }
+
+    // AI fallback
+    if (result.length === 0) {
+      const isQ = isQuestion(trimmed.toLowerCase());
+      result.push({
+        label: 'Apple Intelligence',
+        results: [{
+          id: 'ai', name: isQ ? `Ask: ${trimmed}` : `Search: ${trimmed}`,
+          description: 'Ask Siri with Apple Intelligence', type: 'ai' as const,
+          action: async () => {
+            if (!engineRef.current) engineRef.current = new AIEngine({ launchApp, updateSystemState, setPowerMode });
+            const res = await engineRef.current.executeCommand(trimmed);
+            await showAlert(res, 'Apple Intelligence');
+            setShowSpotlight(false);
+          },
+        }],
+      });
+    }
+
+    return result;
+  }, [query, nodes, launchApp, setShowSpotlight, updateSystemState, showAlert, setPowerMode, emptyTrash, setBootState]);
+
+  const totalResults = sections.reduce((acc, s) => acc + s.results.length, 0);
+
+  // Map flat index to section+result index
+  const getFlatIndex = (si: number, ri: number) => {
+    let flat = 0;
+    for (let i = 0; i < sections.length; i++) {
+      if (i < si) { flat += sections[i].results.length; continue; }
+      if (i === si) return flat + ri;
+    }
+    return flat;
+  };
+
+  // Find section and result from flat index
+  const fromFlatIndex = (flatIdx: number) => {
+    let remaining = flatIdx;
+    for (let i = 0; i < sections.length; i++) {
+      if (remaining < sections[i].results.length) return { si: i, ri: remaining };
+      remaining -= sections[i].results.length;
+    }
+    return { si: 0, ri: 0 };
   };
 
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      if (results.length) setIndex((i) => (i + 1) % results.length);
+      if (totalResults > 0) {
+        const newFlat = (getFlatIndex(sectionIndex, index) + 1) % totalResults;
+        const { si, ri } = fromFlatIndex(newFlat);
+        setSectionIndex(si);
+        setIndex(ri);
+      }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (results.length) setIndex((i) => (i - 1 + results.length) % results.length);
+      if (totalResults > 0) {
+        const newFlat = (getFlatIndex(sectionIndex, index) - 1 + totalResults) % totalResults;
+        const { si, ri } = fromFlatIndex(newFlat);
+        setSectionIndex(si);
+        setIndex(ri);
+      }
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      handleAction(results[index]);
+      const section = sections[sectionIndex];
+      if (section && section.results[index]) {
+        section.results[index].action?.();
+      }
     } else if (e.key === 'Escape') setShowSpotlight(false);
   };
 
@@ -221,46 +277,54 @@ export const Spotlight: React.FC = () => {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setIndex(0);
-                }}
+                onChange={(e) => { setQuery(e.target.value); setIndex(0); setSectionIndex(0); }}
                 onKeyDown={onKey}
-                placeholder={placeholder}
+                placeholder="Search apps, files, contacts, actions..."
                 className="flex-1 bg-transparent border-none text-2xl font-light text-white placeholder-white/20 outline-none"
               />
             </div>
 
-            {results.length > 0 && (
+            {sections.length > 0 && (
               <div className="border-t border-white/10 p-2 max-h-[400px] overflow-y-auto scrollbar-hide">
-                <div className="text-[10px] font-black uppercase tracking-widest text-white/20 px-4 py-2">
-                  {results[0].type === 'ai' ? 'Apple Intelligence' : 'Top Hits'}
-                </div>
-                {results.map((result, i) => (
-                  <div
-                    key={result.id}
-                    onClick={() => handleAction(result)}
-                    onMouseEnter={() => setIndex(i)}
-                    className={`flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-all ${i === index ? 'bg-blue-500 shadow-lg' : 'hover:bg-white/5'}`}
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center ${i === index ? 'bg-white/20' : 'bg-white/5'}`}
-                    >
-                      <result.icon size={20} className="text-white" />
+                {sections.map((section, si) => (
+                  <div key={section.label}>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/20 px-4 py-2">
+                      {section.label}
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-bold text-white tracking-tight">{result.name}</div>
-                      <div
-                        className={`text-[10px] uppercase font-black tracking-widest ${i === index ? 'text-white/70' : 'text-white/30'}`}
-                      >
-                        {result.type === 'ai' && isAsking ? 'Ask Siri' : result.type}
-                      </div>
-                    </div>
-                    {i === index && (
-                      <span className="text-xs text-white/50 font-medium whitespace-nowrap">
-                        ⏎ {result.type === 'ai' ? 'Ask' : 'Open'}
-                      </span>
-                    )}
+                    {section.results.map((result, ri) => {
+                      const isSelected = si === sectionIndex && ri === index;
+                      return (
+                        <div
+                          key={result.id}
+                          onClick={() => result.action?.()}
+                          onMouseEnter={() => { setSectionIndex(si); setIndex(ri); }}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-all ${isSelected ? 'bg-blue-500 shadow-lg' : 'hover:bg-white/5'}`}
+                        >
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? 'bg-white/20' : 'bg-white/5'}`}>
+                            {result.type === 'app' || result.type === 'file' ? (
+                              <AppIcon id={result.appId || 'finder'} size={20} />
+                            ) : result.type === 'contact' ? (
+                              <span className="text-lg">👤</span>
+                            ) : result.type === 'calc' ? (
+                              <span className="text-lg">#</span>
+                            ) : (
+                              <MagicWand01Icon size={20} className="text-white" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-white tracking-tight truncate">{result.name}</div>
+                            {result.description && (
+                              <div className={`text-[10px] uppercase font-black tracking-widest truncate ${isSelected ? 'text-white/70' : 'text-white/30'}`}>
+                                {result.description}
+                              </div>
+                            )}
+                          </div>
+                          {isSelected && (
+                            <span className="text-xs text-white/50 font-medium whitespace-nowrap">⏎ Open</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -270,4 +334,4 @@ export const Spotlight: React.FC = () => {
       )}
     </AnimatePresence>
   );
-};
+}
