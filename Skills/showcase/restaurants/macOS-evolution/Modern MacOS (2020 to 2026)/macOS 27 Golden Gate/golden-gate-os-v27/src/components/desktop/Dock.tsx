@@ -86,7 +86,7 @@ export const Dock: React.FC = () => {
     (app, index, self) => index === self.findIndex((t) => t.id === app.id),
   );
 
-  const iconGap = Math.max(0, 16 - Math.max(0, finalApps.length - 8) * 2);
+  const iconGap = Math.max(0, 5 - Math.max(0, finalApps.length - 24) * 2);
 
   const handleAppClick = (appId: string) => {
     if (appId === 'github') {
