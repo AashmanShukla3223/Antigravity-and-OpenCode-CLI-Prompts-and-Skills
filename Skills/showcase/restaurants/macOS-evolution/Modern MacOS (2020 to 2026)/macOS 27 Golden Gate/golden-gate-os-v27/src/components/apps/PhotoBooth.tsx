@@ -61,7 +61,28 @@ function shutterSound() {
 
 export const PhotoBooth: React.FC = () => {
   const { createNode } = useFileSystem();
-  const { addNotification } = useSystem();
+  const { addNotification, updateSystemState, systemState } = useSystem();
+  const downloadsRef = useRef(systemState.activeDownloads);
+  downloadsRef.current = systemState.activeDownloads;
+
+  const simulateDownload = useCallback((name: string) => {
+    const entry = { name, progress: 0, appId: 'photobooth' };
+    updateSystemState({ activeDownloads: [...downloadsRef.current, entry] });
+    const iv = setInterval(() => {
+      const current = downloadsRef.current;
+      const idx = current.findIndex((d: any) => d.name === name);
+      if (idx === -1) { clearInterval(iv); return; }
+      const newProgress = Math.min(100, current[idx].progress + Math.random() * 30 + 5);
+      const updated = current.map((d: any, i: number) => i === idx ? { ...d, progress: newProgress } : d);
+      updateSystemState({ activeDownloads: updated });
+      if (newProgress >= 100) {
+        clearInterval(iv);
+        setTimeout(() => {
+          updateSystemState({ activeDownloads: downloadsRef.current.filter((d: any) => d.name !== name) });
+        }, 1000);
+      }
+    }, 400);
+  }, [updateSystemState]);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [resolution, setResolution] = useState<ResolutionKey>('720p');
@@ -198,17 +219,19 @@ export const PhotoBooth: React.FC = () => {
       reader.readAsDataURL(blob);
       setRecordedChunks((prev) => [...prev, ...chunks]);
       setIsRecording(false);
+      updateSystemState({ isRecording: false });
       if (timerRef.current) clearInterval(timerRef.current);
       setRecordingTime(0);
     };
     recorder.start(100);
     mediaRecorderRef.current = recorder;
     setIsRecording(true);
+    updateSystemState({ isRecording: true });
     setRecordingTime(0);
     timerRef.current = setInterval(() => {
       setRecordingTime((t) => t + 1);
     }, 1000);
-  }, [stream, createNode, addNotification]);
+  }, [stream, createNode, addNotification, updateSystemState]);
 
   const startRecording = useCallback(() => {
     if (countdownRef.current) return;
@@ -240,6 +263,7 @@ export const PhotoBooth: React.FC = () => {
 
   const downloadVideo = useCallback(() => {
     if (recordedChunks.length === 0) return;
+    simulateDownload(`photo-booth-recording-${Date.now()}.webm`);
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -247,14 +271,15 @@ export const PhotoBooth: React.FC = () => {
     a.download = `photo-booth-recording-${Date.now()}.webm`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [recordedChunks]);
+  }, [recordedChunks, simulateDownload]);
 
   const downloadPhoto = useCallback((dataUrl: string) => {
+    simulateDownload(`photo-booth-${Date.now()}.png`);
     const a = document.createElement('a');
     a.href = dataUrl;
     a.download = `photo-booth-${Date.now()}.png`;
     a.click();
-  }, []);
+  }, [simulateDownload]);
 
   const deletePhoto = useCallback((index: number) => {
     setCapturedPhotos((prev) => prev.filter((_, i) => i !== index));
