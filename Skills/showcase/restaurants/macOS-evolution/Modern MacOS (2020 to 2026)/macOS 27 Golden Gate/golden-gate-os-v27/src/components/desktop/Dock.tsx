@@ -223,6 +223,8 @@ export const Dock = React.memo(() => {
             })}
           </AnimatePresence>
 
+          {minimizedWindows.length > 0 && <div className={isHorizontal ? 'w-[2px] h-10 bg-white/40 mx-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]' : 'w-10 h-[2px] bg-white/40 my-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]'} />}
+
             <DockIcon
               app={{ id: 'downloads', name: 'Downloads' }}
               isOpen={false}
