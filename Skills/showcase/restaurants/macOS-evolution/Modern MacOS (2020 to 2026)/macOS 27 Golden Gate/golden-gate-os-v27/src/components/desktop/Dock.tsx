@@ -188,7 +188,7 @@ export const Dock = React.memo(() => {
             />
           ))}
 
-          <div className={isHorizontal ? 'w-[1px] h-8 bg-white/15 mx-1 self-center' : 'w-8 h-[1px] bg-white/15 my-1 self-center'} />
+          <div className={isHorizontal ? 'w-[2px] h-10 bg-white/40 mx-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]' : 'w-10 h-[2px] bg-white/40 my-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]'} />
 
           <AnimatePresence mode="popLayout">
             {minimizedWindows.map((wId) => {
@@ -223,7 +223,7 @@ export const Dock = React.memo(() => {
             })}
           </AnimatePresence>
 
-          {minimizedWindows.length > 0 && <div className={isHorizontal ? 'w-[1px] h-9 bg-white/20 mx-0.5 self-center' : 'w-8 h-[1px] bg-white/20 my-0.5 self-center'} />}
+          {minimizedWindows.length > 0 && <div className={isHorizontal ? 'w-[2px] h-10 bg-white/40 mx-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]' : 'w-10 h-[2px] bg-white/40 my-2 self-center rounded-full shadow-[0_0_4px_rgba(255,255,255,0.15)]'} />}
 
             <DockIcon
               app={{ id: 'downloads', name: 'Downloads' }}
