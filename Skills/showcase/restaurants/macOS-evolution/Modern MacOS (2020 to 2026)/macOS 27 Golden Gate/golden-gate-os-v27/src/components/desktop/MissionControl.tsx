@@ -77,7 +77,7 @@ const cardVariants = {
 };
 
 export const MissionControl: React.FC<MissionControlProps> = ({ isOpen, onClose }) => {
-  const { openWindows, setActiveWindow, quitApp, openApps, activeWindowId } = useSystem();
+  const { openWindows, setActiveWindow, quitApp, closeWindow, openApps, activeWindowId } = useSystem();
 
   const visibleWindows = openWindows.filter((w) => openApps.includes(w.appId));
 
@@ -99,13 +99,21 @@ export const MissionControl: React.FC<MissionControlProps> = ({ isOpen, onClose 
           onClick={onClose}
         >
           <motion.div
-            className="w-full h-full p-16 overflow-y-auto"
+            className="w-full h-full p-16 overflow-y-auto relative"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
+            <button
+              onClick={onClose}
+              className="fixed top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-red-500/80 border border-white/10 flex items-center justify-center transition-all z-10 group"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/70 group-hover:text-white" />
+              </svg>
+            </button>
             <div className="text-center mb-10">
               <h2 className="text-3xl font-black text-white/80 tracking-tight">Mission Control</h2>
               <p className="text-sm text-white/40 mt-1">{visibleWindows.length} window{visibleWindows.length !== 1 ? 's' : ''}</p>
@@ -160,17 +168,32 @@ export const MissionControl: React.FC<MissionControlProps> = ({ isOpen, onClose 
                         <span className="text-sm font-semibold text-white truncate">{appName}</span>
                       </div>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          quitApp(w.appId);
-                        }}
-                        className="w-7 h-7 rounded-full bg-white/10 hover:bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shrink-0"
-                      >
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                          <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-white" />
-                        </svg>
-                      </button>
+                      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            closeWindow(w.id);
+                          }}
+                          className="w-6 h-6 rounded-full bg-white/10 hover:bg-yellow-500/80 flex items-center justify-center transition-colors"
+                          title="Close Window"
+                        >
+                          <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                            <path d="M1 1L7 7M7 1L1 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-white/70" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            quitApp(w.appId);
+                          }}
+                          className="w-6 h-6 rounded-full bg-white/10 hover:bg-red-500/80 flex items-center justify-center transition-colors"
+                          title="Quit App"
+                        >
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-white" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
 
                     {isActive && (
