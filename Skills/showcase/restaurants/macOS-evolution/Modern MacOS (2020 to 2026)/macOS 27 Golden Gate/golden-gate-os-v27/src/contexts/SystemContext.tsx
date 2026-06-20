@@ -81,6 +81,12 @@ export interface Note {
   lastModified: number;
 }
 
+export interface ActiveDownload {
+  name: string;
+  progress: number;
+  appId: string;
+}
+
 export interface WindowInstance {
   id: string;
   appId: string;
@@ -148,6 +154,20 @@ export interface GoldenGateV27State {
   notes: Note[];
   screenSaverType: 'classic' | 'aerial' | 'photos';
   screenSaverTimer: number;
+  alarmRinging: boolean;
+  alarmLabel: string;
+  timerRunning: boolean;
+  timerRemaining: number;
+  timerLabel: string;
+  stopwatchRunning: boolean;
+  stopwatchElapsed: number;
+  isRecording: boolean;
+  isAirPlaying: boolean;
+  activeDownloads: ActiveDownload[];
+  focusMode: string | null;
+  dndEnabled: boolean;
+  vpnConnected: boolean;
+  hotspotActive: boolean;
 }
 
 const persistQueue = new Map<string, string>();
@@ -233,6 +253,20 @@ const defaultState: GoldenGateV27State = {
   ],
   screenSaverType: 'classic',
   screenSaverTimer: 5,
+  alarmRinging: false,
+  alarmLabel: '',
+  timerRunning: false,
+  timerRemaining: 0,
+  timerLabel: '',
+  stopwatchRunning: false,
+  stopwatchElapsed: 0,
+  isRecording: false,
+  isAirPlaying: false,
+  activeDownloads: [],
+  focusMode: null,
+  dndEnabled: false,
+  vpnConnected: false,
+  hotspotActive: false,
 };
 
 interface SystemContextProps {

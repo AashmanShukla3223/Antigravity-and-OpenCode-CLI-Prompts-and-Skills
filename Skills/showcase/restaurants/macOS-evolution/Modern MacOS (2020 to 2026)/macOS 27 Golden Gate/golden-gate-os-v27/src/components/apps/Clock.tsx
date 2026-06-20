@@ -18,6 +18,7 @@ import {
   Sunrise,
   Sunset,
 } from 'lucide-react';
+import { useSystem } from '../../contexts/SystemContext';
 
 const base = (import.meta as any).env?.BASE_URL || '/';
 
@@ -358,6 +359,7 @@ function AlarmTab() {
   const [ringtone, setRingtone] = useState(RINGTONES[0].name);
   const [ringing, setRinging] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { updateSystemState } = useSystem();
 
   useEffect(() => {
     const check = setInterval(() => {
@@ -369,6 +371,7 @@ function AlarmTab() {
         const alarmH = a.ampm === 'PM' ? (a.hour === 12 ? 12 : a.hour + 12) : a.hour === 12 ? 0 : a.hour;
         if (alarmH === h && a.minute === m && now.getSeconds() === 0 && ringing !== a.id) {
           setRinging(a.id);
+          updateSystemState({ alarmRinging: true, alarmLabel: formatTime(a.hour, a.minute, a.ampm) });
           const rt = RINGTONES.find((r) => r.name === a.ringtone) || RINGTONES[0];
           if (audioRef.current) audioRef.current.pause();
           audioRef.current = playRingtone(rt.file);
@@ -376,7 +379,7 @@ function AlarmTab() {
       });
     }, 1000);
     return () => clearInterval(check);
-  }, [alarms, ringing]);
+  }, [alarms, ringing, updateSystemState]);
 
   const dismissAlarm = () => {
     if (audioRef.current) {
@@ -385,6 +388,7 @@ function AlarmTab() {
       audioRef.current = null;
     }
     setRinging(null);
+    updateSystemState({ alarmRinging: false });
   };
 
   const addAlarm = () => {
@@ -657,6 +661,7 @@ function WorldClockTab() {
 }
 
 function StopwatchTab() {
+  const { updateSystemState } = useSystem();
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
   const [laps, setLaps] = useState<number[]>([]);
@@ -672,7 +677,8 @@ function StopwatchTab() {
       intervalRef.current = setInterval(() => {
         timeRef.current = Date.now() - startTimeRef.current + elapsedBeforeRef.current;
         setTime(timeRef.current);
-      }, 10);
+        updateSystemState({ stopwatchElapsed: timeRef.current });
+      }, 100);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -681,7 +687,11 @@ function StopwatchTab() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [running]);
+  }, [running, updateSystemState]);
+
+  useEffect(() => {
+    updateSystemState({ stopwatchRunning: running });
+  }, [running, updateSystemState]);
 
   const format = (ms: number) => {
     const totalSec = Math.floor(ms / 1000);
@@ -700,6 +710,7 @@ function StopwatchTab() {
     setRunning(false);
     setTime(0);
     setLaps([]);
+    updateSystemState({ stopwatchElapsed: 0 });
   };
 
   return (
@@ -764,6 +775,7 @@ function StopwatchTab() {
 }
 
 function TimerTab() {
+  const { updateSystemState } = useSystem();
   const [timers, setTimers] = useState<TimerItem[]>(() => {
     try {
       const saved = localStorage.getItem('golden_gate_v27_timers');
@@ -781,10 +793,20 @@ function TimerTab() {
   const [completed, setCompleted] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const syncTimerState = useCallback((items: TimerItem[]) => {
+    const running = items.find((t) => t.isRunning && !t.completed);
+    if (running) {
+      updateSystemState({ timerRunning: true, timerRemaining: running.remaining, timerLabel: running.label });
+    } else {
+      updateSystemState({ timerRunning: false });
+    }
+  }, [updateSystemState]);
+
   const saveTimers = useCallback((t: TimerItem[]) => {
     setTimers(t);
     localStorage.setItem('golden_gate_v27_timers', JSON.stringify(t));
-  }, []);
+    syncTimerState(t);
+  }, [syncTimerState]);
 
   useEffect(() => {
     const tick = setInterval(() => {
@@ -806,12 +828,13 @@ function TimerTab() {
         });
         if (changed) {
           localStorage.setItem('golden_gate_v27_timers', JSON.stringify(next));
+          syncTimerState(next);
         }
         return next;
       });
     }, 1000);
     return () => clearInterval(tick);
-  }, []);
+  }, [syncTimerState]);
 
   const dismissCompleted = () => {
     if (audioRef.current) {
@@ -820,6 +843,7 @@ function TimerTab() {
       audioRef.current = null;
     }
     setCompleted(null);
+    updateSystemState({ timerRunning: false });
   };
 
   const addTimer = () => {

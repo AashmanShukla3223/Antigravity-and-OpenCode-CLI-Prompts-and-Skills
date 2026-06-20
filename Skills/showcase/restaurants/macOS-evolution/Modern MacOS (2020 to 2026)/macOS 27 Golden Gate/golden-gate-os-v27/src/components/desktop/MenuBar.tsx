@@ -411,12 +411,20 @@ export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropP
     showConfirm,
     clipboard,
     clearClipboard,
+    wifi,
+    setWifi,
   } = useSystem();
   const { createNode, emptyTrash, findNode, moveNode } = useFileSystem();
   const [time, setTime] = useState(new Date());
   const [appleMenuOpen, setAppleMenuOpen] = useState(false);
   const [batteryMenuOpen, setBatteryMenuOpen] = useState(false);
   const [facetimeMenuOpen, setFacetimeMenuOpen] = useState(false);
+  const [wifiMenuOpen, setWifiMenuOpen] = useState(false);
+  const [connectedNetwork, setConnectedNetwork] = useState<string | null>('Home_Network');
+  const [wifiPasswordModal, setWifiPasswordModal] = useState<string | null>(null);
+  const [wifiPassword, setWifiPassword] = useState('');
+  const [wifiPasswordError, setWifiPasswordError] = useState(false);
+  const [wifiConnecting, setWifiConnecting] = useState(false);
   const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
@@ -1019,9 +1027,156 @@ macOS Golden Gate v27.0`, 'Get Info');
           </div>
           <FaceTimeDropdown isOpen={facetimeMenuOpen} onClose={() => setFacetimeMenuOpen(false)} />
         </div>
-        <div className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition">
-          <img src={`${base}icons/Wifi.png`} alt="Wi-Fi" className="h-4 w-auto object-contain" loading="lazy" />
+        <div className="relative">
+          <div
+            className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"
+            onClick={() => setWifiMenuOpen(!wifiMenuOpen)}
+          >
+            <img src={`${base}icons/Wifi.png`} alt="Wi-Fi" className={`h-4 w-auto object-contain transition-all ${wifi ? '' : 'opacity-40 grayscale'}`} loading="lazy" />
+          </div>
+          {wifiMenuOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setWifiMenuOpen(false)} />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                className="absolute top-10 right-0 w-72 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[28px] shadow-2xl p-4 z-50 text-white overflow-hidden"
+              >
+                <div className="flex items-center justify-between mb-4 px-2">
+                  <span className="text-sm font-bold text-white/50 uppercase tracking-widest">Wi-Fi</span>
+                  <button
+                    onClick={() => {
+                      setWifi(!wifi);
+                      if (!wifi) setConnectedNetwork(null);
+                      else setConnectedNetwork('Home_Network');
+                    }}
+                    className={`relative w-10 h-5 rounded-full transition-all ${wifi ? 'bg-blue-500' : 'bg-white/10'}`}
+                  >
+                    <span className={`block w-3.5 h-3.5 bg-white rounded-full shadow transition-all ${wifi ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+
+                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 px-2">
+                  {wifi ? 'Networks' : 'Wi-Fi is Off'}
+                </div>
+
+                {wifi && (
+                  <div className="space-y-1">
+                    {[
+                      { name: 'Home_Network', secured: true },
+                      { name: 'Hell', secured: true },
+                      { name: 'Death', secured: true },
+                    ].map((net) => {
+                      const isConnected = connectedNetwork === net.name;
+                      return (
+                        <div
+                          key={net.name}
+                          onClick={() => {
+                            if (isConnected) {
+                              setConnectedNetwork(null);
+                              showAlert(`Disconnected from ${net.name}`, 'Wi-Fi');
+                            } else {
+                              setWifiPasswordModal(net.name);
+                              setWifiPassword('');
+                              setWifiPasswordError(false);
+                            }
+                          }}
+                          className={`flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all ${
+                            isConnected
+                              ? 'bg-blue-500/20 border border-blue-500/30'
+                              : 'hover:bg-white/5 border border-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isConnected ? 'text-blue-400' : 'text-white/50'}>
+                              <path d="M5 12.55a11 11 0 0114.08 0" />
+                              <path d="M1.42 9a16 16 0 0121.16 0" />
+                              <path d="M8.53 16.11a6 6 0 016.95 0" />
+                              <circle cx="12" cy="20" r="1" fill="currentColor" />
+                            </svg>
+                            <span className={`text-sm ${isConnected ? 'font-bold text-blue-400' : ''}`}>{net.name}</span>
+                          </div>
+                          {net.secured && (
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                              <path d="M7 11V7a5 5 0 0110 0v4" />
+                            </svg>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            </>
+          )}
         </div>
+
+        {/* WiFi Password Modal */}
+        {wifiPasswordModal && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-md" onClick={() => setWifiPasswordModal(null)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-[340px] bg-[#1d1d1f] border border-white/20 rounded-[28px] shadow-2xl p-6 z-50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-bold text-white mb-2">Enter Password</h3>
+              <p className="text-sm text-white/50 mb-5">Enter the Wi-Fi password for "{wifiPasswordModal}".</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const expected = wifiPasswordModal === 'Hell' ? 'death' : wifiPasswordModal === 'Death' ? 'hell' : 'password';
+                  if (wifiPassword === expected) {
+                    setWifiConnecting(true);
+                    setTimeout(() => {
+                      setConnectedNetwork(wifiPasswordModal);
+                      setWifiPasswordModal(null);
+                      setWifiPassword('');
+                      setWifiConnecting(false);
+                      showAlert(`Connected to ${wifiPasswordModal}`, 'Wi-Fi');
+                    }, 1500);
+                  } else {
+                    setWifiPasswordError(true);
+                    setWifiPassword('');
+                  }
+                }}
+              >
+                <input
+                  type="password"
+                  placeholder="Password"
+                  autoFocus
+                  value={wifiPassword}
+                  onChange={(e) => { setWifiPassword(e.target.value); setWifiPasswordError(false); }}
+                  className={`w-full h-11 bg-white/10 border ${wifiPasswordError ? 'border-red-500/50' : 'border-white/20'} rounded-xl px-4 text-center text-sm focus:outline-none focus:ring-2 transition-all text-white`}
+                />
+                {wifiPasswordError && (
+                  <p className="text-red-500 text-xs font-bold mt-2 text-center">Wrong password</p>
+                )}
+                {wifiConnecting && (
+                  <p className="text-blue-400 text-xs font-bold mt-2 text-center animate-pulse">Connecting...</p>
+                )}
+                <div className="flex gap-3 mt-5">
+                  <button
+                    type="button"
+                    onClick={() => setWifiPasswordModal(null)}
+                    className="flex-1 h-11 bg-white/5 hover:bg-white/10 rounded-xl font-medium text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!wifiPassword || wifiConnecting}
+                    className="flex-1 h-11 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-sm disabled:opacity-50"
+                  >
+                    Join
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
         <div
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"
           onClick={() => setShowSpotlight(!showSpotlight)}
