@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 
-export const App_Version = '27.2';
+export const App_Version = '27.3';
 
 function semverCompare(a: string, b: string): number {
   const pa = a.split('.').map(Number);
@@ -18,7 +18,7 @@ function semverCompare(a: string, b: string): number {
 const DISMISSED_KEY = 'golden_gate_update_dismissed';
 
 export const useSoftwareUpdate = () => {
-  const { showConfirm, showAlert, initiateRestart, bootState } = useSystem();
+  const { showConfirm, showAlert, startOTAUpdate, bootState, systemState, updateSystemState } = useSystem();
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [latestVersion, setLatestVersion] = useState('');
   const [updateNotes, setUpdateNotes] = useState('');
@@ -71,12 +71,30 @@ export const useSoftwareUpdate = () => {
       if (timer) clearTimeout(timer);
       clearInterval(interval);
     };
-  }, [bootState, showConfirm, showAlert, initiateRestart]);
+  }, [bootState, showConfirm, showAlert, startOTAUpdate, updateSystemState, systemState.isUpdating]);
 
   const dismissUpdate = () => {
     setUpdateAvailable(false);
     localStorage.setItem(DISMISSED_KEY, 'true');
   };
 
-  return { updateAvailable, dismissUpdate, currentVersion: App_Version, latestVersion, updateNotes };
+  const installUpdate = async () => {
+    const ok = await showConfirm(
+      `macOS Golden Gate ${latestVersion} is ready to install. Your Mac will restart after the update.`,
+      'Software Update',
+    );
+    if (ok) {
+      setUpdateAvailable(false);
+      startOTAUpdate(latestVersion);
+    }
+  };
+
+  return {
+    updateAvailable,
+    dismissUpdate,
+    installUpdate,
+    currentVersion: App_Version,
+    latestVersion,
+    updateNotes,
+  };
 };

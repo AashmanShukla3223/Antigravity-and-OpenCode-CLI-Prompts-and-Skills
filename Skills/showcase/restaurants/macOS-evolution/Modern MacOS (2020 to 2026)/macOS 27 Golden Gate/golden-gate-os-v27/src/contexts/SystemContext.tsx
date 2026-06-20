@@ -164,6 +164,9 @@ export interface GoldenGateV27State {
   isRecording: boolean;
   isAirPlaying: boolean;
   activeDownloads: ActiveDownload[];
+  isUpdating: boolean;
+  updateProgress: number;
+  updateVersion: string;
   focusMode: string | null;
   dndEnabled: boolean;
   vpnConnected: boolean;
@@ -263,6 +266,9 @@ const defaultState: GoldenGateV27State = {
   isRecording: false,
   isAirPlaying: false,
   activeDownloads: [],
+  isUpdating: false,
+  updateProgress: 0,
+  updateVersion: '',
   focusMode: null,
   dndEnabled: false,
   vpnConnected: false,
@@ -324,6 +330,7 @@ interface SystemContextProps {
   shutdownStep: number;
   initiateRestart: () => void;
   initiateShutdown: () => void;
+  startOTAUpdate: (version: string) => void;
   isHandoff: boolean;
   handoffTarget: BootState | null;
   initiateSystemHandoff: (target: BootState) => void;
@@ -600,6 +607,24 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setShutdownStep(0);
     }, 1200);
   }, [clearSystemErrors, setBootState, pauseSong]);
+
+  const startOTAUpdate = useCallback((version: string) => {
+    updateSystemState({ isUpdating: true, updateProgress: 0, updateVersion: version });
+    let progress = 0;
+    const iv = setInterval(() => {
+      progress += Math.random() * 8 + 2;
+      if (progress >= 100) {
+        clearInterval(iv);
+        updateSystemState({ isUpdating: true, updateProgress: 100, updateVersion: version });
+        setTimeout(() => {
+          updateSystemState({ isUpdating: false, updateProgress: 0, updateVersion: '' });
+          initiateRestart();
+        }, 1500);
+      } else {
+        updateSystemState({ updateProgress: Math.min(100, Math.round(progress)) });
+      }
+    }, 500);
+  }, [updateSystemState, initiateRestart]);
 
   const initiateShutdown = useCallback(() => {
     setIsShuttingDown(true);
@@ -1158,6 +1183,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         shutdownStep,
         initiateRestart,
         initiateShutdown,
+        startOTAUpdate,
         isHandoff,
         handoffTarget,
         initiateSystemHandoff,

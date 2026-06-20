@@ -1,7 +1,8 @@
 {
-  "version": "27.2",
-  "build": "27A405",
-  "updateAvailable": false,
-  "updateUrl": null,
-  "releaseNotes": ""
+  "version": "27.3",
+  "build": "27A429",
+  "updateAvailable": true,
+  "updateUrl": "/version.json",
+  "releaseNotes": "macOS Golden Gate 27.3 brings OTA Update status in Dynamic Island, enhanced stability, and performance improvements.",
+  "release": "macOS Golden Gate 27.3 — OTA Update status in Dynamic Island, enhanced stability, and performance improvements."
 }

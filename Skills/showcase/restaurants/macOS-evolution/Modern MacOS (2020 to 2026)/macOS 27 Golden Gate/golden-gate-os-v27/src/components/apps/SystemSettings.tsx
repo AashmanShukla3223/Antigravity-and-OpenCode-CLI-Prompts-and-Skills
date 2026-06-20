@@ -56,6 +56,7 @@ export const SystemSettings: React.FC = () => {
     battery,
     showConfirm,
     showAlert,
+    startOTAUpdate,
     activeUser,
     switchUser,
     addUser,
@@ -69,6 +70,7 @@ export const SystemSettings: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [updateAvailableVersion, setUpdateAvailableVersion] = useState<string | null>(null);
 
   const [brightness, setBrightness] = useState(80);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 512, percent: 0 });
@@ -112,14 +114,14 @@ export const SystemSettings: React.FC = () => {
       const data = await response.json();
       setTimeout(async () => {
         setIsCheckingUpdate(false);
+        setUpdateAvailableVersion(data.version !== App_Version ? data.version : null);
         if (data.version !== App_Version) {
           const confirmed = await showConfirm(
             `A new software update (macOS Golden Gate ${data.version}) is available. Would you like to update and restart now?`,
             'Software Update',
           );
           if (confirmed) {
-            await showAlert('Downloading update and preparing system restart...', 'macOS Updater');
-            window.location.href = 'https://macos-27-golden-gate.vercel.app';
+            startOTAUpdate(data.version);
           }
         } else {
           await showAlert('Your Mac is up to date.', 'Software Update');
@@ -1100,14 +1102,38 @@ export const SystemSettings: React.FC = () => {
                       </div>
                       <h3 className="text-2xl font-bold mb-2">macOS Golden Gate {App_Version}</h3>
                       <p className="text-white/50 mb-8">
-                        {systemState.betaUpdates && latestCommit ? `Beta Build ${latestCommit}` : 'Your Mac is up to date.'}
+                        {updateAvailableVersion
+                          ? `Update to macOS Golden Gate ${updateAvailableVersion} available`
+                          : systemState.betaUpdates && latestCommit
+                            ? `Beta Build ${latestCommit}`
+                            : 'Your Mac is up to date.'}
                       </p>
-                      <button
-                        onClick={checkUpdates}
-                        className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition"
-                      >
-                        Check for Updates
-                      </button>
+                      {updateAvailableVersion && !systemState.isUpdating ? (
+                        <button
+                          onClick={() => startOTAUpdate(updateAvailableVersion)}
+                          className="px-8 h-12 bg-blue-500 hover:bg-blue-600 rounded-xl font-bold transition"
+                        >
+                          Install Now
+                        </button>
+                      ) : systemState.isUpdating ? (
+                        <div className="flex items-center gap-3">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                            className="w-5 h-5 rounded-full border-2 border-blue-500 border-t-transparent shrink-0"
+                          />
+                          <span className="text-blue-400 text-sm font-bold">
+                            Updating… {systemState.updateProgress}%
+                          </span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={checkUpdates}
+                          className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition"
+                        >
+                          Check for Updates
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

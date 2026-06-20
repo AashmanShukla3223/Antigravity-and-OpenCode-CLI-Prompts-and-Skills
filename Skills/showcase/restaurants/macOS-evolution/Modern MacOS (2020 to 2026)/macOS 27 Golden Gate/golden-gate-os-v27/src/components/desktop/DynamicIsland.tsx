@@ -24,7 +24,8 @@ type IslandMode =
   | 'stopwatch'
   | 'recording'
   | 'download'
-  | 'airplay';
+  | 'airplay'
+  | 'update';
 
 interface LiveActivity {
   mode: IslandMode;
@@ -53,15 +54,16 @@ export const DynamicIsland: React.FC = () => {
     if (incomingCall) activities.push({ mode: 'phone', priority: 1 });
     if (systemState.alarmRinging) activities.push({ mode: 'alarm', priority: 2 });
     if (systemState.timerRunning) activities.push({ mode: 'timer', priority: 3 });
-    if (systemState.isRecording) activities.push({ mode: 'recording', priority: 4 });
-    if (systemState.stopwatchRunning) activities.push({ mode: 'stopwatch', priority: 5 });
-    if (systemState.isCameraOn) activities.push({ mode: 'camera', priority: 6 });
-    if (hasMusic) activities.push({ mode: 'music', priority: 7 });
-    if (systemState.activeDownloads.length > 0) activities.push({ mode: 'download', priority: 8 });
-    if (systemState.isAirPlaying) activities.push({ mode: 'airplay', priority: 9 });
-    if (systemState.notifications.length > 0) activities.push({ mode: 'notification', priority: 10 });
+    if (systemState.isUpdating) activities.push({ mode: 'update', priority: 4 });
+    if (systemState.isRecording) activities.push({ mode: 'recording', priority: 5 });
+    if (systemState.stopwatchRunning) activities.push({ mode: 'stopwatch', priority: 6 });
+    if (systemState.isCameraOn) activities.push({ mode: 'camera', priority: 7 });
+    if (hasMusic) activities.push({ mode: 'music', priority: 8 });
+    if (systemState.activeDownloads.length > 0) activities.push({ mode: 'download', priority: 9 });
+    if (systemState.isAirPlaying) activities.push({ mode: 'airplay', priority: 10 });
+    if (systemState.notifications.length > 0) activities.push({ mode: 'notification', priority: 11 });
     return activities.sort((a, b) => a.priority - b.priority);
-  }, [incomingCall, systemState.alarmRinging, systemState.timerRunning, systemState.isRecording,
+  }, [incomingCall, systemState.alarmRinging, systemState.timerRunning, systemState.isUpdating, systemState.isRecording,
       systemState.stopwatchRunning, systemState.isCameraOn, hasMusic, systemState.activeDownloads,
       systemState.isAirPlaying, systemState.notifications.length]);
 
@@ -143,6 +145,7 @@ export const DynamicIsland: React.FC = () => {
       case 'recording':
       case 'airplay':
       case 'camera': return COMPACT_WIDTH;
+      case 'update': return EXPANDED_WIDTH - 50;
       case 'idle': return hasAnyStatus ? IDLE_STATUS_WIDTH : IDLE_WIDTH;
       default: return IDLE_WIDTH;
     }
@@ -160,6 +163,7 @@ export const DynamicIsland: React.FC = () => {
       case 'music': return 60;
       case 'notification': return 56;
       case 'download': return 54;
+      case 'update': return 60;
       case 'stopwatch':
       case 'recording':
       case 'airplay':
@@ -330,6 +334,30 @@ export const DynamicIsland: React.FC = () => {
           <div className="flex items-center justify-center w-full h-full px-4 gap-2">
             <span className="text-sm">📺</span>
             <span className="text-[9px] text-white font-bold uppercase tracking-widest">AirPlay</span>
+          </div>
+        );
+
+      case 'update':
+        return (
+          <div className="flex items-center gap-3 px-4 w-full h-full">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+              className="w-7 h-7 rounded-full border-2 border-white/30 border-t-white shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-[10px] font-semibold truncate">
+                {systemState.updateProgress < 100 ? 'Downloading update...' : 'Installing update...'}
+              </p>
+              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1">
+                <motion.div
+                  className="h-full bg-blue-400 rounded-full"
+                  animate={{ width: `${systemState.updateProgress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </div>
+            <span className="text-[10px] text-white/50 font-mono shrink-0">{systemState.updateProgress}%</span>
           </div>
         );
 
@@ -567,6 +595,32 @@ export const DynamicIsland: React.FC = () => {
             <div className="flex-1">
               <p className="text-white text-lg font-bold">AirPlay</p>
               <p className="text-blue-300 text-xs font-medium mt-0.5">Connected to Apple TV</p>
+            </div>
+          </div>
+        );
+
+      case 'update':
+        return (
+          <div className="flex items-center gap-3 flex-1 w-full">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+              className="w-10 h-10 rounded-full border-2 border-white/30 border-t-white shrink-0"
+            />
+            <div className="flex-1">
+              <p className="text-white text-sm font-bold">
+                {systemState.updateProgress < 100 ? 'Downloading macOS Golden Gate…' : 'Installing update…'}
+              </p>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-2">
+                <motion.div
+                  className="h-full bg-blue-400 rounded-full"
+                  animate={{ width: `${systemState.updateProgress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+              <p className="text-blue-300 text-[10px] font-mono font-bold mt-1">
+                {systemState.updateVersion} — {systemState.updateProgress}%
+              </p>
             </div>
           </div>
         );
