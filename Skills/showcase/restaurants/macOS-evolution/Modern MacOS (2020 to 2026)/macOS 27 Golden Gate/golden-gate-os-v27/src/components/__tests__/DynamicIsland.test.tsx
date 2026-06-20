@@ -1,0 +1,69 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/react';
+
+vi.mock('../../contexts/SystemContext', () => ({
+  useSystem: () => ({
+    systemState: {
+      music: { isPlaying: false, currentSongIndex: -1 },
+      isCameraOn: false,
+      notifications: [],
+      dockHidden: false,
+      dockMagnifier: false,
+      dockSize: 1,
+      dockCornerRadius: 16,
+      dockIconScaler: 1,
+      dockPosition: 'bottom',
+      dockHoverSmoothness: 1,
+      dockDepth: 1,
+      dockBlurStrength: 1,
+      autoHideDock: false,
+      brightness: 1,
+      appearance: 'dark',
+      airdrop: false,
+      stageManagerEnabled: false,
+      setup_complete: true,
+      isSystemInfected: false,
+      users: [],
+      activeUserId: '',
+      betaUpdates: false,
+      wallpaperUrl: '',
+      wallpaperType: 'image',
+      wallpaperMode: 'static',
+      notchMode: 'dynamic',
+      glassMode: 0,
+      lowPowerMode: false,
+      terminalBgColor: '#000',
+      terminalRibbonColor: '#333',
+      terminalOpacity: 0.8,
+      iconMode: 'off',
+      iconModeSelection: 'dark',
+      widgets: [],
+      reminders: [],
+      runningApps: [],
+      pinnedApps: [],
+      notes: [],
+      screenSaverType: 'classic',
+      screenSaverTimer: 5,
+    },
+    incomingCall: null,
+    notifications: [],
+    activeApp: null,
+    openWindows: [],
+    minimizedWindows: [],
+    openApps: [],
+    updateSystemState: vi.fn(),
+    launchApp: vi.fn(),
+    quitApp: vi.fn(),
+    closeWindow: vi.fn(),
+    setActiveWindow: vi.fn(),
+    addNotification: vi.fn(),
+  }),
+}));
+
+describe('DynamicIsland', () => {
+  it('renders idle state when no activity', async () => {
+    const { DynamicIsland } = await import('../desktop/DynamicIsland');
+    const { container } = render(<DynamicIsland />);
+    expect(container.querySelector('[data-testid="dynamic-island"]')).toBeInTheDocument();
+  });
+});

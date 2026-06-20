@@ -6,6 +6,7 @@ import { MenuBar } from './MenuBar';
 import { Dock } from './Dock';
 import { ControlCenter } from './ControlCenter';
 import { Window } from './Window';
+import { DynamicIsland } from './DynamicIsland';
 const AboutThisMac = lazy(() => import('../apps/AboutThisMac').then((m) => ({ default: m.AboutThisMac })));
 import { RestartDialog } from './RestartDialog';
 import { ShutdownDialog } from './ShutdownDialog';
@@ -26,12 +27,16 @@ import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
 import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
 import { useNotificationScheduler } from '../../hooks/useNotificationScheduler';
 import { useAirDrop } from '../../hooks/useAirDrop';
+import { useHandoff } from '../../hooks/useHandoff';
+import { useUniversalControl } from '../../hooks/useUniversalControl';
 import { NotificationCenter } from './NotificationCenter';
 import { NotificationToast } from './NotificationToast';
 import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
 import { StageManager } from './StageManager';
+import { MissionControl } from './MissionControl';
+const ScreenSaver = lazy(() => import('./ScreenSaver').then((m) => ({ default: m.default })));
 const Apps = lazy(() => import('../apps/Apps').then((m) => ({ default: m.Apps })));
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
@@ -44,6 +49,7 @@ export const Desktop: React.FC = () => {
     updateSystemState,
     openWindows,
     minimizedWindows,
+    minimizeWindow,
     contextMenu,
     setContextMenu,
     showSpotlight,
@@ -69,11 +75,16 @@ export const Desktop: React.FC = () => {
     copyToClipboard,
     cutToClipboard,
     clearClipboard,
+    bootState,
   } = useSystem();
   const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes, moveNode, findNode } = useFileSystem();
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [showApps, setShowApps] = useState(false);
+  const [missionControlOpen, setMissionControlOpen] = useState(false);
+  const [screenSaverActive, setScreenSaverActive] = useState(false);
   const airdrop = useAirDrop();
+  const handoff = useHandoff();
+  const universalControl = useUniversalControl();
 
   // Initialize Hooks
   useDynamicWallpaper();
@@ -121,8 +132,27 @@ export const Desktop: React.FC = () => {
     return () => window.removeEventListener('open-apps', handler);
   }, []);
 
+  const lastActivityRef = useRef(Date.now());
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      lastActivityRef.current = Date.now();
+
+      if (e.key === 'F3' || (e.code === 'F3')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.metaKey || e.ctrlKey) return;
+        setMissionControlOpen((prev) => !prev);
+        if (screenSaverActive) setScreenSaverActive(false);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'F3') {
+        e.preventDefault();
+        e.stopPropagation();
+        setMissionControlOpen((prev) => !prev);
+        if (screenSaverActive) setScreenSaverActive(false);
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
         e.preventDefault();
         e.stopPropagation();
@@ -175,6 +205,100 @@ export const Desktop: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
   }, [setShowSpotlight, clearSystemErrors, showSpotlight, activeApp, quitApp, clipboard, findNode, createNode, moveNode, clearClipboard]);
+
+  // Screen saver inactivity timeout
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const CHECK_INTERVAL = 10000;
+    const IDLE_TIMEOUT = (systemState.screenSaverTimer || 5) * 60 * 1000;
+
+    const checkInactivity = () => {
+      if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT) {
+        setScreenSaverActive(true);
+      }
+    };
+
+    const interval = setInterval(checkInactivity, CHECK_INTERVAL);
+    return () => clearInterval(interval);
+  }, [bootState, systemState.screenSaverTimer]);
+
+  // Listen for Screen Saver preview from Settings
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const handler = () => setScreenSaverActive(true);
+    window.addEventListener('preview-screen-saver', handler);
+    return () => window.removeEventListener('preview-screen-saver', handler);
+  }, [bootState]);
+
+  // Track user activity on the desktop
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const updateActivity = () => { lastActivityRef.current = Date.now(); };
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'];
+    events.forEach((e) => window.addEventListener(e, updateActivity));
+    return () => events.forEach((e) => window.removeEventListener(e, updateActivity));
+  }, [bootState]);
+
+  // Hot Corners: monitor mouse position and trigger configured actions
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const CORNER_THRESHOLD = 5;
+    const triggeredRef: Record<string, number> = {};
+
+    const handleMouseMove = (e: MouseEvent) => {
+      let corners: Record<string, string> = {};
+      try {
+        const saved = localStorage.getItem('golden_gate_v27_hot_corners');
+        if (saved) corners = JSON.parse(saved);
+      } catch { /* ignore */ }
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const now = Date.now();
+      const debounce = 2000;
+
+      let corner: string | null = null;
+      if (x <= CORNER_THRESHOLD && y <= CORNER_THRESHOLD) corner = 'topLeft';
+      else if (x >= w - CORNER_THRESHOLD && y <= CORNER_THRESHOLD) corner = 'topRight';
+      else if (x <= CORNER_THRESHOLD && y >= h - CORNER_THRESHOLD) corner = 'bottomLeft';
+      else if (x >= w - CORNER_THRESHOLD && y >= h - CORNER_THRESHOLD) corner = 'bottomRight';
+
+      if (!corner) return;
+      if (now - (triggeredRef[corner] || 0) < debounce) return;
+
+      const action = corners[corner];
+      if (!action || action === 'off') return;
+
+      triggeredRef[corner] = now;
+
+      switch (action) {
+        case 'mission-control':
+          setMissionControlOpen(true);
+          break;
+        case 'screen-saver':
+          setScreenSaverActive(true);
+          break;
+        case 'notifications':
+          setShowNotificationCenter(true);
+          break;
+        case 'launchpad':
+          setShowApps(true);
+          break;
+        case 'desktop':
+          // Toggle minimize all windows
+          if (openWindows.length > 0) {
+            openWindows.forEach((w) => minimizeWindow(w.id));
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [bootState, openWindows, minimizeWindow, setShowNotificationCenter]);
 
   useEffect(() => {
     const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -230,6 +354,7 @@ export const Desktop: React.FC = () => {
       className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
       onClick={closeMenus}
       onContextMenu={systemState.isSystemInfected ? (e) => e.preventDefault() : handleContextMenu}
+      onMouseMove={(e) => universalControl.broadcastCursor(e.clientX, e.clientY)}
     >
       <motion.div
         initial={{ filter: 'blur(30px) saturate(50%)', scale: 1.1 }}
@@ -634,18 +759,11 @@ export const Desktop: React.FC = () => {
         ))}
       </motion.div>
 
-      {/* The Notch (180px x 30px, Center Anchor) */}
-      {systemState.notchVisible && (
-        <div
-          data-testid="notch"
-          role="presentation"
-          aria-label="Hardware Notch"
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[180px] h-[30px] bg-black rounded-b-[18px] z-50 flex items-center justify-center shadow-[0_5px_15px_rgba(0,0,0,0.5)] border-x border-b border-white/5"
-        >
-          {/* Camera LED Dot */}
-          <div
-            className={`w-1.5 h-1.5 rounded-full ${systemState.isCameraOn ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-[#111]'} transition-colors ml-12`}
-          />
+      {/* Notch / Dynamic Island */}
+      {systemState.notchMode === 'dynamic' && <DynamicIsland />}
+      {systemState.notchMode === 'static' && (
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
+          <div className="w-[140px] h-[30px] bg-black rounded-b-[18px]" />
         </div>
       )}
 
@@ -665,11 +783,17 @@ export const Desktop: React.FC = () => {
       >
         <MenuBar
           airdropPeers={airdrop.peers.length}
+          handoffPeers={handoff.handoffApps.length}
+          airdropSendFile={airdrop.sendFile}
+          airdropIncomingFiles={airdrop.incomingFiles}
+          airdropClearIncoming={airdrop.clearIncoming}
+          nodes={nodes}
           toggleControlCenter={(e) => {
             e.stopPropagation();
             setControlCenterOpen(!controlCenterOpen);
             setContextMenu(null);
           }}
+          onMissionControl={() => setMissionControlOpen(true)}
         />
       </motion.div>
 
@@ -765,6 +889,11 @@ export const Desktop: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <MissionControl isOpen={missionControlOpen} onClose={() => setMissionControlOpen(false)} />
+      <Suspense fallback={null}>
+        <ScreenSaver isActive={screenSaverActive} onDismiss={() => setScreenSaverActive(false)} type={systemState.screenSaverType} />
+      </Suspense>
 
       {/* Custom Context Menu */}
       <AnimatePresence>
@@ -1144,6 +1273,31 @@ export const Desktop: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Remote Cursors (Universal Control) */}
+      <AnimatePresence>
+        {universalControl.remoteCursors.map((cursor) => (
+          <motion.div
+            key={cursor.peerId}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed z-[300] pointer-events-none"
+            style={{
+              left: cursor.x,
+              top: cursor.y,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.8)] border border-white/30" />
+              <span className="text-[9px] font-bold text-white bg-black/40 px-1.5 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap">
+                {cursor.peerId.slice(0, 8)}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };

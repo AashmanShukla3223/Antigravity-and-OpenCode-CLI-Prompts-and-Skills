@@ -11,6 +11,12 @@ import { AIEngine } from '../../utils/AIEngine';
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
   airdropPeers?: number;
+  handoffPeers?: number;
+  airdropSendFile?: (nodeId: string, name: string, fileType: 'file' | 'folder', size?: number) => number;
+  airdropIncomingFiles?: { nodeId: string; name: string; type: 'file' | 'folder'; size?: number; from: string }[];
+  airdropClearIncoming?: (nodeId: string) => void;
+  nodes?: { id: string; name: string; type: 'file' | 'folder' }[];
+  onMissionControl?: () => void;
 }
 
 const FaceTimeDropdown: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
@@ -381,7 +387,7 @@ const BatteryDropdown: React.FC<{
   );
 };
 
-export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropPeers = 0 }) => {
+export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropPeers = 0, handoffPeers = 0, airdropSendFile, airdropIncomingFiles = [], airdropClearIncoming, nodes = [], onMissionControl }) => {
   const {
     activeApp,
     activeWindowId,
@@ -414,6 +420,10 @@ export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropP
   const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showForceQuit, setShowForceQuit] = useState(false);
+  const [airdropSheetOpen, setAirdropSheetOpen] = useState(false);
+  const [airdropFileName, setAirdropFileName] = useState('');
+  const [selectedFileId, setSelectedFileId] = useState('');
+  const [incomingDropdownOpen, setIncomingDropdownOpen] = useState(false);
 
   const base = (import.meta as any).env?.BASE_URL || '/';
 
@@ -817,14 +827,144 @@ macOS Golden Gate v27.0`, 'Get Info');
       </div>
 
       <div className="flex items-center gap-px pointer-events-auto h-full pl-10">
-        {airdropPeers > 0 && (
-          <div className="relative h-full flex items-center px-2" title={`${airdropPeers} device${airdropPeers > 1 ? 's' : ''} nearby`}>
+        {/* AirDrop Indicator + Share Sheet */}
+        <div className="relative h-full">
+          <div
+            className={`cursor-pointer px-2 h-full flex items-center rounded transition ${airdropSheetOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+            onClick={() => setAirdropSheetOpen(!airdropSheetOpen)}
+            title={`${airdropPeers} device${airdropPeers > 1 ? 's' : ''} nearby`}
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
-            <span className="text-[10px] text-blue-400 font-bold ml-0.5">{airdropPeers}</span>
+            {airdropPeers > 0 && (
+              <span className="text-[10px] text-blue-400 font-bold ml-0.5">{airdropPeers}</span>
+            )}
+          </div>
+          <AnimatePresence>
+            {airdropSheetOpen && airdropPeers > 0 && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setAirdropSheetOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  className="absolute top-10 right-0 w-72 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 text-white"
+                >
+                  <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">AirDrop Share</div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <input
+                      type="text"
+                      placeholder="Enter file name..."
+                      value={airdropFileName}
+                      onChange={(e) => setAirdropFileName(e.target.value)}
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <select
+                    value={selectedFileId}
+                    onChange={(e) => setSelectedFileId(e.target.value)}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-xs text-white mb-3 outline-none focus:border-blue-400"
+                  >
+                    <option value="" className="bg-black/80">Select a file...</option>
+                    {nodes.filter((n) => n.type === 'file').map((n) => (
+                      <option key={n.id} value={n.id} className="bg-black/80">{n.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    disabled={!airdropFileName || !selectedFileId}
+                    onClick={() => {
+                      if (airdropSendFile && selectedFileId && airdropFileName) {
+                        airdropSendFile(selectedFileId, airdropFileName, 'file');
+                        setAirdropSheetOpen(false);
+                        setAirdropFileName('');
+                        setSelectedFileId('');
+                      }
+                    }}
+                    className="w-full py-2 bg-blue-500 disabled:bg-white/10 disabled:text-white/30 text-white text-xs font-bold rounded-xl hover:bg-blue-600 transition-colors disabled:cursor-not-allowed"
+                  >
+                    Send via AirDrop
+                  </button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Handoff Indicator */}
+        {handoffPeers > 0 && (
+          <div className="relative h-full flex items-center px-2" title={`${handoffPeers} handoff app${handoffPeers > 1 ? 's' : ''} available`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+            <span className="text-[10px] text-purple-400 font-bold ml-0.5">{handoffPeers}</span>
+          </div>
+        )}
+
+        {/* Incoming Files Notification */}
+        {airdropIncomingFiles.length > 0 && (
+          <div className="relative h-full">
+            <div
+              className={`cursor-pointer px-2 h-full flex items-center rounded transition ${incomingDropdownOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+              onClick={() => setIncomingDropdownOpen(!incomingDropdownOpen)}
+              title="Incoming AirDrop files"
+            >
+              <div className="relative">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full" />
+              </div>
+              <span className="text-[10px] text-green-400 font-bold ml-0.5">{airdropIncomingFiles.length}</span>
+            </div>
+            <AnimatePresence>
+              {incomingDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIncomingDropdownOpen(false)} />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    className="absolute top-10 right-0 w-72 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 text-white"
+                  >
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Incoming Files</div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {airdropIncomingFiles.map((file) => (
+                        <div key={file.nodeId} className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/10">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold">{file.name}</span>
+                            <span className="text-[9px] text-white/40">from {file.from.slice(0, 8)}</span>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => {
+                                if (airdropClearIncoming) airdropClearIncoming(file.nodeId);
+                                showAlert(`Accepted: ${file.name}`, 'AirDrop');
+                              }}
+                              className="px-2 py-1 bg-green-500/20 text-green-400 text-[10px] font-bold rounded-lg hover:bg-green-500/30 transition-colors"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (airdropClearIncoming) airdropClearIncoming(file.nodeId);
+                              }}
+                              className="px-2 py-1 bg-red-500/20 text-red-400 text-[10px] font-bold rounded-lg hover:bg-red-500/30 transition-colors"
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
         )}
         <div className="relative h-full">
@@ -892,6 +1032,16 @@ macOS Golden Gate v27.0`, 'Get Info');
             className="h-4 w-auto object-contain"
             loading="lazy"
           />
+        </div>
+        <div
+          className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"
+          onClick={() => onMissionControl?.()}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/70">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
         </div>
         <div
           className="cursor-pointer px-2 h-full flex items-center hover:bg-white/10 rounded transition"

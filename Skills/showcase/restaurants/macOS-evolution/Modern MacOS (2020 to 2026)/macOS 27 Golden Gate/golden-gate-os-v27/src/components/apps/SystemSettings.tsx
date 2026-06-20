@@ -14,6 +14,7 @@ import {
 } from 'hugeicons-react';
 import { useSystem } from '../../contexts/SystemContext';
 import type { UserAccount } from '../../contexts/SystemContext';
+import HotCorners from '../desktop/HotCorners';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { App_Version } from '../../hooks/useSoftwareUpdate';
@@ -565,7 +566,6 @@ export const SystemSettings: React.FC = () => {
             <div className="space-y-1 mb-8">
               {[
                 { name: 'About', icon: InformationCircleIcon, action: () => setResetStep(5) },
-                { name: 'Software Update', icon: Settings01Icon, action: () => setResetStep(6) },
                 { name: 'Storage', icon: Database01Icon, action: () => setResetStep(7) },
                 { name: 'Transfer or Reset', icon: ArrowLeft01Icon, action: () => setResetStep(1) },
               ].map((item) => (
@@ -675,12 +675,29 @@ export const SystemSettings: React.FC = () => {
             onClick={() => setCurrentTab('Wallpaper')}
           />
           <SidebarItem
+            name="Screen Saver"
+            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-screensaver')}`}
+            color="bg-gradient-to-br from-purple-500 to-indigo-600"
+            active={currentTab === 'Screen Saver'}
+            onClick={() => setCurrentTab('Screen Saver')}
+          />
+          <SidebarItem
             name="General"
             iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system')}`}
             color="bg-gray-500"
             active={currentTab === 'General'}
             onClick={() => {
               setCurrentTab('General');
+              setResetStep(0);
+            }}
+          />
+          <SidebarItem
+            name="Software Update"
+            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-system')}`}
+            color="bg-blue-500"
+            active={currentTab === 'Software Update'}
+            onClick={() => {
+              setCurrentTab('Software Update');
               setResetStep(0);
             }}
           />
@@ -834,23 +851,24 @@ export const SystemSettings: React.FC = () => {
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
-                  <div className="flex items-center justify-between mb-5">
-                    <div>
-                      <h3 className="font-medium text-lg text-white">Notch</h3>
-                      <p className="text-sm text-white/50">Show the hardware notch on Intel Mac and MacBook Air bezel builds.</p>
-                    </div>
-                    <button
-                      onClick={() => updateSystemState({ notchVisible: !systemState.notchVisible })}
-                      className={`relative w-12 h-6 rounded-full transition-all ${
-                        systemState.notchVisible ? 'bg-blue-500' : 'bg-white/10'
-                      }`}
-                    >
-                      <span
-                        className={`block w-4 h-4 bg-white rounded-full shadow transition-all ${
-                          systemState.notchVisible ? 'translate-x-7' : 'translate-x-1'
+                  <div className="mb-5">
+                    <h3 className="font-medium text-lg text-white">Notch</h3>
+                    <p className="text-sm text-white/50">Choose notch style or turn it off.</p>
+                  </div>
+                  <div className="flex gap-1 p-1 bg-black/30 rounded-xl w-fit">
+                    {(['off', 'static', 'dynamic'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => updateSystemState({ notchMode: mode })}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+                          systemState.notchMode === mode
+                            ? 'bg-blue-500 text-white shadow-lg'
+                            : 'text-white/50 hover:text-white'
                         }`}
-                      />
-                    </button>
+                      >
+                        {mode === 'static' ? 'Static' : mode === 'dynamic' ? 'Dynamic Island' : 'Off'}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -1054,9 +1072,62 @@ export const SystemSettings: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
+                {/* Hot Corners Section */}
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 mt-6">
+                  <HotCorners />
+                </div>
               </div>
             )}
             {currentTab === 'General' && renderGeneralContent()}
+            {currentTab === 'Software Update' && (
+              <div className="flex flex-col h-full">
+                <h2 className="text-2xl font-semibold mb-6">Software Update</h2>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6 flex flex-col items-center justify-center text-center">
+                  {isCheckingUpdate ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"
+                      />
+                      <h3 className="text-xl font-medium">Checking for updates...</h3>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-20 h-20 rounded-3xl bg-blue-500/20 flex items-center justify-center text-blue-500 mb-6">
+                        <Settings01Icon size={40} />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">macOS Golden Gate {App_Version}</h3>
+                      <p className="text-white/50 mb-8">
+                        {systemState.betaUpdates && latestCommit ? `Beta Build ${latestCommit}` : 'Your Mac is up to date.'}
+                      </p>
+                      <button
+                        onClick={checkUpdates}
+                        className="px-8 h-12 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition"
+                      >
+                        Check for Updates
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm">Beta Updates</h4>
+                    <p className="text-xs text-white/50">Receive pre-release builds from GitHub.</p>
+                  </div>
+                  <button
+                    onClick={() => updateSystemState({ betaUpdates: !systemState.betaUpdates })}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${systemState.betaUpdates ? 'bg-blue-500' : 'bg-white/10'}`}
+                  >
+                    <motion.div
+                      animate={{ x: systemState.betaUpdates ? 26 : 2 }}
+                      className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
             {currentTab === 'Users' && (
               <div className="flex flex-col h-full">
                 <h2 className="text-2xl font-semibold mb-6">Users & Groups</h2>
@@ -1411,6 +1482,59 @@ export const SystemSettings: React.FC = () => {
                       />
                     </label>
                   </div>
+                </div>
+              </div>
+            )}
+            {currentTab === 'Screen Saver' && (
+              <div className="flex flex-col h-full">
+                <h2 className="text-2xl font-semibold mb-6">Screen Saver</h2>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                  <div className="mb-6">
+                    <h3 className="font-medium text-lg text-white mb-1">Type</h3>
+                    <p className="text-sm text-white/50">Choose your screen saver style.</p>
+                  </div>
+                  <div className="flex gap-2 p-1 bg-black/30 rounded-xl w-fit mb-8">
+                    {(['classic', 'aerial', 'photos'] as const).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => updateSystemState({ screenSaverType: type })}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+                          systemState.screenSaverType === type
+                            ? 'bg-blue-500 text-white shadow-lg'
+                            : 'text-white/50 hover:text-white'
+                        }`}
+                      >
+                        {type === 'classic' ? 'Classic' : type === 'aerial' ? 'Aerial' : 'Photos'}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="font-medium text-lg text-white mb-1">Start After</h3>
+                    <p className="text-sm text-white/50 mb-3">How long before the screen saver activates.</p>
+                    <div className="flex gap-2 p-1 bg-black/30 rounded-xl w-fit">
+                      {[1, 2, 5, 10, 15, 30].map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => updateSystemState({ screenSaverTimer: m })}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            systemState.screenSaverTimer === m
+                              ? 'bg-blue-500 text-white shadow-lg'
+                              : 'text-white/50 hover:text-white'
+                          }`}
+                        >
+                          {m} min
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent('preview-screen-saver'))}
+                    className="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-bold transition-colors"
+                  >
+                    Preview
+                  </button>
                 </div>
               </div>
             )}

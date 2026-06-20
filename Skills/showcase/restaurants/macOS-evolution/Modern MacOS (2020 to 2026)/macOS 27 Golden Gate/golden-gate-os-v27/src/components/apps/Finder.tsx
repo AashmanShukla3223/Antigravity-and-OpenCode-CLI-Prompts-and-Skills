@@ -115,7 +115,7 @@ export const Finder: React.FC = () => {
   const [airDropCode, setAirDropCode] = useState('0000');
   const [previewNode, setPreviewNode] = useState<FileSystemNode | null>(null);
   const closePreview = useCallback(() => setPreviewNode(null), []);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'columns'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
 
   const rawContents = getDirectoryContents(currentFolderId);
@@ -382,6 +382,17 @@ export const Finder: React.FC = () => {
             {/* View Toggle */}
             <div className="flex border border-gray-200 rounded-lg overflow-hidden mr-1">
               <button
+                onClick={() => setViewMode('columns')}
+                className={`p-1.5 transition-colors ${viewMode === 'columns' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+                title="Column View"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="3" width="5" height="18" />
+                  <rect x="9.5" y="3" width="5" height="18" />
+                  <rect x="17" y="3" width="5" height="18" />
+                </svg>
+              </button>
+              <button
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-gray-100'}`}
                 title="Icon View"
@@ -492,6 +503,44 @@ export const Finder: React.FC = () => {
             <div className="h-full flex flex-col items-center justify-center text-gray-300 gap-2">
               <AppIcon id="folder" size={48} className="opacity-20" />
               <span className="text-xs font-bold uppercase tracking-widest">Empty Folder</span>
+            </div>
+          ) : viewMode === 'columns' ? (
+            <div className="flex h-full overflow-x-auto scrollbar-hide">
+              {(() => {
+                const renderColumn = (items: typeof contents, title: string) => (
+                  <div className="flex-shrink-0 w-56 border-r border-gray-200 flex flex-col min-h-0 mr-[-1px]">
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 bg-gray-50/50 sticky top-0">
+                      {title}
+                    </div>
+                    <div className="flex-1 overflow-y-auto scrollbar-hide">
+                      {items.map((node) => (
+                        <div
+                          key={node.id}
+                          draggable={!node.isLocked}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedNodeId(node.id);
+                            if (node.type === 'folder') navigateTo(node.id);
+                          }}
+                          onDoubleClick={() => handlePreview(node)}
+                          onContextMenu={(e) => handleContextMenu(e, 'item', node.id)}
+                          className={`flex items-center gap-2 px-3 py-1.5 text-sm border-b border-gray-50 cursor-pointer transition-all
+                            ${selectedNodeId === node.id ? 'bg-blue-500/10 text-blue-700 font-bold' : 'text-gray-600 hover:bg-gray-50'}
+                          `}
+                        >
+                          {node.type === 'folder' ? (
+                            <AppIcon id={node.customIcon || `folder-${node.id}`} size={16} folderColor={node.color} />
+                          ) : (
+                            <span className="text-sm">{getFileIcon(node).icon}</span>
+                          )}
+                          <span className="truncate text-xs">{node.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+                return renderColumn(contents, currentFolder?.name || '');
+              })()}
             </div>
           ) : viewMode === 'list' ? (
             <div className="flex flex-col">

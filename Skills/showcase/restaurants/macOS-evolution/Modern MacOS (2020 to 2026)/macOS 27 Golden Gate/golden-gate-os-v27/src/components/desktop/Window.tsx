@@ -64,6 +64,8 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   photobooth: namedLazy(() => import('../apps/PhotoBooth'), 'PhotoBooth'),
   chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
   minecraft: namedLazy(() => import('../apps/Minecraft'), 'Minecraft'),
+  launchpad: namedLazy(() => import('../apps/Apps'), 'Apps'),
+  githubnavigator: namedLazy(() => import('../apps/GitHubNavigator'), 'GitHubNavigator'),
 };
 
 const AppFallback: React.FC = () => (

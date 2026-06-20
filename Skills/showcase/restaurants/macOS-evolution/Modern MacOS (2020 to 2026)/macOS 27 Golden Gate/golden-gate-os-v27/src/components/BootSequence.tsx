@@ -22,7 +22,6 @@ export const BootSequence: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === 'm') {
         recoveryTriggered.current = true;
-        console.log('Recovery Mode Triggered via Keyboard Shortcut');
         if (isDeadDriveRef.current) {
           setIsDeadDrive(false);
           startBoot();
@@ -83,7 +82,6 @@ export const BootSequence: React.FC = () => {
         return;
       }
 
-      console.log('🥾 Boot: startBoot() called');
       setProgress(60);
       await new Promise((r) => setTimeout(r, 1200));
       if (!mounted) return;
@@ -100,16 +98,11 @@ export const BootSequence: React.FC = () => {
       await new Promise((r) => setTimeout(r, 800));
       if (!mounted) return;
 
-      console.log('🥾 Boot: Transitioning from booting stage. setup_complete:', systemState.setup_complete);
-
       if (recoveryTriggered.current) {
-        console.log('Boot: Transitioning to recovery');
         setBootState('recovery');
       } else if (!systemState.setup_complete) {
-        console.log('Boot: Transitioning to setup');
         setBootState('setup');
       } else {
-        console.log('Boot: Transitioning to login');
         setBootState('login');
       }
     };

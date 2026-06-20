@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SignalIcon, Wifi01Icon, Settings01Icon, Search01Icon, AiCloudIcon, Alert01Icon } from 'hugeicons-react';
+import { SignalIcon, Wifi01Icon, Settings01Icon, Search01Icon, AiCloudIcon, Alert01Icon, Message01Icon, MusicNote01Icon, Camera01Icon, Mail01Icon, Calendar01Icon, Note03Icon, Video01Icon } from 'hugeicons-react';
+import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 const HARDCODED_LOCK_PATH = 'Skills/showcase/restaurants';
@@ -20,6 +21,8 @@ export const IPhoneMirroring: React.FC = () => {
   const [stage, setStage] = useState<'idle' | 'authorizing' | 'scanning' | 'booting' | 'active'>('authorizing');
   const [bootProgress, setBootProgress] = useState(0);
   const [time, setTime] = useState(new Date());
+  const [tappedApp, setTappedApp] = useState<string | null>(null);
+  const { launchApp, showAlert } = useSystem();
   const base = (import.meta as any).env?.BASE_URL || '/';
 
   useEffect(() => {
@@ -186,6 +189,39 @@ export const IPhoneMirroring: React.FC = () => {
                   </div>
                 </header>
 
+                {/* iOS App Grid */}
+                <div className="grid grid-cols-4 gap-4">
+                  {[
+                    { name: 'Phone', icon: (p: any) => <svg viewBox="0 0 24 24" width={p.size || 22} height={p.size || 22} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, color: 'bg-green-500', action: () => launchApp('facetime') },
+                    { name: 'Messages', icon: Message01Icon, color: 'bg-green-600', action: () => launchApp('messages') },
+                    { name: 'Music', icon: MusicNote01Icon, color: 'bg-pink-500', action: () => launchApp('music') },
+                    { name: 'Camera', icon: Camera01Icon, color: 'bg-gray-800', action: () => showAlert('Camera would open on iPhone') },
+                    { name: 'Mail', icon: Mail01Icon, color: 'bg-blue-600', action: () => launchApp('mail') },
+                    { name: 'Maps', icon: (p: any) => <svg viewBox="0 0 24 24" width={p.size || 22} height={p.size || 22} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={p.className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, color: 'bg-green-700', action: () => launchApp('maps') },
+                    { name: 'Calendar', icon: Calendar01Icon, color: 'bg-red-500', action: () => showAlert('Calendar opened on iPhone') },
+                    { name: 'Notes', icon: Note03Icon, color: 'bg-yellow-600', action: () => launchApp('notes') },
+                    { name: 'Photos', icon: Video01Icon, color: 'bg-cyan-600', action: () => launchApp('photos') },
+                    { name: 'Settings', icon: Settings01Icon, color: 'bg-gray-600', action: () => launchApp('settings') },
+                    { name: 'FaceTime', icon: Video01Icon, color: 'bg-green-500', action: () => launchApp('facetime') },
+                  ].map((app) => (
+                    <motion.div
+                      key={app.name}
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => {
+                        setTappedApp(app.name);
+                        app.action();
+                        setTimeout(() => setTappedApp(null), 500);
+                      }}
+                      className="flex flex-col items-center gap-1 cursor-pointer"
+                    >
+                      <div className={`w-12 h-12 rounded-2xl ${app.color} flex items-center justify-center shadow-lg ${tappedApp === app.name ? 'ring-2 ring-white/50 scale-110' : ''}`}>
+                        <app.icon size={22} className="text-white" />
+                      </div>
+                      <span className="text-[8px] text-white/70 font-medium text-center">{app.name}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
                 <div className="space-y-2 pb-20">
                   {AUTHORIZED_ASSETS.map((logic, i) => {
                     const isMissing = logic.path.includes('MISSING');
@@ -249,12 +285,12 @@ export const IPhoneMirroring: React.FC = () => {
 
               {/* iOS Dock */}
               <div className="absolute bottom-3 left-3 right-3 h-16 bg-white/10 backdrop-blur-[20px] border border-white/10 flex items-center justify-around px-3 rounded-3xl z-20">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600" />
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600" />
-                <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center border border-white/5">
-                  <Settings01Icon size={18} className="text-white/40" />
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600" />
+                <motion.div whileTap={{ scale: 0.85 }} onClick={() => { launchApp('messages'); showAlert('Messages opened via iPhone Mirroring'); }} className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600 cursor-pointer" />
+                <motion.div whileTap={{ scale: 0.85 }} onClick={() => { launchApp('safari'); showAlert('Safari opened via iPhone Mirroring'); }} className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 cursor-pointer" />
+                <motion.div whileTap={{ scale: 0.85 }} onClick={() => launchApp('music')} className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center border border-white/5 cursor-pointer">
+                  <MusicNote01Icon size={18} className="text-white/40" />
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.85 }} onClick={() => launchApp('photos')} className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 cursor-pointer" />
               </div>
 
               {/* Home Indicator */}

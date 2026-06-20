@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSystem } from '../../contexts/SystemContext';
-import { useFileSystem } from '../../contexts/FileSystemContext';
+import { useFileSystem } from '../../contexts/FileSystemContext'; // createNode, deleteNode available
 
 export const TerminalApp: React.FC = () => {
   const { bootState, launchApp, setBootState, battery, hardware, uptime, activeUser, systemState } = useSystem();
-  const { getDirectoryContents, nodes } = useFileSystem();
+  const { getDirectoryContents, nodes, createNode, deleteNode } = useFileSystem();
 
   const isRecovery = bootState === 'recovery';
   const username = isRecovery ? 'root' : activeUser.accountName || activeUser.fullName || 'Architect';
@@ -49,6 +49,11 @@ export const TerminalApp: React.FC = () => {
         output = `Available commands:
   ls        - List directory contents
   cd [dir]  - Change directory
+  pwd       - Print working directory
+  mkdir [n] - Create a directory
+  touch [n] - Create a file
+  cat [file]- Display file contents
+  rm [item] - Remove file or directory
   open [app]- Open an application (e.g., open Safari)
   neofetch  - Display system information
   date      - Display current date
@@ -84,6 +89,64 @@ export const TerminalApp: React.FC = () => {
           } else {
             output = `cd: no such directory: ${targetDir}`;
           }
+        }
+        break;
+      }
+      case 'pwd':
+        output = getCurrentDirPath();
+        break;
+      case 'mkdir': {
+        const dirName = args[0];
+        if (dirName) {
+          createNode({ name: dirName, type: 'folder', parentId: currentDirId, isLocked: false, tags: [] });
+          output = '';
+        } else {
+          output = 'usage: mkdir [directory name]';
+        }
+        break;
+      }
+      case 'touch': {
+        const fileName = args[0];
+        if (fileName) {
+          createNode({ name: fileName, type: 'file', parentId: currentDirId, content: '', isLocked: false, tags: [] });
+          output = '';
+        } else {
+          output = 'usage: touch [file name]';
+        }
+        break;
+      }
+      case 'cat': {
+        const catName = args[0];
+        if (catName) {
+          const found = getDirectoryContents(currentDirId).find(
+            (n) => n.name.toLowerCase() === catName.toLowerCase() && n.type === 'file',
+          );
+          if (found && found.content) {
+            output = found.content;
+          } else if (found) {
+            output = `cat: ${catName}: file is empty`;
+          } else {
+            output = `cat: ${catName}: No such file`;
+          }
+        } else {
+          output = 'usage: cat [file name]';
+        }
+        break;
+      }
+      case 'rm': {
+        const rmName = args[0];
+        if (rmName) {
+          const found = getDirectoryContents(currentDirId).find(
+            (n) => n.name.toLowerCase() === rmName.toLowerCase(),
+          );
+          if (found) {
+            deleteNode(found.id);
+            output = '';
+          } else {
+            output = `rm: ${rmName}: No such file or directory`;
+          }
+        } else {
+          output = 'usage: rm [file or directory name]';
         }
         break;
       }

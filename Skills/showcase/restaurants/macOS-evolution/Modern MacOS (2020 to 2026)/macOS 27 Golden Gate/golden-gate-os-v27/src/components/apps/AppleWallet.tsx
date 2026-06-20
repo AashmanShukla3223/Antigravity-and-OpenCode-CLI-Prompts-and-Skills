@@ -9,6 +9,7 @@ import {
   CoinsSwapIcon,
   AddMoneyCircleIcon,
 } from 'hugeicons-react';
+import { useSystem } from '../../contexts/SystemContext';
 
 interface Card {
   id: string;
@@ -564,6 +565,7 @@ interface ApplePayProps {
 }
 
 export const ApplePayFramework: React.FC<ApplePayProps> = ({ amount, itemName, onSuccess, onCancel }) => {
+  const { verifyPassword } = useSystem();
   const [step, setStep] = useState<'password' | 'selection' | 'processing' | 'success'>('password');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
@@ -571,7 +573,7 @@ export const ApplePayFramework: React.FC<ApplePayProps> = ({ amount, itemName, o
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === '' || password === 'debug') {
+    if (verifyPassword(password)) {
       setStep('selection');
     } else {
       setError(true);

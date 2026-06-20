@@ -32,13 +32,11 @@ export const SetupAssistant: React.FC = () => {
 
   useEffect(() => {
     if (step === 12) {
-      console.log('Setup Step 12: Initializing finalization timer');
       // Automatic finalization after 3s (progress bar fills)
       // Capture form state at this moment
       const userData = { fullName, accountName, password, avatar: selectedEmoji };
 
       const timer = setTimeout(() => {
-        console.log('Setup Step 12: Auto-finalizing setup with data:', userData);
         try {
           restoreSystemNodes();
           updateSystemState({
@@ -53,7 +51,6 @@ export const SetupAssistant: React.FC = () => {
         }
       }, 3000);
       return () => {
-        console.log('Setup Step 12: Clearing finalization timer');
         clearTimeout(timer);
       };
     }
@@ -503,14 +500,12 @@ export const SetupAssistant: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.5 }}
                 onClick={() => {
-                  console.log("Setup: Manual 'Get Started' button clicked");
                   try {
                     restoreSystemNodes();
                     updateSystemState({
                       setup_complete: true,
                       users: [{ fullName, accountName, password, avatar: selectedEmoji, id: crypto.randomUUID() }],
                     });
-                    console.log('Setup: Transitioning to desktop');
                     setBootState('desktop');
                   } catch (e) {
                     console.error('Setup error on Get Started:', e);

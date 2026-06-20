@@ -18,7 +18,6 @@ export const DeviceRecovery: React.FC = () => {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         setShowRecoveryUI(true);
-        console.log('🔧 Recovery Mode Activated');
       }
       // Escape to close
       if (e.key === 'Escape') {
@@ -31,7 +30,6 @@ export const DeviceRecovery: React.FC = () => {
   }, []);
 
   const quickBypass = () => {
-    console.log('⚡ Quick Setup Bypass...');
     try {
       restoreSystemNodes();
       const userId = crypto.randomUUID();
@@ -48,18 +46,15 @@ export const DeviceRecovery: React.FC = () => {
       });
       setBootState('desktop');
       setShowRecoveryUI(false);
-      console.log('✅ Setup bypassed - Going to desktop');
     } catch (e) {
       console.error('❌ Bypass failed:', e);
     }
   };
 
   const clearCache = () => {
-    console.log('🗑️ Clearing all cache...');
     try {
       localStorage.removeItem('golden_gate_v27_state');
       localStorage.removeItem('golden_gate_v27_fs');
-      console.log('✅ Cache cleared - Reloading...');
       location.reload();
     } catch (e) {
       console.error('❌ Clear cache failed:', e);
@@ -67,14 +62,12 @@ export const DeviceRecovery: React.FC = () => {
   };
 
   const goToSetup = () => {
-    console.log('🔄 Returning to setup...');
     updateSystemState({ setup_complete: false });
     setBootState('setup');
     setShowRecoveryUI(false);
   };
 
   const goToLogin = () => {
-    console.log('🔓 Going to login...');
     setBootState('login');
     setShowRecoveryUI(false);
   };
@@ -99,7 +92,6 @@ export const DeviceRecovery: React.FC = () => {
 
           <button
             onClick={() => {
-              console.log('🚀 Force Starting Desktop...');
               updateSystemState({ setup_complete: true });
               setBootState('desktop');
               setShowRecoveryUI(false);

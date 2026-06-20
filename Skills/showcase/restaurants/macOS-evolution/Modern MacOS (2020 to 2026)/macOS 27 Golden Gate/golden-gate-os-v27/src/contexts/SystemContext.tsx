@@ -118,7 +118,7 @@ export interface GoldenGateV27State {
   wallpaperType: 'image' | 'video';
   wallpaperMode: 'off' | 'static' | 'dynamic';
   isCameraOn: boolean;
-  notchVisible: boolean;
+  notchMode: 'static' | 'dynamic' | 'off';
   glassMode: number;
   lowPowerMode: boolean;
   dockHidden: boolean;
@@ -146,6 +146,8 @@ export interface GoldenGateV27State {
   runningApps: string[];
   pinnedApps: string[];
   notes: Note[];
+  screenSaverType: 'classic' | 'aerial' | 'photos';
+  screenSaverTimer: number;
 }
 
 const persistQueue = new Map<string, string>();
@@ -175,7 +177,7 @@ const defaultState: GoldenGateV27State = {
   wallpaperType: 'image',
   wallpaperMode: 'static',
   isCameraOn: false,
-  notchVisible: true,
+  notchMode: 'dynamic',
   glassMode: 50,
   lowPowerMode: false,
   dockHidden: false,
@@ -229,6 +231,8 @@ const defaultState: GoldenGateV27State = {
       lastModified: Date.now() - 86400000,
     },
   ],
+  screenSaverType: 'classic',
+  screenSaverTimer: 5,
 };
 
 interface SystemContextProps {

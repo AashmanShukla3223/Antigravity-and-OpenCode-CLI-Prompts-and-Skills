@@ -35,10 +35,6 @@ function App() {
     }
   }, [systemState.isSystemInfected, bootState, triggerSystemError]);
 
-  useEffect(() => {
-    console.log('🖥️ App: bootState changed to:', bootState);
-  }, [bootState]);
-
   return (
     <div
       className={`h-full w-full ${isShuttingDown && shutdownStep >= 4 ? 'cursor-none' : isShuttingDown && shutdownStep >= 3 ? 'is-busy' : ''}`}

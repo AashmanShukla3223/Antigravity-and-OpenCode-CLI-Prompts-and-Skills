@@ -44,6 +44,9 @@ export const ControlCenter = React.memo<{ isOpen: boolean; onClose: () => void }
   const { battery, wifi, setWifi, bluetooth, setBluetooth, systemState, updateSystemState, setVolume } = useSystem();
   const base = (import.meta as any).env?.BASE_URL || '/';
   const backdropRef = useRef<HTMLDivElement>(null);
+  const [showDisplays, setShowDisplays] = React.useState(false);
+  const displays = ['Built-in Display', 'Studio Display', 'iPad Pro (Sidecar)'];
+  const [activeDisplay, setActiveDisplay] = React.useState(() => localStorage.getItem('golden_gate_display') || 'Built-in Display');
 
   return (
     <AnimatePresence>
@@ -168,14 +171,30 @@ export const ControlCenter = React.memo<{ isOpen: boolean; onClose: () => void }
 
             {/* Bottom Row: Mic & Battery */}
             <div className="flex gap-4">
-              <div className="flex-1 bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/20 transition-colors">
+              <div className="flex-1 bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/20 transition-colors relative"
+                onClick={() => setShowDisplays(!showDisplays)}
+              >
                 <img
-                  src={`${base}${FileSystemResolver.getDeviceIcon('audio-input-microphone')}`}
-                  alt="Mic"
+                  src={`${base}${FileSystemResolver.getDeviceIcon('video-display')}`}
+                  alt="Displays"
                   className="w-5 h-5"
                   loading="lazy"
                 />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Microphone</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Displays</span>
+                {showDisplays && (
+                  <div className="absolute bottom-16 left-0 right-0 bg-black/90 backdrop-blur-2xl rounded-2xl border border-white/10 p-2 z-50 shadow-2xl">
+                    {displays.map((d) => (
+                      <div
+                        key={d}
+                        onClick={(e) => { e.stopPropagation(); setActiveDisplay(d); localStorage.setItem('golden_gate_display', d); setShowDisplays(false); }}
+                        className={`px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors flex items-center gap-2 ${activeDisplay === d ? 'bg-blue-500/20 text-blue-400' : 'text-white/70 hover:bg-white/10'}`}
+                      >
+                        <div className={`w-2 h-2 rounded-full ${activeDisplay === d ? 'bg-blue-500' : 'bg-white/20'}`} />
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex-1 bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2">
                 <div className="flex items-center gap-2">

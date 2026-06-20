@@ -11,6 +11,14 @@ import {
 
 const XFRAME_DISMISS_KEY = 'golden_gate_xframe_dismissed';
 
+const generateId = () => `tab-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+interface TabData {
+  id: string;
+  url: string;
+  title: string;
+}
+
 export const Safari: React.FC = () => {
   const [url, setUrl] = useState('');
   const [showStartPage, setShowStartPage] = useState(true);
@@ -21,6 +29,61 @@ export const Safari: React.FC = () => {
   const [xframeDismissed, setXframeDismissed] = useState(() => localStorage.getItem(XFRAME_DISMISS_KEY) === 'true');
   const [xframeDontShow, setXframeDontShow] = useState(false);
 
+  const [tabs, setTabs] = useState<TabData[]>([{ id: generateId(), url: '', title: 'Start Page' }]);
+  const [activeTabId, setActiveTabId] = useState(tabs[0].id);
+
+  const [tabHistory, setTabHistory] = useState<Record<string, string[]>>({});
+  const [tabHistoryIndex, setTabHistoryIndex] = useState<Record<string, number>>({});
+
+  const [showTabOverview, setShowTabOverview] = useState(false);
+
+  const pushHistory = (tabId: string, newUrl: string) => {
+    const currentHistory = tabHistory[tabId] || [];
+    const currentIndex = tabHistoryIndex[tabId] ?? -1;
+    const newHistory = [...currentHistory.slice(0, currentIndex + 1), newUrl];
+    setTabHistory(prev => ({ ...prev, [tabId]: newHistory }));
+    setTabHistoryIndex(prev => ({ ...prev, [tabId]: newHistory.length - 1 }));
+  };
+
+  const canGoBack = (tabHistoryIndex[activeTabId] ?? -1) > 0;
+  const canGoForward = (tabHistoryIndex[activeTabId] ?? -1) < (tabHistory[activeTabId]?.length ?? 0) - 1;
+
+  const loadUrl = (newUrl: string) => {
+    setUrl(newUrl);
+    setInputValue(newUrl);
+    setShowStartPage(false);
+    setHasError(false);
+    if (newUrl.includes('apple.com')) {
+      setIsNeuralMode(true);
+      setIsProxied(true);
+    } else if (newUrl.includes('google.com')) {
+      setIsNeuralMode(false);
+      setIsProxied(false);
+    } else {
+      setIsNeuralMode(false);
+      setIsProxied(true);
+    }
+  };
+
+  const goBack = () => {
+    const idx = tabHistoryIndex[activeTabId] ?? -1;
+    if (idx <= 0) return;
+    const newIdx = idx - 1;
+    const newUrl = (tabHistory[activeTabId] || [])[newIdx];
+    setTabHistoryIndex(prev => ({ ...prev, [activeTabId]: newIdx }));
+    loadUrl(newUrl);
+  };
+
+  const goForward = () => {
+    const history = tabHistory[activeTabId] || [];
+    const idx = tabHistoryIndex[activeTabId] ?? -1;
+    if (idx >= history.length - 1) return;
+    const newIdx = idx + 1;
+    const newUrl = history[newIdx];
+    setTabHistoryIndex(prev => ({ ...prev, [activeTabId]: newIdx }));
+    loadUrl(newUrl);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
@@ -28,7 +91,6 @@ export const Safari: React.FC = () => {
     setShowStartPage(false);
     let finalUrl = inputValue.toLowerCase().trim();
 
-    // Auto-search logic
     if (!finalUrl.includes('.') && !finalUrl.startsWith('http')) {
       finalUrl = `https://www.google.com/search?q=${encodeURIComponent(finalUrl)}&igu=1`;
     } else if (!finalUrl.startsWith('http')) {
@@ -38,28 +100,29 @@ export const Safari: React.FC = () => {
     setHasError(false);
     setIsNeuralMode(false);
 
-    // Special handling for Apple.com (Neural Preview Mode)
     if (finalUrl.includes('apple.com') || finalUrl === 'apple') {
       setIsNeuralMode(true);
       setIsProxied(true);
       setInputValue('apple.com');
       setUrl('https://www.apple.com');
+      pushHistory(activeTabId, 'https://www.apple.com');
       return;
     }
 
-    // Special handling for Google
     if (finalUrl.includes('google.com')) {
       if (!finalUrl.includes('igu=1')) {
         finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'igu=1';
       }
       setUrl(finalUrl);
       setIsProxied(false);
+      pushHistory(activeTabId, finalUrl);
       return;
     }
 
     const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
     setUrl(proxiedUrl);
     setIsProxied(true);
+    pushHistory(activeTabId, proxiedUrl);
   };
 
   const navigateTo = (siteUrl: string) => {
@@ -70,12 +133,85 @@ export const Safari: React.FC = () => {
       setIsNeuralMode(true);
       setIsProxied(true);
       setUrl('https://www.apple.com');
+      pushHistory(activeTabId, 'https://www.apple.com');
     } else {
       setIsNeuralMode(false);
       setIsProxied(true);
-      setUrl(
-        `https://corsproxy.io/?${encodeURIComponent(siteUrl.startsWith('http') ? siteUrl : 'https://' + siteUrl)}`,
-      );
+      const resolved = `https://corsproxy.io/?${encodeURIComponent(siteUrl.startsWith('http') ? siteUrl : 'https://' + siteUrl)}`;
+      setUrl(resolved);
+      pushHistory(activeTabId, resolved);
+    }
+  };
+
+  const switchTab = (tabId: string) => {
+    if (tabId === activeTabId) return;
+    setShowTabOverview(false);
+    const tab = tabs.find(t => t.id === tabId);
+    if (!tab) return;
+    setActiveTabId(tabId);
+    setUrl(tab.url);
+    setInputValue(tab.url);
+    setShowStartPage(!tab.url);
+    setHasError(false);
+    if (tab.url.includes('apple.com') && tab.url) {
+      setIsNeuralMode(true);
+      setIsProxied(true);
+    } else if (tab.url.includes('google.com')) {
+      setIsNeuralMode(false);
+      setIsProxied(false);
+    } else {
+      setIsNeuralMode(false);
+      setIsProxied(!!tab.url);
+    }
+  };
+
+  const addTab = () => {
+    const newTab: TabData = { id: generateId(), url: '', title: 'Start Page' };
+    setTabs(prev => [...prev, newTab]);
+    setActiveTabId(newTab.id);
+    setShowTabOverview(false);
+    setUrl('');
+    setInputValue('');
+    setShowStartPage(true);
+    setHasError(false);
+    setIsNeuralMode(false);
+    setIsProxied(true);
+  };
+
+  const closeTab = (tabId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (tabs.length <= 1) return;
+    const idx = tabs.findIndex(t => t.id === tabId);
+    const newTabs = tabs.filter(t => t.id !== tabId);
+    setTabs(newTabs);
+    if (tabId === activeTabId) {
+      const newActiveIdx = Math.min(idx, newTabs.length - 1);
+      const newActive = newTabs[newActiveIdx];
+      setActiveTabId(newActive.id);
+      setUrl(newActive.url);
+      setInputValue(newActive.url);
+      setShowStartPage(!newActive.url);
+      setHasError(false);
+      if (newActive.url.includes('apple.com') && newActive.url) {
+        setIsNeuralMode(true);
+        setIsProxied(true);
+      } else if (newActive.url.includes('google.com')) {
+        setIsNeuralMode(false);
+        setIsProxied(false);
+      } else {
+        setIsNeuralMode(false);
+        setIsProxied(!!newActive.url);
+      }
+    }
+  };
+
+  const getTabTitle = (tab: TabData): string => {
+    if (!tab.url) return 'Start Page';
+    try {
+      const hostname = new URL(tab.url).hostname;
+      return hostname.replace('www.', '');
+    } catch {
+      return tab.url;
     }
   };
 
@@ -91,17 +227,65 @@ export const Safari: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-zinc-950 text-black dark:text-white">
+      {/* Tab Bar */}
+      <div className="h-9 bg-[#e8e8e8] dark:bg-zinc-800 border-b border-gray-300 dark:border-white/10 flex items-center px-2 gap-0.5 overflow-x-auto shrink-0">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => switchTab(tab.id)}
+            className={`h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors shrink-0 ${
+              tab.id === activeTabId
+                ? 'bg-white dark:bg-zinc-900 text-black dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
+            }`}
+          >
+            <Shield01Icon
+              size={12}
+              className={tab.url ? 'text-blue-400' : 'text-gray-400'}
+            />
+            <span className="truncate max-w-[120px]">{getTabTitle(tab)}</span>
+            {tabs.length > 1 && (
+              <span
+                onClick={(e) => closeTab(tab.id, e)}
+                className="text-gray-400 hover:text-black dark:hover:text-white ml-0.5 shrink-0 text-sm leading-none"
+              >
+                ×
+              </span>
+            )}
+          </button>
+        ))}
+        <button
+          onClick={addTab}
+          className="h-7 w-7 rounded-md flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/5 shrink-0"
+        >
+          <PlusSignIcon size={14} />
+        </button>
+      </div>
+
       {/* Toolbar */}
-      <div className="h-14 bg-[#f6f6f6] dark:bg-zinc-900 border-b border-gray-300 dark:border-white/10 flex items-center px-4 gap-4">
+      <div className="h-14 bg-[#f6f6f6] dark:bg-zinc-900 border-b border-gray-300 dark:border-white/10 flex items-center px-4 gap-4 shrink-0">
         {/* Navigation */}
         <div className="flex gap-2">
           <button
-            onClick={() => setShowStartPage(true)}
-            className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+            onClick={goBack}
+            disabled={!canGoBack}
+            className={`transition-colors ${
+              canGoBack
+                ? 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                : 'text-gray-300 dark:text-gray-600 cursor-default'
+            }`}
           >
             <ArrowLeft01Icon size={20} className="hugeicon-golden-gate" />
           </button>
-          <button className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+          <button
+            onClick={goForward}
+            disabled={!canGoForward}
+            className={`transition-colors ${
+              canGoForward
+                ? 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                : 'text-gray-300 dark:text-gray-600 cursor-default'
+            }`}
+          >
             <ArrowRight01Icon size={20} className="hugeicon-golden-gate" />
           </button>
         </div>
@@ -145,10 +329,16 @@ export const Safari: React.FC = () => {
           <PlusSignIcon
             size={20}
             className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white cursor-pointer hugeicon-golden-gate"
+            onClick={addTab}
           />
           <DashboardSquare01Icon
             size={20}
-            className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white cursor-pointer hugeicon-golden-gate"
+            className={`cursor-pointer hugeicon-golden-gate transition-colors ${
+              showTabOverview
+                ? 'text-blue-500'
+                : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
+            }`}
+            onClick={() => setShowTabOverview(prev => !prev)}
           />
         </div>
       </div>
@@ -404,6 +594,75 @@ export const Safari: React.FC = () => {
             }
           }}
         />
+
+        {/* Tab Overview Overlay */}
+        <AnimatePresence>
+          {showTabOverview && (
+            <motion.div
+              key="tab-overview"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 z-50 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl overflow-y-auto"
+            >
+              <div className="max-w-5xl mx-auto p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-bold tracking-tight">
+                    Tab Overview
+                    <span className="ml-2 text-sm font-normal opacity-40">{tabs.length} tab{tabs.length !== 1 ? 's' : ''}</span>
+                  </h2>
+                  <button
+                    onClick={() => setShowTabOverview(false)}
+                    className="text-sm text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {tabs.map(tab => (
+                    <motion.div
+                      key={tab.id}
+                      layout
+                      onClick={() => switchTab(tab.id)}
+                      className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all hover:shadow-xl hover:scale-[1.02] ${
+                        tab.id === activeTabId
+                          ? 'border-blue-500 bg-blue-500/5'
+                          : 'border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <Shield01Icon
+                          size={18}
+                          className={tab.url ? 'text-blue-400' : 'text-gray-300 dark:text-gray-600'}
+                        />
+                        {tabs.length > 1 && (
+                          <button
+                            onClick={(e) => closeTab(tab.id, e)}
+                            className="w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-gray-300 dark:hover:bg-white/20 transition-colors text-sm"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-bold truncate">{getTabTitle(tab)}</h3>
+                      <p className="text-[11px] text-gray-400 mt-1 truncate">{tab.url || 'Start page'}</p>
+                    </motion.div>
+                  ))}
+
+                  {/* New Tab Card */}
+                  <motion.div
+                    onClick={addTab}
+                    className="rounded-2xl border-2 border-dashed border-gray-300 dark:border-white/10 p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-500 hover:bg-blue-500/5 transition-all hover:scale-[1.02] min-h-[120px]"
+                  >
+                    <PlusSignIcon size={28} className="text-gray-400" />
+                    <span className="text-xs font-medium text-gray-400">New Tab</span>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
