@@ -616,15 +616,36 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (progress >= 100) {
         clearInterval(iv);
         updateSystemState({ isUpdating: true, updateProgress: 100, updateVersion: version });
+        // "Installing update…" for 1.5s, then shutdown animation, then page reload
         setTimeout(() => {
           updateSystemState({ isUpdating: false, updateProgress: 0, updateVersion: '' });
-          initiateRestart();
+          setIsShuttingDown(true);
+          pauseSong();
+          setShowRestartDialog(false);
+          setShowAboutWindow(false);
+          setShowSpotlight(false);
+          setShowWidgetPicker(false);
+          setSystemDialog(null);
+          setShutdownStep(1);
+          setTimeout(() => setShutdownStep(2), 300);
+          setTimeout(() => {
+            setShutdownStep(3);
+            clearSystemErrors();
+            setOpenWindows([]);
+            setMinimizedWindows([]);
+            setMaximizedWindows([]);
+            setActiveWindow(null);
+          }, 600);
+          setTimeout(() => setShutdownStep(4), 900);
+          setTimeout(() => {
+            window.location.href = 'https://macos-27-golden-gate.vercel.app';
+          }, 1300);
         }, 1500);
       } else {
         updateSystemState({ updateProgress: Math.min(100, Math.round(progress)) });
       }
     }, 500);
-  }, [updateSystemState, initiateRestart]);
+  }, [updateSystemState, pauseSong, clearSystemErrors]);
 
   const initiateShutdown = useCallback(() => {
     setIsShuttingDown(true);
