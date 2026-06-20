@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { useSystem } from '../contexts/SystemContext';
 
 let APP_VERSION: string | null = null;
 
@@ -24,12 +25,6 @@ async function fetchVersion(): Promise<string | null> {
   }
 }
 
-async function checkForUpdate(): Promise<string | null> {
-  const remote = await fetchVersion();
-  if (!remote || !APP_VERSION) return null;
-  return semverCompare(remote, APP_VERSION) > 0 ? remote : null;
-}
-
 export async function getCurrentVersion(): Promise<string> {
   if (APP_VERSION) return APP_VERSION;
   const v = await fetchVersion();
@@ -37,56 +32,10 @@ export async function getCurrentVersion(): Promise<string> {
   return APP_VERSION;
 }
 
-export function useOTACheck() {
-  const [updateTarget, setUpdateTarget] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(3);
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    let mounted = true;
-    let checkTimer: ReturnType<typeof setTimeout>;
-
-    (async () => {
-      const v = await fetchVersion();
-      if (!mounted) return;
-      APP_VERSION = v || '0.0.0';
-      initialized.current = true;
-
-      // First real check after 10s — by then if version.json was updated
-      // between this load and the check, it'll be detected.
-      const scheduleCheck = () => {
-        checkTimer = setTimeout(async () => {
-          if (!mounted) return;
-          if (updateTarget) return; // already showing
-          const newer = await checkForUpdate();
-          if (!mounted) return;
-          if (newer) {
-            setUpdateTarget(newer);
-          } else {
-            scheduleCheck(); // no update yet, check again later
-          }
-        }, 10_000);
-      };
-      scheduleCheck();
-    })();
-
-    return () => {
-      mounted = false;
-      clearTimeout(checkTimer);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!updateTarget) return;
-    if (countdown <= 0) {
-      location.reload();
-      return;
-    }
-    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [updateTarget, countdown]);
-
-  return { updateTarget, countdown };
+async function checkForUpdate(): Promise<string | null> {
+  const remote = await fetchVersion();
+  if (!remote || !APP_VERSION) return null;
+  return semverCompare(remote, APP_VERSION) > 0 ? remote : null;
 }
 
 export function useManualOTACheck() {
@@ -104,55 +53,43 @@ export function useManualOTACheck() {
   return { checking, result, check, clearResult: () => setResult(null) };
 }
 
-export function OtaModal({ target, countdown, onClose }: { target: string; countdown: number; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#1c1c1e] border border-white/10 rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-5">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 12a9 9 0 1 1-9-9" />
-            <path d="M21 3v6h-6" />
-            <path d="M12 7v5l3 3" />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-white mb-2">Software Update Available</h2>
-        <p className="text-white/50 text-sm mb-1">
-          Current version: <span className="text-white font-mono">{APP_VERSION || '—'}</span>
-        </p>
-        <p className="text-white/50 text-sm mb-6">
-          Target version: <span className="text-blue-400 font-mono font-bold">{target}</span>
-        </p>
-        <p className="text-white/70 text-lg font-bold mb-2">Updating in {countdown}…</p>
-        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mb-6">
-          <div
-            className="h-full bg-blue-400 rounded-full transition-all duration-1000 ease-linear"
-            style={{ width: `${((3 - countdown) / 3) * 100}%` }}
-          />
-        </div>
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={onClose}
-            className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium text-white/70 transition-colors"
-          >
-            Remind Later
-          </button>
-          <button
-            onClick={() => location.reload()}
-            className="px-5 py-2 bg-blue-500 hover:bg-blue-600 rounded-full text-sm font-bold text-white transition-colors"
-          >
-            Update Now
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function OtaUpdateChecker() {
-  const { updateTarget, countdown } = useOTACheck();
-  const [dismissed, setDismissed] = useState(false);
+  const { startOTAUpdate } = useSystem();
+  const initDone = useRef(false);
+  const updateStarted = useRef(false);
 
-  if (!updateTarget || dismissed) return null;
+  useEffect(() => {
+    if (updateStarted.current) return;
+    let mounted = true;
+    let checkTimer: ReturnType<typeof setTimeout>;
 
-  return <OtaModal target={updateTarget} countdown={countdown} onClose={() => setDismissed(true)} />;
+    (async () => {
+      const v = await fetchVersion();
+      if (!mounted) return;
+      APP_VERSION = v || '0.0.0';
+      initDone.current = true;
+
+      const scheduleCheck = () => {
+        checkTimer = setTimeout(async () => {
+          if (!mounted || updateStarted.current) return;
+          const newer = await checkForUpdate();
+          if (!mounted || updateStarted.current) return;
+          if (newer) {
+            updateStarted.current = true;
+            startOTAUpdate(newer);
+          } else {
+            scheduleCheck();
+          }
+        }, 10_000);
+      };
+      scheduleCheck();
+    })();
+
+    return () => {
+      mounted = false;
+      clearTimeout(checkTimer);
+    };
+  }, [startOTAUpdate]);
+
+  return null;
 }

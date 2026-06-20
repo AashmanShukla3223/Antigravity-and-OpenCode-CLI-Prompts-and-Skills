@@ -342,16 +342,33 @@ export const DynamicIsland: React.FC = () => {
           <div className="flex items-center gap-3 px-4 w-full h-full">
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-              className="w-7 h-7 rounded-full border-2 border-white/30 border-t-white shrink-0"
-            />
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
+              className="w-7 h-7 shrink-0"
+            >
+              <svg viewBox="0 0 28 28" fill="none" className="w-full h-full">
+                <circle cx="14" cy="14" r="11" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" />
+                <motion.path
+                  d="M14 3A11 11 0 0 1 25 14"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeDasharray="52"
+                  strokeDashoffset="0"
+                  animate={{ strokeDashoffset: [0, -104] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                />
+                <circle cx="14" cy="3" r="2" fill="white" />
+              </svg>
+            </motion.div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-[10px] font-semibold truncate">
-                {systemState.updateProgress < 100 ? 'Downloading update...' : 'Installing update...'}
+                {systemState.updateProgress < 100
+                  ? `macOS Golden Gate ${systemState.updateVersion}`
+                  : 'Installing update…'}
               </p>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1">
                 <motion.div
-                  className="h-full bg-blue-400 rounded-full"
+                  className="h-full bg-white rounded-full"
                   animate={{ width: `${systemState.updateProgress}%` }}
                   transition={{ duration: 0.3 }}
                 />
@@ -601,25 +618,41 @@ export const DynamicIsland: React.FC = () => {
 
       case 'update':
         return (
-          <div className="flex items-center gap-3 flex-1 w-full">
+          <div className="flex items-center gap-4 flex-1 w-full">
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-              className="w-10 h-10 rounded-full border-2 border-white/30 border-t-white shrink-0"
-            />
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
+              className="w-10 h-10 shrink-0"
+            >
+              <svg viewBox="0 0 40 40" fill="none" className="w-full h-full">
+                <circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.12)" strokeWidth="3" />
+                <motion.path
+                  d="M20 4A16 16 0 0 1 36 20"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray="76"
+                  animate={{ strokeDashoffset: [0, -152] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                />
+                <circle cx="20" cy="4" r="2.5" fill="white" />
+              </svg>
+            </motion.div>
             <div className="flex-1">
               <p className="text-white text-sm font-bold">
-                {systemState.updateProgress < 100 ? 'Downloading macOS Golden Gate…' : 'Installing update…'}
+                {systemState.updateProgress < 100
+                  ? `macOS Golden Gate ${systemState.updateVersion}`
+                  : 'Installing update…'}
               </p>
               <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-2">
                 <motion.div
-                  className="h-full bg-blue-400 rounded-full"
+                  className="h-full bg-white rounded-full"
                   animate={{ width: `${systemState.updateProgress}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>
-              <p className="text-blue-300 text-[10px] font-mono font-bold mt-1">
-                {systemState.updateVersion} — {systemState.updateProgress}%
+              <p className="text-white/40 text-[10px] font-medium mt-1">
+                {systemState.updateProgress}% complete
               </p>
             </div>
           </div>
