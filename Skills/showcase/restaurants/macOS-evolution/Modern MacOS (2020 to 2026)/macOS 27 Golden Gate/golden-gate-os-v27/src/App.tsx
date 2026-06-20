@@ -10,6 +10,7 @@ import { MacOSActivation } from './components/MacOSActivation';
 import { DeviceRecovery } from './components/DeviceRecovery';
 import { StructuredData } from './components/StructuredData';
 import { usePageMetadata } from './hooks/usePageMetadata';
+import { OtaUpdateChecker } from './utils/otaUpdate';
 
 const SCHEMA_WEBAPP = {
   '@context': 'https://schema.org',
@@ -40,6 +41,7 @@ function App() {
       className={`h-full w-full ${isShuttingDown && shutdownStep >= 4 ? 'cursor-none' : isShuttingDown && shutdownStep >= 3 ? 'is-busy' : ''}`}
     >
       <DeviceRecovery />
+      <OtaUpdateChecker />
       <StructuredData id="ld-webapp-dynamic" data={SCHEMA_WEBAPP} />
       <AnimatePresence mode="wait">
         {bootState === 'booting' && <BootSequence key="boot" />}

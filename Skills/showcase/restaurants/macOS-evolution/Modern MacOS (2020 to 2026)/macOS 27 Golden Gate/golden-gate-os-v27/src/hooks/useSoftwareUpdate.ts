@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 
-export const App_Version = '27.3';
+export const App_Version = '27.3.0';
 
 function semverCompare(a: string, b: string): number {
   const pa = a.split('.').map(Number);
