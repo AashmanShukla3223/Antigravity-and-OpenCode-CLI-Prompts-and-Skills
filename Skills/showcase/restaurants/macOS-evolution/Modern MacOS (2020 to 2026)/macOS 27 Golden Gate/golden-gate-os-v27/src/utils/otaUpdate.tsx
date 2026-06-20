@@ -40,22 +40,40 @@ export async function getCurrentVersion(): Promise<string> {
 export function useOTACheck() {
   const [updateTarget, setUpdateTarget] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(3);
-  const inModal = useRef(false);
+  const initialized = useRef(false);
 
   useEffect(() => {
     let mounted = true;
+    let checkTimer: ReturnType<typeof setTimeout>;
+
     (async () => {
       const v = await fetchVersion();
       if (!mounted) return;
       APP_VERSION = v || '0.0.0';
-      const newer = await checkForUpdate();
-      if (!mounted) return;
-      if (newer) {
-        inModal.current = true;
-        setUpdateTarget(newer);
-      }
+      initialized.current = true;
+
+      // First real check after 10s — by then if version.json was updated
+      // between this load and the check, it'll be detected.
+      const scheduleCheck = () => {
+        checkTimer = setTimeout(async () => {
+          if (!mounted) return;
+          if (updateTarget) return; // already showing
+          const newer = await checkForUpdate();
+          if (!mounted) return;
+          if (newer) {
+            setUpdateTarget(newer);
+          } else {
+            scheduleCheck(); // no update yet, check again later
+          }
+        }, 10_000);
+      };
+      scheduleCheck();
     })();
-    return () => { mounted = false; };
+
+    return () => {
+      mounted = false;
+      clearTimeout(checkTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -80,8 +98,7 @@ export function useManualOTACheck() {
     setResult(null);
     const newer = await checkForUpdate();
     setChecking(false);
-    if (newer) setResult(newer);
-    else setResult(null);
+    setResult(newer);
   }, []);
 
   return { checking, result, check, clearResult: () => setResult(null) };
