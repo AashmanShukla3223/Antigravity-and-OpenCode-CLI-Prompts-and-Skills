@@ -1,6 +1,30 @@
 User-agent: *
 Allow: /
 Allow: /assets/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /wallpapers/
+Allow: /fonts/
 Disallow: /_vercel/
+Crawl-delay: 1
+
+# AI / LLM crawlers — explicitly allowed for content extraction
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: /sitemap.xml
