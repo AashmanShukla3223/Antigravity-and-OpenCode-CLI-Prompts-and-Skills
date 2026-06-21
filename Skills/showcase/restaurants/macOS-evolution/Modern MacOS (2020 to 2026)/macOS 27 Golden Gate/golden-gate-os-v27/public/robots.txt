@@ -27,4 +27,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: /sitemap.xml
+Sitemap: https://macos-27-golden-gate.vercel.app/sitemap.xml
