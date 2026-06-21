@@ -1,8 +1,8 @@
 {
-  "version": "27.3.5",
-  "build": "27A429",
-  "updateAvailable": true,
+  "version": "27.4",
+  "build": "27A430",
+  "updateAvailable": false,
   "updateUrl": "/version.json",
-  "releaseNotes": "macOS Golden Gate 27.3 brings OTA Update status in Dynamic Island, enhanced stability, and performance improvements.",
-  "release": "macOS Golden Gate 27.3 — OTA Update status in Dynamic Island, enhanced stability, and performance improvements."
+  "releaseNotes": "macOS Golden Gate 27.4 — Dynamic Island on all screens, iPhone-style battery indicators, 2s notification auto-dismiss, 52 apps, and cross-tab Continuity features.",
+  "release": "macOS Golden Gate 27.4 — Dynamic Island on all screens, iPhone-style battery indicators, 2s notification auto-dismiss, 52 apps, and cross-tab Continuity features."
 }
