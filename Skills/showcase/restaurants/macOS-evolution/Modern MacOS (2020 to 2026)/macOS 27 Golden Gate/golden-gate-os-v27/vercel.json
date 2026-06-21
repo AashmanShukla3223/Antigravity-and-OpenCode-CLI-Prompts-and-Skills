@@ -3,5 +3,13 @@
     { "source": "/version.json", "destination": "/version.json" },
     { "source": "/_vercel/(.*)", "destination": "/_vercel/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "golden-gate-os-v27.vercel.app" }],
+      "destination": "https://macos-27-golden-gate.vercel.app/$1",
+      "permanent": true
+    }
   ]
 }
