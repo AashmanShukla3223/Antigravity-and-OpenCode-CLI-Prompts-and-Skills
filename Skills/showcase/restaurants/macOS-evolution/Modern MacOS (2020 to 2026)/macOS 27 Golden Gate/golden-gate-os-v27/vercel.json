@@ -1,6 +1,10 @@
 {
   "rewrites": [
     { "source": "/version.json", "destination": "/version.json" },
+    { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+    { "source": "/llms.txt", "destination": "/llms.txt" },
+    { "source": "/llms-full.txt", "destination": "/llms-full.txt" },
     { "source": "/_vercel/(.*)", "destination": "/_vercel/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
