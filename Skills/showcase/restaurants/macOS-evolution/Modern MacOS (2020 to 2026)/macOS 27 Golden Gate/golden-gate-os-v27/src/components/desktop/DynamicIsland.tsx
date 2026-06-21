@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
 import { songs } from '../../utils/MusicData';
+import { BatteryCharging01Icon, BatteryLowIcon, BatteryFullIcon } from 'hugeicons-react';
 
 const IDLE_WIDTH = 126;
 const IDLE_STATUS_WIDTH = 200;
@@ -731,18 +732,21 @@ export const DynamicIsland: React.FC = () => {
               <div className="flex items-center gap-2">
                 {showCharging && (
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-green-400">⚡</span>
+                    <BatteryCharging01Icon size={11} className="text-green-400" />
                     <span className="text-[8px] text-green-400 font-bold">{Math.round(battery.level * 100)}%</span>
                   </div>
                 )}
                 {showLowBattery && (
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-yellow-400">⚠️</span>
-                    <span className="text-[8px] text-yellow-400 font-bold">{Math.round(battery.level * 100)}%</span>
+                    <BatteryLowIcon size={11} className="text-red-400" />
+                    <span className="text-[8px] text-red-400 font-bold">{Math.round(battery.level * 100)}%</span>
                   </div>
                 )}
-                {!hasAnyStatus && !showLowBattery && !showCharging && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#222]" />
+                {!showCharging && !showLowBattery && (
+                  <div className="flex items-center gap-1.5">
+                    <BatteryFullIcon size={11} className="text-white/60" />
+                    <span className="text-[8px] text-white/50 font-bold">{Math.round(battery.level * 100)}%</span>
+                  </div>
                 )}
               </div>
             </motion.div>
