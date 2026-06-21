@@ -34,7 +34,7 @@ interface LiveActivity {
 }
 
 export const DynamicIsland: React.FC = () => {
-  const { systemState, incomingCall, battery, updateSystemState, pauseSong, playSong, nextSong, prevSong } = useSystem();
+  const { systemState, incomingCall, battery, updateSystemState, pauseSong, playSong, nextSong, prevSong, removeNotification } = useSystem();
   const [isExpanded, setIsExpanded] = useState(false);
   const notificationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,9 +80,11 @@ export const DynamicIsland: React.FC = () => {
 
   // Auto-dismiss notification mode
   useEffect(() => {
-    if (primaryMode === 'notification' && !isExpanded) {
+    if (primaryMode === 'notification' && !isExpanded && systemState.notifications.length > 0) {
       if (notificationTimer.current) clearTimeout(notificationTimer.current);
+      const lastId = systemState.notifications[systemState.notifications.length - 1].id;
       notificationTimer.current = setTimeout(() => {
+        removeNotification(lastId);
         setIsExpanded(false);
       }, 2000);
       return;
@@ -91,7 +93,7 @@ export const DynamicIsland: React.FC = () => {
       clearTimeout(notificationTimer.current);
       notificationTimer.current = null;
     }
-  }, [primaryMode, isExpanded]);
+  }, [primaryMode, isExpanded, systemState.notifications.length]);
 
   useEffect(() => {
     return () => {
