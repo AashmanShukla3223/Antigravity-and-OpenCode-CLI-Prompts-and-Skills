@@ -84,7 +84,7 @@ export const DynamicIsland: React.FC = () => {
       if (notificationTimer.current) clearTimeout(notificationTimer.current);
       notificationTimer.current = setTimeout(() => {
         setIsExpanded(false);
-      }, 3000);
+      }, 2000);
       return;
     }
     if (primaryMode !== 'notification' && notificationTimer.current) {
