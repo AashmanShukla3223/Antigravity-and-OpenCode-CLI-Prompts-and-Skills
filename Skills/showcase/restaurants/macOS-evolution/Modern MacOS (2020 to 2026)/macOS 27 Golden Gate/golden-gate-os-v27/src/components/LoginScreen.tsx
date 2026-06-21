@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../contexts/SystemContext';
 import { BatteryCharging01Icon, BatteryFullIcon, BatteryMedium01Icon, BatteryLowIcon } from 'hugeicons-react';
 import { WallpaperEngine } from './desktop/WallpaperEngine';
-import { DynamicIsland } from './desktop/DynamicIsland';
 
 export const LoginScreen: React.FC = () => {
   const { setBootState, updateSystemState, systemState, battery, activeUser, initiateShutdown } = useSystem();
@@ -63,13 +62,17 @@ export const LoginScreen: React.FC = () => {
         fallbackImage="/wallpapers/golden-gate-dark.png"
       />
 
-      {/* Notch / Dynamic Island */}
-      {systemState.notchMode === 'dynamic' && <DynamicIsland />}
-      {systemState.notchMode === 'static' && (
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
-          <div className="w-[140px] h-[30px] bg-black rounded-b-[18px]" />
+      {/* Status-only notch */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
+        <div className="flex items-center justify-center gap-1.5 w-[140px] h-[30px] bg-black rounded-b-[18px] px-4">
+          {battery.isCharging && (
+            <BatteryCharging01Icon size={11} className="text-green-400" />
+          )}
+          {!battery.isCharging && battery.level < 0.2 && (
+            <BatteryLowIcon size={11} className="text-red-400" />
+          )}
         </div>
-      )}
+      </div>
 
       {/* Top Right: Status */}
       <div className="absolute top-8 right-8 z-10 flex items-center gap-3 text-white/80">

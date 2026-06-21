@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../contexts/SystemContext';
 import { useFileSystem } from '../contexts/FileSystemContext';
-import { GlobalIcon, ViewIcon, FlashIcon, InformationCircleIcon } from 'hugeicons-react';
-import { DynamicIsland } from './desktop/DynamicIsland';
+import { GlobalIcon, ViewIcon, FlashIcon, InformationCircleIcon, BatteryCharging01Icon, BatteryLowIcon } from 'hugeicons-react';
 
 const languages = ['hello', 'hola', 'bonjour', 'namaste', 'ciao'];
 
 export const SetupAssistant: React.FC = () => {
-  const { systemState, updateSystemState, setBootState } = useSystem();
+  const { systemState, updateSystemState, setBootState, battery } = useSystem();
   const { restoreSystemNodes } = useFileSystem();
   const [step, setStep] = useState(1);
   const [helloIndex, setHelloIndex] = useState(0);
@@ -80,13 +79,17 @@ export const SetupAssistant: React.FC = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Notch / Dynamic Island */}
-      {systemState.notchMode === 'dynamic' && <DynamicIsland />}
-      {systemState.notchMode === 'static' && (
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
-          <div className="w-[140px] h-[30px] bg-black rounded-b-[18px]" />
+      {/* Status-only notch */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
+        <div className="flex items-center justify-center gap-1.5 w-[140px] h-[30px] bg-black rounded-b-[18px] px-4">
+          {battery.isCharging && (
+            <BatteryCharging01Icon size={11} className="text-green-400" />
+          )}
+          {!battery.isCharging && battery.level < 0.2 && (
+            <BatteryLowIcon size={11} className="text-red-400" />
+          )}
         </div>
-      )}
+      </div>
 
       {/* Dynamic Background Blur - "Deep Obsidian" etc */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-[80px]" />
