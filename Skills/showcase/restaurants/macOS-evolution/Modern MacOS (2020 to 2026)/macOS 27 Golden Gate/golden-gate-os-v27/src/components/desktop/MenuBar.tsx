@@ -7,6 +7,7 @@ import { AppIcon } from '../common/AppIcon';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 import { contacts } from '../../utils/contacts';
 import { AIEngine } from '../../utils/AIEngine';
+import { App_Version } from '../../hooks/useSoftwareUpdate';
 
 interface MenuBarProps {
   toggleControlCenter: (e: React.MouseEvent) => void;
@@ -544,43 +545,6 @@ export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropP
     return items;
   };
 
-  const getAppVersion = (appId: string): string => {
-    const versions: Record<string, string> = {
-      finder: '14.0',
-      safari: '18.0',
-      messages: '16.0',
-      mail: '14.0',
-      maps: '7.0',
-      photos: '11.0',
-      facetime: '9.0',
-      phone: '5.0',
-      calendar: '12.0',
-      contacts: '14.0',
-      notes: '10.0',
-      reminders: '12.0',
-      music: '2.0',
-      tv: '3.0',
-      appstore: '8.0',
-      settings: '11.0',
-      terminal: '8.0',
-      calculator: '2.0',
-      books: '7.0',
-      wallet: '5.0',
-      stickies: '3.0',
-      'crazy-errors': '1.0',
-      'iphonemirroring': '3.0',
-      siriai: '3.0',
-      keynote: '14.0',
-      numbers: '14.0',
-      pages: '14.0',
-      github: '1.0',
-      apps: '1.0',
-      games: '2.0',
-      activity: '3.0',
-    };
-    return versions[appId] || '1.0';
-  };
-
   const getHelpMenu = () => {
     return [
       {
@@ -596,12 +560,10 @@ export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropP
       {
         label: `About ${getActiveAppName()}`,
         action: () => {
-          const app = activeApp || 'finder';
-          const ver = getAppVersion(app);
-          showAlert(`${getActiveAppName()} ${ver}
+          showAlert(`${getActiveAppName()} — v${App_Version}
 Golden Gate Edition
 Apple Silicon
-macOS Golden Gate v27.0`, `About ${getActiveAppName()}`);
+macOS Golden Gate v${App_Version}`, `About ${getActiveAppName()}`);
         },
       },
     ];
@@ -692,12 +654,11 @@ macOS Golden Gate v27.0`, `About ${getActiveAppName()}`);
           { label: 'Close Window', shortcut: '⌘W', action: () => { closeCurrentWindow(); }, disabled: !activeWindowId },
           { separator: true },
           { label: 'Get Info', shortcut: '⌘I', action: () => {
-            const app = activeApp || 'finder';
             showAlert(`Name: ${getActiveAppName()}
 Kind: Application
-Version: ${getAppVersion(app)}
+Version: v${App_Version}
 Architecture: Apple Silicon
-macOS Golden Gate v27.0`, 'Get Info');
+macOS Golden Gate v${App_Version}`, 'Get Info');
           } },
           { label: 'Empty Trash...', action: () => {
             showConfirm('Are you sure you want to permanently erase all items in the Trash?', 'Empty Trash').then((r) => {
