@@ -196,7 +196,7 @@ const defaultState: GoldenGateV27State = {
   notifications: [],
   appearance: 'auto',
   betaUpdates: false,
-  wallpaperUrl: '/wallpapers/golden-gate-dark.png',
+  wallpaperUrl: '/wallpapers/golden-gate-light.png',
   wallpaperType: 'image',
   wallpaperMode: 'static',
   isCameraOn: false,
