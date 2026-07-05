@@ -4,8 +4,7 @@ import { useFileSystem } from '../contexts/FileSystemContext';
 import { buildTools } from './tools';
 import {
   MCP_BROADCAST_CHANNEL,
-  MCP_WS_URL,
-  MCP_WS_PORT,
+  MCP_WS_PORTS,
 } from './types';
 import type { MCPToolContext, MCPToolDefinition, MCPToolRequest, MCPToolResponse } from './types';
 
@@ -142,14 +141,24 @@ export const MCPBridge = () => {
   // WebSocket bridge — for the external MCP server (desktop/terminal agents)
   useEffect(() => {
     let ws: WebSocket | null = null;
+    let portIndex = 0;
 
     const connect = () => {
+      if (portIndex >= MCP_WS_PORTS.length) {
+        // All ports tried — retry from start after 10s
+        portIndex = 0;
+        reconnectTimer.current = setTimeout(connect, 10000);
+        return;
+      }
+
+      const port = MCP_WS_PORTS[portIndex];
       try {
-        ws = new WebSocket(MCP_WS_URL);
+        ws = new WebSocket(`ws://localhost:${port}`);
         wsRef.current = ws;
 
         ws.onopen = () => {
-          console.log(`[MCP] Connected to server at ws://localhost:${MCP_WS_PORT}`);
+          portIndex = 0;
+          console.log(`[MCP] Connected to server at ws://localhost:${port}`);
         };
 
         ws.onmessage = async (event: MessageEvent) => {
@@ -181,10 +190,13 @@ export const MCPBridge = () => {
         };
 
         ws.onerror = () => {
+          // Port not available, try next
+          portIndex++;
           ws?.close();
         };
       } catch {
-        // WebSocket not available or server not running — silently degrade
+        portIndex++;
+        connect();
       }
     };
 

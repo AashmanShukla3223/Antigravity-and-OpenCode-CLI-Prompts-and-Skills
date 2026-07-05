@@ -90,7 +90,8 @@ wsReady.then(() => {
   activePort = typeof addr === 'object' && addr ? addr.port : WS_PORT;
 
   console.error(`[MCP] Waiting for browser to connect on ws://localhost:${activePort}...`);
-  console.error(`[MCP] Connect Claude Desktop to: npx @modelcontextprotocol/inspector node mcp-server/index.ts`);
+  console.error(`[MCP] Enable in Hermes via: hermes mcp add golden-gate --command npx --args tsx ${process.argv[1]}`);
+  console.error(`[MCP] Or test with: npx @modelcontextprotocol/inspector node mcp-server/index.ts`);
 
   wss.on('connection', (ws) => {
     console.error(`[MCP] Browser connected on ws://localhost:${activePort}`);
@@ -141,29 +142,37 @@ async function forwardToolCallToBrowser(
   args: Record<string, unknown>,
 ): Promise<unknown> {
   if (!browserSocket) {
-    // Browser not connected, simulate response
-    if (toolName === 'list_available_apps') {
-      return {
-        apps: [
-          'finder', 'safari', 'messages', 'mail', 'maps', 'photos',
-          'facetime', 'phone', 'calendar', 'contacts', 'notes',
-          'reminders', 'music', 'tv', 'keynote', 'numbers', 'pages',
-          'appstore', 'books', 'wallet', 'games', 'iphonemirroring',
-          'siriai', 'settings', 'terminal', 'activitymonitor',
-          'calculator', 'weather', 'clock',
-        ],
-      };
+    // Browser not connected — return meaningful fallback responses
+    switch (toolName) {
+      case 'list_available_apps':
+        return {
+          apps: [
+            'finder', 'safari', 'messages', 'mail', 'maps', 'photos',
+            'facetime', 'phone', 'calendar', 'contacts', 'notes',
+            'reminders', 'music', 'tv', 'keynote', 'numbers', 'pages',
+            'appstore', 'books', 'wallet', 'games', 'iphonemirroring',
+            'siriai', 'settings', 'terminal', 'activitymonitor',
+            'calculator', 'weather', 'clock',
+          ],
+        };
+      case 'get_system_status':
+        return {
+          bootState: 'unknown',
+          browserConnected: false,
+          message: 'No browser tab connected. Open macos-27-golden-gate.vercel.app and reload to enable full control.',
+          availableTools: 'get_system_status, list_available_apps, get_system_info',
+        };
+      case 'get_system_info':
+        return {
+          error: 'Browser not connected. Start the macOS 27 Golden Gate app and reload this page.',
+        };
+      case 'get_desktop_state':
+        return {
+          error: 'Browser not connected. Desktop state unavailable until a browser tab connects via WebSocket.',
+        };
+      default:
+        return { error: 'Browser not connected. Open the macOS 27 Golden Gate app (macos-27-golden-gate.vercel.app) in a browser tab first, then retry.' };
     }
-    if (toolName === 'get_system_info') {
-      return {
-        error: 'Browser not connected. Start the macOS 27 Golden Gate app and reload this page.',
-      };
-    }
-    // For execute actions that can't run server-side
-    if (['launch_app', 'close_app', 'shutdown', 'restart'].includes(toolName)) {
-      return { error: 'Browser not connected. Open the macOS 27 Golden Gate app in a browser tab first.' };
-    }
-    return { error: 'Browser not connected' };
   }
 
   return new Promise((resolve) => {

@@ -10,7 +10,6 @@ export type {
 } from './types';
 export {
   MCP_BROADCAST_CHANNEL,
-  MCP_WS_PORT,
-  MCP_WS_URL,
+  MCP_WS_PORTS,
   AVAILABLE_APP_IDS,
 } from './types';
