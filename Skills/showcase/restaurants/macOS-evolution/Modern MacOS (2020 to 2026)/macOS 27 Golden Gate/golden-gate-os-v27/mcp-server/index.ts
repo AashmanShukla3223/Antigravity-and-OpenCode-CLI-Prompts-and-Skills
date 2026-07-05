@@ -240,7 +240,7 @@ function handleMCPRequest(request: MCPRequest) {
                 'set_brightness, toggle_wifi, toggle_bluetooth, send_notification, ' +
                 'shutdown, restart, list_directory, read_file, create_file, ' +
                 'create_folder, delete_node, search_files, get_file_info, ' +
-                'play_music, pause_music, next_track, previous_track, set_volume. ' +
+                'play_music, pause_music, next_track, previous_track, set_volume, search_music. ' +
                 'All tools work across ALL system states (boot, setup, login, desktop, recovery, activation). ' +
                 'Use get_system_status first to see what state the system is in and which tools are available. ' +
                 'Use this tool to instruct the OS to perform any action.',

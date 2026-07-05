@@ -1,5 +1,6 @@
 import type { MCPToolDefinition, MCPToolContext, BootState } from './types';
 import { AVAILABLE_APP_IDS } from './types';
+import { songs } from '../utils/MusicData';
 
 function skipIfNotDesktop(ctx: MCPToolContext) {
   if (ctx.bootState !== 'desktop') {
@@ -662,6 +663,33 @@ export function buildTools(ctx: MCPToolContext): MCPToolDefinition[] {
         if (isNaN(v) || v < 0 || v > 1) return { error: 'volume must be 0.0 to 1.0' };
         ctx.setVolume(v);
         return { success: true, volume: v };
+      },
+    },
+
+    // ─── Music Search (desktop only) ───────────────────────────
+    {
+      name: 'search_music',
+      description: 'Search the music library by song title or artist name. Returns matching tracks with title, artist, and cover.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Search query (title or artist)' },
+        },
+        required: ['query'],
+      },
+      execute: ({ query }) => {
+        const q = String(query || '').toLowerCase().trim();
+        if (!q) return { results: [], total: 0 };
+        const results = songs
+          .filter((s) => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q))
+          .map((s, i) => ({
+            id: s.id,
+            index: songs.findIndex((x) => x.id === s.id),
+            title: s.title,
+            artist: s.artist,
+            cover: s.cover,
+          }));
+        return { results, total: results.length, query };
       },
     },
   ];

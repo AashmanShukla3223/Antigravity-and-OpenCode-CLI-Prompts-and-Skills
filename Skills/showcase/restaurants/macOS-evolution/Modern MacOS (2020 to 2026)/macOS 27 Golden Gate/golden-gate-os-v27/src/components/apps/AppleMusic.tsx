@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext';
 import { songs } from '../../utils/MusicData';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PlayIcon, PauseIcon, ArrowRight01Icon, ArrowLeft01Icon, VolumeHighIcon } from 'hugeicons-react';
+import { Search, X } from 'lucide-react';
 import { ImportFileButton, useFileDrop } from '../../utils/vfs-ops';
 
 const AUDIO_EXTS = ['mp3', 'wav', 'aac', 'ogg', 'flac'];
@@ -12,11 +13,22 @@ export const AppleMusic: React.FC = () => {
   const { systemState, playSong, pauseSong, nextSong, prevSong, setVolume, updatePlaybackProgress } = useSystem();
   const { nodes, createNode } = useFileSystem();
   const [unlocked, setUnlocked] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
   const vfsAudioRef = useRef<HTMLAudioElement | null>(null);
   const [vfsPlaying, setVfsPlaying] = useState<string | null>(null);
 
   const { currentSongIndex, isPlaying, playbackProgress, volume } = systemState.music;
   const currentSong = songs[currentSongIndex] || songs[0];
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return songs.filter(
+      (s) => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q),
+    );
+  }, [searchQuery]);
 
   useEffect(() => {
     const checkUnlocked = () => {
@@ -26,6 +38,12 @@ export const AppleMusic: React.FC = () => {
     window.addEventListener('storage', checkUnlocked);
     return () => window.removeEventListener('storage', checkUnlocked);
   }, []);
+
+  useEffect(() => {
+    if (showSearch && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [showSearch]);
 
   const vfsAudioFiles = useMemo(() => {
     return nodes.filter((n) => {
@@ -57,17 +75,143 @@ export const AppleMusic: React.FC = () => {
     setVfsPlaying(null);
   }, []);
 
+  const selectSearchResult = useCallback(
+    (index: number) => {
+      if (unlocked) {
+        stopVfsTrack();
+        playSong(index);
+        setShowSearch(false);
+        setSearchQuery('');
+      }
+    },
+    [unlocked, stopVfsTrack, playSong],
+  );
+
   useFileDrop(createNode, 'music', '.mp3,.wav,.aac,.ogg,.flac');
 
   return (
-    <div className="flex flex-col h-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-white overflow-hidden">
+    <div className="flex flex-col h-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-white overflow-hidden relative">
       {!unlocked && (
-        <div className="p-4 bg-red-500 text-white text-center text-xs font-black uppercase tracking-widest animate-pulse z-20">
+        <div className="p-4 bg-red-500 text-white text-center text-xs font-black uppercase tracking-widest animate-pulse z-30">
           Music Locked. Visit iTunes Store to Unlock.
         </div>
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
+      {/* ─── Search Header ─────────────────────────────── */}
+      <div className="flex items-center gap-2 px-4 pt-3 pb-1 z-20">
+        <div className="flex-1 relative">
+          <div
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+              showSearch
+                ? 'bg-white/90 dark:bg-zinc-800/90 ring-2 ring-red-500/50 shadow-lg'
+                : 'bg-zinc-100/80 dark:bg-zinc-800/50 hover:bg-zinc-200/80 dark:hover:bg-zinc-700/50'
+            }`}
+          >
+            <Search size={16} className="text-zinc-400 shrink-0" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search songs, artists..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (!showSearch) setShowSearch(true);
+              }}
+              onFocus={() => setShowSearch(true)}
+              className="flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setShowSearch(false);
+                }}
+                className="p-0.5 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full transition-colors"
+              >
+                <X size={14} className="text-zinc-400" />
+              </button>
+            )}
+          </div>
+        </div>
+        <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav,.aac,.ogg,.flac" />
+      </div>
+
+      {/* ─── Search Results Pop-up ─────────────────────── */}
+      <AnimatePresence>
+        {showSearch && searchResults.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="absolute top-[72px] left-3 right-3 z-50 max-h-[60vh] overflow-y-auto rounded-2xl border border-white/20 dark:border-white/10 shadow-2xl"
+            style={{
+              backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
+              background: 'rgba(255,255,255,0.7)',
+            }}
+          >
+            <div
+              className="dark:bg-zinc-900/70 rounded-2xl overflow-hidden"
+              style={
+                { background: 'rgba(24,24,27,0.7)' }
+              }
+            >
+              <div className="px-4 py-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-b border-white/5">
+                Top Results
+              </div>
+              {searchResults.map((s, i) => {
+                const globalIndex = songs.findIndex((x) => x.id === s.id);
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => selectSearchResult(globalIndex)}
+                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-all hover:bg-white/10 active:bg-white/5"
+                  >
+                    <img
+                      src={s.cover}
+                      className="w-10 h-10 rounded-xl shadow-md shrink-0"
+                      alt={s.title}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold truncate text-white drop-shadow-sm">
+                        {s.title}
+                      </div>
+                      <div className="text-xs text-zinc-400 truncate">{s.artist}</div>
+                    </div>
+                    {currentSongIndex === globalIndex && isPlaying && (
+                      <div className="flex gap-0.5 items-end h-3 mr-1">
+                        {[1, 2, 3].map((i) => (
+                          <motion.div
+                            key={i}
+                            animate={{ height: [4, 12, 6, 10, 4] }}
+                            transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                            className="w-0.5 bg-red-500 rounded-full"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Overlay backdrop when search is active ────── */}
+      {showSearch && searchResults.length > 0 && (
+        <div
+          className="absolute inset-0 z-40"
+          onClick={() => {
+            setShowSearch(false);
+            setSearchQuery('');
+          }}
+        />
+      )}
+
+      {/* ─── Main Player ───────────────────────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto scrollbar-hide">
         <div className="relative mb-8 group">
           <img
             src={currentSong.cover}
@@ -148,10 +292,10 @@ export const AppleMusic: React.FC = () => {
         </div>
       </div>
 
+      {/* ─── Song Catalog ──────────────────────────────── */}
       <div className="h-48 border-t border-zinc-100 dark:border-zinc-800 overflow-y-auto bg-zinc-50/50 dark:bg-black/20 p-2 scrollbar-hide">
         <div className="flex items-center justify-between px-2 py-1">
           <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Apple Music Catalog</span>
-          <ImportFileButton createNode={createNode} parentId="music" accept=".mp3,.wav,.aac,.ogg,.flac" />
         </div>
         {songs.map((s, i) => (
           <div
