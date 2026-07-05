@@ -160,7 +160,7 @@ export const AppleMusic: React.FC = () => {
               <div className="px-4 py-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-b border-white/5">
                 Top Results
               </div>
-              {searchResults.map((s, i) => {
+              {searchResults.map((s) => {
                 const globalIndex = songs.findIndex((x) => x.id === s.id);
                 return (
                   <div

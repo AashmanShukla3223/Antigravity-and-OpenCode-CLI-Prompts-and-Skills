@@ -682,7 +682,7 @@ export function buildTools(ctx: MCPToolContext): MCPToolDefinition[] {
         if (!q) return { results: [], total: 0 };
         const results = songs
           .filter((s) => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q))
-          .map((s, i) => ({
+          .map((s) => ({
             id: s.id,
             index: songs.findIndex((x) => x.id === s.id),
             title: s.title,
