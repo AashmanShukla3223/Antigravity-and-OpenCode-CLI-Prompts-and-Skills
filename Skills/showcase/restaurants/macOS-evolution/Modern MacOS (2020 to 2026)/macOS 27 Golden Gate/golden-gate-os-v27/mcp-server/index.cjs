@@ -1,62 +1,35 @@
 /**
- * macOS 27 Golden Gate — MCP Server (Node.js)
+ * macOS 27 Golden Gate — MCP Server (Node.js, CommonJS)
  *
- * Bridges between MCP clients (Claude Desktop, Cursor, etc.) via stdio
+ * Bridges between MCP clients (Hermes CLI/Telegram) via stdio
  * and the browser app via WebSocket.
  *
- * Run: npm run mcp-server
- *     (or: npx tsx mcp-server/index.ts)
+ * Run: node mcp-server/index.cjs
  */
 
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
-import { writeFileSync } from 'fs';
+const { createServer } = require('http');
+const { WebSocketServer } = require('ws');
+const { writeFileSync } = require('fs');
 
 const WS_PORT = 9876;
 const SERVER_NAME = 'macOS 27 Golden Gate';
 const SERVER_VERSION = '1.0.0';
 const PROTOCOL_VERSION = '2024-11-05';
 
-// ─── Types ───────────────────────────────────────────────────────
-
-interface ToolDef {
-  name: string;
-  description: string;
-  inputSchema: {
-    type: string;
-    properties: Record<string, unknown>;
-    required?: string[];
-  };
-}
-
-interface MCPRequest {
-  jsonrpc: string;
-  id?: number | string;
-  method: string;
-  params?: Record<string, unknown>;
-}
-
-interface MCPResponse {
-  jsonrpc: string;
-  id: number | string | null;
-  result?: unknown;
-  error?: { code: number; message: string };
-}
-
 // ─── State ───────────────────────────────────────────────────────
 
-let browserSocket: import('ws').WebSocket | null = null;
-let queuedMessages: string[] = [];
-const pendingToolCalls = new Map<string, (result: unknown) => void>();
+let browserSocket = null;
+let queuedMessages = [];
+const pendingToolCalls = new Map();
 let toolRequestIdCounter = 0;
 
 // ─── WebSocket Server ────────────────────────────────────────────
 
-let wss: WebSocketServer;
+let wss;
 
-async function startWSServer(): Promise<void> {
+function startWSServer() {
   return new Promise((resolve) => {
-    function tryPort(port: number) {
+    function tryPort(port) {
       if (port > WS_PORT + 10) {
         console.error(`[MCP] No available ports found — browser bridge disabled`);
         resolve();
@@ -68,14 +41,14 @@ async function startWSServer(): Promise<void> {
         console.error(`[MCP] WebSocket server listening on ws://localhost:${port}`);
         resolve();
       });
-      server.on('error', (err: any) => {
+      server.on('error', (err) => {
         if (err.code === 'EADDRINUSE') {
           server.close();
           console.error(`[MCP] Port ${port} in use, trying ${port + 1}...`);
           tryPort(port + 1);
         } else {
           console.error(`[MCP] WebSocket error:`, err);
-          resolve(); // continue without WS
+          resolve();
         }
       });
     }
@@ -83,10 +56,9 @@ async function startWSServer(): Promise<void> {
   });
 }
 
-const wsReady = startWSServer();
 let activePort = WS_PORT;
 
-wsReady.then(() => {
+startWSServer().then(() => {
   if (!wss) {
     console.error(`[MCP] WebSocket server not available — browser bridge disabled`);
     return;
@@ -95,8 +67,8 @@ wsReady.then(() => {
   activePort = typeof addr === 'object' && addr ? addr.port : WS_PORT;
 
   console.error(`[MCP] Waiting for browser to connect on ws://localhost:${activePort}...`);
-  console.error(`[MCP] Enable in Hermes via: hermes mcp add golden-gate --command npx --args tsx ${process.argv[1]}`);
-  console.error(`[MCP] Or test with: npx @modelcontextprotocol/inspector node mcp-server/index.ts`);
+  console.error(`[MCP] Enable in Hermes via: hermes mcp add golden-gate --command node --args ${__filename}`);
+  console.error(`[MCP] Or test with: npx @modelcontextprotocol/inspector node ${__filename}`);
 
   wss.on('connection', (ws) => {
     console.error(`[MCP] Browser connected on ws://localhost:${activePort}`);
@@ -108,7 +80,7 @@ wsReady.then(() => {
     queuedMessages = [];
 
     ws.on('message', (raw) => {
-      let data: any;
+      let data;
       try { data = JSON.parse(raw.toString()); } catch { return; }
 
       if (data.type === 'register') {
@@ -134,20 +106,16 @@ wsReady.then(() => {
 
 // ─── Stdio MCP Protocol (JSON-RPC 2.0) ───────────────────────────
 
-function sendMCPResponse(response: MCPResponse) {
+function sendMCPResponse(response) {
   writeFileSync(process.stdout.fd, JSON.stringify(response) + '\n');
 }
 
-function sendMCPError(id: number | string | null, code: number, message: string) {
+function sendMCPError(id, code, message) {
   sendMCPResponse({ jsonrpc: '2.0', id: id ?? 0, error: { code, message } });
 }
 
-async function forwardToolCallToBrowser(
-  toolName: string,
-  args: Record<string, unknown>,
-): Promise<unknown> {
+async function forwardToolCallToBrowser(toolName, args) {
   if (!browserSocket) {
-    // Browser not connected — return meaningful fallback responses
     switch (toolName) {
       case 'list_available_apps':
         return {
@@ -185,9 +153,8 @@ async function forwardToolCallToBrowser(
     pendingToolCalls.set(requestId, resolve);
 
     const message = JSON.stringify({ id: requestId, tool: toolName, params: args });
-    browserSocket!.send(message);
+    browserSocket.send(message);
 
-    // Safety timeout
     setTimeout(() => {
       if (pendingToolCalls.has(requestId)) {
         pendingToolCalls.delete(requestId);
@@ -197,12 +164,12 @@ async function forwardToolCallToBrowser(
   });
 }
 
-function handleMCPRequest(request: MCPRequest) {
+function handleMCPRequest(request) {
   const id = request.id ?? null;
 
   switch (request.method) {
     case 'initialize': {
-      const clientInfo = (request.params as any)?.clientInfo;
+      const clientInfo = request.params?.clientInfo;
       console.error(`[MCP] Client connected: ${clientInfo?.name || 'unknown'} v${clientInfo?.version || '?'}`);
       sendMCPResponse({
         jsonrpc: '2.0',
@@ -217,13 +184,10 @@ function handleMCPRequest(request: MCPRequest) {
     }
 
     case 'notifications/initialized': {
-      // Client ready — no response needed
       break;
     }
 
     case 'tools/list': {
-      // Return a single proxy tool that forwards to the browser
-      // The browser registers all its tools on connection
       sendMCPResponse({
         jsonrpc: '2.0',
         id,
@@ -266,13 +230,13 @@ function handleMCPRequest(request: MCPRequest) {
     }
 
     case 'tools/call': {
-      const params = request.params as any;
-      const toolName = params?.name as string;
-      const args = (params?.arguments as Record<string, unknown>) || {};
+      const params = request.params;
+      const toolName = params?.name;
+      const args = params?.arguments || {};
 
       if (toolName === 'execute_os_tool') {
-        const innerName = args.name as string;
-        const innerArgs = (args.arguments as Record<string, unknown>) || {};
+        const innerName = args.name;
+        const innerArgs = args.arguments || {};
         forwardToolCallToBrowser(innerName, innerArgs)
           .then((result) => {
             sendMCPResponse({
@@ -313,7 +277,7 @@ function handleMCPRequest(request: MCPRequest) {
 // ─── Read JSON-RPC 2.0 from stdin ────────────────────────────────
 
 let buffer = '';
-process.stdin.on('data', (chunk: Buffer) => {
+process.stdin.on('data', (chunk) => {
   buffer += chunk.toString();
   const lines = buffer.split('\n');
   buffer = lines.pop() || '';
@@ -322,7 +286,7 @@ process.stdin.on('data', (chunk: Buffer) => {
     const trimmed = line.trim();
     if (!trimmed) continue;
     try {
-      const request = JSON.parse(trimmed) as MCPRequest;
+      const request = JSON.parse(trimmed);
       handleMCPRequest(request);
     } catch {
       sendMCPError(0, -32700, 'Parse error');
