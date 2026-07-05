@@ -11,7 +11,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "mcp-server": "cd mcp-server && npx tsx index.ts"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

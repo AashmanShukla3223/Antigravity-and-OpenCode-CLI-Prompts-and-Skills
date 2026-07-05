@@ -5,6 +5,8 @@ import { BootSequence } from './components/BootSequence';
 import { SetupAssistant } from './components/SetupAssistant';
 import { LoginScreen } from './components/LoginScreen';
 import { Desktop } from './components/desktop/Desktop';
+import { WebMCPTools } from './mcp/WebMCPTools';
+import { MCPBridge } from './mcp/MCPBridge';
 import { MacOSRecovery } from './components/MacOSRecovery';
 import { MacOSActivation } from './components/MacOSActivation';
 import { DeviceRecovery } from './components/DeviceRecovery';
@@ -42,6 +44,8 @@ function App() {
     >
       <DeviceRecovery />
       <OtaUpdateChecker />
+      <WebMCPTools />
+      <MCPBridge />
       <StructuredData id="ld-webapp-dynamic" data={SCHEMA_WEBAPP} />
       <AnimatePresence mode="wait">
         {bootState === 'booting' && <BootSequence key="boot" />}
