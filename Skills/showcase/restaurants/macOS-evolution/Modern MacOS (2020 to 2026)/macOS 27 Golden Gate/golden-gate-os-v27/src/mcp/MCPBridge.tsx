@@ -5,6 +5,7 @@ import { buildTools } from './tools';
 import {
   MCP_BROADCAST_CHANNEL,
   MCP_WS_PORTS,
+  MCP_WSS_PORT_OFFSET,
 } from './types';
 import type { MCPToolContext, MCPToolDefinition, MCPToolRequest, MCPToolResponse } from './types';
 
@@ -141,62 +142,78 @@ export const MCPBridge = () => {
   // WebSocket bridge — for the external MCP server (desktop/terminal agents)
   useEffect(() => {
     let ws: WebSocket | null = null;
-    let portIndex = 0;
+    const isHttps = window.location.protocol === 'https:';
 
     const connect = () => {
-      if (portIndex >= MCP_WS_PORTS.length) {
-        // All ports tried — retry from start after 10s
-        portIndex = 0;
-        reconnectTimer.current = setTimeout(connect, 10000);
-        return;
+      // Build list of URLs to try: for each port, try ws and optionally wss
+      const urls: string[] = [];
+      for (const port of MCP_WS_PORTS) {
+        urls.push(`ws://localhost:${port}`);
+        if (isHttps) {
+          urls.push(`wss://localhost:${port + MCP_WSS_PORT_OFFSET}`);
+        }
       }
 
-      const port = MCP_WS_PORTS[portIndex];
-      try {
-        ws = new WebSocket(`ws://localhost:${port}`);
-        wsRef.current = ws;
+      let urlIndex = 0;
 
-        ws.onopen = () => {
-          portIndex = 0;
-          console.log(`[MCP] Connected to server at ws://localhost:${port}`);
-        };
+      const tryNext = () => {
+        if (urlIndex >= urls.length) {
+          reconnectTimer.current = setTimeout(connect, 10000);
+          return;
+        }
 
-        ws.onmessage = async (event: MessageEvent) => {
-          try {
-            const data = JSON.parse(event.data) as MCPToolRequest | MCPToolResponse;
+        const url = urls[urlIndex];
 
-            if ('result' in data || 'error' in data) {
-              const pending = pendingRef.current.get(data.id);
-              if (pending) {
-                pending.resolve(data);
-                pendingRef.current.delete(data.id);
+        try {
+          ws = new WebSocket(url);
+          wsRef.current = ws;
+
+          ws.onopen = () => {
+            urlIndex = 0;
+            console.log(`[MCP] Connected to server at ${url}`);
+          };
+
+          ws.onmessage = async (event: MessageEvent) => {
+            try {
+              const data = JSON.parse(event.data as string) as MCPToolRequest | MCPToolResponse;
+
+              if ('result' in data || 'error' in data) {
+                const pending = pendingRef.current.get(data.id);
+                if (pending) {
+                  pending.resolve(data);
+                  pendingRef.current.delete(data.id);
+                }
+                return;
               }
-              return;
+
+              if ('tool' in data) {
+                const response = await handleToolRequest(data);
+                ws?.send(JSON.stringify(response));
+              }
+            } catch {
+              // JSON parse error
             }
+          };
 
-            if ('tool' in data) {
-              const response = await handleToolRequest(data);
-              ws?.send(JSON.stringify(response));
-            }
-          } catch {
-            // JSON parse error
-          }
-        };
+          ws.onclose = () => {
+            wsRef.current = null;
+            reconnectTimer.current = setTimeout(connect, 5000);
+          };
 
-        ws.onclose = () => {
-          wsRef.current = null;
-          // Reconnect after 5s if not intentional
-          reconnectTimer.current = setTimeout(connect, 5000);
-        };
+          ws.onerror = () => {
+            urlIndex++;
+            ws?.close();
+          };
+        } catch {
+          urlIndex++;
+          tryNext();
+        }
+      };
 
-        ws.onerror = () => {
-          // Port not available, try next
-          portIndex++;
-          ws?.close();
-        };
-      } catch {
-        portIndex++;
-        connect();
+      tryNext();
+    };
+
+    connect();
       }
     };
 

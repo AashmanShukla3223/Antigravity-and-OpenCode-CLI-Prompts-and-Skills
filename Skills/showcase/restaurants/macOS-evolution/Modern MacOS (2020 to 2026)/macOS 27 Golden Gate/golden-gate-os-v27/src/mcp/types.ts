@@ -116,6 +116,7 @@ export interface MCPToolContext {
 
 export const MCP_BROADCAST_CHANNEL = 'golden-gate-mcp';
 export const MCP_WS_PORTS = [9876, 9877, 9878, 9879];
+export const MCP_WSS_PORT_OFFSET = 100;
 
 export const AVAILABLE_APP_IDS = [
   'finder', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime',

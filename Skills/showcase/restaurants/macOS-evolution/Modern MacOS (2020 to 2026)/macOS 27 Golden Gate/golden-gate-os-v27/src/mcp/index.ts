@@ -11,5 +11,6 @@ export type {
 export {
   MCP_BROADCAST_CHANNEL,
   MCP_WS_PORTS,
+  MCP_WSS_PORT_OFFSET,
   AVAILABLE_APP_IDS,
 } from './types';

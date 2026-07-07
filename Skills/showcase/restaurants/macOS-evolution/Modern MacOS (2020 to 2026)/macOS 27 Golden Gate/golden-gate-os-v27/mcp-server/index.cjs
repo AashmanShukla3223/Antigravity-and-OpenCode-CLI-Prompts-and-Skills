@@ -8,13 +8,41 @@
  */
 
 const { createServer } = require('http');
+const { createServer: createHttpsServer } = require('https');
 const { WebSocketServer } = require('ws');
-const { writeFileSync } = require('fs');
+const { writeFileSync, readFileSync, existsSync, mkdirSync } = require('fs');
+const { execSync } = require('child_process');
+const path = require('path');
 
 const WS_PORT = 9876;
 const SERVER_NAME = 'macOS 27 Golden Gate';
 const SERVER_VERSION = '1.0.0';
 const PROTOCOL_VERSION = '2024-11-05';
+const CERT_DIR = path.join(require('os').homedir(), '.golden-gate-mcp');
+
+// ─── Self-signed TLS Certificate ──────────────────────────────────
+
+function ensureCert() {
+  const keyPath = path.join(CERT_DIR, 'server.key');
+  const certPath = path.join(CERT_DIR, 'server.crt');
+  if (existsSync(keyPath) && existsSync(certPath)) {
+    return { key: readFileSync(keyPath), cert: readFileSync(certPath) };
+  }
+  try {
+    mkdirSync(CERT_DIR, { recursive: true });
+    execSync(
+      `openssl req -x509 -newkey rsa:2048 -keyout "${keyPath}" -out "${certPath}" -days 3650 -nodes -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' 2>/dev/null`,
+      { stdio: 'ignore', timeout: 10000 },
+    );
+    console.error(`[MCP] Generated self-signed cert at ${CERT_DIR}`);
+    return { key: readFileSync(keyPath), cert: readFileSync(certPath) };
+  } catch {
+    console.error(`[MCP] Could not generate TLS cert — WSS not available`);
+    return null;
+  }
+}
+
+const tls = ensureCert();
 
 // ─── State ───────────────────────────────────────────────────────
 
@@ -23,22 +51,38 @@ let queuedMessages = [];
 const pendingToolCalls = new Map();
 let toolRequestIdCounter = 0;
 
-// ─── WebSocket Server ────────────────────────────────────────────
+// ─── WebSocket Servers ───────────────────────────────────────────
 
 let wss;
+let wssServer; // secure WSS server instance
+let securePort = null;
 
 function startWSServer() {
   return new Promise((resolve) => {
     function tryPort(port) {
       if (port > WS_PORT + 10) {
-        console.error(`[MCP] No available ports found — browser bridge disabled`);
+        console.error(`[MCP] No available WS ports found — browser bridge disabled`);
         resolve();
         return;
       }
+      // Plain WS (for HTTP pages — local dev server)
       const server = new WebSocketServer({ port });
       server.on('listening', () => {
         wss = server;
-        console.error(`[MCP] WebSocket server listening on ws://localhost:${port}`);
+        console.error(`[MCP] WS server listening on ws://localhost:${port}`);
+        server.on('connection', handleWsConnection);
+        // Secure WSS on port+100 (for HTTPS pages — Vercel)
+        if (tls) {
+          const sp = port + 100;
+          const httpsServer = createHttpsServer({ key: tls.key, cert: tls.cert });
+          securePort = sp;
+          wssServer = new WebSocketServer({ server: httpsServer });
+          httpsServer.listen(sp, () => {
+            console.error(`[MCP] WSS server listening on wss://localhost:${sp}`);
+          });
+          wssServer.on('connection', handleWsConnection);
+          httpsServer.on('error', () => {});
+        }
         resolve();
       });
       server.on('error', (err) => {
@@ -56,6 +100,39 @@ function startWSServer() {
   });
 }
 
+function handleWsConnection(ws) {
+  console.error(`[MCP] Browser connected`);
+  browserSocket = ws;
+
+  for (const msg of queuedMessages) {
+    try { ws.send(msg); } catch { /* ignore */ }
+  }
+  queuedMessages = [];
+
+  ws.on('message', (raw) => {
+    let data;
+    try { data = JSON.parse(raw.toString()); } catch { return; }
+
+    if (data.type === 'register') {
+      console.error(`[MCP] Browser registered ${data.tools?.length || 0} tools`);
+      return;
+    }
+
+    if (data.id && ('result' in data || 'error' in data)) {
+      const handler = pendingToolCalls.get(String(data.id));
+      if (handler) {
+        handler(data);
+        pendingToolCalls.delete(String(data.id));
+      }
+    }
+  });
+
+  ws.on('close', () => {
+    console.error('[MCP] Browser disconnected');
+    browserSocket = null;
+  });
+}
+
 let activePort = WS_PORT;
 
 startWSServer().then(() => {
@@ -67,41 +144,11 @@ startWSServer().then(() => {
   activePort = typeof addr === 'object' && addr ? addr.port : WS_PORT;
 
   console.error(`[MCP] Waiting for browser to connect on ws://localhost:${activePort}...`);
+  if (securePort) {
+    console.error(`[MCP]   also on wss://localhost:${securePort} (for HTTPS pages)`);
+  }
   console.error(`[MCP] Enable in Hermes via: hermes mcp add golden-gate --command node --args ${__filename}`);
   console.error(`[MCP] Or test with: npx @modelcontextprotocol/inspector node ${__filename}`);
-
-  wss.on('connection', (ws) => {
-    console.error(`[MCP] Browser connected on ws://localhost:${activePort}`);
-    browserSocket = ws;
-
-    for (const msg of queuedMessages) {
-      try { ws.send(msg); } catch { /* ignore */ }
-    }
-    queuedMessages = [];
-
-    ws.on('message', (raw) => {
-      let data;
-      try { data = JSON.parse(raw.toString()); } catch { return; }
-
-      if (data.type === 'register') {
-        console.error(`[MCP] Browser registered ${data.tools?.length || 0} tools`);
-        return;
-      }
-
-      if (data.id && ('result' in data || 'error' in data)) {
-        const handler = pendingToolCalls.get(String(data.id));
-        if (handler) {
-          handler(data);
-          pendingToolCalls.delete(String(data.id));
-        }
-      }
-    });
-
-    ws.on('close', () => {
-      console.error('[MCP] Browser disconnected');
-      browserSocket = null;
-    });
-  });
 });
 
 // ─── Stdio MCP Protocol (JSON-RPC 2.0) ───────────────────────────
