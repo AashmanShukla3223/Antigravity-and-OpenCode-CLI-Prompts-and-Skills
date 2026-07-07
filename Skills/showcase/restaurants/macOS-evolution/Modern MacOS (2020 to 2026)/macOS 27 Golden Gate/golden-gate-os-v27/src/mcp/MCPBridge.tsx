@@ -214,10 +214,6 @@ export const MCPBridge = () => {
     };
 
     connect();
-      }
-    };
-
-    connect();
 
     return () => {
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
