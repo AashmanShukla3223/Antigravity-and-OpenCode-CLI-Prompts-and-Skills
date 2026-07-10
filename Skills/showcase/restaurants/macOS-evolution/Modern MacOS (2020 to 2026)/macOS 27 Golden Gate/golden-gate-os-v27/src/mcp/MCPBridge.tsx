@@ -168,7 +168,7 @@ export const MCPBridge = () => {
         wsRef.current.send(raw);
       } else if (bridgeSourceRef.current) {
         try {
-          bridgeSourceRef.current.postMessage(JSON.parse(raw), '*');
+          bridgeSourceRef.current.postMessage(JSON.parse(raw), { targetOrigin: '*' });
         } catch { /* ignore */ }
       }
     }
