@@ -180,7 +180,7 @@ export const MCPBridge = () => {
 
       const tryNext = () => {
         if (urlIndex >= MCP_WS_PORTS.length) {
-          reconnectTimer.current = setTimeout(connectDirectWS, 10000);
+          console.log('[MCP] Local WebSocket unavailable — MCP features require a local dev server. Run: npm run mcp-server');
           return;
         }
 
@@ -199,7 +199,6 @@ export const MCPBridge = () => {
 
           ws.onclose = () => {
             wsRef.current = null;
-            reconnectTimer.current = setTimeout(connectDirectWS, 5000);
           };
 
           ws.onerror = () => {
@@ -232,7 +231,7 @@ export const MCPBridge = () => {
 
       const tryNext = () => {
         if (portIndex >= MCP_WS_PORTS.length) {
-          reconnectTimer.current = setTimeout(connectViaIframe, 10000);
+          console.log('[MCP] Local network bridge unavailable — MCP features require a local dev server. Run: npm run mcp-server');
           return;
         }
 
@@ -245,10 +244,20 @@ export const MCPBridge = () => {
         iframe.src = `http://localhost:${port}/bridge.html#${port}`;
         currentIframe = iframe;
         bridgeIframeRef.current = iframe;
-        document.body.appendChild(iframe);
+
+        iframe.onerror = () => {
+          console.warn(`[MCP] Local network request to localhost:${port} blocked by browser. Grant local network permission or run MCP server locally.`);
+          tryNext();
+        };
+
+        try {
+          document.body.appendChild(iframe);
+        } catch {
+          console.warn(`[MCP] Cannot create bridge iframe — local network access blocked.`);
+          return;
+        }
 
         portDiscoverTimer.current = setTimeout(() => {
-          // No response from this port — try next
           tryNext();
         }, 3000);
       };

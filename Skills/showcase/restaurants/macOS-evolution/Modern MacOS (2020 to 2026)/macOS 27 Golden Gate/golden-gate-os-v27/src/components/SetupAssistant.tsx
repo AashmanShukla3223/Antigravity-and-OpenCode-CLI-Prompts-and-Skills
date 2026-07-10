@@ -259,11 +259,15 @@ export const SetupAssistant: React.FC = () => {
               <h2 className="text-3xl font-semibold mb-4">Sign in to the Evolution</h2>
               <p className="mb-8 opacity-70">Use your Apple Account to access all Golden Gate features.</p>
               <input
+                id="setup-apple-id"
+                name="appleId"
                 type="text"
                 placeholder="Apple ID"
                 className="w-full p-4 mb-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 outline-none"
               />
               <input
+                id="setup-password"
+                name="password"
                 type="password"
                 placeholder="Password"
                 className="w-full p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 outline-none"
@@ -354,6 +358,8 @@ export const SetupAssistant: React.FC = () => {
                       Full Name
                     </label>
                     <input
+                      id="setup-fullname"
+                      name="fullName"
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -367,6 +373,8 @@ export const SetupAssistant: React.FC = () => {
                       Account Name
                     </label>
                     <input
+                      id="setup-accountname"
+                      name="accountName"
                       type="text"
                       value={accountName}
                       onChange={(e) => setAccountName(e.target.value.toLowerCase().replace(/\s/g, ''))}
@@ -380,6 +388,8 @@ export const SetupAssistant: React.FC = () => {
                       Password
                     </label>
                     <input
+                      id="setup-createpassword"
+                      name="newPassword"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}

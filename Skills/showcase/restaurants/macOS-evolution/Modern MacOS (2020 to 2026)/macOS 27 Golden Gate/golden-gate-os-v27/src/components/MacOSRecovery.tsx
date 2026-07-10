@@ -203,6 +203,8 @@ export const MacOSRecovery: React.FC = () => {
               Enter the password for "{username}" to unlock the disk.
             </p>
             <input
+              id="recovery-password"
+              name="recoveryPassword"
               type="password"
               autoFocus
               value={password}

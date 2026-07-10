@@ -178,6 +178,8 @@ export const LoginScreen: React.FC = () => {
           {!isLoggingIn ? (
             <>
               <input
+                id="login-password"
+                name="password"
                 type="password"
                 placeholder="Enter Password"
                 value={password}
