@@ -2,47 +2,34 @@
  * macOS 27 Golden Gate — MCP Server (Node.js, CommonJS)
  *
  * Bridges between MCP clients (Hermes CLI/Telegram) via stdio
- * and the browser app via WebSocket.
+ * and the browser app via WebSocket (+ HTTP bridge for HTTPS pages).
  *
  * Run: node mcp-server/index.cjs
  */
 
 const { createServer } = require('http');
-const { createServer: createHttpsServer } = require('https');
 const { WebSocketServer } = require('ws');
-const { writeFileSync, readFileSync, existsSync, mkdirSync } = require('fs');
-const { execSync } = require('child_process');
+const { writeFileSync, readFileSync } = require('fs');
 const path = require('path');
 
 const WS_PORT = 9876;
 const SERVER_NAME = 'macOS 27 Golden Gate';
 const SERVER_VERSION = '1.0.0';
 const PROTOCOL_VERSION = '2024-11-05';
-const CERT_DIR = path.join(require('os').homedir(), '.golden-gate-mcp');
 
-// ─── Self-signed TLS Certificate ──────────────────────────────────
+// ─── Bridge HTML (served to HTTPS pages via HTTP iframe) ──────────
 
-function ensureCert() {
-  const keyPath = path.join(CERT_DIR, 'server.key');
-  const certPath = path.join(CERT_DIR, 'server.crt');
-  if (existsSync(keyPath) && existsSync(certPath)) {
-    return { key: readFileSync(keyPath), cert: readFileSync(certPath) };
-  }
-  try {
-    mkdirSync(CERT_DIR, { recursive: true });
-    execSync(
-      `openssl req -x509 -newkey rsa:2048 -keyout "${keyPath}" -out "${certPath}" -days 3650 -nodes -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' 2>/dev/null`,
-      { stdio: 'ignore', timeout: 10000 },
-    );
-    console.error(`[MCP] Generated self-signed cert at ${CERT_DIR}`);
-    return { key: readFileSync(keyPath), cert: readFileSync(certPath) };
-  } catch {
-    console.error(`[MCP] Could not generate TLS cert — WSS not available`);
-    return null;
-  }
-}
-
-const tls = ensureCert();
+const BRIDGE_HTML = `<!DOCTYPE html>
+<html><body><script>
+var port = location.hash.replace('#','') || location.port || 9876;
+var ws = new WebSocket('ws://localhost:' + port);
+ws.onopen = function(){ window.parent.postMessage({type:'bridge_ready',port:Number(port)},'*'); };
+ws.onerror = function(){ window.parent.postMessage({type:'bridge_error',port:Number(port)},'*'); };
+ws.onmessage = function(e){ window.parent.postMessage(JSON.parse(e.data),'*'); };
+window.addEventListener('message',function(e){
+  if(e.data && (e.data.id || e.data.type)) ws.send(JSON.stringify(e.data));
+});
+</script></body></html>`;
 
 // ─── State ───────────────────────────────────────────────────────
 
@@ -51,49 +38,65 @@ let queuedMessages = [];
 const pendingToolCalls = new Map();
 let toolRequestIdCounter = 0;
 
-// ─── WebSocket Servers ───────────────────────────────────────────
+// ─── HTTP + WebSocket Server ─────────────────────────────────────
 
+let httpServer;
 let wss;
-let wssServer; // secure WSS server instance
-let securePort = null;
+let activePort = WS_PORT;
 
-function startWSServer() {
+function startServer() {
   return new Promise((resolve) => {
     function tryPort(port) {
       if (port > WS_PORT + 10) {
-        console.error(`[MCP] No available WS ports found — browser bridge disabled`);
+        console.error(`[MCP] No available ports found — browser bridge disabled`);
         resolve();
         return;
       }
-      // Plain WS (for HTTP pages — local dev server)
-      const server = new WebSocketServer({ port });
-      server.on('listening', () => {
-        wss = server;
-        console.error(`[MCP] WS server listening on ws://localhost:${port}`);
-        server.on('connection', handleWsConnection);
-        // Secure WSS on port+100 (for HTTPS pages — Vercel)
-        if (tls) {
-          const sp = port + 100;
-          const httpsServer = createHttpsServer({ key: tls.key, cert: tls.cert });
-          securePort = sp;
-          wssServer = new WebSocketServer({ server: httpsServer });
-          httpsServer.listen(sp, () => {
-            console.error(`[MCP] WSS server listening on wss://localhost:${sp}`);
+      httpServer = createServer((req, res) => {
+        if (req.url === '/bridge.html' || req.url === '/') {
+          res.writeHead(200, {
+            'Content-Type': 'text/html',
+            'Access-Control-Allow-Origin': '*',
           });
-          wssServer.on('connection', handleWsConnection);
-          httpsServer.on('error', () => {});
+          res.end(BRIDGE_HTML);
+        } else if (req.url === '/status') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            server: SERVER_NAME,
+            version: SERVER_VERSION,
+            browserConnected: !!browserSocket,
+            wsPort: port,
+          }));
+        } else {
+          res.writeHead(404);
+          res.end('Not found');
         }
-        resolve();
       });
-      server.on('error', (err) => {
+
+      wss = new WebSocketServer({ server: httpServer });
+      wss.on('error', (err) => {
+        if (err.code !== 'EADDRINUSE') console.error(`[MCP] WebSocket error:`, err);
+      });
+
+      httpServer.on('error', (err) => {
         if (err.code === 'EADDRINUSE') {
-          server.close();
+          httpServer.close();
+          wss.close();
           console.error(`[MCP] Port ${port} in use, trying ${port + 1}...`);
           tryPort(port + 1);
         } else {
-          console.error(`[MCP] WebSocket error:`, err);
+          console.error(`[MCP] Server error:`, err);
           resolve();
         }
+      });
+
+      httpServer.listen(port, () => {
+        activePort = port;
+        console.error(`[MCP] Server listening on http://localhost:${port}`);
+        console.error(`[MCP]   WS bridge: ws://localhost:${port}`);
+        console.error(`[MCP]   HTTP bridge: http://localhost:${port}/bridge.html`);
+        wss.on('connection', handleWsConnection);
+        resolve();
       });
     }
     tryPort(WS_PORT);
@@ -133,20 +136,8 @@ function handleWsConnection(ws) {
   });
 }
 
-let activePort = WS_PORT;
-
-startWSServer().then(() => {
-  if (!wss) {
-    console.error(`[MCP] WebSocket server not available — browser bridge disabled`);
-    return;
-  }
-  const addr = wss.address();
-  activePort = typeof addr === 'object' && addr ? addr.port : WS_PORT;
-
-  console.error(`[MCP] Waiting for browser to connect on ws://localhost:${activePort}...`);
-  if (securePort) {
-    console.error(`[MCP]   also on wss://localhost:${securePort} (for HTTPS pages)`);
-  }
+startServer().then(() => {
+  console.error(`[MCP] Waiting for browser to connect...`);
   console.error(`[MCP] Enable in Hermes via: hermes mcp add golden-gate --command node --args ${__filename}`);
   console.error(`[MCP] Or test with: npx @modelcontextprotocol/inspector node ${__filename}`);
 });
@@ -343,20 +334,4 @@ process.stdin.on('data', (chunk) => {
 
 process.stdin.on('end', () => {
   process.exit(0);
-});
-
-// ─── Health check HTTP server (optional) ─────────────────────────
-
-const httpServer = createServer((_req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({
-    server: SERVER_NAME,
-    version: SERVER_VERSION,
-    browserConnected: !!browserSocket,
-    wsPort: WS_PORT,
-  }));
-});
-
-httpServer.listen(0, () => {
-  // Random port for health check, not critical
 });

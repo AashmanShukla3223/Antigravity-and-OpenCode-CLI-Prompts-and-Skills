@@ -2,3 +2,5 @@
 .env
 node_modules/
 dist/
+mcp-server/dist/
+mcp-server/tsconfig.json

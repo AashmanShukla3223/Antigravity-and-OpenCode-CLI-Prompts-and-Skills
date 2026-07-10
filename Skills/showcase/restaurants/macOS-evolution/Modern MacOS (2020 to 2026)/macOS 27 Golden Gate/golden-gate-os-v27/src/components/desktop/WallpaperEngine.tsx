@@ -22,20 +22,14 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
       }
     }
   }, [url, type]);
-
   const bgImage = type === 'image' ? url : fallbackImage || '';
 
   return (
     <div
       data-testid="wallpaper"
       role="presentation"
-      aria-label="Desktop Wallpaper"
+      aria-hidden="true"
       className="absolute inset-0 overflow-hidden bg-transparent pointer-events-none"
-      style={
-        bgImage
-          ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-          : undefined
-      }
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -57,10 +51,15 @@ export const WallpaperEngine: React.FC<WallpaperEngineProps> = ({ url, type, blu
               className={`absolute inset-0 w-full h-full object-cover ${blur ? 'blur-2xl scale-110 opacity-60' : 'opacity-100'}`}
             />
           ) : (
-            <div
-              className={`absolute inset-[-5%] bg-cover bg-center ${blur ? 'blur-2xl scale-110 opacity-40' : ''}`}
-              style={{ backgroundImage: `url(${url})` }}
-            />
+            bgImage && (
+              <img
+                src={bgImage}
+                alt="Desktop Wallpaper"
+                fetchPriority="high"
+                loading="eager"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )
           )}
         </motion.div>
       </AnimatePresence>

@@ -43,6 +43,9 @@ const cacheAssetsPlugin = () => ({
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), emulatorHeadersPlugin(), cacheAssetsPlugin()],
+  server: {
+    allowedHosts: true,
+  },
   test: {
     globals: true,
     environment: 'jsdom',

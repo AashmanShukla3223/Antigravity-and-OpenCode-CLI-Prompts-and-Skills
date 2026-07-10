@@ -133,7 +133,7 @@ export const ControlCenter = React.memo<{ isOpen: boolean; onClose: () => void }
                     const newAppearance = systemState.appearance === 'dark' ? 'light' : 'dark';
                     updateSystemState({
                       appearance: newAppearance,
-                      wallpaperUrl: newAppearance === 'dark' ? '/wallpapers/golden-gate-dark.png' : '/wallpapers/golden-gate-light.png',
+                      wallpaperUrl: newAppearance === 'dark' ? '/wallpapers/golden-gate-dark.webp' : '/wallpapers/golden-gate-light.webp',
                       wallpaperType: 'image',
                       iconModeSelection: newAppearance === 'dark' ? 'dark' : 'light',
                     });

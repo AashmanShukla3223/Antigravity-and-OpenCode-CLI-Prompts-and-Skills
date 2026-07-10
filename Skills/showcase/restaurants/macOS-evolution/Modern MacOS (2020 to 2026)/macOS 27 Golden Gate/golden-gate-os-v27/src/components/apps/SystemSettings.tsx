@@ -1379,13 +1379,13 @@ export const SystemSettings: React.FC = () => {
                 <h2 className="text-2xl font-semibold mb-6">Wallpaper</h2>
                 <div className="grid grid-cols-4 gap-4 pb-8">
                   <div
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/golden-gate-light.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/golden-gate-light.webp' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
                     onClick={() =>
-                      updateSystemState({ wallpaperUrl: '/wallpapers/golden-gate-light.png', wallpaperType: 'image' })
+                      updateSystemState({ wallpaperUrl: '/wallpapers/golden-gate-light.webp', wallpaperType: 'image' })
                     }
                   >
                     <img
-                      src="/wallpapers/golden-gate-light.png"
+                      src="/wallpapers/golden-gate-light.webp"
                       alt="Golden Gate Light"
                       className="w-full aspect-video object-cover"
                     />
@@ -1394,13 +1394,13 @@ export const SystemSettings: React.FC = () => {
                     </div>
                   </div>
                   <div
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/golden-gate-dark.png' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer border-4 transition-all ${systemState.wallpaperUrl === '/wallpapers/golden-gate-dark.webp' ? 'border-blue-500 scale-[1.02]' : 'border-white/10 hover:border-white/30'}`}
                     onClick={() =>
-                      updateSystemState({ wallpaperUrl: '/wallpapers/golden-gate-dark.png', wallpaperType: 'image' })
+                      updateSystemState({ wallpaperUrl: '/wallpapers/golden-gate-dark.webp', wallpaperType: 'image' })
                     }
                   >
                     <img
-                      src="/wallpapers/golden-gate-dark.png"
+                      src="/wallpapers/golden-gate-dark.webp"
                       alt="Golden Gate Dark"
                       className="w-full aspect-video object-cover"
                     />

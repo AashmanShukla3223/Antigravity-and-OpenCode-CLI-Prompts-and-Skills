@@ -60,7 +60,7 @@ export const LoginScreen: React.FC = () => {
       <WallpaperEngine
         url={systemState.wallpaperUrl}
         type={systemState.wallpaperType}
-        fallbackImage="/wallpapers/golden-gate-dark.png"
+        fallbackImage="/wallpapers/golden-gate-dark.webp"
       />
 
       {/* Dynamic Island / Notch */}

@@ -196,7 +196,7 @@ const defaultState: GoldenGateV27State = {
   notifications: [],
   appearance: 'auto',
   betaUpdates: false,
-  wallpaperUrl: '/wallpapers/golden-gate-light.png',
+  wallpaperUrl: '/wallpapers/golden-gate-light.webp',
   wallpaperType: 'image',
   wallpaperMode: 'static',
   isCameraOn: false,
@@ -386,7 +386,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             : 'https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/releases/download/v1.1.10/Khabardar.mp4';
           state.wallpaperType = 'video';
         } else {
-          state.wallpaperUrl = isDay ? '/wallpapers/golden-gate-light.png' : '/wallpapers/golden-gate-dark.png';
+          state.wallpaperUrl = isDay ? '/wallpapers/golden-gate-light.webp' : '/wallpapers/golden-gate-dark.webp';
           state.wallpaperType = 'image';
         }
       }

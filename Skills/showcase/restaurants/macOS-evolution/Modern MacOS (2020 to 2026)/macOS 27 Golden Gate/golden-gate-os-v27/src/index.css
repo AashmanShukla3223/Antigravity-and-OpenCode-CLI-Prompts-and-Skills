@@ -18,6 +18,7 @@
   src: url('/fonts/SF Pro Display Regular.OTF') format('opentype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -25,6 +26,7 @@
   src: url('/fonts/SF Pro Display Bold.OTF') format('opentype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -32,6 +34,7 @@
   src: url('/fonts/SF Pro Display Medium.OTF') format('opentype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -39,6 +42,7 @@
   src: url('/fonts/SF Pro Display Thin Italic.OTF') format('opentype');
   font-weight: 100;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -46,6 +50,7 @@
   src: url('/fonts/SF Pro Display Ultra Light Italic.OTF') format('opentype');
   font-weight: 200;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -53,6 +58,7 @@
   src: url('/fonts/SF Pro Display Light Italic.OTF') format('opentype');
   font-weight: 300;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -60,6 +66,7 @@
   src: url('/fonts/SF Pro Display Semibold Italic.OTF') format('opentype');
   font-weight: 600;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -67,6 +74,7 @@
   src: url('/fonts/SF Pro Display Heavy Italic.OTF') format('opentype');
   font-weight: 800;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -74,6 +82,7 @@
   src: url('/fonts/SF Pro Display Black Italic.OTF') format('opentype');
   font-weight: 900;
   font-style: italic;
+  font-display: swap;
 }
 
 @layer base {

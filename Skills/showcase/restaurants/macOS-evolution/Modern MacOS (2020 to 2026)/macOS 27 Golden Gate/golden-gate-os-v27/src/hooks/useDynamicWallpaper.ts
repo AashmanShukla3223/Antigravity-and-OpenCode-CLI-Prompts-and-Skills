@@ -20,7 +20,7 @@ function getWallpaper(stage: WallpaperStage, mode: 'static' | 'dynamic') {
     };
   }
   return {
-    url: stage === 'light' ? '/wallpapers/golden-gate-light.png' : '/wallpapers/golden-gate-dark.png',
+    url: stage === 'light' ? '/wallpapers/golden-gate-light.webp' : '/wallpapers/golden-gate-dark.webp',
     type: 'image' as const,
   };
 }
