@@ -109,11 +109,11 @@ export const Desktop: React.FC = () => {
   }, [systemState.notifications]);
 
   useEffect(() => {
-    // Play the reveal shimmer sound when Dock starts animating
     const timer = setTimeout(() => {
       const audio = new Audio('/sounds/Hero.mp3');
+      audio.preload = 'metadata';
       audio.play().catch((e) => console.warn('Hero sound failed', e));
-    }, 250); // Stagger step 2 (Dock)
+    }, 250);
 
     return () => {
       clearTimeout(timer);

@@ -136,6 +136,8 @@ export const Dock = React.memo(() => {
 
   return (
     <nav
+      role="navigation"
+      aria-label="Application Dock"
       className={`z-40 pointer-events-none ${
         isHorizontal
           ? 'absolute bottom-0 w-full flex justify-center'
@@ -339,6 +341,13 @@ const DockIcon = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center group">
       {hovered && !onHoverChange && (
@@ -348,6 +357,9 @@ const DockIcon = ({
       )}
       <motion.div
         ref={iconRef}
+        role="button"
+        tabIndex={0}
+        aria-label={`${app.name}${isRunning ? ' (running)' : ''}`}
         style={{
           borderRadius: cornerRadius,
           boxShadow: `0 15px 40px rgba(0,0,0,${0.2 + dockDepth * 0.005})`,
@@ -362,13 +374,14 @@ const DockIcon = ({
           height: isLaunching ? { duration: 0.1 } : springTransition,
           y: isLaunching ? { repeat: Infinity, duration: 0.5, ease: 'easeOut' } : { duration: 0.2 },
         }}
-        className={`relative flex items-center justify-center cursor-pointer
+        className={`relative flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-lg
           ${isActive ? 'bg-white/20 border-white/40' : ''} 
           ${isMinimized ? 'opacity-40 blur-[1px]' : 'opacity-100'}
         `}
         onHoverStart={handleHoverStart}
         onHoverEnd={handleHoverEnd}
         onClick={onClick}
+        onKeyDown={handleKeyDown}
         onContextMenu={onContextMenu}
         whileTap={{ scale: 0.9 }}
       >

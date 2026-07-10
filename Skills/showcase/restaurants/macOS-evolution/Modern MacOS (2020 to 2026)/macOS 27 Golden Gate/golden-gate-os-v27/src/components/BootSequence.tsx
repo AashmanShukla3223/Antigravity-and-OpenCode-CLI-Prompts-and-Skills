@@ -38,7 +38,7 @@ export const BootSequence: React.FC = () => {
     const playChime = () => {
       const audio = new Audio('/sounds/startup chime.mp3');
       audio.volume = 0.5;
-      audio.preload = 'auto';
+      audio.preload = 'metadata';
 
       const attemptPlay = () => {
         if (!mounted) return;
@@ -49,13 +49,11 @@ export const BootSequence: React.FC = () => {
             document.removeEventListener('keydown', attemptPlay, true);
           })
           .catch(() => {
-            // Autoplay blocked — retry on first user interaction
             document.addEventListener('click', attemptPlay, true);
             document.addEventListener('keydown', attemptPlay, true);
           });
       };
 
-      // Wait for audio to be loaded before attempting playback
       if (audio.readyState >= 3) {
         attemptPlay();
       } else {
@@ -63,7 +61,6 @@ export const BootSequence: React.FC = () => {
         audio.addEventListener(
           'error',
           () => {
-            // If audio fails to load, still try on interaction
             attemptPlay();
           },
           { once: true },

@@ -40,6 +40,8 @@ function App() {
 
   return (
     <div
+      role="application"
+      aria-label="macOS 27 Golden Gate Simulator"
       className={`h-full w-full ${isShuttingDown && shutdownStep >= 4 ? 'cursor-none' : isShuttingDown && shutdownStep >= 3 ? 'is-busy' : ''}`}
     >
       <DeviceRecovery />
