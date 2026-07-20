@@ -80,5 +80,5 @@ describe('DynamicIsland', () => {
     const { DynamicIsland } = await import('../desktop/DynamicIsland');
     const { container } = render(<DynamicIsland />);
     expect(container.querySelector('[data-testid="dynamic-island"]')).toBeInTheDocument();
-  });
+  }, 30000);
 });

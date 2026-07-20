@@ -1,0 +1,1072 @@
+{
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/emu/vercel.json": {
+    "mtime": 1784558247.0388906,
+    "ast_hash": "7d7345d0cce7d1175593625552536a6d",
+    "semantic_hash": "7d7345d0cce7d1175593625552536a6d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/eslint.config.js": {
+    "mtime": 1784558247.0388906,
+    "ast_hash": "79689901919f01dc0e358a590057bc46",
+    "semantic_hash": "79689901919f01dc0e358a590057bc46"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/mcp-server/index.cjs": {
+    "mtime": 1784558247.0398905,
+    "ast_hash": "a5c74b8bdb3e6bf3c76878f5bed030cb",
+    "semantic_hash": "a5c74b8bdb3e6bf3c76878f5bed030cb"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/mcp-server/index.ts": {
+    "mtime": 1784558247.0398905,
+    "ast_hash": "1e4edb968f270b7bf8030ebd19a63aa2",
+    "semantic_hash": "1e4edb968f270b7bf8030ebd19a63aa2"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/mcp-server/package.json": {
+    "mtime": 1784558247.0398905,
+    "ast_hash": "a6f70d3f030d16c53b580c2300bba730",
+    "semantic_hash": "a6f70d3f030d16c53b580c2300bba730"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/package.json": {
+    "mtime": 1784558247.0418906,
+    "ast_hash": "fb391228c1c47bb6f906254ad4a69be8",
+    "semantic_hash": "fb391228c1c47bb6f906254ad4a69be8"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/version.json": {
+    "mtime": 1784558250.1679018,
+    "ast_hash": "d73f34e089c327a46e753b079f53130a",
+    "semantic_hash": "d73f34e089c327a46e753b079f53130a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/App.tsx": {
+    "mtime": 1784558250.2589023,
+    "ast_hash": "b90d4ab1467c7e76eba2571c40b136d3",
+    "semantic_hash": "b90d4ab1467c7e76eba2571c40b136d3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/AssetLoader.js": {
+    "mtime": 1784558250.2589023,
+    "ast_hash": "54f5353251ca826a6dc217ae35958fa1",
+    "semantic_hash": "54f5353251ca826a6dc217ae35958fa1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/BootSequence.tsx": {
+    "mtime": 1784558250.2599022,
+    "ast_hash": "c2c2c34bbdfc170f6f33423e026fba2d",
+    "semantic_hash": "c2c2c34bbdfc170f6f33423e026fba2d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/DeviceRecovery.tsx": {
+    "mtime": 1784558250.2599022,
+    "ast_hash": "3191339f994a749c7f2096037343b34b",
+    "semantic_hash": "3191339f994a749c7f2096037343b34b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/LoginScreen.tsx": {
+    "mtime": 1784558250.2609022,
+    "ast_hash": "8675f6e74f34b88724e12fa8d10abe2e",
+    "semantic_hash": "8675f6e74f34b88724e12fa8d10abe2e"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/MacOSActivation.tsx": {
+    "mtime": 1784558250.2609022,
+    "ast_hash": "22be465ee287c4a2d3f7d55b9d1295a2",
+    "semantic_hash": "22be465ee287c4a2d3f7d55b9d1295a2"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/MacOSRecovery.tsx": {
+    "mtime": 1784558250.2609022,
+    "ast_hash": "301ec79c39888db301a7824552d8e362",
+    "semantic_hash": "301ec79c39888db301a7824552d8e362"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/SetupAssistant.tsx": {
+    "mtime": 1784558250.2609022,
+    "ast_hash": "1f26906fc6b2b01346fbceec023efb70",
+    "semantic_hash": "1f26906fc6b2b01346fbceec023efb70"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/StructuredData.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "c4dd43a857db7ed2f103aec10c919e32",
+    "semantic_hash": "c4dd43a857db7ed2f103aec10c919e32"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/__tests__/DynamicIsland.test.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "3628271f70600a8ad7bc4d7a5495f52c",
+    "semantic_hash": "3628271f70600a8ad7bc4d7a5495f52c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AboutMe.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "807a9c08d224b1893333269c11a57311",
+    "semantic_hash": "807a9c08d224b1893333269c11a57311"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AboutThisMac.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "20ef277be5706f0f91525e08682caf07",
+    "semantic_hash": "20ef277be5706f0f91525e08682caf07"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/ActivityMonitor.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "c41c2afd8580a1054b2559273c973644",
+    "semantic_hash": "c41c2afd8580a1054b2559273c973644"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AppStore.tsx": {
+    "mtime": 1784558250.2619023,
+    "ast_hash": "d3a16f1720ee1793787cd50483cc8ece",
+    "semantic_hash": "d3a16f1720ee1793787cd50483cc8ece"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AppleBooks.tsx": {
+    "mtime": 1784558250.2629023,
+    "ast_hash": "6b7fe640f47cf02e1434b9b0d0e99ee3",
+    "semantic_hash": "6b7fe640f47cf02e1434b9b0d0e99ee3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AppleMusic.tsx": {
+    "mtime": 1784558250.2629023,
+    "ast_hash": "669b6ee8b878845e3515299f43eba796",
+    "semantic_hash": "669b6ee8b878845e3515299f43eba796"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AppleTVPlus.tsx": {
+    "mtime": 1784558250.2629023,
+    "ast_hash": "b3851b5c7e837df2febc198382182822",
+    "semantic_hash": "b3851b5c7e837df2febc198382182822"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/AppleWallet.tsx": {
+    "mtime": 1784558250.2639022,
+    "ast_hash": "b31712710c84fe645ce98a326c759f13",
+    "semantic_hash": "b31712710c84fe645ce98a326c759f13"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Apps.tsx": {
+    "mtime": 1784558250.2639022,
+    "ast_hash": "10c02356856e13c37d8af23524dd8cdd",
+    "semantic_hash": "10c02356856e13c37d8af23524dd8cdd"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Calculator.tsx": {
+    "mtime": 1784558250.2639022,
+    "ast_hash": "46f532bcdc8f822815d1171f868f023a",
+    "semantic_hash": "46f532bcdc8f822815d1171f868f023a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Calendar.tsx": {
+    "mtime": 1784558250.2639022,
+    "ast_hash": "80be0f878b0ff8982c50fefd4d0ba4ad",
+    "semantic_hash": "80be0f878b0ff8982c50fefd4d0ba4ad"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Chess.tsx": {
+    "mtime": 1784558250.2639022,
+    "ast_hash": "d93f2a7524c120bb373aa2dfc800b13f",
+    "semantic_hash": "d93f2a7524c120bb373aa2dfc800b13f"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Clock.tsx": {
+    "mtime": 1784558250.264902,
+    "ast_hash": "de3e839b6f56183f990b0af1e7ae4619",
+    "semantic_hash": "de3e839b6f56183f990b0af1e7ae4619"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/CodeViewer.tsx": {
+    "mtime": 1784558250.264902,
+    "ast_hash": "a8048f766c078c3884255e6f9e3b45a0",
+    "semantic_hash": "a8048f766c078c3884255e6f9e3b45a0"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Contacts.tsx": {
+    "mtime": 1784558250.264902,
+    "ast_hash": "23ceb3002f93b252558557bde413439d",
+    "semantic_hash": "23ceb3002f93b252558557bde413439d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/CrazyErrors.tsx": {
+    "mtime": 1784558250.264902,
+    "ast_hash": "f1cc962669d1fd749d6bb34b66c0264a",
+    "semantic_hash": "f1cc962669d1fd749d6bb34b66c0264a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/DiskUtility.tsx": {
+    "mtime": 1784558250.264902,
+    "ast_hash": "ef74c39404871f7dab63737ad6cc9586",
+    "semantic_hash": "ef74c39404871f7dab63737ad6cc9586"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/EKGCanvas.tsx": {
+    "mtime": 1784558250.2659023,
+    "ast_hash": "b4ab3c935a4cb6282b89e0f3d0dbab01",
+    "semantic_hash": "b4ab3c935a4cb6282b89e0f3d0dbab01"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/FaceTime.tsx": {
+    "mtime": 1784558250.2659023,
+    "ast_hash": "a217b15f4e7103538f4747791bfb9986",
+    "semantic_hash": "a217b15f4e7103538f4747791bfb9986"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/FinalCutPro.tsx": {
+    "mtime": 1784558250.2659023,
+    "ast_hash": "f6d81cdccb0f3e539c06316ed76ee746",
+    "semantic_hash": "f6d81cdccb0f3e539c06316ed76ee746"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Finder.tsx": {
+    "mtime": 1784558250.2659023,
+    "ast_hash": "6de293ea94969fa2cbd66232c1285bf9",
+    "semantic_hash": "6de293ea94969fa2cbd66232c1285bf9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Freeform.tsx": {
+    "mtime": 1784558250.2669022,
+    "ast_hash": "e1ba32c7c0309e2b7a6a8f43b4025a6c",
+    "semantic_hash": "e1ba32c7c0309e2b7a6a8f43b4025a6c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Games.tsx": {
+    "mtime": 1784558250.2669022,
+    "ast_hash": "a9bf4ceabe3fc328d92e94d22d0e2e26",
+    "semantic_hash": "a9bf4ceabe3fc328d92e94d22d0e2e26"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/GitHubNavigator.tsx": {
+    "mtime": 1784558250.2669022,
+    "ast_hash": "f814c14bf1cff243a60780b3d6127da4",
+    "semantic_hash": "f814c14bf1cff243a60780b3d6127da4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Installer.tsx": {
+    "mtime": 1784558250.2669022,
+    "ast_hash": "d64b2a2d79a83248b16339d257e44ef3",
+    "semantic_hash": "d64b2a2d79a83248b16339d257e44ef3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Keynote.tsx": {
+    "mtime": 1784558250.2669022,
+    "ast_hash": "c2c752f9dabaab366ca41908197e7be9",
+    "semantic_hash": "c2c752f9dabaab366ca41908197e7be9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/LogicPro.tsx": {
+    "mtime": 1784558250.2679021,
+    "ast_hash": "b7d8dc6921057c45d6dfde5472b8ea9d",
+    "semantic_hash": "b7d8dc6921057c45d6dfde5472b8ea9d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Mail.tsx": {
+    "mtime": 1784558250.2679021,
+    "ast_hash": "30de16fb5b2620dc5543a4e2d3824f2b",
+    "semantic_hash": "30de16fb5b2620dc5543a4e2d3824f2b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Maps.tsx": {
+    "mtime": 1784558250.2679021,
+    "ast_hash": "4aa697f640b11f6513dbac8195f08368",
+    "semantic_hash": "4aa697f640b11f6513dbac8195f08368"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Messages.tsx": {
+    "mtime": 1784558250.2679021,
+    "ast_hash": "ac57e50d3ff6e247df3e6add4af361fe",
+    "semantic_hash": "ac57e50d3ff6e247df3e6add4af361fe"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Minecraft.tsx": {
+    "mtime": 1784558250.2689023,
+    "ast_hash": "f2f70696e252b906c1242b15140d2c78",
+    "semantic_hash": "f2f70696e252b906c1242b15140d2c78"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Motion.tsx": {
+    "mtime": 1784558250.2689023,
+    "ast_hash": "d7f3725ee4e5f6351844b08dd4354673",
+    "semantic_hash": "d7f3725ee4e5f6351844b08dd4354673"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Notes.tsx": {
+    "mtime": 1784558250.2689023,
+    "ast_hash": "f724f2182d5b93c7169efb95ad7d0e05",
+    "semantic_hash": "f724f2182d5b93c7169efb95ad7d0e05"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Numbers.tsx": {
+    "mtime": 1784558250.2689023,
+    "ast_hash": "d80776c0b4928913868b97e96bcfd5e5",
+    "semantic_hash": "d80776c0b4928913868b97e96bcfd5e5"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Pages.tsx": {
+    "mtime": 1784558250.2699022,
+    "ast_hash": "80caca1750ceabf1fdc86eed92fb5e1c",
+    "semantic_hash": "80caca1750ceabf1fdc86eed92fb5e1c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Phone.tsx": {
+    "mtime": 1784558250.2699022,
+    "ast_hash": "187eb3797b33aa106b31d77107620b4b",
+    "semantic_hash": "187eb3797b33aa106b31d77107620b4b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/PhotoBooth.tsx": {
+    "mtime": 1784558250.2699022,
+    "ast_hash": "631dcd5cb14aa437a04289a6c25c72bd",
+    "semantic_hash": "631dcd5cb14aa437a04289a6c25c72bd"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Photos.tsx": {
+    "mtime": 1784558250.2699022,
+    "ast_hash": "8998d599327057577984180cef2d2ce1",
+    "semantic_hash": "8998d599327057577984180cef2d2ce1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/PixelmatorPro.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "27c80ffdf58ab4bb02a0e20ea544c3b9",
+    "semantic_hash": "27c80ffdf58ab4bb02a0e20ea544c3b9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Reminders.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "993aa895595bc796ca40a89b6f37df95",
+    "semantic_hash": "993aa895595bc796ca40a89b6f37df95"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Safari.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "81cbd53e1c614609a7905731a7bdb2a1",
+    "semantic_hash": "81cbd53e1c614609a7905731a7bdb2a1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/SamsungLCDApp.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "80524d9ef5b00c188bee2cd5e08db926",
+    "semantic_hash": "80524d9ef5b00c188bee2cd5e08db926"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/SiriAI.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "77bd542d63c8555a9750db92bdbca10b",
+    "semantic_hash": "77bd542d63c8555a9750db92bdbca10b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/SoundTest.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "2c198c70317fd78bcb0a9334193a0088",
+    "semantic_hash": "2c198c70317fd78bcb0a9334193a0088"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Stickies.tsx": {
+    "mtime": 1784558250.2709022,
+    "ast_hash": "af041d59a4a9a74daa5a96583dd888c9",
+    "semantic_hash": "af041d59a4a9a74daa5a96583dd888c9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/SystemSettings.tsx": {
+    "mtime": 1784558250.2719023,
+    "ast_hash": "20e8f32c8a95d130d94955547f823291",
+    "semantic_hash": "20e8f32c8a95d130d94955547f823291"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/TerminalApp.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "e4163f4f06aa1dad93465c4c61eed03f",
+    "semantic_hash": "e4163f4f06aa1dad93465c4c61eed03f"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/TimeMachine.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "4040ed51376e2225dadc21f277d82617",
+    "semantic_hash": "4040ed51376e2225dadc21f277d82617"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/VMwareFusionPro.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "4849b720dd6ebd4bfbb09477c71a50d2",
+    "semantic_hash": "4849b720dd6ebd4bfbb09477c71a50d2"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/VSCode.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "7867ac3591163882ef884c6122994495",
+    "semantic_hash": "7867ac3591163882ef884c6122994495"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Weather.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "645408eff1c900c2f9d5dd8ec91b9800",
+    "semantic_hash": "645408eff1c900c2f9d5dd8ec91b9800"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/XCode.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "e56ef11f63329904b4df95e8639b8957",
+    "semantic_hash": "e56ef11f63329904b4df95e8639b8957"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/iPhoneMirroring.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "70785743586d11922a06ef371f9fea0d",
+    "semantic_hash": "70785743586d11922a06ef371f9fea0d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/iTunesStore.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "afae240dcf4af799ae3a6d7c136cca0a",
+    "semantic_hash": "afae240dcf4af799ae3a6d7c136cca0a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/common/AppIcon.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "b0c31ae89efee79ca041a054ea0eeb74",
+    "semantic_hash": "b0c31ae89efee79ca041a054ea0eeb74"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/common/ErrorBoundary.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "61121e0a80f0a43b4194bdbecd409b5c",
+    "semantic_hash": "61121e0a80f0a43b4194bdbecd409b5c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/common/SystemMenuBar.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "b27badd5dc5a27b0f5e173d27e4ded19",
+    "semantic_hash": "b27badd5dc5a27b0f5e173d27e4ded19"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/ControlCenter.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "dfeb14cb77304451fb83435c4d3757cf",
+    "semantic_hash": "dfeb14cb77304451fb83435c4d3757cf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/Desktop.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "7bd98b3c207bc4dd1a56642252a1ed09",
+    "semantic_hash": "7bd98b3c207bc4dd1a56642252a1ed09"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/Dock.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "6b3777c0413219f49086654f08f619dd",
+    "semantic_hash": "6b3777c0413219f49086654f08f619dd"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/DynamicIsland.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "c216fdd882cbc9c110cc82befa7d7754",
+    "semantic_hash": "c216fdd882cbc9c110cc82befa7d7754"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/HotCorners.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "61de7d785f1a683819fe6a9278f0c546",
+    "semantic_hash": "61de7d785f1a683819fe6a9278f0c546"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/IncomingCallOverlay.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "c63f0c593fb6f2746a9021e2cb480872",
+    "semantic_hash": "c63f0c593fb6f2746a9021e2cb480872"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/MenuBar.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "9a772e5c3d612a8e89e953d5547da3e9",
+    "semantic_hash": "9a772e5c3d612a8e89e953d5547da3e9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/MissionControl.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "e9150abf0f095ab05ecaa9fdf334c4cc",
+    "semantic_hash": "e9150abf0f095ab05ecaa9fdf334c4cc"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/NotificationBanner.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "9927add6aa13907571affb21ce234525",
+    "semantic_hash": "9927add6aa13907571affb21ce234525"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/NotificationCenter.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "db4364b34e0eada979431f7e4b19ccf6",
+    "semantic_hash": "db4364b34e0eada979431f7e4b19ccf6"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/NotificationToast.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "883cff6e9cfcf16a1c9aa879984f4350",
+    "semantic_hash": "883cff6e9cfcf16a1c9aa879984f4350"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/RestartDialog.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "6ceada625f2b023f125e87a9f10963a3",
+    "semantic_hash": "6ceada625f2b023f125e87a9f10963a3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/ScreenSaver.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "69e61025652aa7f08da18eac5abd027a",
+    "semantic_hash": "69e61025652aa7f08da18eac5abd027a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/ShutdownDialog.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "ab7928d052212b6095a7274171379381",
+    "semantic_hash": "ab7928d052212b6095a7274171379381"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/Spotlight.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "c09cbf93b7c9028ed22567bc0d3d37d7",
+    "semantic_hash": "c09cbf93b7c9028ed22567bc0d3d37d7"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/StageManager.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "f90f9116ebd2aae6527368f8b4593dc6",
+    "semantic_hash": "f90f9116ebd2aae6527368f8b4593dc6"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/SystemDialog.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "cfa2561c5ba2963632e2e6dedaefd2d3",
+    "semantic_hash": "cfa2561c5ba2963632e2e6dedaefd2d3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/WallpaperEngine.tsx": {
+    "mtime": 1784558250.4519029,
+    "ast_hash": "1c1407be50b7d4ada05ed6c945eea1d6",
+    "semantic_hash": "1c1407be50b7d4ada05ed6c945eea1d6"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/WidgetPicker.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "3d07ed77cce5fc2be648f763080048a1",
+    "semantic_hash": "3d07ed77cce5fc2be648f763080048a1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/desktop/Window.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "1638905bbe54b8a839799445876d97b4",
+    "semantic_hash": "1638905bbe54b8a839799445876d97b4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/FileSystemContext.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "ab8721db715b00b144f5d79ff5b454c5",
+    "semantic_hash": "ab8721db715b00b144f5d79ff5b454c5"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/SystemContext.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "351557c45d19b3fa8ccb7e30385cfb2a",
+    "semantic_hash": "351557c45d19b3fa8ccb7e30385cfb2a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useAirDrop.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "5176d91b1b9314b2d4cffedf6e84af4b",
+    "semantic_hash": "5176d91b1b9314b2d4cffedf6e84af4b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useDynamicWallpaper.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "bc72dffebdd8295cb7d27afa751cf371",
+    "semantic_hash": "bc72dffebdd8295cb7d27afa751cf371"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useHandoff.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "12bf3616600953a3cc0670b2df0dc02b",
+    "semantic_hash": "12bf3616600953a3cc0670b2df0dc02b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useNotificationScheduler.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "60e96e96ae1d7c14601e70bdf87dc155",
+    "semantic_hash": "60e96e96ae1d7c14601e70bdf87dc155"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/usePageMetadata.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "c713458801dc4f59adbbd6b85aee12d6",
+    "semantic_hash": "c713458801dc4f59adbbd6b85aee12d6"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useSoftwareUpdate.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "7a0678a38970d5c575bd7061db29205d",
+    "semantic_hash": "7a0678a38970d5c575bd7061db29205d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useTelemetry.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "b6732067f34b779d13f307269aaa6d4e",
+    "semantic_hash": "b6732067f34b779d13f307269aaa6d4e"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/hooks/useUniversalControl.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "0237b01567d34d9d572611352cb59014",
+    "semantic_hash": "0237b01567d34d9d572611352cb59014"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/main.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "f1b76930b0f8d3cb8f21b188087e6ba8",
+    "semantic_hash": "f1b76930b0f8d3cb8f21b188087e6ba8"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/mcp/MCPBridge.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "ae85231ed093fb60c98b9dbccc8bbc85",
+    "semantic_hash": "ae85231ed093fb60c98b9dbccc8bbc85"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/mcp/WebMCPTools.tsx": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "5e9ea5bf76c94e58feded1cb6c114a16",
+    "semantic_hash": "5e9ea5bf76c94e58feded1cb6c114a16"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/mcp/index.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "292c52dc8d32c9ffdb4efd4708128ed3",
+    "semantic_hash": "292c52dc8d32c9ffdb4efd4708128ed3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/mcp/tools.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "881c6d34ac599bc9dd0f3c252593879b",
+    "semantic_hash": "881c6d34ac599bc9dd0f3c252593879b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/mcp/types.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "46ca94ea70845743c33ba9cf75750a1f",
+    "semantic_hash": "46ca94ea70845743c33ba9cf75750a1f"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/test-setup.ts": {
+    "mtime": 1784558250.457903,
+    "ast_hash": "00e47f7b9836e8f731101981fa2bb2de",
+    "semantic_hash": "00e47f7b9836e8f731101981fa2bb2de"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/AIEngine.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "72dbe63ebba126bcb8a944d932b3fbbc",
+    "semantic_hash": "72dbe63ebba126bcb8a944d932b3fbbc"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/FileSystemResolver.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "879e2e811f33e36229782101d20d65bf",
+    "semantic_hash": "879e2e811f33e36229782101d20d65bf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/MusicData.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "82f91a45ca77250fc557ab03f2aecc23",
+    "semantic_hash": "82f91a45ca77250fc557ab03f2aecc23"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/WeatherEngine.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "eb158acb4a48ff38834cc0f6c49bd602",
+    "semantic_hash": "eb158acb4a48ff38834cc0f6c49bd602"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/bootLogger.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "d9f830939512568dc4302d29b3869fd8",
+    "semantic_hash": "d9f830939512568dc4302d29b3869fd8"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/contacts.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "fd17102aec6da807aff104c9fccb2f31",
+    "semantic_hash": "fd17102aec6da807aff104c9fccb2f31"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/iconDebugger.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "21a7122132c0f649b700a11f9d139931",
+    "semantic_hash": "21a7122132c0f649b700a11f9d139931"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/otaUpdate.tsx": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "0d145b3183f568faa4d3aaeadb91c2ae",
+    "semantic_hash": "0d145b3183f568faa4d3aaeadb91c2ae"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/romStorage.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "aa733d211ea14d6667469fda0ca365b9",
+    "semantic_hash": "aa733d211ea14d6667469fda0ca365b9"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/utils/vfs-ops.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "056b4dd2c7ca9efc659e6f1fdc391ebf",
+    "semantic_hash": "056b4dd2c7ca9efc659e6f1fdc391ebf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/tests/e2e/qa-test.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "f5a6da74667fca8548c6088433d434cc",
+    "semantic_hash": "f5a6da74667fca8548c6088433d434cc"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/tsconfig.app.json": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "b885d5f97cf6fc2c1e7997d4b8abfb88",
+    "semantic_hash": "b885d5f97cf6fc2c1e7997d4b8abfb88"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/tsconfig.json": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": "a3d39fa780ebff65444de257f291ce6c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/tsconfig.node.json": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "70bdd0a673bcfc0e828080b306e7c680",
+    "semantic_hash": "70bdd0a673bcfc0e828080b306e7c680"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/vercel.json": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "d3250adf32092099fca35b2b8d273e09",
+    "semantic_hash": "d3250adf32092099fca35b2b8d273e09"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/vite.config.ts": {
+    "mtime": 1784558250.462903,
+    "ast_hash": "5aa834144b3198ff00d76dbfd01fef39",
+    "semantic_hash": "5aa834144b3198ff00d76dbfd01fef39"
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1784558431.020153,
+    "ast_hash": "f1e53ecc9194573d3c28fc116c743a2e",
+    "semantic_hash": "f1e53ecc9194573d3c28fc116c743a2e"
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1784558431.020153,
+    "ast_hash": "0bc020d491fca99550c1ea3de0a5f862",
+    "semantic_hash": "0bc020d491fca99550c1ea3de0a5f862"
+  },
+  "README.md": {
+    "mtime": 1784558241.862875,
+    "ast_hash": "d8300228a865d1a587a9c2becf52c05f",
+    "semantic_hash": "d8300228a865d1a587a9c2becf52c05f"
+  },
+  "Skills/CONTRIBUTOR.md": {
+    "mtime": 1784558241.863875,
+    "ast_hash": "8ac3e617a00c639b24bb4050d2cb941e",
+    "semantic_hash": "8ac3e617a00c639b24bb4050d2cb941e"
+  },
+  "Skills/caveman-full-stack-developer.md": {
+    "mtime": 1784558241.863875,
+    "ast_hash": "221d225589bfef515926110860e7155d",
+    "semantic_hash": "221d225589bfef515926110860e7155d"
+  },
+  "Skills/caveman-hardware-design-functional.md": {
+    "mtime": 1784558241.863875,
+    "ast_hash": "26683dc00d494042c10bb7d4162d08c1",
+    "semantic_hash": "26683dc00d494042c10bb7d4162d08c1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/README.md": {
+    "mtime": 1784558247.0378907,
+    "ast_hash": "551aebeb95492f242a57c300027effbb",
+    "semantic_hash": "551aebeb95492f242a57c300027effbb"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/AGENTS.md": {
+    "mtime": 1784558247.0378907,
+    "ast_hash": "b723ffd48aa3aef32313e84bb23b6a32",
+    "semantic_hash": "b723ffd48aa3aef32313e84bb23b6a32"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/MCP-GUIDE.md": {
+    "mtime": 1784558247.0378907,
+    "ast_hash": "b3536c8db62ecf838cf1f0ce3ff138e3",
+    "semantic_hash": "b3536c8db62ecf838cf1f0ce3ff138e3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/README.md": {
+    "mtime": 1784558247.0388906,
+    "ast_hash": "226a7fbe24a640c56589a7bce0d54338",
+    "semantic_hash": "226a7fbe24a640c56589a7bce0d54338"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/emu/player.html": {
+    "mtime": 1784558247.0388906,
+    "ast_hash": "4bf7ed0072408616949d945945d29fcf",
+    "semantic_hash": "4bf7ed0072408616949d945945d29fcf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/index.html": {
+    "mtime": 1784558247.0388906,
+    "ast_hash": "93722e6492f95fab7b9d55056f50dbcf",
+    "semantic_hash": "93722e6492f95fab7b9d55056f50dbcf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/emulatorjs/player.html": {
+    "mtime": 1784558247.8958936,
+    "ast_hash": "22700fa66f25b767d4ffd80e8d14db25",
+    "semantic_hash": "22700fa66f25b767d4ffd80e8d14db25"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/llms-full.txt": {
+    "mtime": 1784558248.0958943,
+    "ast_hash": "fdc55ed7267de0b1af7f9a18fec8e29d",
+    "semantic_hash": "fdc55ed7267de0b1af7f9a18fec8e29d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/llms.txt": {
+    "mtime": 1784558248.0958943,
+    "ast_hash": "cb05cd481f5e4bd24efc21f04dda3af0",
+    "semantic_hash": "cb05cd481f5e4bd24efc21f04dda3af0"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/robots.txt": {
+    "mtime": 1784558250.1499019,
+    "ast_hash": "aa04299d24997111b09cb90d05261a8a",
+    "semantic_hash": "aa04299d24997111b09cb90d05261a8a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/Kala-Chashma.mp3": {
+    "mtime": 1784558248.1578946,
+    "ast_hash": "100dc6a75e1548babdf73e5aa121e433",
+    "semantic_hash": "100dc6a75e1548babdf73e5aa121e433"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/LUZ ROJA - Sped Up - bxkq.mp3": {
+    "mtime": 1784558248.1738946,
+    "ast_hash": "48913221876279c9460d17857dd98efc",
+    "semantic_hash": "48913221876279c9460d17857dd98efc"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/aaj-ki-party.mp3": {
+    "mtime": 1784558248.2628949,
+    "ast_hash": "90294d3c006e2d7abfb6a42fd89e110f",
+    "semantic_hash": "90294d3c006e2d7abfb6a42fd89e110f"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/abrar.mp3": {
+    "mtime": 1784558248.3718953,
+    "ast_hash": "a711de128903a36b7a39ebe7a19d83df",
+    "semantic_hash": "a711de128903a36b7a39ebe7a19d83df"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/adventure.mp3": {
+    "mtime": 1784558248.3738952,
+    "ast_hash": "581f45f6fe57bc2df61a71e7c819c5ff",
+    "semantic_hash": "581f45f6fe57bc2df61a71e7c819c5ff"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/apt.mp3": {
+    "mtime": 1784558248.3978953,
+    "ast_hash": "aa7b353e7fb6aa800145d374e354c22d",
+    "semantic_hash": "aa7b353e7fb6aa800145d374e354c22d"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/baby.mp3": {
+    "mtime": 1784558248.4238954,
+    "ast_hash": "11e810b36599d1deb1eb0d7a7b0a0db3",
+    "semantic_hash": "11e810b36599d1deb1eb0d7a7b0a0db3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/believer.mp3": {
+    "mtime": 1784558248.4758956,
+    "ast_hash": "d64b96f85900c4905a6f97d0a194b6bb",
+    "semantic_hash": "d64b96f85900c4905a6f97d0a194b6bb"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/bhool-bhulaiyaa.mp3": {
+    "mtime": 1784558248.4978957,
+    "ast_hash": "42082dfa316ff19a9043d9dec819bb03",
+    "semantic_hash": "42082dfa316ff19a9043d9dec819bb03"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/chak-de-india.mp3": {
+    "mtime": 1784558248.5288959,
+    "ast_hash": "48458aa332ac5870f646376689d53529",
+    "semantic_hash": "48458aa332ac5870f646376689d53529"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/chhota-bheem.mp3": {
+    "mtime": 1784558248.5368958,
+    "ast_hash": "1b979f31efa434b68286eadd13a1f194",
+    "semantic_hash": "1b979f31efa434b68286eadd13a1f194"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/chikoo.mp3": {
+    "mtime": 1784558248.540896,
+    "ast_hash": "a7a94008f6219f5dcde793fb730c41a8",
+    "semantic_hash": "a7a94008f6219f5dcde793fb730c41a8"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/chor.mp3": {
+    "mtime": 1784558248.560896,
+    "ast_hash": "0c4596d7e5b96a9f30e2fffba16c95f0",
+    "semantic_hash": "0c4596d7e5b96a9f30e2fffba16c95f0"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/chuttamalle.mp3": {
+    "mtime": 1784558248.594896,
+    "ast_hash": "273e7a82c422c1788fcc0a3497c6d132",
+    "semantic_hash": "273e7a82c422c1788fcc0a3497c6d132"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/ek-zindagi.mp3": {
+    "mtime": 1784558248.6138961,
+    "ast_hash": "9e65d991898f4c1aa05daefce0b39e32",
+    "semantic_hash": "9e65d991898f4c1aa05daefce0b39e32"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/faltu.mp3": {
+    "mtime": 1784558248.6448963,
+    "ast_hash": "7495c2bc759ce8a3ca71ee7d30c363da",
+    "semantic_hash": "7495c2bc759ce8a3ca71ee7d30c363da"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/galti-se-mistake.mp3": {
+    "mtime": 1784558248.6578963,
+    "ast_hash": "11aeed9d7cd7de39dd0a499a83fb0265",
+    "semantic_hash": "11aeed9d7cd7de39dd0a499a83fb0265"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/gulabi-sadi.mp3": {
+    "mtime": 1784558248.6808963,
+    "ast_hash": "09ca9a33f331eab729fb5b64c9ce672c",
+    "semantic_hash": "09ca9a33f331eab729fb5b64c9ce672c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/gulabi-sharara.mp3": {
+    "mtime": 1784558248.7028964,
+    "ast_hash": "d7f4e541152321b9a53377ffa6b5c718",
+    "semantic_hash": "d7f4e541152321b9a53377ffa6b5c718"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/heeriye.mp3": {
+    "mtime": 1784558248.7228966,
+    "ast_hash": "3558b3e935b3b59e5bdf6f7164d8f822",
+    "semantic_hash": "3558b3e935b3b59e5bdf6f7164d8f822"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/ice-cream.mp3": {
+    "mtime": 1784558248.825897,
+    "ast_hash": "2f636706510f793ce0743871e495d04a",
+    "semantic_hash": "2f636706510f793ce0743871e495d04a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/jaana-samjho-na.mp3": {
+    "mtime": 1784558248.844897,
+    "ast_hash": "26366ba018c2aef82a570f239e10f8fe",
+    "semantic_hash": "26366ba018c2aef82a570f239e10f8fe"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/jind-kadh-ke.mp3": {
+    "mtime": 1784558248.865897,
+    "ast_hash": "e1d3b73628e8714f9b894a53bdfd47ba",
+    "semantic_hash": "e1d3b73628e8714f9b894a53bdfd47ba"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/jo-tum-mere-ho.mp3": {
+    "mtime": 1784558248.8978972,
+    "ast_hash": "2ae2ccf1a40124530fc83894efef447c",
+    "semantic_hash": "2ae2ccf1a40124530fc83894efef447c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/jutti-meri.mp3": {
+    "mtime": 1784558248.9718974,
+    "ast_hash": "4691d6ff7fb876b2f0a9bd616f04c0cf",
+    "semantic_hash": "4691d6ff7fb876b2f0a9bd616f04c0cf"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/kheech-meri-photo.mp3": {
+    "mtime": 1784558249.1098979,
+    "ast_hash": "6660aa14d02b837bc054ebec4745d902",
+    "semantic_hash": "6660aa14d02b837bc054ebec4745d902"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/kinni-kinni.mp3": {
+    "mtime": 1784558249.127898,
+    "ast_hash": "0af968602dbfa5204d49855e78c404f8",
+    "semantic_hash": "0af968602dbfa5204d49855e78c404f8"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/kissik.mp3": {
+    "mtime": 1784558249.2798986,
+    "ast_hash": "f345f4b0b820c6452814815aa2a24b33",
+    "semantic_hash": "f345f4b0b820c6452814815aa2a24b33"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/kosandra.mp3": {
+    "mtime": 1784558249.3048987,
+    "ast_hash": "9bdc7d8f948e09f39c09e95d642d65b3",
+    "semantic_hash": "9bdc7d8f948e09f39c09e95d642d65b3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/lamhey.mp3": {
+    "mtime": 1784558249.376899,
+    "ast_hash": "5129ccb12ce752a962f8812f24073c0a",
+    "semantic_hash": "5129ccb12ce752a962f8812f24073c0a"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/let-me-love-you.mp3": {
+    "mtime": 1784558249.422899,
+    "ast_hash": "53bbaca7e51ae879a5e0f11f09650a06",
+    "semantic_hash": "53bbaca7e51ae879a5e0f11f09650a06"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/life-is-good.mp3": {
+    "mtime": 1784558249.4528992,
+    "ast_hash": "732e32dad5a379804045be9ceb4ec2a1",
+    "semantic_hash": "732e32dad5a379804045be9ceb4ec2a1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/london-thumakda.mp3": {
+    "mtime": 1784558249.4758992,
+    "ast_hash": "c67acf48fd1b6f1c359486f8fcc595bd",
+    "semantic_hash": "c67acf48fd1b6f1c359486f8fcc595bd"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/maan-meri-jaan.mp3": {
+    "mtime": 1784558249.4968994,
+    "ast_hash": "c1cbf8a16153200b005c5ed0708e91ef",
+    "semantic_hash": "c1cbf8a16153200b005c5ed0708e91ef"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/mere-ghar-ram.mp3": {
+    "mtime": 1784558249.5208995,
+    "ast_hash": "2fec44796967974d9ea0928d659d517b",
+    "semantic_hash": "2fec44796967974d9ea0928d659d517b"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/motu-paltu.mp3": {
+    "mtime": 1784558249.5248995,
+    "ast_hash": "f8cc734239d548d64be004afac44dc14",
+    "semantic_hash": "f8cc734239d548d64be004afac44dc14"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/nadaaniyan.mp3": {
+    "mtime": 1784558249.5428996,
+    "ast_hash": "844bf3ad6018768e5ba7c49d752364fb",
+    "semantic_hash": "844bf3ad6018768e5ba7c49d752364fb"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/o-maahi.mp3": {
+    "mtime": 1784558249.5848997,
+    "ast_hash": "047071024b86cbcc18ae5d6ef7b3754e",
+    "semantic_hash": "047071024b86cbcc18ae5d6ef7b3754e"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/over-horizon.mp3": {
+    "mtime": 1784558249.6239,
+    "ast_hash": "ddec6ca261708b5bfebf5b9362738884",
+    "semantic_hash": "ddec6ca261708b5bfebf5b9362738884"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/paisa-hai-toh.mp3": {
+    "mtime": 1784558249.6469,
+    "ast_hash": "48b8c20e5fd3fe22db8a97649b791604",
+    "semantic_hash": "48b8c20e5fd3fe22db8a97649b791604"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/paisaa.mp3": {
+    "mtime": 1784558249.6689,
+    "ast_hash": "0a576e2a1564143becef9758746ee34c",
+    "semantic_hash": "0a576e2a1564143becef9758746ee34c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/party.mp3": {
+    "mtime": 1784558249.7179003,
+    "ast_hash": "f67be696edf378df348d645e66602dde",
+    "semantic_hash": "f67be696edf378df348d645e66602dde"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/sahiba.mp3": {
+    "mtime": 1784558249.7839005,
+    "ast_hash": "eecb408a4f969fb42ce4b96be925ca11",
+    "semantic_hash": "eecb408a4f969fb42ce4b96be925ca11"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/saiyaara.mp3": {
+    "mtime": 1784558249.8949008,
+    "ast_hash": "fc046201feef114738352b62d3ba8c9f",
+    "semantic_hash": "fc046201feef114738352b62d3ba8c9f"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/sajna.mp3": {
+    "mtime": 1784558249.9109008,
+    "ast_hash": "43cdcf0f6a2992e147ebfedc947e5a43",
+    "semantic_hash": "43cdcf0f6a2992e147ebfedc947e5a43"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/saregama.mp3": {
+    "mtime": 1784558249.956901,
+    "ast_hash": "8e4b27554db875f33873d846baa0f625",
+    "semantic_hash": "8e4b27554db875f33873d846baa0f625"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/small-world.mp3": {
+    "mtime": 1784558249.973901,
+    "ast_hash": "ff2f779502a584f1728ee98d179dae61",
+    "semantic_hash": "ff2f779502a584f1728ee98d179dae61"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/sunny-sunny.mp3": {
+    "mtime": 1784558250.0359013,
+    "ast_hash": "c4782ecdaa60518d5fa9e0dc2ab71580",
+    "semantic_hash": "c4782ecdaa60518d5fa9e0dc2ab71580"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/tauba-tauba.mp3": {
+    "mtime": 1784558250.0549014,
+    "ast_hash": "bea0c8efd0f104877d65fb218a813cac",
+    "semantic_hash": "bea0c8efd0f104877d65fb218a813cac"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/top-of-the-world.mp3": {
+    "mtime": 1784558250.0829015,
+    "ast_hash": "da7fb1478727890e51dcf20108de97e4",
+    "semantic_hash": "da7fb1478727890e51dcf20108de97e4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/uff.mp3": {
+    "mtime": 1784558250.1099017,
+    "ast_hash": "d08302661717cef9363712581824d7b4",
+    "semantic_hash": "d08302661717cef9363712581824d7b4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/victory.mp3": {
+    "mtime": 1784558250.1319017,
+    "ast_hash": "4854b4ddea89a4c13318e73d561d47e3",
+    "semantic_hash": "4854b4ddea89a4c13318e73d561d47e3"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/music/walking.mp3": {
+    "mtime": 1784558250.1499019,
+    "ast_hash": "0c0c315d4b6b1d2de2dc8f3ca46d2a40",
+    "semantic_hash": "0c0c315d4b6b1d2de2dc8f3ca46d2a40"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Basso.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "09079f1d3174eb65575fdf35f1d94c26",
+    "semantic_hash": "09079f1d3174eb65575fdf35f1d94c26"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Blow.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "576128c856329b46bca87bac820cb010",
+    "semantic_hash": "576128c856329b46bca87bac820cb010"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Bottle.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "708906daa4539217889dbe71d4d09560",
+    "semantic_hash": "708906daa4539217889dbe71d4d09560"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Frog.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "071504483b90b53e1a6f6c708ef9acc5",
+    "semantic_hash": "071504483b90b53e1a6f6c708ef9acc5"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Funk.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "50130661e2a2ad010b113a1a95535bef",
+    "semantic_hash": "50130661e2a2ad010b113a1a95535bef"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Glass.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "9b4e3c94f4319b86b7275cf0202ef441",
+    "semantic_hash": "9b4e3c94f4319b86b7275cf0202ef441"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Hero.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "d61781e2334f2d2a5d43ef57be7cae7c",
+    "semantic_hash": "d61781e2334f2d2a5d43ef57be7cae7c"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Morse.mp3": {
+    "mtime": 1784558250.1509018,
+    "ast_hash": "09b0194503c8c4246189b1672e8d1d68",
+    "semantic_hash": "09b0194503c8c4246189b1672e8d1d68"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Ping.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "95bf2bf6817b436d99f6f084a7c08322",
+    "semantic_hash": "95bf2bf6817b436d99f6f084a7c08322"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Pop.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "26cc54964feb3992636dcb785ba70525",
+    "semantic_hash": "26cc54964feb3992636dcb785ba70525"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Purr.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "8f4adeed2036423719571bc0baf2bf25",
+    "semantic_hash": "8f4adeed2036423719571bc0baf2bf25"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Sosumi.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "761a630d6d8ca908e5c65ca791460ce5",
+    "semantic_hash": "761a630d6d8ca908e5c65ca791460ce5"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Submarine.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "2fb8b0129eb0e3c544a2c1b689c4ebb4",
+    "semantic_hash": "2fb8b0129eb0e3c544a2c1b689c4ebb4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/Tink.mp3": {
+    "mtime": 1784558250.1519017,
+    "ast_hash": "0fdeea55765815bf02a997648838d064",
+    "semantic_hash": "0fdeea55765815bf02a997648838d064"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/opening.mp3": {
+    "mtime": 1784558250.155902,
+    "ast_hash": "8fd89189df8d386048f333750f7b11c4",
+    "semantic_hash": "8fd89189df8d386048f333750f7b11c4"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/reflection.mp3": {
+    "mtime": 1784558250.1609018,
+    "ast_hash": "50b2e07eb57d43dcd02f9d9e418d4ea1",
+    "semantic_hash": "50b2e07eb57d43dcd02f9d9e418d4ea1"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/sounds/startup chime.mp3": {
+    "mtime": 1784558250.1679018,
+    "ast_hash": "2f471f8f938be61b63d215aafaa4af62",
+    "semantic_hash": "2f471f8f938be61b63d215aafaa4af62"
+  },
+  "Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/public/wallpapers/Golden Gate Dynamic Wallpaper.mp4": {
+    "mtime": 1784558250.168902,
+    "ast_hash": "19a006a122a0817d841ca8929028341f",
+    "semantic_hash": "19a006a122a0817d841ca8929028341f"
+  }
+}
