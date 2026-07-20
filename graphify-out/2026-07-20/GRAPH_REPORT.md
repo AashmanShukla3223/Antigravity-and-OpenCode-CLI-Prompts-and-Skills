@@ -1,11 +1,11 @@
 # Graph Report - Antigravity-and-OpenCode-CLI-Prompts-and-Skills  (2026-07-20)
 
 ## Corpus Check
-- 137 files · ~741,165 words
+- 137 files · ~743,113 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 784 nodes · 1366 edges · 77 communities (56 shown, 21 thin omitted)
+- 798 nodes · 1384 edges · 77 communities (57 shown, 20 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.75)
 - Token cost: 0 input · 0 output
 
@@ -106,8 +106,8 @@
   Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Apps.tsx → Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/SystemContext.tsx
 - `StopwatchTab()` --calls--> `useSystem()`  [EXTRACTED]
   Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Clock.tsx → Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/SystemContext.tsx
-- `Mail()` --calls--> `useSystem()`  [EXTRACTED]
-  Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/Mail.tsx → Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/SystemContext.tsx
+- `GitHubNavigator()` --calls--> `useSystem()`  [EXTRACTED]
+  Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/components/apps/GitHubNavigator.tsx → Skills/showcase/restaurants/macOS-evolution/Modern MacOS (2020 to 2026)/macOS 27 Golden Gate/golden-gate-os-v27/src/contexts/SystemContext.tsx
 
 ## Import Cycles
 - None detected.
@@ -115,11 +115,11 @@
 ## Hyperedges (group relationships)
 - **macOS Evolution Lineage** — skills_showcase_restaurants_macos_evolution_modern_macos__2020_to_2026__macos_27_golden_gate_readme_macos_27_golden_gate [EXTRACTED 1.00]
 
-## Communities (77 total, 21 thin omitted)
+## Communities (77 total, 20 thin omitted)
 
 ### Community 0 - "Golden Gate - 27 Mcp Types"
-Cohesion: 0.18
-Nodes (19): IslandMode, LiveActivity, buildContext(), executeTool(), MCPBridge(), QueuedResponse, buildTools(), skipIfNotDesktop() (+11 more)
+Cohesion: 0.08
+Nodes (37): App(), SCHEMA_WEBAPP, TerminalApp(), BootSequence(), DynamicIsland(), IslandMode, LiveActivity, WallpaperEngine() (+29 more)
 
 ### Community 1 - "Golden Gate - 27 Package Devdependencies"
 Cohesion: 0.04
@@ -134,8 +134,8 @@ Cohesion: 0.10
 Nodes (25): Message, SiriAI(), suggestions, ALL_APPS_LIST, APP_NAMES, isCalc(), isQuestion(), QUESTION_WORDS (+17 more)
 
 ### Community 4 - "Golden Gate - 27 Package React"
-Cohesion: 0.06
-Nodes (33): framer-motion, hugeicons-react, lucide-react, @monaco-editor/react, react, react-dom, dependencies, framer-motion (+25 more)
+Cohesion: 0.07
+Nodes (29): framer-motion, hugeicons-react, lucide-react, @monaco-editor/react, react-dom, dependencies, framer-motion, hugeicons-react (+21 more)
 
 ### Community 5 - "Golden Gate - 27 Filesystemcontext Finde"
 Cohesion: 0.19
@@ -143,7 +143,7 @@ Nodes (10): FileSystemContext, FileSystemContextProps, FileSystemProvider(), gen
 
 ### Community 6 - "Golden Gate - 27 Desktop Notificationtoa"
 Cohesion: 0.09
-Nodes (17): ControlCenter, AboutThisMac, Apps, ScreenSaver, DynamicIsland(), IncomingCallOverlay(), MenuBar, NotificationBanner() (+9 more)
+Nodes (18): ControlCenter, AboutThisMac, Apps, ScreenSaver, ALL_APPS, Dock, MenuBar, NotificationBanner() (+10 more)
 
 ### Community 7 - "Golden Gate - 27 Applewallet Appletvplus"
 Cohesion: 0.09
@@ -154,8 +154,8 @@ Cohesion: 0.15
 Nodes (23): applyMove(), bestMove(), Board, Chess(), ChessMode, cloneBoard(), createInitialBoard(), evaluate() (+15 more)
 
 ### Community 9 - "Golden Gate - 27 Errorboundary Window"
-Cohesion: 0.13
-Nodes (11): ActivityMonitor(), generateInitialProcesses(), EKGCanvas(), ErrorBoundary, Props, State, AppMap, WindowProps (+3 more)
+Cohesion: 0.12
+Nodes (12): ActivityMonitor(), generateInitialProcesses(), EKGCanvas(), ErrorBoundary, Props, State, AppMap, Window() (+4 more)
 
 ### Community 10 - "Golden Gate - 27 Tsconfig App"
 Cohesion: 0.08
@@ -167,15 +167,15 @@ Nodes (18): AlarmItem, AlarmTab(), COMMON_TIMEZONES, DEFAULT_CITIES, formatTime(
 
 ### Community 12 - "Golden Gate - 27 Desktop Menubar"
 Cohesion: 0.14
-Nodes (14): CodeViewer(), DiskUtility(), GitHubItem, GitHubNavigator(), generateId(), PageDocument, Pages(), TimeMachine() (+6 more)
+Nodes (13): CodeViewer(), DiskUtility(), generateId(), PageDocument, Pages(), TimeMachine(), IncomingCallOverlay(), BatteryDropdown() (+5 more)
 
 ### Community 13 - "Golden Gate - Node 27 Tsconfig"
 Cohesion: 0.10
 Nodes (20): node, vite.config.ts, compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection (+12 more)
 
 ### Community 14 - "Golden Gate - 27 Filesystemresolver Desk"
-Cohesion: 0.14
-Nodes (11): AboutThisMac(), AppItem, apps, subApps, CrazyErrors(), Installer(), SystemSettings(), AppIcon() (+3 more)
+Cohesion: 0.15
+Nodes (10): AboutThisMac(), CrazyErrors(), GitHubItem, GitHubNavigator(), Installer(), SystemSettings(), AppIcon(), AppIconProps (+2 more)
 
 ### Community 15 - "Golden Gate - 27 Desktop Dock"
 Cohesion: 0.50
@@ -186,24 +186,24 @@ Cohesion: 0.12
 Nodes (15): Notes(), ActiveDownload, ActiveError, BootState, ClipboardEntry, DEFAULT_PINNED_APPS, defaultState, GoldenGateV27State (+7 more)
 
 ### Community 17 - "Golden Gate - 27 Motion Freeform"
-Cohesion: 0.29
-Nodes (8): beep(), FILTERS, PhotoBooth(), ResolutionKey, RESOLUTIONS, shutterSound(), TerminalApp(), useFileSystem()
+Cohesion: 0.38
+Nodes (6): beep(), FILTERS, PhotoBooth(), ResolutionKey, RESOLUTIONS, shutterSound()
 
 ### Community 18 - "Golden Gate - 27 Mcp Server"
 Cohesion: 0.13
 Nodes (14): dependencies, ws, devDependencies, @types/node, @types/ws, typescript, @types/node, typescript (+6 more)
 
 ### Community 19 - "Golden Gate - 27 Pixelmatorpro Vfs"
-Cohesion: 0.38
-Nodes (8): AppleMusic(), AUDIO_EXTS, IMAGE_EXTS, Photos(), ImportFileButton(), readFilesAndStore(), useFileDrop(), useImportFile()
+Cohesion: 0.35
+Nodes (9): AppleMusic(), AUDIO_EXTS, IMAGE_EXTS, Photos(), cleanup(), ImportFileButton(), readFilesAndStore(), useFileDrop() (+1 more)
 
 ### Community 20 - "Golden Gate - 27 Mcp Server"
-Cohesion: 0.21
-Nodes (10): forwardToolCallToBrowser(), handleMCPRequest(), pendingToolCalls, queuedMessages, sendMCPError(), sendMCPResponse(), { createServer }, path (+2 more)
+Cohesion: 0.14
+Nodes (16): connectionWaitQueue, CORE_TOOLS, executeTool(), forwardToolCallToBrowser(), handleMCPRequest(), pendingToolCalls, queuedMessages, READ_ONLY_TOOLS (+8 more)
 
 ### Community 21 - "Golden Gate - 27 Mcp Server"
-Cohesion: 0.21
-Nodes (11): httpServer, MCPRequest, MCPResponse, ToolDef, forwardToolCallToBrowser(), handleMCPRequest(), pendingToolCalls, queuedMessages (+3 more)
+Cohesion: 0.12
+Nodes (19): httpServer, MCPRequest, MCPResponse, QueuedConnectionPromise, ToolDef, connectionWaitQueue, CORE_TOOLS, executeTool() (+11 more)
 
 ### Community 22 - "Golden Gate - 27 Missioncontrol Iphonemi"
 Cohesion: 0.29
@@ -226,8 +226,8 @@ Cohesion: 0.28
 Nodes (5): SystemMenuBar(), SystemMenuBarProps, MacOSActivation(), MacOSRecovery(), TerminalApp
 
 ### Community 27 - "Golden Gate - Finalcutpro 27 Clip"
-Cohesion: 0.10
-Nodes (21): App(), SCHEMA_WEBAPP, BootSequence(), WallpaperEngine(), WallpaperEngineProps, DeviceRecovery(), LoginScreen(), languages (+13 more)
+Cohesion: 0.57
+Nodes (6): checkForUpdate(), fetchVersion(), getCurrentVersion(), OtaUpdateChecker(), semverCompare(), useManualOTACheck()
 
 ### Community 28 - "Golden Gate - Logicpro 27 Track"
 Cohesion: 0.27
@@ -250,8 +250,8 @@ Cohesion: 0.39
 Nodes (7): fail(), ok(), printReport(), recreatePage(), results, run(), TestResult
 
 ### Community 33 - "Golden Gate - Photobooth 27 Beep"
-Cohesion: 0.28
-Nodes (7): FILE_ICONS, Finder(), getFileIcon(), openFilePicker(), tagColors, FileSystemNode, TagColor
+Cohesion: 0.18
+Nodes (11): react, react, FILE_ICONS, Finder(), getFileIcon(), openFilePicker(), tagColors, FileSystemNode (+3 more)
 
 ### Community 34 - "Golden Gate - Screensaver 27 Desktop"
 Cohesion: 0.29
@@ -278,8 +278,8 @@ Cohesion: 0.50
 Nodes (4): generateWidgetId(), WIDGET_TEMPLATES, WidgetPicker(), Widget
 
 ### Community 40 - "Golden Gate - Usedynamicwallpaper 27 Get"
-Cohesion: 0.14
-Nodes (14): Desktop(), AirDropFile, AirDropPeer, useAirDrop(), getCurrentStage(), getWallpaper(), useDynamicWallpaper(), WallpaperStage (+6 more)
+Cohesion: 0.16
+Nodes (11): Desktop(), AirDropFile, AirDropPeer, useAirDrop(), getCurrentStage(), getWallpaper(), useDynamicWallpaper(), WallpaperStage (+3 more)
 
 ### Community 41 - "Caveman Full Stack"
 Cohesion: 0.50
@@ -309,25 +309,29 @@ Nodes (5): BootLog, bootLogger, logs, startTime, Window
 Cohesion: 0.47
 Nodes (5): dateFormat(), HomeApp, IPhoneMirroring(), ScreenState, timeFormat()
 
+### Community 76 - "Apps.tsx"
+Cohesion: 0.50
+Nodes (3): AppItem, apps, subApps
+
 ## Knowledge Gaps
-- **296 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+291 more)
+- **306 isolated node(s):** `redirects`, `headers`, `{ createServer }`, `{ WebSocketServer }`, `{ writeFileSync }` (+301 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `useSystem()` connect `Golden Gate - 27 Desktop Menubar` to `Golden Gate - 27 Mcp Types`, `Golden Gate - 27 Contacts Spotlight`, `Golden Gate - 27 Aiengine Xcode`, `Golden Gate - 27 Desktop Notificationtoa`, `Golden Gate - 27 Applewallet Appletvplus`, `Golden Gate - 27 Errorboundary Window`, `Golden Gate - Clock 27 Alarmitem`, `Golden Gate - 27 Filesystemresolver Desk`, `Golden Gate - 27 Desktop Dock`, `Golden Gate - 27 Systemcontext Notes`, `Golden Gate - 27 Motion Freeform`, `Golden Gate - 27 Pixelmatorpro Vfs`, `Golden Gate - 27 Missioncontrol Iphonemi`, `Golden Gate - 27 Systemsettings Usesoftw`, `Golden Gate - Vscode 27 Detectlanguage`, `Golden Gate - 27 Macosrecovery Systemmen`, `Golden Gate - Finalcutpro 27 Clip`, `Golden Gate - Logicpro 27 Track`, `Golden Gate - Photobooth 27 Beep`, `Golden Gate - 27 Widgetpicker Desktop`, `Golden Gate - Usedynamicwallpaper 27 Get`, `iPhoneMirroring.tsx`, `Apps.tsx`?**
-  _High betweenness centrality (0.214) - this node is a cross-community bridge._
-- **Why does `react` connect `Golden Gate - 27 Package React` to `Golden Gate - Photobooth 27 Beep`, `Golden Gate - 27 Contacts Spotlight`, `Golden Gate - 27 Pixelmatorpro Vfs`?**
-  _High betweenness centrality (0.121) - this node is a cross-community bridge._
-- **What connects `name`, `private`, `version` to the rest of the system?**
-  _296 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.206) - this node is a cross-community bridge._
+- **Why does `react` connect `Golden Gate - Photobooth 27 Beep` to `Golden Gate - 27 Contacts Spotlight`, `Golden Gate - 27 Pixelmatorpro Vfs`, `Golden Gate - 27 Package React`?**
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `Golden Gate - 27 Package React` to `Golden Gate - Photobooth 27 Beep`?**
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
+- **What connects `redirects`, `headers`, `{ createServer }` to the rest of the system?**
+  _306 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Golden Gate - 27 Mcp Types` be split into smaller, more focused modules?**
+  _Cohesion score 0.07826694619147449 - nodes in this community are weakly interconnected._
 - **Should `Golden Gate - 27 Package Devdependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `Golden Gate - 27 Contacts Spotlight` be split into smaller, more focused modules?**
   _Cohesion score 0.10037878787878787 - nodes in this community are weakly interconnected._
-- **Should `Golden Gate - 27 Aiengine Xcode` be split into smaller, more focused modules?**
-  _Cohesion score 0.09957325746799431 - nodes in this community are weakly interconnected._
-- **Should `Golden Gate - 27 Package React` be split into smaller, more focused modules?**
-  _Cohesion score 0.058823529411764705 - nodes in this community are weakly interconnected._

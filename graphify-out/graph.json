@@ -959,8 +959,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_package_dependencies_react",
-      "community": 33,
-      "community_name": "Golden Gate - Photobooth 27 Beep",
+      "community": 4,
+      "community_name": "Golden Gate - 27 Package React",
       "norm_label": "react"
     },
     {
@@ -970,8 +970,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "react",
-      "community": 33,
-      "community_name": "Golden Gate - Photobooth 27 Beep",
+      "community": 4,
+      "community_name": "Golden Gate - 27 Package React",
       "norm_label": "react"
     },
     {
@@ -1619,8 +1619,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_bootsequence",
-      "community": 0,
-      "community_name": "Golden Gate - 27 Mcp Types",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "bootsequence.tsx"
     },
     {
@@ -1630,8 +1630,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_bootsequence_bootsequence",
-      "community": 0,
-      "community_name": "Golden Gate - 27 Mcp Types",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "bootsequence()"
     },
     {
@@ -3885,8 +3885,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pages",
-      "community": 12,
-      "community_name": "Golden Gate - 27 Desktop Menubar",
+      "community": 39,
+      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
       "norm_label": "pages.tsx"
     },
     {
@@ -3896,8 +3896,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pages_pagedocument",
-      "community": 12,
-      "community_name": "Golden Gate - 27 Desktop Menubar",
+      "community": 39,
+      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
       "norm_label": "pagedocument"
     },
     {
@@ -3907,8 +3907,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pages_generateid",
-      "community": 12,
-      "community_name": "Golden Gate - 27 Desktop Menubar",
+      "community": 39,
+      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
       "norm_label": "generateid()"
     },
     {
@@ -3918,8 +3918,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pages_pages",
-      "community": 12,
-      "community_name": "Golden Gate - 27 Desktop Menubar",
+      "community": 39,
+      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
       "norm_label": "pages()"
     },
     {
@@ -4094,8 +4094,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "pixelmatorpro.tsx"
     },
     {
@@ -4105,8 +4105,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro_tool",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "tool"
     },
     {
@@ -4116,8 +4116,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro_filter",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "filter"
     },
     {
@@ -4127,8 +4127,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro_pixellayer",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "pixellayer"
     },
     {
@@ -4138,8 +4138,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro_nextlayer",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "nextlayer()"
     },
     {
@@ -4149,8 +4149,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_pixelmatorpro_pixelmatorpro",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "pixelmatorpro()"
     },
     {
@@ -4424,8 +4424,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_terminalapp",
-      "community": 0,
-      "community_name": "Golden Gate - 27 Mcp Types",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "terminalapp.tsx"
     },
     {
@@ -4435,8 +4435,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_apps_terminalapp_terminalapp",
-      "community": 0,
-      "community_name": "Golden Gate - 27 Mcp Types",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "terminalapp()"
     },
     {
@@ -5007,8 +5007,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_controlcenter",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "controlcenter.tsx"
     },
     {
@@ -5018,8 +5018,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_controlcenter_viscousslider",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "viscousslider()"
     },
     {
@@ -5029,8 +5029,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_controlcenter_controlcenter",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "controlcenter"
     },
     {
@@ -5084,8 +5084,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_desktop_desktop",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "desktop()"
     },
     {
@@ -5095,8 +5095,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_dock",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "dock.tsx"
     },
     {
@@ -5106,8 +5106,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_dock_all_apps",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "all_apps"
     },
     {
@@ -5117,8 +5117,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_dock_dock",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "dock"
     },
     {
@@ -5128,8 +5128,8 @@
       "source_location": "L297",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_dock_dockicon",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 14,
+      "community_name": "Golden Gate - 27 Filesystemresolver Desk",
       "norm_label": "dockicon()"
     },
     {
@@ -5579,8 +5579,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_restartdialog",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "restartdialog.tsx"
     },
     {
@@ -5590,8 +5590,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_restartdialog_restartdialog",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "restartdialog()"
     },
     {
@@ -5678,8 +5678,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_shutdowndialog",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "shutdowndialog.tsx"
     },
     {
@@ -5689,8 +5689,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_shutdowndialog_shutdowndialog",
-      "community": 6,
-      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
+      "community": 12,
+      "community_name": "Golden Gate - 27 Desktop Menubar",
       "norm_label": "shutdowndialog()"
     },
     {
@@ -5700,8 +5700,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "spotlight.tsx"
     },
     {
@@ -5711,8 +5711,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_searchsection",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "searchsection"
     },
     {
@@ -5722,8 +5722,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_searchresult",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "searchresult"
     },
     {
@@ -5733,8 +5733,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_system_actions",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "system_actions"
     },
     {
@@ -5744,8 +5744,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_all_apps_list",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "all_apps_list"
     },
     {
@@ -5755,8 +5755,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_app_names",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "app_names"
     },
     {
@@ -5766,8 +5766,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_question_words",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "question_words"
     },
     {
@@ -5777,8 +5777,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_isquestion",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "isquestion()"
     },
     {
@@ -5788,8 +5788,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_iscalc",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "iscalc()"
     },
     {
@@ -5799,8 +5799,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_spotlight_spotlight",
-      "community": 3,
-      "community_name": "Golden Gate - 27 Aiengine Xcode",
+      "community": 2,
+      "community_name": "Golden Gate - 27 Contacts Spotlight",
       "norm_label": "spotlight()"
     },
     {
@@ -5909,8 +5909,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_widgetpicker",
-      "community": 39,
-      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "widgetpicker.tsx"
     },
     {
@@ -5920,8 +5920,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_widgetpicker_widget_templates",
-      "community": 39,
-      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "widget_templates"
     },
     {
@@ -5931,8 +5931,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_widgetpicker_generatewidgetid",
-      "community": 39,
-      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "generatewidgetid()"
     },
     {
@@ -5942,8 +5942,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_components_desktop_widgetpicker_widgetpicker",
-      "community": 39,
-      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "widgetpicker()"
     },
     {
@@ -6239,8 +6239,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_contexts_systemcontext_widget",
-      "community": 39,
-      "community_name": "Golden Gate - 27 Widgetpicker Desktop",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "widget"
     },
     {
@@ -6360,8 +6360,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_contexts_systemcontext_schedulepersist",
-      "community": 33,
-      "community_name": "Golden Gate - Photobooth 27 Beep",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "schedulepersist()"
     },
     {
@@ -6404,8 +6404,8 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_contexts_systemcontext_systemprovider",
-      "community": 33,
-      "community_name": "Golden Gate - Photobooth 27 Beep",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "systemprovider()"
     },
     {
@@ -6426,8 +6426,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_useairdrop",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "useairdrop.ts"
     },
     {
@@ -6437,8 +6437,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_useairdrop_airdroppeer",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "airdroppeer"
     },
     {
@@ -6448,8 +6448,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_useairdrop_airdropfile",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "airdropfile"
     },
     {
@@ -6459,8 +6459,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_useairdrop_useairdrop",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "useairdrop()"
     },
     {
@@ -6470,8 +6470,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usedynamicwallpaper",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "usedynamicwallpaper.ts"
     },
     {
@@ -6481,8 +6481,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usedynamicwallpaper_wallpaperstage",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "wallpaperstage"
     },
     {
@@ -6492,8 +6492,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usedynamicwallpaper_getcurrentstage",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "getcurrentstage()"
     },
     {
@@ -6503,8 +6503,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usedynamicwallpaper_getwallpaper",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "getwallpaper()"
     },
     {
@@ -6514,8 +6514,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usedynamicwallpaper_usedynamicwallpaper",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "usedynamicwallpaper()"
     },
     {
@@ -6525,8 +6525,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usehandoff",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "usehandoff.ts"
     },
     {
@@ -6536,8 +6536,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usehandoff_handoffpeer",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "handoffpeer"
     },
     {
@@ -6547,8 +6547,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usehandoff_usehandoff",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "usehandoff()"
     },
     {
@@ -6558,8 +6558,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "usenotificationscheduler.ts"
     },
     {
@@ -6569,8 +6569,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler_subjects",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "subjects"
     },
     {
@@ -6580,8 +6580,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler_message_texts",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "message_texts"
     },
     {
@@ -6591,8 +6591,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler_pick",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "pick()"
     },
     {
@@ -6602,8 +6602,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler_playnotificationsound",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "playnotificationsound()"
     },
     {
@@ -6613,8 +6613,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_hooks_usenotificationscheduler_usenotificationscheduler",
-      "community": 2,
-      "community_name": "Golden Gate - 27 Contacts Spotlight",
+      "community": 27,
+      "community_name": "Golden Gate - Finalcutpro 27 Clip",
       "norm_label": "usenotificationscheduler()"
     },
     {
@@ -6778,8 +6778,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_main",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "main.tsx"
     },
     {
@@ -6789,8 +6789,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_main_booterrorboundary",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "booterrorboundary"
     },
     {
@@ -6800,8 +6800,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_main_booterrorboundary_getderivedstatefromerror",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": ".getderivedstatefromerror()"
     },
     {
@@ -6811,8 +6811,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_main_booterrorboundary_render",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": ".render()"
     },
     {
@@ -7603,8 +7603,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_icondebugger",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "icondebugger.ts"
     },
     {
@@ -7614,8 +7614,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_icondebugger_icondebugger",
-      "community": 5,
-      "community_name": "Golden Gate - 27 Filesystemcontext Finde",
+      "community": 16,
+      "community_name": "Golden Gate - 27 Systemcontext Notes",
       "norm_label": "icondebugger"
     },
     {
@@ -7625,8 +7625,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "otaupdate.tsx"
     },
     {
@@ -7636,8 +7636,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_semvercompare",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "semvercompare()"
     },
     {
@@ -7647,8 +7647,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_fetchversion",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "fetchversion()"
     },
     {
@@ -7658,8 +7658,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_getcurrentversion",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "getcurrentversion()"
     },
     {
@@ -7669,8 +7669,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_checkforupdate",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "checkforupdate()"
     },
     {
@@ -7680,8 +7680,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_usemanualotacheck",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "usemanualotacheck()"
     },
     {
@@ -7691,8 +7691,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_otaupdate_otaupdatechecker",
-      "community": 27,
-      "community_name": "Golden Gate - Finalcutpro 27 Clip",
+      "community": 0,
+      "community_name": "Golden Gate - 27 Mcp Types",
       "norm_label": "otaupdatechecker()"
     },
     {
@@ -7790,8 +7790,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_vfs_ops_downloadblob",
-      "community": 35,
-      "community_name": "Golden Gate - 27 Otaupdate Checkforupdat",
+      "community": 73,
+      "community_name": "Motion.tsx",
       "norm_label": "downloadblob()"
     },
     {
@@ -7801,8 +7801,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_vfs_ops_downloaddataurl",
-      "community": 40,
-      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "community": 6,
+      "community_name": "Golden Gate - 27 Desktop Notificationtoa",
       "norm_label": "downloaddataurl()"
     },
     {
@@ -7845,8 +7845,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "skills_showcase_restaurants_macos_evolution_modern_macos_2020_to_2026_macos_27_golden_gate_golden_gate_os_v27_src_utils_vfs_ops_savetovfs",
-      "community": 37,
-      "community_name": "Golden Gate - 27 Applemusic Musicdata",
+      "community": 17,
+      "community_name": "Golden Gate - 27 Motion Freeform",
       "norm_label": "savetovfs()"
     },
     {
@@ -8563,6 +8563,28 @@
       "community": 45,
       "community_name": "Golden Gate - 27 Vite Config",
       "norm_label": "cacheassetsplugin()"
+    },
+    {
+      "label": "browser_session.md",
+      "file_type": "document",
+      "source_file": ".agents/rules/browser_session.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "agents_rules_browser_session",
+      "community": 40,
+      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "norm_label": "browser_session.md"
+    },
+    {
+      "label": "Browser-based Session Learning",
+      "file_type": "document",
+      "source_file": ".agents/rules/browser_session.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "agents_rules_browser_session_browser_based_session_learning",
+      "community": 40,
+      "community_name": "Golden Gate - Usedynamicwallpaper 27 Get",
+      "norm_label": "browser-based session learning"
     },
     {
       "label": "Graphify Consultation Rules",
@@ -24766,6 +24788,17 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/rules/browser_session.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "agents_rules_browser_session",
+      "target": "agents_rules_browser_session_browser_based_session_learning",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -24859,5 +24892,5 @@
       "source_file": "README.md"
     }
   ],
-  "built_at_commit": "4b7cf6a64c6be1db791b91cd9c9b7473fb7063cb"
+  "built_at_commit": "75abf624e576e78db981e365084b6bfdc47880f8"
 }

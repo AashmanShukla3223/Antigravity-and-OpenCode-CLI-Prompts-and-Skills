@@ -6633,5 +6633,10 @@
     "mtime": 1784558250.462903,
     "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
     "semantic_hash": ""
+  },
+  ".agents/rules/browser_session.md": {
+    "mtime": 1784561207.5575452,
+    "ast_hash": "b5b0cdfceb664319089973b1c04fb0da",
+    "semantic_hash": ""
   }
 }
