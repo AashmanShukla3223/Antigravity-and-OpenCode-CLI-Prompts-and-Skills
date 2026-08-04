@@ -45,6 +45,7 @@ const apps: AppItem[] = [
   { id: 'finalcutpro', name: 'Final Cut Pro' },
   { id: 'logicpro', name: 'Logic Pro' },
   { id: 'chess', name: 'Chess' },
+  { id: 'geometrydash', name: 'Geometry Dash' },
 
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts', 'photobooth'] },
   { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code', 'vmware'] },

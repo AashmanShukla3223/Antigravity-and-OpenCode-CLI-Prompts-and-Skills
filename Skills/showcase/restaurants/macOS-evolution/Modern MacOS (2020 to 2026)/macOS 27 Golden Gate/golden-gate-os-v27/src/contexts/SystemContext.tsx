@@ -171,6 +171,10 @@ export interface GoldenGateV27State {
   dndEnabled: boolean;
   vpnConnected: boolean;
   hotspotActive: boolean;
+  osVersion: 'golden-gate' | 'macos-28';
+  rosettaInstalled: boolean;
+  geometryDashBuildType: 'intel' | 'apple-silicon';
+  appStoreDeepLink: string | null;
 }
 
 const persistQueue = new Map<string, string>();
@@ -273,6 +277,10 @@ const defaultState: GoldenGateV27State = {
   dndEnabled: false,
   vpnConnected: false,
   hotspotActive: false,
+  osVersion: 'golden-gate',
+  rosettaInstalled: false,
+  geometryDashBuildType: 'intel',
+  appStoreDeepLink: null,
 };
 
 interface SystemContextProps {
@@ -851,6 +859,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const launchApp = useCallback(
     (appId: string) => {
+      if (appId === 'geometrydash') {
+        const isAppleSilicon = systemState.geometryDashBuildType === 'apple-silicon';
+        if (!isAppleSilicon) {
+          if (systemState.osVersion === 'golden-gate' || !systemState.osVersion) {
+            if (!systemState.rosettaInstalled) {
+              window.dispatchEvent(new CustomEvent('open-rosetta-modal'));
+              return;
+            }
+          } else if (systemState.osVersion === 'macos-28') {
+            window.dispatchEvent(new CustomEvent('open-rosetta-modal'));
+            return;
+          }
+        }
+      }
+
       const SINGLE_INSTANCE_APPS = new Set(['apps', 'installer', 'siriai']);
 
       if (SINGLE_INSTANCE_APPS.has(appId)) {
@@ -882,7 +905,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setMinimizedWindows((prev) => prev.filter((id) => id !== newId));
       }, 1000);
     },
-    [openWindows, activeWindowId, systemState.runningApps, updateSystemState],
+    [openWindows, activeWindowId, systemState, updateSystemState],
   );
 
   const closeWindow = useCallback((windowId: string) => {

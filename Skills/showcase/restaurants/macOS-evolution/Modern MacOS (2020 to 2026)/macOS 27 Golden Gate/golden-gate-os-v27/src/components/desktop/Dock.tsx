@@ -39,6 +39,7 @@ const ALL_APPS = [
   { id: 'logicpro', name: 'Logic Pro' },
   { id: 'photobooth', name: 'Photo Booth' },
   { id: 'chess', name: 'Chess' },
+  { id: 'geometrydash', name: 'Geometry Dash' },
   { id: 'minecraft', name: 'Minecraft' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },

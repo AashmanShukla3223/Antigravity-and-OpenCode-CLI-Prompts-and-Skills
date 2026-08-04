@@ -11,6 +11,7 @@ const AboutThisMac = lazy(() => import('../apps/AboutThisMac').then((m) => ({ de
 import { RestartDialog } from './RestartDialog';
 import { ShutdownDialog } from './ShutdownDialog';
 import { SystemDialog } from './SystemDialog';
+import { RosettaModal } from '../modals/RosettaModal';
 import { WallpaperEngine } from './WallpaperEngine';
 import { Spotlight } from './Spotlight';
 import {
@@ -82,6 +83,15 @@ export const Desktop: React.FC = () => {
   const [showApps, setShowApps] = useState(false);
   const [missionControlOpen, setMissionControlOpen] = useState(false);
   const [screenSaverActive, setScreenSaverActive] = useState(false);
+  const [rosettaModalOpen, setRosettaModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleIntercept = () => {
+      setRosettaModalOpen(true);
+    };
+    window.addEventListener('open-rosetta-modal', handleIntercept);
+    return () => window.removeEventListener('open-rosetta-modal', handleIntercept);
+  }, []);
   const airdrop = useAirDrop();
   const handoff = useHandoff();
   const universalControl = useUniversalControl();
@@ -1298,6 +1308,25 @@ export const Desktop: React.FC = () => {
           </motion.div>
         ))}
       </AnimatePresence>
+      {/* Rosetta 2 / macOS 28 Intel Deprecation Modal */}
+      <RosettaModal
+        isOpen={rosettaModalOpen}
+        osVersion={systemState.osVersion}
+        onNotNow={() => setRosettaModalOpen(false)}
+        onInstallComplete={() => {
+          updateSystemState({ rosettaInstalled: true });
+          setRosettaModalOpen(false);
+          setTimeout(() => {
+            launchApp('geometrydash');
+          }, 100);
+        }}
+        onOpenAppStore={() => {
+          setRosettaModalOpen(false);
+          updateSystemState({ appStoreDeepLink: 'geometrydash' });
+          launchApp('appstore');
+        }}
+        onClose={() => setRosettaModalOpen(false)}
+      />
     </div>
   );
 };

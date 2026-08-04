@@ -138,6 +138,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
     logicpro: `${base}icons/logic-pro.png`,
     photobooth: `${base}icons/photo-booth.png`,
     chess: `${base}icons/chess.png`,
+    geometrydash: `${base}icons/Geometry Dash.png`,
     minecraft: `${base}icons/Minecraft.png`,
   };
 

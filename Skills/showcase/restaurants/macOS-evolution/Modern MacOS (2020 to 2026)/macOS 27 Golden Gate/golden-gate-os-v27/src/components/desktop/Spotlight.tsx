@@ -40,6 +40,7 @@ const ALL_APPS_LIST = [
   'diskutility', 'timemachine', 'photobooth', 'siriai', 'github', 'aboutme',
   'vmware', 'samsunglcdtv', 'iphonemirroring', 'crazyerrors', 'soundtest',
   'freeform', 'motion', 'xcode', 'pixelmatorpro', 'finalcutpro', 'logicpro',
+  'geometrydash',
 ];
 
 const APP_NAMES: Record<string, string> = {
@@ -59,7 +60,7 @@ const APP_NAMES: Record<string, string> = {
   crazyerrors: 'Crazy Errors', soundtest: 'Sound Test', freeform: 'Freeform',
   motion: 'Motion', xcode: 'Xcode', pixelmatorpro: 'Pixelmator Pro',
   finalcutpro: 'Final Cut Pro', logicpro: 'Logic Pro',
-  installer: 'Installer', games: 'Games',
+  installer: 'Installer', games: 'Games', geometrydash: 'Geometry Dash',
 };
 
 const QUESTION_WORDS = new Set([

@@ -153,11 +153,23 @@ export const AboutThisMac: React.FC = () => {
 
           <div className="flex flex-col text-black dark:text-white items-center w-full">
             <h1 className="text-2xl font-black tracking-tight mb-1">
-              macOS <span className="font-light">Golden Gate</span>
+              macOS <span className="font-light">{systemState.osVersion === 'macos-28' ? '28 Sequoia' : 'Golden Gate'}</span>
             </h1>
-            <p className="text-[10px] text-black/40 dark:text-white/40 mb-8 font-black uppercase tracking-[0.2em]">
-              Version 27.0.0
-            </p>
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-[10px] text-black/40 dark:text-white/40 font-black uppercase tracking-[0.2em]">
+                {systemState.osVersion === 'macos-28' ? 'Version 28.0.0' : 'Version 27.0.0'}
+              </span>
+              <button
+                onClick={() =>
+                  updateSystemState({
+                    osVersion: systemState.osVersion === 'macos-28' ? 'golden-gate' : 'macos-28',
+                  })
+                }
+                className="px-2 py-0.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-[9px] font-bold rounded-full border border-blue-500/30 transition-colors"
+              >
+                Switch to {systemState.osVersion === 'macos-28' ? 'Golden Gate' : 'macOS 28'}
+              </button>
+            </div>
 
             <div className="space-y-4 font-mono text-[10px] text-black/60 dark:text-white/60 w-full px-2">
               <div className="flex flex-col gap-1 border-b border-black/5 dark:border-white/5 pb-3">
