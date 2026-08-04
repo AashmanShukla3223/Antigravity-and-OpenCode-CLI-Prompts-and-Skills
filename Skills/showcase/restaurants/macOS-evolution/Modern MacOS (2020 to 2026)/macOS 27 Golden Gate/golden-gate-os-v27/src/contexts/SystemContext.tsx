@@ -863,7 +863,8 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const isAppleSilicon = systemState.geometryDashBuildType === 'apple-silicon';
         if (!isAppleSilicon) {
           if (systemState.osVersion === 'golden-gate' || !systemState.osVersion) {
-            if (!systemState.rosettaInstalled) {
+            const isRosettaInstalled = systemState.rosettaInstalled || localStorage.getItem('golden_gate_v27_rosetta') === 'true';
+            if (!isRosettaInstalled) {
               window.dispatchEvent(new CustomEvent('open-rosetta-modal'));
               return;
             }

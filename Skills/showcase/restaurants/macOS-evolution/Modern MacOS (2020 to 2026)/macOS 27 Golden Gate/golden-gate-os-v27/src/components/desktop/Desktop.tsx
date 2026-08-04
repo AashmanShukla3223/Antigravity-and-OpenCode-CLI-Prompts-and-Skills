@@ -1314,11 +1314,12 @@ export const Desktop: React.FC = () => {
         osVersion={systemState.osVersion}
         onNotNow={() => setRosettaModalOpen(false)}
         onInstallComplete={() => {
+          localStorage.setItem('golden_gate_v27_rosetta', 'true');
           updateSystemState({ rosettaInstalled: true });
           setRosettaModalOpen(false);
           setTimeout(() => {
             launchApp('geometrydash');
-          }, 100);
+          }, 150);
         }}
         onOpenAppStore={() => {
           setRosettaModalOpen(false);
