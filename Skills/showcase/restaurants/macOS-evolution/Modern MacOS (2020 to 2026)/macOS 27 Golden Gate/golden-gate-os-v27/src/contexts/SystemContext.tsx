@@ -859,6 +859,23 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const launchApp = useCallback(
     (appId: string) => {
+      if (appId === 'crazyerrors') {
+        showAlert(
+          '"Crazy Errors" needs to be updated. This app will not work with future versions of macOS Golden Gate. Contact the developer for more information.',
+          'App Needs to be Updated',
+        );
+        return;
+      }
+
+      if (appId === 'vmware') {
+        addNotification({
+          appId: 'vmware',
+          title: 'App Not Optimized',
+          message: '"VMware Fusion Pro" is not optimized for your Mac and needs to be updated. Reduced performance may occur.',
+          icon: '/icons/VMware Fusion Pro.png',
+        });
+      }
+
       if (appId === 'geometrydash') {
         const isAppleSilicon = systemState.geometryDashBuildType === 'apple-silicon';
         if (!isAppleSilicon) {

@@ -39,10 +39,12 @@ const getGlassmorphicIcon = (code: number, size = 48) => {
 };
 
 export const Weather: React.FC = () => {
-  const [location, setLocation] = useState('auto:ip');
+  const [location, setLocation] = useState('Kanpur, India');
   const [searchInput, setSearchInput] = useState('');
   const [weather, setWeather] = useState<GoldenGateWeatherData | null>(null);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('golden_gate_weather_api_key') || '');
+  const [apiKey, setApiKey] = useState(
+    () => (import.meta as any).env?.VITE_OPENWEATHER_API_KEY || '49e42a3d6cdb74758adea850a3aa750d',
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

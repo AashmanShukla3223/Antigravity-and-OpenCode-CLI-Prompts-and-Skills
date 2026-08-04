@@ -3,7 +3,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { useFileSystem } from '../../contexts/FileSystemContext'; // createNode, deleteNode available
 
 export const TerminalApp: React.FC = () => {
-  const { bootState, launchApp, setBootState, battery, hardware, uptime, activeUser, systemState } = useSystem();
+  const { bootState, launchApp, setBootState, hardware, uptime, activeUser, systemState } = useSystem();
   const { getDirectoryContents, nodes, createNode, deleteNode } = useFileSystem();
 
   const isRecovery = bootState === 'recovery';
@@ -180,16 +180,17 @@ export const TerminalApp: React.FC = () => {
         break;
       }
       case 'neofetch':
-        output = `        .       ${username.toLowerCase()}@${isRecovery ? 'Recovery' : 'MacBook-Pro'}
+        output = `        .       ${username.toLowerCase()}@Golden-Gate-Mac
         .:.      ---------------------------
-       .:::.     OS: macOS Golden Gate 27.0.0 ${isRecovery ? '(Recovery Mode)' : ''}
-      .:::::.    Kernel: Darwin 27.0.0
+       .:::.     OS: macOS Golden Gate 27.0.0
+      .:::::.    Kernel: Darwin 27.0.0 (ARM64)
       :::::::    Uptime: ${Math.floor(uptime / 60)} mins, ${uptime % 60} secs
-      ':::::'    Battery: ${Math.round(battery.level * 100)}% (${battery.isCharging ? 'Charging' : 'Discharging'})
-       ':::'     Shell: zsh 5.9
-        ':'      Resolution: 2560x1600
-         '       CPU: Apple Silicon (${hardware.cores} cores)
-                 Memory: ${hardware.memory}GB Unified Silicon`;
+      ':::::'    Architect: Aashman Shukla
+       ':::'     GitHub: @AashmanShukla3223
+        ':'      Shell: zsh 5.9
+         '       CPU: Apple Silicon M5 Max (${hardware.cores} cores)
+                 Memory: ${hardware.memory || 16}GB Unified Silicon
+                 Apps Registered: 48 Installed Apps`;
         break;
       case 'uptime':
         output = `up ${Math.floor(uptime / 60)} minutes, ${uptime % 60} seconds`;

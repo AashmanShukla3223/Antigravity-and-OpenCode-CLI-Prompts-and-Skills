@@ -73,22 +73,38 @@ export const DiskUtility: React.FC = () => {
             <div className="absolute inset-0 bg-blue-500/20 blur-[40px] rounded-full" />
             <HardDriveIcon size={128} className="text-blue-500 opacity-20 relative z-10 hugeicon-golden-gate" />
           </div>
-          <h2 className="text-3xl font-bold mb-2 tracking-tight">M5 Max SSD</h2>
-          <p className="text-xs text-white/20 mb-12 font-black uppercase tracking-[0.3em]">Apple Neural Storage 2.0</p>
+          <h2 className="text-3xl font-bold mb-2 tracking-tight">Macintosh HD</h2>
+          <p className="text-xs text-white/20 mb-8 font-black uppercase tracking-[0.3em]">512 GB APFS Container Volume</p>
 
-          <div className="w-full max-w-lg h-14 bg-white/5 border border-white/10 rounded-3xl flex overflow-hidden p-1.5 shadow-inner">
+          <div className="w-full max-w-lg h-10 bg-white/5 border border-white/10 rounded-2xl flex overflow-hidden p-1 shadow-inner">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: '60%' }}
-              transition={{ duration: 1.5, ease: 'circOut' }}
-              className="h-full bg-blue-500 rounded-2xl shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+              animate={{ width: '45%' }}
+              transition={{ duration: 1.2, ease: 'circOut' }}
+              className="h-full bg-blue-500 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+              title="Apps (230.4 GB)"
+            />
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '20%' }}
+              transition={{ duration: 1.2, delay: 0.1, ease: 'circOut' }}
+              className="h-full bg-purple-500 rounded-xl ml-1 shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+              title="System Data (102.4 GB)"
             />
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '15%' }}
-              transition={{ duration: 1.5, delay: 0.2, ease: 'circOut' }}
-              className="h-full bg-purple-500 rounded-2xl ml-1 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+              transition={{ duration: 1.2, delay: 0.2, ease: 'circOut' }}
+              className="h-full bg-yellow-500 rounded-xl ml-1 shadow-[0_0_15px_rgba(234,179,8,0.4)]"
+              title="Media & Files (76.8 GB)"
             />
+          </div>
+
+          <div className="flex gap-6 mt-4 text-[11px] font-semibold text-white/60">
+            <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Apps (230 GB)</span>
+            <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> System (102 GB)</span>
+            <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-yellow-500" /> Media (76 GB)</span>
+            <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-white/20" /> Free (104 GB)</span>
           </div>
 
           <div className="flex justify-between w-full max-w-lg mt-12 space-y-3 flex-col">

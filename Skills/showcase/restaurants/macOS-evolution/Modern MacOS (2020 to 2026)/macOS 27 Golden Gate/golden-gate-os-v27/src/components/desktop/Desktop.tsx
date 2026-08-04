@@ -84,6 +84,7 @@ export const Desktop: React.FC = () => {
   const [missionControlOpen, setMissionControlOpen] = useState(false);
   const [screenSaverActive, setScreenSaverActive] = useState(false);
   const [rosettaModalOpen, setRosettaModalOpen] = useState(false);
+  const [showWallpaperInfo, setShowWallpaperInfo] = useState(false);
 
   useEffect(() => {
     const handleIntercept = () => {
@@ -978,6 +979,15 @@ export const Desktop: React.FC = () => {
                 >
                   Change Wallpaper
                 </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    setShowWallpaperInfo(true);
+                    setContextMenu(null);
+                  }}
+                >
+                  Get Info on Wallpaper
+                </div>
                 <div className="border-b border-white/10 my-1 mx-3" />
                 <div
                   className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
@@ -1328,6 +1338,65 @@ export const Desktop: React.FC = () => {
         }}
         onClose={() => setRosettaModalOpen(false)}
       />
+
+      {/* Wallpaper Get Info Modal */}
+      <AnimatePresence>
+        {showWallpaperInfo && (
+          <div className="fixed inset-0 z-[15000] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-sm bg-neutral-900/90 border border-white/20 rounded-2xl p-6 shadow-2xl backdrop-blur-2xl text-white select-none relative"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-base font-bold">Golden Gate Light.webp Info</h3>
+                  <p className="text-xs text-white/50">macOS Wallpaper File Metadata</p>
+                </div>
+                <button
+                  onClick={() => setShowWallpaperInfo(false)}
+                  className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs text-white/70 border-t border-white/10 pt-4">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Kind:</span>
+                  <span>HEIF Image (Native Glass)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Dimensions:</span>
+                  <span>5120 × 2880 (5K Retina)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Architect & Dev:</span>
+                  <span className="text-blue-400 font-bold">Aashman Shukla</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Project GitHub:</span>
+                  <span className="text-blue-400">@AashmanShukla3223</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">OS Build:</span>
+                  <span>macOS Golden Gate v27.0</span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-white/10 flex justify-end">
+                <button
+                  onClick={() => setShowWallpaperInfo(false)}
+                  className="px-5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold text-xs transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

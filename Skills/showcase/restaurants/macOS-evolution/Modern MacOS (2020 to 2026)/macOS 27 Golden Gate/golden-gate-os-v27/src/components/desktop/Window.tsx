@@ -64,7 +64,8 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   photobooth: namedLazy(() => import('../apps/PhotoBooth'), 'PhotoBooth'),
   chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
   geometrydash: namedLazy(() => import('../apps/GeometryDash'), 'GeometryDash'),
-  minecraft: namedLazy(() => import('../apps/Minecraft'), 'Minecraft'),
+  screensharing: namedLazy(() => import('../apps/ScreenSharing'), 'ScreenSharing'),
+  migrationassistant: namedLazy(() => import('../apps/MigrationAssistant'), 'MigrationAssistant'),
   launchpad: namedLazy(() => import('../apps/Apps'), 'Apps'),
   githubnavigator: namedLazy(() => import('../apps/GitHubNavigator'), 'GitHubNavigator'),
 };

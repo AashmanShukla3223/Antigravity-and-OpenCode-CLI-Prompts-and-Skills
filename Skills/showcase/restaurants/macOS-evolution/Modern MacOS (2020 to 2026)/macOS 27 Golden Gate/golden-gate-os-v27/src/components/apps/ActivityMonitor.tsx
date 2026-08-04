@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity01Icon } from 'hugeicons-react';
 import { EKGCanvas } from './EKGCanvas';
 import { useTelemetry } from '../../hooks/useTelemetry';
+import { useSystem } from '../../contexts/SystemContext';
 
 const generateInitialProcesses = () => {
   return Array.from({ length: 15 }).map((_, i) => ({
@@ -18,21 +19,28 @@ const generateInitialProcesses = () => {
 export const ActivityMonitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CPU' | 'Memory' | 'Network'>('CPU');
   const telemetry = useTelemetry();
+  const { systemState } = useSystem();
 
   const [processes, setProcesses] = useState(generateInitialProcesses);
 
-  // Simulate updating stats, but scale cpu load with our telemetry
+  // Update process list to reflect real active apps from SystemContext
   useEffect(() => {
     const timer = setInterval(() => {
-      setProcesses((prev) =>
-        prev.map((p) => ({
-          ...p,
-          cpu: (Math.random() * 15 + telemetry.cpuPressure * 20).toFixed(1),
-        })),
-      );
+      const activeAppsList = systemState.runningApps.map((id: string, i: number) => ({
+        id: 5000 + i,
+        name: id.charAt(0).toUpperCase() + id.slice(1),
+        cpu: (Math.random() * 25 + 5).toFixed(1),
+        memory: (Math.random() * 300 + 80).toFixed(0),
+        threads: Math.floor(Math.random() * 20 + 8),
+      }));
+
+      setProcesses([
+        ...activeAppsList,
+        ...generateInitialProcesses().slice(activeAppsList.length),
+      ]);
     }, 2000);
     return () => clearInterval(timer);
-  }, [telemetry.cpuPressure]);
+  }, [telemetry.cpuPressure, systemState.runningApps]);
 
   return (
     <div className="flex flex-col h-full w-full bg-white text-black font-sans">

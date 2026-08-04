@@ -743,7 +743,14 @@ export const SystemSettings: React.FC = () => {
             color="bg-zinc-900"
             active={currentTab === 'Wallet'}
             onClick={() => setCurrentTab('Wallet')}
-          />{' '}
+          />
+          <SidebarItem
+            name="Privacy & Security"
+            iconUrl={`${base}${FileSystemResolver.getPreferenceIcon('preferences-desktop-user-password')}`}
+            color="bg-blue-600"
+            active={currentTab === 'Privacy & Security'}
+            onClick={() => setCurrentTab('Privacy & Security')}
+          />
         </div>
       </div>
       <div className="flex-1 p-8 overflow-y-auto scrollbar-hide">
@@ -756,6 +763,33 @@ export const SystemSettings: React.FC = () => {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
+            {currentTab === 'Privacy & Security' && (
+              <>
+                <h2 className="text-2xl font-semibold mb-6">Privacy & Security</h2>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6 flex flex-col gap-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-base text-white">System Extensions</h3>
+                      <p className="text-xs text-white/50 mt-0.5">
+                        System software from application &apos;VMware Fusion Pro&apos; was updated and is no longer compatible with this version of macOS.
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-1 bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                      Blocked
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-2">
+                    <span className="text-xs text-white/40">Kext ID: com.vmware.kext.VMnet (Legacy Kernel Extension)</span>
+                    <button
+                      disabled
+                      className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-white/30 border border-white/10 cursor-not-allowed"
+                    >
+                      Allow
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
             {currentTab === 'Appearance' && (
               <>
                 <h2 className="text-2xl font-semibold mb-6">Appearance</h2>

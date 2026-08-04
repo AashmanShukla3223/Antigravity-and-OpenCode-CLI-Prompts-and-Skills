@@ -40,6 +40,8 @@ const ALL_APPS = [
   { id: 'photobooth', name: 'Photo Booth' },
   { id: 'chess', name: 'Chess' },
   { id: 'geometrydash', name: 'Geometry Dash' },
+  { id: 'screensharing', name: 'Screen Sharing' },
+  { id: 'migrationassistant', name: 'Migration Assistant' },
   { id: 'minecraft', name: 'Minecraft' },
   { id: 'books', name: 'Books' },
   { id: 'wallet', name: 'Wallet' },

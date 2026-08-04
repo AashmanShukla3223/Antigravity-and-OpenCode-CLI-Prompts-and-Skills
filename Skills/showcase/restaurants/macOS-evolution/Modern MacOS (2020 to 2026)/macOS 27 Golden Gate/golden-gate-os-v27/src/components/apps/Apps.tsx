@@ -46,10 +46,12 @@ const apps: AppItem[] = [
   { id: 'logicpro', name: 'Logic Pro' },
   { id: 'chess', name: 'Chess' },
   { id: 'geometrydash', name: 'Geometry Dash' },
+  { id: 'screensharing', name: 'Screen Sharing' },
+  { id: 'migrationassistant', name: 'Migration Assistant' },
 
   { id: 'socialize', name: 'Social', isFolder: true, folderApps: ['messages', 'mail', 'facetime', 'contacts', 'photobooth'] },
   { id: 'developer', name: 'Developer', isFolder: true, folderApps: ['terminal', 'github', 'code', 'vmware'] },
-  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring', 'chess'] },
+  { id: 'utility', name: 'Utility', isFolder: true, folderApps: ['settings', 'activitymonitor', 'weather', 'notes', 'reminders', 'stickies', 'iphonemirroring', 'timemachine', 'diskutility', 'screensharing', 'migrationassistant', 'chess'] },
 ];
 
 const subApps: Record<string, AppItem[]> = {
