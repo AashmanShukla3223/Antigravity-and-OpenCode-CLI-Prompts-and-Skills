@@ -5,7 +5,7 @@ import { useSystem } from '../../contexts/SystemContext';
 import { FileSystemResolver } from '../../utils/FileSystemResolver';
 
 export const AboutThisMac: React.FC = () => {
-  const { showAboutWindow, setShowAboutWindow, launchApp, battery, hardware } = useSystem();
+  const { showAboutWindow, setShowAboutWindow, launchApp, battery, hardware, systemState, updateSystemState } = useSystem();
 
   const [gpuInfo] = useState(() => {
     try {
