@@ -1,0 +1,105 @@
+# macOS 27 Golden Gate — Full Context
+
+## Project Overview
+
+macOS Golden Gate (v27.0) is a high-fidelity web-based OS simulation representing the "Unit 7" era of Apple computing. It is built as a React SPA that bridges the gap between legacy desktop metaphors and futuristic "Frozen Prompt" architectures.
+
+### Aesthetic
+
+"Silicon-Native Liquid Glass" — Glassmorphism with 50px blur, 190% saturation, and 120fps Framer Motion physics.
+
+### Modular Architecture
+
+- Centralized SystemContext state machine for OS lifecycle
+- Persistent FileSystemContext virtual drive
+- 43 application modules in a component registry
+- Real-time hardware simulation (battery, memory, storage)
+
+## Technical Stack
+
+- **Framework:** React 19 + Vite (TypeScript)
+- **Styling:** Tailwind CSS 4 (custom glassmorphism utilities)
+- **Animations:** Framer Motion (physics transitions, true-magnification dock, genie effect)
+- **Icons:** HugeIcons + Lucide React + custom SVG paths
+- **Persistence:** LocalStorage keys: `golden_gate_v27_state` (System) and `golden_gate_v27_fs` (Filesystem)
+
+## Directory Structure
+
+```
+src/
+├── App.tsx                     # Root component — boot state routing
+├── main.tsx                    # React entry point
+├── contexts/
+│   ├── SystemContext.tsx       # Main OS state machine
+│   └── FileSystemContext.tsx   # Virtual File System (VFS)
+├── components/
+│   ├── BootSequence.tsx        # Boot screen (432Hz sine chime)
+│   ├── SetupAssistant.tsx      # First-run setup wizard
+│   ├── LoginScreen.tsx         # Password gate
+│   ├── MacOSRecovery.tsx       # Recovery mode
+│   ├── MacOSActivation.tsx     # Activation lock
+│   ├── DeviceRecovery.tsx      # Dead-drive overlay
+│   ├── desktop/
+│   │   ├── Desktop.tsx         # Main desktop shell
+│   │   ├── Dock.tsx            # macOS dock with magnification
+│   │   ├── MenuBar.tsx         # Top menu bar
+│   │   ├── Window.tsx          # Window manager
+│   │   ├── ControlCenter.tsx   # Control center panel
+│   │   ├── Spotlight.tsx       # Spotlight search
+│   │   └── WallpaperEngine.tsx # Dynamic wallpaper
+│   ├── apps/                   # 43 individual app components
+│   └── common/
+│       ├── AppIcon.tsx         # Icon renderer
+│       └── SystemMenuBar.tsx
+├── hooks/
+│   ├── useDynamicWallpaper.ts
+│   ├── useSoftwareUpdate.ts
+│   └── useTelemetry.ts
+└── utils/
+    ├── FileSystemResolver.ts
+    ├── MusicData.ts
+    └── contacts.ts
+```
+
+## Core System Logic
+
+### 1. System Lifecycle
+- **Boot Flow:** BootSequence (432Hz sine chime) → SetupAssistant → LoginScreen → Desktop
+- **Recovery Mode:** Triggered via Ctrl+M keyboard shortcut or system failure
+- **Persistence:** State synchronized to localStorage on every change
+
+### 2. Virtual File System
+- **Nodes:** Files and folders with unique IDs, parent relationships, metadata (tags, locked status)
+- **macOS Logic:** Deletion moves nodes to trash; emptyTrash recursively purges
+- **Self-Heal:** Ensures critical system nodes (root, apps, users) are restored if missing
+
+### 3. Window Management
+- **Active State:** Z-index and focus managed via activeApp in SystemContext
+- **Interactions:** Minimize, maximize (toggle), and close
+- **App Registry:** Window.tsx maps 43 app IDs to React components
+
+### 4. Hardware Integration
+- **Battery:** Tracks hardware battery level, adapts "Power Mode"
+- **Dynamic Appearance:** Light, Dark, and Auto modes (system preference sync)
+- **Notch:** Simulated hardware notch with active camera indicator
+
+## Development
+
+```bash
+npm run dev      # Start dev server
+npm run build    # Type check + Vite build
+npm run lint     # ESLint
+npm run preview  # Preview production build
+```
+
+## Z-Index Map
+
+- Wallpaper: Background
+- Desktop Grid: 0
+- Windows: 10-50
+- Dock/MenuBar: 40
+- Spotlight/Modals: 100+
+- System dialogs: 200+
+- Context menus: 300
+- System errors: 20000
+- Shutdown overlay: 10000

@@ -1,0 +1,1402 @@
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSystem, type Notification } from '../../contexts/SystemContext';
+import { useFileSystem } from '../../contexts/FileSystemContext';
+import { MenuBar } from './MenuBar';
+import { Dock } from './Dock';
+import { ControlCenter } from './ControlCenter';
+import { Window } from './Window';
+import { DynamicIsland } from './DynamicIsland';
+const AboutThisMac = lazy(() => import('../apps/AboutThisMac').then((m) => ({ default: m.AboutThisMac })));
+import { RestartDialog } from './RestartDialog';
+import { ShutdownDialog } from './ShutdownDialog';
+import { SystemDialog } from './SystemDialog';
+import { RosettaModal } from '../modals/RosettaModal';
+import { WallpaperEngine } from './WallpaperEngine';
+import { Spotlight } from './Spotlight';
+import {
+  File01Icon,
+  Sun01Icon,
+  PlayIcon,
+  PauseIcon,
+  ArrowRight01Icon,
+  ArrowLeft01Icon,
+  Tick01Icon,
+} from 'hugeicons-react';
+import { AppIcon } from '../common/AppIcon';
+import { useDynamicWallpaper } from '../../hooks/useDynamicWallpaper';
+import { useSoftwareUpdate } from '../../hooks/useSoftwareUpdate';
+import { useNotificationScheduler } from '../../hooks/useNotificationScheduler';
+import { useAirDrop } from '../../hooks/useAirDrop';
+import { useHandoff } from '../../hooks/useHandoff';
+import { useUniversalControl } from '../../hooks/useUniversalControl';
+import { NotificationCenter } from './NotificationCenter';
+import { NotificationToast } from './NotificationToast';
+import { NotificationBanner } from './NotificationBanner';
+import { IncomingCallOverlay } from './IncomingCallOverlay';
+import { WidgetPicker } from './WidgetPicker';
+import { StageManager } from './StageManager';
+import { MissionControl } from './MissionControl';
+const ScreenSaver = lazy(() => import('./ScreenSaver').then((m) => ({ default: m.default })));
+const Apps = lazy(() => import('../apps/Apps').then((m) => ({ default: m.Apps })));
+import { FileSystemResolver } from '../../utils/FileSystemResolver';
+import { contacts } from '../../utils/contacts';
+import { readFilesAndStore, downloadDataURL } from '../../utils/vfs-ops';
+import { songs } from '../../utils/MusicData';
+
+export const Desktop: React.FC = () => {
+  const {
+    systemState,
+    updateSystemState,
+    openWindows,
+    minimizedWindows,
+    minimizeWindow,
+    contextMenu,
+    setContextMenu,
+    showSpotlight,
+    setShowSpotlight,
+    launchApp,
+    setShowWidgetPicker,
+    setIncomingCall,
+    quitApp,
+    systemErrors,
+    shutdownStep,
+    isHandoff,
+    clearSystemErrors,
+    showPrompt,
+    playSong,
+    pauseSong,
+    nextSong,
+    prevSong,
+    activeUser,
+    updateUser,
+    setShowNotificationCenter,
+    activeApp,
+    clipboard,
+    copyToClipboard,
+    cutToClipboard,
+    clearClipboard,
+    bootState,
+  } = useSystem();
+  const { createNode, addTag, getDirectoryContents, deleteNode, updateNode, nodes, moveNode, findNode } = useFileSystem();
+  const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [showApps, setShowApps] = useState(false);
+  const [missionControlOpen, setMissionControlOpen] = useState(false);
+  const [screenSaverActive, setScreenSaverActive] = useState(false);
+  const [rosettaModalOpen, setRosettaModalOpen] = useState(false);
+  const [showWallpaperInfo, setShowWallpaperInfo] = useState(false);
+
+  useEffect(() => {
+    const handleIntercept = () => {
+      setRosettaModalOpen(true);
+    };
+    window.addEventListener('open-rosetta-modal', handleIntercept);
+    return () => window.removeEventListener('open-rosetta-modal', handleIntercept);
+  }, []);
+  const airdrop = useAirDrop();
+  const handoff = useHandoff();
+  const universalControl = useUniversalControl();
+
+  // Initialize Hooks
+  useDynamicWallpaper();
+  const { updateAvailable, dismissUpdate } = useSoftwareUpdate();
+  useNotificationScheduler();
+  const [toastNotification, setToastNotification] = useState<Notification | null>(null);
+  const seenToastIds = useRef<Set<string>>(new Set());
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Watch for new notifications from any source (scheduler, PhotoBooth, FaceTime, etc.)
+  // and show them as a quick toast popup
+  useEffect(() => {
+    const notifs = systemState.notifications;
+    if (notifs.length === 0) return;
+    const latest = notifs[notifs.length - 1];
+    if (!seenToastIds.current.has(latest.id)) {
+      seenToastIds.current.add(latest.id);
+      setToastNotification(latest);
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setToastNotification(null), 5000);
+    }
+  }, [systemState.notifications]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const audio = new Audio('/sounds/Hero.mp3');
+      audio.preload = 'metadata';
+      audio.play().catch((e) => console.warn('Hero sound failed', e));
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.pageX, y: e.pageY, type: 'desktop' });
+    setControlCenterOpen(false); // Close CC if open
+  };
+
+  useEffect(() => {
+    const handler = () => setShowApps(true);
+    window.addEventListener('open-apps', handler);
+    return () => window.removeEventListener('open-apps', handler);
+  }, []);
+
+  const lastActivityRef = useRef(Date.now());
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      lastActivityRef.current = Date.now();
+
+      if (e.key === 'F3' || (e.code === 'F3')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.metaKey || e.ctrlKey) return;
+        setMissionControlOpen((prev) => !prev);
+        if (screenSaverActive) setScreenSaverActive(false);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'F3') {
+        e.preventDefault();
+        e.stopPropagation();
+        setMissionControlOpen((prev) => !prev);
+        if (screenSaverActive) setScreenSaverActive(false);
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowSpotlight(!showSpotlight);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyQ') {
+        e.preventDefault();
+        if (activeApp) quitApp(activeApp);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyV') {
+        if (!clipboard || clipboard.nodeIds.length === 0) return;
+        e.preventDefault();
+        const targetParentId = 'desktop';
+        for (const nodeId of clipboard.nodeIds) {
+          const node = findNode(nodeId);
+          if (!node) continue;
+          if (clipboard.type === 'copy') {
+            createNode({
+              name: node.name,
+              type: node.type,
+              parentId: targetParentId,
+              content: node.content,
+              tags: node.tags,
+              customIcon: node.customIcon,
+              color: node.color,
+            });
+          } else {
+            moveNode(nodeId, targetParentId);
+          }
+        }
+        if (clipboard.type === 'cut') {
+          clearClipboard();
+        }
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyC') {
+        e.preventDefault();
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyX') {
+        e.preventDefault();
+        return;
+      }
+      if (e.key === 'Escape') {
+        clearSystemErrors();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [setShowSpotlight, clearSystemErrors, showSpotlight, activeApp, quitApp, clipboard, findNode, createNode, moveNode, clearClipboard]);
+
+  // Screen saver inactivity timeout
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const CHECK_INTERVAL = 10000;
+    const IDLE_TIMEOUT = (systemState.screenSaverTimer || 5) * 60 * 1000;
+
+    const checkInactivity = () => {
+      if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT) {
+        setScreenSaverActive(true);
+      }
+    };
+
+    const interval = setInterval(checkInactivity, CHECK_INTERVAL);
+    return () => clearInterval(interval);
+  }, [bootState, systemState.screenSaverTimer]);
+
+  // Listen for Screen Saver preview from Settings
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const handler = () => setScreenSaverActive(true);
+    window.addEventListener('preview-screen-saver', handler);
+    return () => window.removeEventListener('preview-screen-saver', handler);
+  }, [bootState]);
+
+  // Track user activity on the desktop
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const updateActivity = () => { lastActivityRef.current = Date.now(); };
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'];
+    events.forEach((e) => window.addEventListener(e, updateActivity));
+    return () => events.forEach((e) => window.removeEventListener(e, updateActivity));
+  }, [bootState]);
+
+  // Hot Corners: monitor mouse position and trigger configured actions
+  useEffect(() => {
+    if (bootState !== 'desktop') return;
+    const CORNER_THRESHOLD = 5;
+    const triggeredRef: Record<string, number> = {};
+
+    const handleMouseMove = (e: MouseEvent) => {
+      let corners: Record<string, string> = {};
+      try {
+        const saved = localStorage.getItem('golden_gate_v27_hot_corners');
+        if (saved) corners = JSON.parse(saved);
+      } catch { /* ignore */ }
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const now = Date.now();
+      const debounce = 2000;
+
+      let corner: string | null = null;
+      if (x <= CORNER_THRESHOLD && y <= CORNER_THRESHOLD) corner = 'topLeft';
+      else if (x >= w - CORNER_THRESHOLD && y <= CORNER_THRESHOLD) corner = 'topRight';
+      else if (x <= CORNER_THRESHOLD && y >= h - CORNER_THRESHOLD) corner = 'bottomLeft';
+      else if (x >= w - CORNER_THRESHOLD && y >= h - CORNER_THRESHOLD) corner = 'bottomRight';
+
+      if (!corner) return;
+      if (now - (triggeredRef[corner] || 0) < debounce) return;
+
+      const action = corners[corner];
+      if (!action || action === 'off') return;
+
+      triggeredRef[corner] = now;
+
+      switch (action) {
+        case 'mission-control':
+          setMissionControlOpen(true);
+          break;
+        case 'screen-saver':
+          setScreenSaverActive(true);
+          break;
+        case 'notifications':
+          setShowNotificationCenter(true);
+          break;
+        case 'launchpad':
+          setShowApps(true);
+          break;
+        case 'desktop':
+          // Toggle minimize all windows
+          if (openWindows.length > 0) {
+            openWindows.forEach((w) => minimizeWindow(w.id));
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [bootState, openWindows, minimizeWindow, setShowNotificationCenter]);
+
+  useEffect(() => {
+    const handleGlobalContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        e.preventDefault();
+        e.stopPropagation();
+        setContextMenu({ x: e.pageX, y: e.pageY, type: 'writing' });
+      }
+    };
+    window.addEventListener('contextmenu', handleGlobalContextMenu);
+    return () => window.removeEventListener('contextmenu', handleGlobalContextMenu);
+  }, [setContextMenu]);
+
+  const closeMenus = () => {
+    setContextMenu(null);
+    if (controlCenterOpen) setControlCenterOpen(false);
+  };
+
+  const desktopItems = getDirectoryContents('desktop');
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Widget Actions
+  const toggleReminder = (id: number) => {
+    updateSystemState({
+      reminders: systemState.reminders.map((r) => (r.id === id ? { ...r, completed: !r.completed } : r)),
+    });
+  };
+
+  const triggerFaceTime = () => {
+    const randomContact = contacts[Math.floor(Math.random() * contacts.length)];
+    setIncomingCall({ contact: randomContact, type: 'facetime' });
+  };
+
+  const handleWidgetDragEnd = (id: string, info: any) => {
+    if (!gridRef.current) return;
+
+    const gridRect = gridRef.current.getBoundingClientRect();
+    const cellWidth = gridRect.width / 8;
+    const cellHeight = gridRect.height / 4;
+
+    // Relative position within grid
+    const x = Math.max(0, Math.min(7, Math.round(info.point.x / cellWidth)));
+    const y = Math.max(0, Math.min(3, Math.round(info.point.y / cellHeight)));
+
+    updateSystemState({
+      widgets: systemState.widgets.map((w) => (w.id === id ? { ...w, x, y } : w)),
+    });
+  };
+
+  return (
+    <div
+      className={`fixed inset-0 w-full h-full overflow-hidden select-none transition-shadow duration-700 ${systemState.isCameraOn ? 'shadow-[inset_0_0_150px_rgba(255,255,255,0.2)] ring-4 ring-white/10' : ''}`}
+      onClick={closeMenus}
+      onContextMenu={systemState.isSystemInfected ? (e) => e.preventDefault() : handleContextMenu}
+      onMouseMove={(e) => universalControl.broadcastCursor(e.clientX, e.clientY)}
+    >
+      <motion.div
+        initial={{ filter: 'blur(30px) saturate(50%)', scale: 1.1 }}
+        animate={{
+          filter: isHandoff && shutdownStep >= 3 ? 'blur(100px) saturate(0%)' : 'blur(0px) saturate(100%)',
+          scale: isHandoff && shutdownStep >= 3 ? 1.2 : 1,
+          opacity: isHandoff && shutdownStep >= 3 ? 0.3 : 1,
+        }}
+        transition={{ delay: isHandoff ? 0 : 0.5, duration: 1.2, ease: 'easeOut' }}
+        className="absolute inset-0"
+        style={{ willChange: 'filter, transform, opacity' }}
+      >
+        <WallpaperEngine
+          url={systemState.wallpaperUrl}
+          type={systemState.wallpaperType}
+          fallbackImage="/wallpapers/golden-gate-dark.webp"
+        />
+      </motion.div>
+
+      {/* Handoff Overlay (Deep System Blur) */}
+      <motion.div
+        className="fixed inset-0 z-[100] bg-zinc-900/60 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHandoff && shutdownStep >= 3 ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        style={{ backdropFilter: 'blur(100px)' }}
+      />
+
+      {/* Widgets Layer */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
+        animate={{
+          opacity: shutdownStep >= 3 ? 0 : 1,
+          scale: shutdownStep >= 3 ? 0.5 : 1,
+          filter: shutdownStep >= 3 ? 'blur(20px)' : 'blur(0px)',
+        }}
+        transition={{
+          opacity: { delay: isHandoff ? 0 : 0.75, duration: 0.8 },
+          scale: { delay: isHandoff ? 0 : 0.75, duration: 0.8, type: 'spring', stiffness: 100 },
+          filter: { delay: isHandoff ? 0 : 0.75, duration: 0.8 },
+          default: { duration: 0.5, ease: 'backIn' },
+        }}
+        className={`absolute inset-0 z-0 p-8 pointer-events-none ${systemState.isSystemInfected ? 'opacity-20 blur-xl' : ''}`}
+        ref={gridRef}
+        style={{ willChange: 'opacity, transform, filter' }}
+      >
+        <div className="grid grid-cols-8 grid-rows-4 gap-6 w-full h-full">
+          {systemState.widgets.map((widget) => {
+            const isReminders = widget.type === 'reminders';
+            const isMusic = widget.type === 'music';
+            const isFaceTime = widget.type === 'facetime';
+            const isAllApps = widget.type === 'all-apps';
+            const isWeather = widget.type === 'weather';
+            const isDevices = widget.type === 'connected-devices';
+
+            return (
+              <motion.div
+                key={widget.id}
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                onDragEnd={(_, info) => handleWidgetDragEnd(widget.id, info)}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{
+                  gridColumnStart: widget.x + 1,
+                  gridRowStart: widget.y + 1,
+                  gridColumnEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 4}`,
+                  gridRowEnd: `span ${widget.size === 'small' ? 1 : widget.size === 'medium' ? 2 : 2}`,
+                }}
+                className="bg-white/10 backdrop-blur-xl rounded-[2.5rem] border border-white/20 p-5 pointer-events-auto shadow-2xl group relative flex flex-col overflow-hidden"
+              >
+                {/* Widget Header */}
+                <div className="flex items-center gap-2 mb-3 z-10">
+                  <div className="w-7 h-7 flex items-center justify-center">
+                    {isDevices ? (
+                      <img
+                        src={FileSystemResolver.getDeviceIcon('phone-apple-iphone')}
+                        className="w-full h-full object-contain drop-shadow-md invert"
+                        alt={widget.type}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <img
+                        src={`/icons/${isReminders ? 'reminders' : isWeather ? 'weather' : isMusic ? 'music' : isFaceTime ? 'facetime' : 'apps'}.png`}
+                        className="w-full h-full object-contain drop-shadow-md"
+                        alt={widget.type}
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">
+                    {widget.type.replace('-', ' ')}
+                  </span>
+                </div>
+
+                {/* Widget Content */}
+                <div className="flex-1 flex flex-col z-10 overflow-hidden">
+                  {isReminders && (
+                    <div className="space-y-2">
+                      {systemState.reminders.slice(0, 3).map((reminder) => (
+                        <div key={reminder.id} className="flex items-center gap-3 group/item">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleReminder(reminder.id);
+                            }}
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${reminder.completed ? 'bg-orange-500 border-orange-500' : 'border-white/20 hover:border-orange-400'}`}
+                          >
+                            {reminder.completed && <Tick01Icon size={8} className="text-white" />}
+                          </button>
+                          <span
+                            className={`text-xs truncate transition-all ${reminder.completed ? 'text-white/30 line-through' : 'text-white font-medium'}`}
+                          >
+                            {reminder.text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {isMusic && (
+                    <div className="flex flex-col items-center justify-center h-full gap-3">
+                      <div className="relative group/cover">
+                        <img
+                          src={songs[systemState.music.currentSongIndex].cover}
+                          className={`w-20 h-20 rounded-2xl shadow-2xl transition-transform duration-700 ${systemState.music.isPlaying ? 'scale-105' : 'scale-95'}`}
+                          alt="Cover"
+                        />
+                        {systemState.music.isPlaying && (
+                          <div className="absolute -bottom-1 -right-1 flex gap-0.5 items-end h-4 bg-black/40 backdrop-blur-md px-1.5 py-1 rounded-lg">
+                            {[1, 2, 3].map((i) => (
+                              <motion.div
+                                key={i}
+                                animate={{ height: [2, 8, 4, 10, 2] }}
+                                transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
+                                className="w-0.5 bg-red-500 rounded-full"
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center w-full">
+                        <div className="text-[12px] font-black text-white truncate px-2">
+                          {songs[systemState.music.currentSongIndex].title}
+                        </div>
+                        <div className="text-[10px] text-white/50 truncate px-2">
+                          {songs[systemState.music.currentSongIndex].artist}
+                        </div>
+                      </div>
+
+                      {/* Mini Progress Bar */}
+                      <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden mb-1">
+                        <motion.div
+                          className="h-full bg-white/80"
+                          initial={false}
+                          animate={{ width: `${systemState.music.playbackProgress}%` }}
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            prevSong();
+                          }}
+                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                        >
+                          <ArrowLeft01Icon size={14} className="text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (systemState.music.isPlaying) {
+                              pauseSong();
+                            } else {
+                              playSong();
+                            }
+                          }}
+                          className="w-10 h-10 rounded-full bg-white text-black hover:bg-white/90 flex items-center justify-center transition-transform hover:scale-110 shadow-xl shadow-white/10"
+                        >
+                          {systemState.music.isPlaying ? (
+                            <PauseIcon size={20} fill="currentColor" />
+                          ) : (
+                            <PlayIcon size={20} fill="currentColor" className="ml-0.5" />
+                          )}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            nextSong();
+                          }}
+                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                        >
+                          <ArrowRight01Icon size={14} className="text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFaceTime && (
+                    <div className="flex flex-col gap-3 h-full justify-center">
+                      <div className="text-xs text-white/60 font-medium">Recently Called</div>
+                      <div className="flex -space-x-2">
+                        {contacts.slice(0, 4).map((c, i) => (
+                          <div
+                            key={c.id}
+                            className={`w-8 h-8 rounded-full border-2 border-black/20 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-white`}
+                            style={{ zIndex: 10 - i }}
+                          >
+                            {c.name[0]}
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={triggerFaceTime}
+                        className="w-full py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[10px] font-bold rounded-xl transition-colors border border-green-500/30"
+                      >
+                        SIMULATE CALL
+                      </button>
+                    </div>
+                  )}
+
+                  {isAllApps && (
+                    <div className="grid grid-cols-4 gap-2">
+                      {['safari', 'mail', 'messages', 'photos', 'maps', 'music', 'notes', 'settings'].map((app) => (
+                        <div
+                          key={app}
+                          onClick={() => launchApp(app)}
+                          className="aspect-square bg-white/5 hover:bg-white/20 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                        >
+                          <img src={`/icons/${app}.png`} className="w-6 h-6 object-contain" alt={app} />
+                        </div>
+                      ))}
+                      <div
+                        onClick={() => launchApp('launchpad')}
+                        className="aspect-square bg-blue-500/20 hover:bg-blue-500/40 rounded-lg flex items-center justify-center cursor-pointer transition-colors border border-blue-500/30 col-span-4 mt-1"
+                      >
+                        <span className="text-[10px] font-bold text-blue-400">OPEN LAUNCHPAD</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {isWeather && (
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <Sun01Icon
+                        size={48}
+                        className="text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)] mb-2"
+                      />
+                      <div className="text-3xl font-black text-white">24°</div>
+                      <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Sunny</div>
+                    </div>
+                  )}
+
+                  {isDevices && (
+                    <div className="flex flex-col gap-2 h-full justify-center px-1">
+                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`${FileSystemResolver.getDeviceIcon('phone-apple-iphone')}`}
+                            className="w-6 h-6 object-contain"
+                            loading="lazy"
+                          />
+                          <div>
+                            <div className="text-[10px] font-bold text-white leading-tight">iPhone 18 Pro Max</div>
+                            <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">
+                              Connected
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`${FileSystemResolver.getDeviceIcon('audio-headphones')}`}
+                            className="w-6 h-6 object-contain"
+                            loading="lazy"
+                          />
+                          <div>
+                            <div className="text-[10px] font-bold text-white leading-tight">AirPods Pro</div>
+                            <div className="text-[8px] text-green-400 font-bold uppercase tracking-widest">
+                              Connected
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5 shadow-sm opacity-50">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={`${FileSystemResolver.getDeviceIcon('input-touchscreen')}`}
+                            className="w-6 h-6 object-contain"
+                            loading="lazy"
+                          />
+                          <div>
+                            <div className="text-[10px] font-bold text-white leading-tight">Apple Watch Ultra</div>
+                            <div className="text-[8px] text-white/40 font-bold uppercase tracking-widest">
+                              Disconnected
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => {
+                    updateSystemState({
+                      widgets: systemState.widgets.filter((w) => w.id !== widget.id),
+                    });
+                  }}
+                  className="absolute top-4 right-4 w-6 h-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                >
+                  <span className="text-white text-xs leading-none">−</span>
+                </button>
+
+                {/* Glass highlight */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Desktop Items Grid */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{
+          opacity: shutdownStep >= 3 || systemState.isSystemInfected ? 0 : 1,
+          scale: shutdownStep >= 3 || systemState.isSystemInfected ? 0.8 : 1,
+          y: shutdownStep >= 3 ? 20 : 0,
+        }}
+        transition={{
+          opacity: { delay: isHandoff ? 0 : 0.8, duration: 0.6 },
+          scale: { delay: isHandoff ? 0 : 0.8, duration: 0.6 },
+          default: { duration: 0.4, ease: 'circIn' },
+        }}
+        className="absolute inset-0 z-0 p-4 pt-12 flex flex-col flex-wrap gap-4 content-end pointer-events-none"
+        style={{ willChange: 'opacity, transform' }}
+        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+        onDrop={(e) => {
+          e.preventDefault();
+          const draggedId = e.dataTransfer.getData('text/plain');
+          if (draggedId) moveNode(draggedId, 'desktop');
+        }}
+      >
+        {desktopItems.map((item) => (
+          <motion.div
+            key={item.id}
+            draggable
+            onDragStart={(e: any) => {
+              e.dataTransfer.setData('text/plain', item.id);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragOver={(e: any) => {
+              if (item.type === 'folder') {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }
+            }}
+            onDrop={(e: any) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const draggedId = e.dataTransfer.getData('text/plain');
+              if (draggedId && item.type === 'folder' && draggedId !== item.id) {
+                moveNode(draggedId, item.id);
+              }
+            }}
+            onDoubleClick={() => {
+              if (item.type === 'folder') launchApp('finder');
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setContextMenu({ x: e.pageX, y: e.pageY, type: 'item', targetId: item.id });
+            }}
+            className="w-20 flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/10 border border-transparent hover:border-white/10 pointer-events-auto cursor-default group"
+          >
+            <div className="relative w-12 h-12 flex items-center justify-center">
+              {item.customIcon ? (
+                <img src={item.customIcon} alt={item.name} className="w-full h-full object-contain drop-shadow-lg" />
+              ) : item.type === 'folder' ? (
+                <AppIcon id={`folder-${item.id}`} size={48} folderColor={item.color} />
+              ) : (
+                <File01Icon size={40} className="text-white/80 drop-shadow-lg hugeicon-golden-gate" />
+              )}
+              {/* Tags */}
+              <div className="absolute -top-1 -right-1 flex flex-col gap-0.5">
+                {item.tags?.map((color) => (
+                  <div
+                    key={color}
+                    className={`w-2 h-2 rounded-full bg-${color}-500 border border-white/20 shadow-sm`}
+                  />
+                ))}
+              </div>
+            </div>
+            <span className="text-[11px] font-medium text-white text-center break-words w-full drop-shadow-md leading-tight">
+              {item.name}
+            </span>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Notch / Dynamic Island */}
+      {systemState.notchMode === 'dynamic' && <DynamicIsland />}
+      {systemState.notchMode === 'static' && (
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-50">
+          <div className="w-[140px] h-[30px] bg-black rounded-b-[18px]" />
+        </div>
+      )}
+
+      {/* OS Shell Components */}
+      <motion.div
+        initial={{ y: -32, opacity: 0 }}
+        animate={{
+          y: shutdownStep >= 2 ? -150 : 0,
+          opacity: shutdownStep >= 2 && isHandoff ? 0 : 1,
+        }}
+        transition={{
+          y: { duration: 0.6, ease: 'anticipate' },
+          opacity: { duration: 0.4 },
+        }}
+        className={`absolute top-0 left-0 right-0 z-40 ${systemState.isSystemInfected ? 'pointer-events-none' : ''}`}
+        style={{ willChange: 'transform, opacity' }}
+      >
+        <MenuBar
+          airdropPeers={airdrop.peers.length}
+          handoffPeers={handoff.handoffApps.length}
+          airdropSendFile={airdrop.sendFile}
+          airdropIncomingFiles={airdrop.incomingFiles}
+          airdropClearIncoming={airdrop.clearIncoming}
+          nodes={nodes}
+          toggleControlCenter={(e) => {
+            e.stopPropagation();
+            setControlCenterOpen(!controlCenterOpen);
+            setContextMenu(null);
+          }}
+          onMissionControl={() => setMissionControlOpen(true)}
+        />
+      </motion.div>
+
+      {/* Shutdown Overlay (Final Blackout) */}
+      <motion.div
+        className="fixed inset-0 z-[10000] bg-black pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: shutdownStep >= 4 ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+      />
+
+      {/* Windows Layer */}
+      <motion.div
+        role="main"
+        aria-label="Desktop workspace"
+        animate={{
+          opacity: shutdownStep >= 3 ? 0 : 1,
+          scale: shutdownStep >= 3 ? 0 : 1,
+          filter: shutdownStep >= 3 ? 'blur(40px)' : 'blur(0px)',
+        }}
+        transition={{ duration: 0.6, ease: 'anticipate' }}
+        className={`absolute inset-0 z-10 pt-8 pb-20 pointer-events-none ${systemState.stageManagerEnabled ? 'pl-24' : ''}`}
+      >
+        <StageManager />
+
+        <AnimatePresence>
+          {openWindows
+            .filter((w) => !minimizedWindows.includes(w.id))
+            .map((w) => (
+              <Window key={w.id} windowId={w.id} appId={w.appId} />
+            ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Control Center Overlay */}
+      <AnimatePresence>
+        {controlCenterOpen && <ControlCenter isOpen={controlCenterOpen} onClose={() => setControlCenterOpen(false)} />}
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ y: 150, opacity: 0 }}
+        animate={{
+          y: shutdownStep >= 1 ? 400 : 0,
+          opacity: shutdownStep >= 1 && isHandoff ? 0 : 1,
+        }}
+        transition={{
+          y: { delay: isHandoff ? 0 : 0.25, duration: 0.8, type: 'spring', bounce: 0.4 },
+          opacity: { delay: isHandoff ? 0 : 0.25, duration: 0.4 },
+        }}
+        className={`${systemState.isSystemInfected ? 'pointer-events-none' : ''} ${
+          systemState.dockPosition === 'bottom'
+            ? 'fixed bottom-0 left-0 right-0 z-40'
+            : `fixed top-[30px] ${systemState.dockPosition === 'left' ? 'left-0' : 'right-0'} bottom-0 z-40 pointer-events-none`
+        }`}
+        style={{ willChange: 'transform, opacity' }}
+      >
+        <Dock />
+      </motion.div>
+
+      <Suspense fallback={null}><AboutThisMac /></Suspense>
+      <RestartDialog />
+      <ShutdownDialog />
+      <SystemDialog />
+      <NotificationBanner isVisible={updateAvailable} onDismiss={dismissUpdate} onUpdate={() => { window.location.href = 'https://macos-27-golden-gate.vercel.app'; }} />
+      <NotificationToast
+        notification={toastNotification}
+        onDismiss={() => setToastNotification(null)}
+        onClick={() => {
+          if (toastNotification) {
+            launchApp(toastNotification.appId);
+            setShowNotificationCenter(true);
+            setToastNotification(null);
+          }
+        }}
+      />
+      <Spotlight />
+      <IncomingCallOverlay />
+      <WidgetPicker />
+      <NotificationCenter />
+
+      {/* Apps Overlay (replaces Launchpad) */}
+      <AnimatePresence>
+        {showApps && (
+          <motion.div
+            key="apps-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9000] bg-white/40 backdrop-blur-2xl"
+          >
+            <Apps onClose={() => setShowApps(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <MissionControl isOpen={missionControlOpen} onClose={() => setMissionControlOpen(false)} />
+      <Suspense fallback={null}>
+        <ScreenSaver isActive={screenSaverActive} onDismiss={() => setScreenSaverActive(false)} type={systemState.screenSaverType} />
+      </Suspense>
+
+      {/* Custom Context Menu */}
+      <AnimatePresence>
+        {contextMenu && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.1 }}
+            style={{
+              top: contextMenu.type === 'dock' ? contextMenu.y - 140 : contextMenu.y,
+              left: contextMenu.x,
+            }}
+            className="absolute z-[300] w-64 bg-black/40 backdrop-blur-[var(--glass-blur)] saturate-[190%] border border-white/20 rounded-2xl shadow-2xl py-2 flex flex-col gap-0.5"
+            onClick={(e) => e.stopPropagation()}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            {contextMenu.type === 'desktop' ? (
+              <>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={async () => {
+                    const name = await showPrompt('Enter folder name:', 'New Folder', 'New Folder');
+                    if (name) createNode({ name, type: 'folder', parentId: 'desktop' });
+                    setContextMenu(null);
+                  }}
+                >
+                  New Folder
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-green-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.accept = '*/*';
+                    input.style.display = 'none';
+                    document.body.appendChild(input);
+                    input.onchange = () => {
+                      const files = Array.from(input.files || []);
+                      if (files.length > 0) readFilesAndStore(files, createNode, 'desktop');
+                      try {
+                        document.body.removeChild(input);
+                      } catch { /* ignore */ }
+                    };
+                    input.click();
+                    setContextMenu(null);
+                  }}
+                >
+                  Import Files...
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    const nextAppearance = systemState.appearance === 'light' ? 'dark' : 'light';
+                    updateSystemState({ appearance: nextAppearance });
+                    setContextMenu(null);
+                  }}
+                >
+                  Toggle Appearance
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() =>
+                    updateSystemState({
+                      wallpaperUrl:
+                        'https://images.unsplash.com/photo-1635837958542-a381046eb53e?q=80&w=2670&auto=format&fm=webp',
+                      wallpaperType: 'image',
+                    })
+                  }
+                >
+                  Change Wallpaper
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    setShowWallpaperInfo(true);
+                    setContextMenu(null);
+                  }}
+                >
+                  Get Info on Wallpaper
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    setShowWidgetPicker(true);
+                    setContextMenu(null);
+                  }}
+                >
+                  Edit Widgets
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    updateSystemState({ dockHidden: !systemState.dockHidden });
+                    setContextMenu(null);
+                  }}
+                >
+                  {systemState.dockHidden ? 'Show Dock' : 'Hide Dock'}
+                </div>
+              </>
+            ) : contextMenu.type === 'writing' ? (
+              <>
+                <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-blue-400 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  Writing Tools
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => setContextMenu(null)}
+                >
+                  Proofread
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => setContextMenu(null)}
+                >
+                  Rewrite...
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-sm text-white/50 cursor-default mx-1.5 flex justify-between">
+                  Set Tone <span className="text-[10px]">▶</span>
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => setContextMenu(null)}
+                >
+                  Summarize
+                </div>
+              </>
+            ) : contextMenu.type === 'item' ? (
+              <>
+                <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white/30">
+                  Item Actions
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-red-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) deleteNode(contextMenu.targetId);
+                    setContextMenu(null);
+                  }}
+                >
+                  Move to Trash
+                </div>
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) cutToClipboard([contextMenu.targetId]);
+                    setContextMenu(null);
+                  }}
+                >
+                  Cut
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) copyToClipboard([contextMenu.targetId]);
+                    setContextMenu(null);
+                  }}
+                >
+                  Copy
+                </div>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    const targetParentId = contextMenu.targetId && nodes.find((n) => n.id === contextMenu.targetId)?.type === 'folder'
+                      ? contextMenu.targetId
+                      : 'desktop';
+                    if (!clipboard || clipboard.nodeIds.length === 0) {
+                      setContextMenu(null);
+                      return;
+                    }
+                    for (const nodeId of clipboard.nodeIds) {
+                      const node = findNode(nodeId);
+                      if (!node) continue;
+                      if (clipboard.type === 'copy') {
+                        createNode({
+                          name: node.name,
+                          type: node.type,
+                          parentId: targetParentId,
+                          content: node.content,
+                          tags: node.tags,
+                          customIcon: node.customIcon,
+                          color: node.color,
+                        });
+                      } else {
+                        moveNode(nodeId, targetParentId);
+                      }
+                    }
+                    if (clipboard.type === 'cut') clearClipboard();
+                    setContextMenu(null);
+                  }}
+                >
+                  {clipboard && clipboard.nodeIds.length > 0
+                    ? `Paste ${clipboard.type === 'cut' ? '& Move' : ''}`
+                    : 'Paste'}
+                </div>
+                {contextMenu.targetId &&
+                  nodes.find((n) => n.id === contextMenu.targetId)?.type === 'file' &&
+                  nodes.find((n) => n.id === contextMenu.targetId)?.content && (
+                    <div
+                      className="px-4 py-1.5 text-sm text-white hover:bg-green-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                      onClick={() => {
+                        const node = nodes.find((n) => n.id === contextMenu.targetId);
+                        if (node?.content) downloadDataURL(node.content, node.name);
+                        setContextMenu(null);
+                      }}
+                    >
+                      Export
+                    </div>
+                  )}
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div className="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/30">Tags</div>
+                <div className="px-4 py-2 flex gap-2 mx-1.5">
+                  {['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'gray'].map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => {
+                        if (contextMenu.targetId) addTag(contextMenu.targetId, color as any);
+                        setContextMenu(null);
+                      }}
+                      className={`w-5 h-5 rounded-full bg-${color}-500 border border-white/10 hover:scale-125 transition-transform shadow-lg`}
+                    />
+                  ))}
+                </div>
+                {nodes.find((n) => n.id === contextMenu.targetId)?.type === 'folder' && (
+                  <>
+                    <div className="border-b border-white/10 my-1 mx-3" />
+                    <div className="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white/30">
+                      Folder Color
+                    </div>
+                    <div className="px-4 py-2 flex flex-wrap gap-2 mx-1.5">
+                      {['blue', 'green', 'grey', 'nord', 'orange', 'purple', 'red', 'yellow'].map((color) => {
+                        const colorMap: Record<string, string> = {
+                          blue: 'bg-blue-500',
+                          green: 'bg-green-500',
+                          grey: 'bg-gray-500',
+                          nord: 'bg-[#5E81AC]',
+                          orange: 'bg-orange-500',
+                          purple: 'bg-purple-500',
+                          red: 'bg-red-500',
+                          yellow: 'bg-yellow-500',
+                        };
+                        return (
+                          <button
+                            key={color}
+                            onClick={() => {
+                              if (contextMenu.targetId) updateNode(contextMenu.targetId, { color });
+                              setContextMenu(null);
+                            }}
+                            className={`w-5 h-5 rounded-full border border-white/10 hover:scale-125 transition-transform shadow-lg ${colorMap[color]}`}
+                            title={color.charAt(0).toUpperCase() + color.slice(1)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => setContextMenu(null)}
+                >
+                  Show All Windows
+                </div>
+
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    updateSystemState({ dockHidden: !systemState.dockHidden });
+                    setContextMenu(null);
+                  }}
+                >
+                  {systemState.dockHidden ? 'Show Dock' : 'Hide Dock'}
+                </div>
+
+                {/* Pin/Unpin - Hidden for system apps */}
+                {contextMenu.targetId !== 'finder' &&
+                  contextMenu.targetId !== 'launchpad' &&
+                  contextMenu.targetId !== 'apps' && (
+                    <>
+                      <div className="border-b border-white/10 my-1 mx-3" />
+                      <div
+                        className="px-4 py-1.5 text-sm text-white hover:bg-blue-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                        onClick={() => {
+                          const appId = contextMenu.targetId;
+                          if (appId) {
+                            const userApps = activeUser.pinnedApps ?? systemState.pinnedApps;
+                            const isPinned = userApps.includes(appId);
+                            updateUser(activeUser.id, {
+                              pinnedApps: isPinned
+                                ? userApps.filter((id) => id !== appId)
+                                : [...userApps, appId],
+                            });
+                          }
+                          setContextMenu(null);
+                        }}
+                      >
+                        {contextMenu.targetId && (activeUser.pinnedApps ?? systemState.pinnedApps).includes(contextMenu.targetId)
+                          ? 'Unpin from Dock'
+                          : 'Keep in Dock'}
+                      </div>
+                    </>
+                  )}
+
+                <div className="border-b border-white/10 my-1 mx-3" />
+                <div
+                  className="px-4 py-1.5 text-sm text-white hover:bg-red-500 cursor-pointer transition-colors mx-1.5 rounded-lg"
+                  onClick={() => {
+                    if (contextMenu.targetId) quitApp(contextMenu.targetId);
+                    setContextMenu(null);
+                  }}
+                >
+                  Quit
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Global System Errors */}
+      {systemErrors.length > 0 && (
+        <div className="absolute inset-0 pointer-events-none z-[20000] overflow-hidden">
+          {systemErrors.map((err, i) => (
+            <motion.div
+              key={err.id}
+              initial={{ opacity: 0, scale: 0.8, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              style={{
+                position: 'absolute',
+                left: err.x,
+                top: err.y,
+                zIndex: 20000 + i,
+                width: err.orientation === 'vertical' ? 320 : 700,
+                height: err.orientation === 'vertical' ? 580 : 240,
+              }}
+              className={`crazy-error-box ${err.orientation === 'vertical' ? 'vertical-error' : 'horizontal-error'} pointer-events-auto ${err.type === 'vertical_stretch' ? 'vertical_stretch' : err.type === 'horizontal_glitch' ? 'horizontal_glitch' : ''}`}
+            >
+              <img
+                src={err.icon}
+                className="warning-icon w-16 h-16 object-contain flex-shrink-0"
+                style={{ minWidth: '64px', minHeight: '64px' }}
+                alt="Error Icon"
+              />
+
+              <div className="flex-1 flex flex-col justify-between overflow-hidden text-black">
+                <div className="flex flex-col">
+                  <h4 className="text-[10px] font-bold opacity-30 uppercase tracking-[0.25em] mb-2">
+                    Kernel Protocol Exception
+                  </h4>
+                  <p className="text-[14px] font-bold leading-tight tracking-tight mb-4">{err.message}</p>
+
+                  {err.orientation === 'vertical' && (
+                    <div className="text-[11px] opacity-60 leading-relaxed overflow-y-auto pr-2 custom-scrollbar max-h-[380px] text-left font-normal">
+                      The system has encountered a critical memory access violation at 0x00FF2A01. This may be caused by
+                      outdated drivers or malicious interference from the Golden Gate V27 VFS engine.
+                      <br />
+                      <br />
+                      Technical details: Error Code: 0x2281_LIQUID_GLASS Stack Trace: - System.UI.FramerMotion.Physics -
+                      System.Kernel.Memory.Heap - System.App.MigrationAssistant.Chaos
+                    </div>
+                  )}
+                </div>
+
+                {/* Dynamic Buttons Array - Aligned Bottom Right */}
+                <div className="flex justify-end gap-2 mt-auto">
+                  {err.buttons?.map((btn, idx) => (
+                    <button
+                      key={idx}
+                      className={`px-4 py-1.5 rounded-lg text-[12px] transition-all border ${idx === 0 ? 'bg-blue-500 text-white border-blue-600 shadow-lg hover:bg-blue-600 font-bold' : 'bg-black/5 text-black border-black/10 hover:bg-black/10 font-normal'} whitespace-nowrap active:scale-95`}
+                    >
+                      {btn}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Remote Cursors (Universal Control) */}
+      <AnimatePresence>
+        {universalControl.remoteCursors.map((cursor) => (
+          <motion.div
+            key={cursor.peerId}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed z-[300] pointer-events-none"
+            style={{
+              left: cursor.x,
+              top: cursor.y,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.8)] border border-white/30" />
+              <span className="text-[9px] font-bold text-white bg-black/40 px-1.5 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap">
+                {cursor.peerId.slice(0, 8)}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+      {/* Rosetta 2 / macOS 28 Intel Deprecation Modal */}
+      <RosettaModal
+        isOpen={rosettaModalOpen}
+        osVersion={systemState.osVersion}
+        onNotNow={() => setRosettaModalOpen(false)}
+        onInstallComplete={() => {
+          localStorage.setItem('golden_gate_v27_rosetta', 'true');
+          updateSystemState({ rosettaInstalled: true });
+          setRosettaModalOpen(false);
+          setTimeout(() => {
+            launchApp('geometrydash');
+          }, 150);
+        }}
+        onOpenAppStore={() => {
+          setRosettaModalOpen(false);
+          updateSystemState({ appStoreDeepLink: 'geometrydash' });
+          launchApp('appstore');
+        }}
+        onClose={() => setRosettaModalOpen(false)}
+      />
+
+      {/* Wallpaper Get Info Modal */}
+      <AnimatePresence>
+        {showWallpaperInfo && (
+          <div className="fixed inset-0 z-[15000] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-sm bg-neutral-900/90 border border-white/20 rounded-2xl p-6 shadow-2xl backdrop-blur-2xl text-white select-none relative"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-base font-bold">Golden Gate Light.webp Info</h3>
+                  <p className="text-xs text-white/50">macOS Wallpaper File Metadata</p>
+                </div>
+                <button
+                  onClick={() => setShowWallpaperInfo(false)}
+                  className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs text-white/70 border-t border-white/10 pt-4">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Kind:</span>
+                  <span>HEIF Image (Native Glass)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Dimensions:</span>
+                  <span>5120 × 2880 (5K Retina)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Architect & Dev:</span>
+                  <span className="text-blue-400 font-bold">Aashman Shukla</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">Project GitHub:</span>
+                  <span className="text-blue-400">@AashmanShukla3223</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-white/90">OS Build:</span>
+                  <span>macOS Golden Gate v27.0</span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-white/10 flex justify-end">
+                <button
+                  onClick={() => setShowWallpaperInfo(false)}
+                  className="px-5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold text-xs transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
