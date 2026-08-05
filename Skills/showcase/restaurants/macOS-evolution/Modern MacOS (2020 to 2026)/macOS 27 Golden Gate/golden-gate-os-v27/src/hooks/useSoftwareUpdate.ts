@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 
-export const App_Version = '27.4';
+export const App_Version = '27.4.1';
 
 function semverCompare(a: string, b: string): number {
   const pa = a.split('.').map(Number);
@@ -53,6 +53,9 @@ export const useSoftwareUpdate = () => {
               audioRef.current.currentTime = 0;
               audioRef.current.play().catch(() => {});
             }
+
+            // Immediately trigger system-wide OTA update screen
+            startOTAUpdate(data.version);
           }
         }
       } catch (error) {
