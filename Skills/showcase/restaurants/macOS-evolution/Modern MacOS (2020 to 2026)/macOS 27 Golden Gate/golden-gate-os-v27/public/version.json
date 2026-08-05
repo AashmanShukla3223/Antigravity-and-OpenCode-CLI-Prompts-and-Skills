@@ -1,8 +1,8 @@
 {
-  "version": "27.4",
-  "build": "27A430",
-  "updateAvailable": false,
+  "version": "27.4.1",
+  "build": "27B501",
+  "updateAvailable": true,
   "updateUrl": "/version.json",
-  "releaseNotes": "macOS Golden Gate 27.4 — Dynamic Island on all screens, iPhone-style battery indicators, 2s notification auto-dismiss, 52 apps, and cross-tab Continuity features.",
-  "release": "macOS Golden Gate 27.4 — Dynamic Island on all screens, iPhone-style battery indicators, 2s notification auto-dismiss, 52 apps, and cross-tab Continuity features."
+  "releaseNotes": "macOS Golden Gate 27.4.1 — Performance optimizations, security updates, and refreshed Migration Assistant.",
+  "release": "macOS Golden Gate 27.4.1 — Performance optimizations, security updates, and refreshed Migration Assistant."
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
+import { App_Version } from '../../hooks/useSoftwareUpdate';
 import {
   ComputerIcon,
   SmartPhone01Icon,
@@ -128,7 +129,7 @@ export const MigrationAssistant: React.FC = () => {
           </div>
         </div>
         <div className="text-xs font-mono text-white/30 bg-white/5 px-2.5 py-1 rounded-md">
-          macOS Golden Gate v26.0
+          macOS Golden Gate v{App_Version}
         </div>
       </div>
 
