@@ -57,7 +57,6 @@ const ALL_APPS = [
   { id: 'activitymonitor', name: 'Activity Monitor' },
   { id: 'timemachine', name: 'Time Machine' },
   { id: 'diskutility', name: 'Disk Utility' },
-  { id: 'installer', name: 'Installer' },
   { id: 'github', name: 'GitHub' },
 ];
 

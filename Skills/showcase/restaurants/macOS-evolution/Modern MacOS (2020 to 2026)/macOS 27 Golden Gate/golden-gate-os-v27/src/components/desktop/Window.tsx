@@ -35,7 +35,7 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   tv: namedLazy(() => import('../apps/AppleTVPlus'), 'AppleTVPlus'),
   itunes: namedLazy(() => import('../apps/iTunesStore'), 'ITunesStore'),
   soundtest: namedLazy(() => import('../apps/SoundTest'), 'SoundTest'),
-  installer: namedLazy(() => import('../apps/Installer'), 'Installer'),
+  migrationassistant: namedLazy(() => import('../apps/MigrationAssistant'), 'MigrationAssistant'),
   timemachine: namedLazy(() => import('../apps/TimeMachine'), 'TimeMachine'),
   diskutility: namedLazy(() => import('../apps/DiskUtility'), 'DiskUtility'),
   iphonemirroring: namedLazy(() => import('../apps/iPhoneMirroring'), 'IPhoneMirroring'),
@@ -65,7 +65,6 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
   geometrydash: namedLazy(() => import('../apps/GeometryDash'), 'GeometryDash'),
   screensharing: namedLazy(() => import('../apps/ScreenSharing'), 'ScreenSharing'),
-  migrationassistant: namedLazy(() => import('../apps/MigrationAssistant'), 'MigrationAssistant'),
   launchpad: namedLazy(() => import('../apps/Apps'), 'Apps'),
   githubnavigator: namedLazy(() => import('../apps/GitHubNavigator'), 'GitHubNavigator'),
 };
@@ -121,7 +120,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   const isActive = activeWindowId === windowId;
   const isMaximized = windowState === 'maximized';
   const isFullscreen = windowState === 'fullscreen';
-  const zIndex = appId === 'installer' ? 10000 : isActive ? 50 : openWindows.findIndex((w) => w.id === windowId) + 10;
+  const zIndex = isActive ? 50 : openWindows.findIndex((w) => w.id === windowId) + 10;
 
   const appNames: Record<string, string> = {
     finder: 'Finder',
@@ -146,7 +145,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     tv: 'Apple TV+',
     itunes: 'iTunes Store',
     soundtest: 'Sound Test',
-    installer: 'Installer',
+    migrationassistant: 'Migration Assistant',
     timemachine: 'Time Machine',
     diskutility: 'Disk Utility',
     iphonemirroring: 'iPhone Mirroring',
@@ -218,7 +217,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
 
   const handleClose = useCallback(() => {
     setWindowState('normal');
-    if (appId === 'terminal' || appId === 'activitymonitor' || appId === 'installer') {
+    if (appId === 'terminal' || appId === 'activitymonitor') {
       quitApp(appId);
     } else {
       closeWindow(windowId);

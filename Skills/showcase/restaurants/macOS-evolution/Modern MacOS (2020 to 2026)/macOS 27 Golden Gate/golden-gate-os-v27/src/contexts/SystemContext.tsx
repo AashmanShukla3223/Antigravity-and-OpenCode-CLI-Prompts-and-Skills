@@ -401,9 +401,6 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       if (isInfected) {
         state.isSystemInfected = true;
-        if (!state.pinnedApps.includes('installer')) {
-          state.pinnedApps = ['installer', ...state.pinnedApps];
-        }
       }
       if (!state.pinnedApps.includes('keynote')) {
         state.pinnedApps = [...state.pinnedApps, 'keynote'];
@@ -892,7 +889,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
       }
 
-      const SINGLE_INSTANCE_APPS = new Set(['apps', 'installer', 'siriai']);
+      const SINGLE_INSTANCE_APPS = new Set(['apps', 'migrationassistant', 'siriai']);
 
       if (SINGLE_INSTANCE_APPS.has(appId)) {
         const existing = openWindows.filter((w) => w.appId === appId);

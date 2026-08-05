@@ -37,7 +37,6 @@ const apps: AppItem[] = [
   { id: 'numbers', name: 'Numbers' },
   { id: 'pages', name: 'Pages' },
   { id: 'games', name: 'Games' },
-  { id: 'installer', name: 'Installer' },
   { id: 'freeform', name: 'Freeform' },
   { id: 'motion', name: 'Motion' },
   { id: 'xcode', name: 'Xcode' },

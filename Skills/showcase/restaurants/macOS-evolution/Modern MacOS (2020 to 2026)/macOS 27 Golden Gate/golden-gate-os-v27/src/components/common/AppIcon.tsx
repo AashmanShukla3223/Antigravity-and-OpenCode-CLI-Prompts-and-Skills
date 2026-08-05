@@ -98,7 +98,6 @@ export const AppIcon: React.FC<AppIconProps> = ({
     reminders: `${base}icons/reminders.png`,
     stickies: `${base}icons/stickies.png`,
     notes: `${base}icons/notes.png`,
-    installer: `${base}icons/golden-gate-installer.png`,
     terminal: `${base}icons/terminal.png`,
     activitymonitor: `${base}icons/activity.png`,
     calculator: `${base}icons/calculator.png`,
@@ -139,7 +138,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
     photobooth: `${base}icons/photo-booth.png`,
     chess: `${base}icons/chess.png`,
     geometrydash: `${base}icons/Geometry Dash.png`,
-    screensharing: `${base}icons/files.png`,
+    screensharing: `${base}icons/airdrop.png`,
     migrationassistant: `${base}icons/golden-gate-installer.png`,
     minecraft: `${base}icons/Minecraft.png`,
   };

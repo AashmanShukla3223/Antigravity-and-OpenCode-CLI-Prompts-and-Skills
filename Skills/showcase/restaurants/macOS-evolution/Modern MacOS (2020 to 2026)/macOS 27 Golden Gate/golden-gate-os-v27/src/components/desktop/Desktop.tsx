@@ -1272,7 +1272,7 @@ export const Desktop: React.FC = () => {
                       <br />
                       <br />
                       Technical details: Error Code: 0x2281_LIQUID_GLASS Stack Trace: - System.UI.FramerMotion.Physics -
-                      System.Kernel.Memory.Heap - System.App.Installer.Chaos
+                      System.Kernel.Memory.Heap - System.App.MigrationAssistant.Chaos
                     </div>
                   )}
                 </div>

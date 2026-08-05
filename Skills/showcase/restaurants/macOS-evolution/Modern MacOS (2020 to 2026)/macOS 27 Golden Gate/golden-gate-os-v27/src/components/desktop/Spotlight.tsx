@@ -60,7 +60,7 @@ const APP_NAMES: Record<string, string> = {
   crazyerrors: 'Crazy Errors', soundtest: 'Sound Test', freeform: 'Freeform',
   motion: 'Motion', xcode: 'Xcode', pixelmatorpro: 'Pixelmator Pro',
   finalcutpro: 'Final Cut Pro', logicpro: 'Logic Pro',
-  installer: 'Installer', games: 'Games', geometrydash: 'Geometry Dash',
+  games: 'Games', geometrydash: 'Geometry Dash',
   screensharing: 'Screen Sharing', migrationassistant: 'Migration Assistant',
 };
 
