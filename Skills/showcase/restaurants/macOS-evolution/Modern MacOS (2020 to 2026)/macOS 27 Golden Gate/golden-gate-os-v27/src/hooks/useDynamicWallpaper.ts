@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSystem } from '../contexts/SystemContext';
+import { getSunTimes } from '../utils/sunCalc';
 
 type WallpaperStage = 'light' | 'dark';
 
 function getCurrentStage(): WallpaperStage {
-  const now = new Date();
-  const mins = now.getHours() * 60 + now.getMinutes();
-  return mins >= 300 && mins < 1050 ? 'light' : 'dark';
+  const { isNight } = getSunTimes();
+  return isNight ? 'dark' : 'light';
 }
 
 function getWallpaper(stage: WallpaperStage, mode: 'static' | 'dynamic') {
@@ -49,6 +49,8 @@ export const useDynamicWallpaper = () => {
         updateSystemState({
           wallpaperUrl: newWallpaper.url,
           wallpaperType: newWallpaper.type,
+          appearance: newStage === 'dark' ? 'dark' : 'light',
+          iconModeSelection: newStage === 'dark' ? 'dark' : 'light',
         });
       }
     }, 60000);

@@ -51,6 +51,8 @@ export const AppIcon: React.FC<AppIconProps> = ({
     const match = lightPath.match(/\/icons\/([\w\- ]+)\.png$/i);
     if (!match) return null;
     const name = match[1];
+    if (name === 'airdrop') return `${base}icons/dark mode/airdrop-dark.png`;
+    if (name === 'golden-gate-installer') return `${base}icons/dark mode/golden-gate-installer-dark.png`;
     return `${base}icons/dark mode/${name}-dark.png`;
   };
 
