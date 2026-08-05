@@ -433,6 +433,7 @@ export const MenuBar = React.memo<MenuBarProps>(({ toggleControlCenter, airdropP
   const [airdropFileName, setAirdropFileName] = useState('');
   const [selectedFileId, setSelectedFileId] = useState('');
   const [incomingDropdownOpen, setIncomingDropdownOpen] = useState(false);
+  const [handoffMenuOpen, setHandoffMenuOpen] = useState(false);
 
   const base = (import.meta as any).env?.BASE_URL || '/';
 
@@ -863,14 +864,76 @@ macOS Golden Gate v${App_Version}`, 'Get Info');
         </div>
 
         {/* Handoff Indicator */}
-        {handoffPeers > 0 && (
-          <div className="relative h-full flex items-center px-2" title={`${handoffPeers} handoff app${handoffPeers > 1 ? 's' : ''} available`}>
+        <div className="relative h-full">
+          <div
+            className={`cursor-pointer px-2 h-full flex items-center rounded transition gap-0.5 ${handoffMenuOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+            onClick={() => setHandoffMenuOpen(!handoffMenuOpen)}
+            title="Handoff Devices & Continuity Apps"
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
-            <span className="text-[10px] text-purple-400 font-bold ml-0.5">{handoffPeers}</span>
+            <span className="text-[10px] text-purple-400 font-bold ml-0.5">{handoffPeers > 0 ? handoffPeers : 1}</span>
           </div>
-        )}
+          <AnimatePresence>
+            {handoffMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setHandoffMenuOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  className="absolute top-10 right-0 w-72 bg-black/60 backdrop-blur-[var(--glass-blur)] saturate-[200%] border border-white/20 rounded-[24px] shadow-2xl p-4 z-50 text-white"
+                >
+                  <div className="text-[10px] font-black uppercase tracking-widest text-purple-300 mb-2">Handoff & Continuity</div>
+                  <p className="text-xs text-white/60 mb-3">Resume activity seamlessly on another Apple device.</p>
+
+                  <div className="space-y-2">
+                    <div
+                      onClick={() => {
+                        launchApp('safari');
+                        setHandoffMenuOpen(false);
+                        showAlert('Resumed Safari session from iPad Pro via Handoff', 'Handoff');
+                      }}
+                      className="flex items-center justify-between p-2.5 bg-purple-500/15 border border-purple-500/30 rounded-xl cursor-pointer hover:bg-purple-500/25 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-300">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold">Safari Tab</div>
+                          <div className="text-[10px] text-white/40">From iPad Pro</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full">Open</span>
+                    </div>
+
+                    <div
+                      onClick={() => {
+                        launchApp('notes');
+                        setHandoffMenuOpen(false);
+                        showAlert('Resumed Notes from iPhone 16 Pro via Handoff', 'Handoff');
+                      }}
+                      className="flex items-center justify-between p-2.5 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/70">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold">Quick Note Draft</div>
+                          <div className="text-[10px] text-white/40">From iPhone 16 Pro</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-white/60 bg-white/10 px-2 py-0.5 rounded-full">Open</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Incoming Files Notification */}
         {airdropIncomingFiles.length > 0 && (
