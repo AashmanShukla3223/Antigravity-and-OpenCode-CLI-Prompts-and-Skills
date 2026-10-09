@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { songs } from '../utils/MusicData';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
 
@@ -432,6 +433,15 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [minimizedWindows, setMinimizedWindows] = useState<string[]>([]);
   const [maximizedWindows, setMaximizedWindows] = useState<string[]>([]);
   const [launchingApp, setLaunchingApp] = useState<string | null>(null);
+  const { trackAppOpen, trackAppClose, trackBootComplete } = useAnalytics();
+  const bootTracked = useRef(false);
+
+  useEffect(() => {
+    if (bootState === 'desktop' && !bootTracked.current) {
+      bootTracked.current = true;
+      trackBootComplete();
+    }
+  }, [bootState, trackBootComplete]);
   const [showAboutWindow, setShowAboutWindow] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -910,6 +920,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       setLaunchingApp(appId);
+      trackAppOpen(appId);
       windowIdCounter.current += 1;
       const newId = `${appId}-${windowIdCounter.current}`;
       const newWindow: WindowInstance = { id: newId, appId };
@@ -920,15 +931,17 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setMinimizedWindows((prev) => prev.filter((id) => id !== newId));
       }, 1000);
     },
-    [openWindows, activeWindowId, systemState, updateSystemState],
+    [openWindows, activeWindowId, systemState, updateSystemState, trackAppOpen],
   );
 
   const closeWindow = useCallback((windowId: string) => {
+    const closingApp = openWindows.find((w) => w.id === windowId)?.appId;
+    if (closingApp) trackAppClose(closingApp);
     setOpenWindows((prev) => prev.filter((w) => w.id !== windowId));
     setMinimizedWindows((prev) => prev.filter((id) => id !== windowId));
     setMaximizedWindows((prev) => prev.filter((id) => id !== windowId));
     setActiveWindow((prev) => (prev === windowId ? null : prev));
-  }, []);
+  }, [openWindows, trackAppClose]);
 
   const closeCurrentWindow = useCallback(() => {
     if (activeWindowId) closeWindow(activeWindowId);
@@ -937,6 +950,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const closeApp = useCallback(
     (appId: string) => {
       const targets = openWindows.filter((w) => w.appId === appId);
+      if (targets.length > 0) trackAppClose(appId);
       targets.forEach((w) => {
         setOpenWindows((prev) => prev.filter((pw) => pw.id !== w.id));
         setMinimizedWindows((prev) => prev.filter((id) => id !== w.id));
@@ -946,7 +960,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveWindow(null);
       }
     },
-    [openWindows, activeWindowId],
+    [openWindows, activeWindowId, trackAppClose],
   );
 
   const quitApp = useCallback(
