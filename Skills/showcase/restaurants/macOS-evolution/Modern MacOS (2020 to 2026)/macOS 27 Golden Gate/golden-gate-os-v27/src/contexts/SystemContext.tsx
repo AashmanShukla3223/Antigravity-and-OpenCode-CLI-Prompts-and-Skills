@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { songs } from '../utils/MusicData';
 import { useAnalytics } from '../hooks/useAnalytics';
 
-type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
+type BootState = 'booting' | 'setup' | 'welcome' | 'login' | 'desktop' | 'recovery' | 'activation';
 
 export const DEFAULT_PINNED_APPS = [
   'finder',

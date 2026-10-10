@@ -13,7 +13,8 @@ function skipIfNotDesktop(ctx: MCPToolContext) {
 
 const VALID_TRANSITIONS: Record<BootState, BootState[]> = {
   booting: ['setup', 'login', 'recovery', 'activation'],
-  setup: ['login', 'desktop', 'recovery'],
+  setup: ['welcome', 'login', 'desktop', 'recovery'],
+  welcome: ['desktop'],
   login: ['desktop', 'recovery'],
   desktop: ['recovery', 'login'],
   recovery: ['desktop', 'login'],

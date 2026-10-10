@@ -21,7 +21,7 @@ export interface MCPToolResponse {
   error?: string;
 }
 
-export type BootState = 'booting' | 'setup' | 'login' | 'desktop' | 'recovery' | 'activation';
+export type BootState = 'booting' | 'setup' | 'welcome' | 'login' | 'desktop' | 'recovery' | 'activation';
 
 export interface MCPToolContext {
   // Boot lifecycle

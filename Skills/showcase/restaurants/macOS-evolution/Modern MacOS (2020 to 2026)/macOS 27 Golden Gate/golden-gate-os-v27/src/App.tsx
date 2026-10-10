@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useSystem } from './contexts/SystemContext';
 import { BootSequence } from './components/BootSequence';
 import { SetupAssistant } from './components/SetupAssistant';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { LoginScreen } from './components/LoginScreen';
 import { Desktop } from './components/desktop/Desktop';
 import { WebMCPTools } from './mcp/WebMCPTools';
@@ -52,6 +53,7 @@ function App() {
       <AnimatePresence mode="wait">
         {bootState === 'booting' && <BootSequence key="boot" />}
         {bootState === 'setup' && <SetupAssistant key="setup" />}
+        {bootState === 'welcome' && <WelcomeScreen key="welcome" />}
         {bootState === 'login' && <LoginScreen key="login" />}
         {bootState === 'desktop' && <Desktop key="desktop" />}
         {bootState === 'recovery' && <MacOSRecovery key="recovery" />}

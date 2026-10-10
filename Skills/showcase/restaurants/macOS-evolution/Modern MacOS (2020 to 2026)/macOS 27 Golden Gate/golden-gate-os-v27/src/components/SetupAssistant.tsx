@@ -4,6 +4,7 @@ import { useSystem } from '../contexts/SystemContext';
 import { useFileSystem } from '../contexts/FileSystemContext';
 import { GlobalIcon, ViewIcon, FlashIcon, InformationCircleIcon, BatteryCharging01Icon, BatteryLowIcon } from 'hugeicons-react';
 import { DynamicIsland } from './desktop/DynamicIsland';
+import { hasSeenWelcome } from './WelcomeScreen';
 
 const languages = ['hello', 'hola', 'bonjour', 'namaste', 'ciao'];
 
@@ -44,7 +45,9 @@ export const SetupAssistant: React.FC = () => {
             setup_complete: true,
             users: [{ ...userData, id: crypto.randomUUID() }],
           });
-          setBootState('desktop'); // Fade straight into the Desktop as per PRD
+          // First run gets the welcome screen; the welcome screen hands over
+          // to the desktop and records that it has been seen.
+          setBootState(hasSeenWelcome() ? 'desktop' : 'welcome');
         } catch (e) {
           console.error('Setup finalization error:', e);
           // Force transition anyway
@@ -528,7 +531,7 @@ export const SetupAssistant: React.FC = () => {
                       setup_complete: true,
                       users: [{ fullName, accountName, password, avatar: selectedEmoji, id: crypto.randomUUID() }],
                     });
-                    setBootState('desktop');
+                    setBootState(hasSeenWelcome() ? 'desktop' : 'welcome');
                   } catch (e) {
                     console.error('Setup error on Get Started:', e);
                     setBootState('desktop'); // Force transition anyway
