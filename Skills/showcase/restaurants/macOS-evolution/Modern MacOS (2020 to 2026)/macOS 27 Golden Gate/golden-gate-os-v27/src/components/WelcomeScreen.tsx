@@ -34,9 +34,11 @@ export const WelcomeScreen: React.FC = () => {
   const x = useMotionValue(0);
   const [dismissed, setDismissed] = useState(false);
 
-  const opacity = useTransform(x, [-420, -180, 0], [0.05, 0.5, 1]);
-  const scale = useTransform(x, [-420, 0], [0.94, 1]);
-  const hintOpacity = useTransform(x, [-60, 0], [0, 1]);
+  // Swipe right to continue. Positive offsets fade and shrink the card, so the
+  // gesture reads as pushing the surface aside.
+  const opacity = useTransform(x, [0, 180, 420], [1, 0.5, 0.05]);
+  const scale = useTransform(x, [0, 420], [1, 0.94]);
+  const hintOpacity = useTransform(x, [0, 60], [1, 0]);
 
   const firstName =
     systemState.users[0]?.fullName?.split(' ')[0] || 'there';
@@ -53,9 +55,9 @@ export const WelcomeScreen: React.FC = () => {
     setBootState('desktop');
   }, [dismissed, setBootState, updateSystemState]);
 
-  // Slide home, then hand over to the desktop.
+  // Slide out to the right, then hand over to the desktop.
   const release = () => {
-    animate(x, -520, { type: 'spring', stiffness: 220, damping: 30 });
+    animate(x, 520, { type: 'spring', stiffness: 220, damping: 30 });
     setTimeout(finish, 180);
   };
 
@@ -85,7 +87,7 @@ export const WelcomeScreen: React.FC = () => {
         style={{ x, opacity, scale }}
         onDragEnd={(_, info) => {
           // Either a decisive flick or a long slow drag releases it.
-          if (info.offset.x < -170 || info.velocity.x < -620) release();
+          if (info.offset.x > 170 || info.velocity.x > 620) release();
           else animate(x, 0, { type: 'spring', stiffness: 320, damping: 32 });
         }}
         className="relative z-10 h-full w-full flex flex-col cursor-grab active:cursor-grabbing"
@@ -149,18 +151,19 @@ export const WelcomeScreen: React.FC = () => {
             style={{ opacity: hintOpacity }}
             className="text-[11px] uppercase tracking-[0.24em] text-white/40"
           >
-            Slide to continue
+            Slide right to continue
           </motion.p>
           <motion.div
-            animate={{ x: [0, -10, 0] }}
+            animate={{ x: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 1.9, ease: 'easeInOut' }}
             className="flex items-center gap-1.5 text-white/50"
           >
-            <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden>
+            {/* Chevron points the way the card travels. */}
+            <svg width="28" height="14" viewBox="0 0 28 14" fill="none" aria-hidden>
               <path
-                d="M20 2 12 6l8 4"
+                d="M6 2l8 5-8 5"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
