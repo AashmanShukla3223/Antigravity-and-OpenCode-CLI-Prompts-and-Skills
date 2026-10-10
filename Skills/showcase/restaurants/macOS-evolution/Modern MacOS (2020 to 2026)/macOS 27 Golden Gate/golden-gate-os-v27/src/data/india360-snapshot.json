@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-10T14:48:53.168Z",
+ "generatedAt": "2026-10-10T15:01:32.390Z",
  "source": "google-analytics-mcp",
  "property": {
   "id": "542523883",
@@ -478,7 +478,7 @@
     "stars": 4,
     "language": "TypeScript",
     "description": "The definitive, free web simulator for macOS 27 Golden Gate. Built natively in React 19, Vite, Tailwind v4, and Framer Motion. Explores Liquid Glass 2.0 aesthetics, a 25-node live application dock array, and standalone Siri AI app routing.",
-    "updatedAt": "2026-10-10T12:39:26Z"
+    "updatedAt": "2026-10-10T15:00:37Z"
    },
    {
     "name": "Parallax-Launcher",
