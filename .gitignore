@@ -183,3 +183,6 @@ graphify-out/
 
 # Playwright GIF capture scratch
 .github/demo-frames/
+
+# Ad-hoc reference screenshots (superseded by .github/desktop-still.png)
+/New*.png

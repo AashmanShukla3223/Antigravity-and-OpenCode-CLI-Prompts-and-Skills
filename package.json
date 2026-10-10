@@ -1,0 +1,31 @@
+{
+  "name": "antigravity-and-opencode-cli-prompts-and-skills",
+  "version": "1.0.0",
+  "description": "macOS 27 Golden Gate — a web-based macOS simulator with 52 working apps, plus the agent skills used to build it.",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills.git"
+  },
+  "keywords": [
+    "macos",
+    "web-os",
+    "simulator",
+    "playwright",
+    "agent-skills"
+  ],
+  "author": "Aashman Shukla",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills/issues"
+  },
+  "homepage": "https://github.com/AashmanShukla3223/Antigravity-and-OpenCode-CLI-Prompts-and-Skills#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5"
+  }
+}
