@@ -80,6 +80,7 @@ const APP_NAMES: Record<string, string> = {
   clock: 'Clock',
   reminders: 'Reminders',
   stickies: 'Stickies',
+  tips: 'Tips',
   books: 'Books',
   wallet: 'Wallet',
   code: 'VS Code',

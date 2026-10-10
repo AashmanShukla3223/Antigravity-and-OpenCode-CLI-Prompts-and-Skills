@@ -100,6 +100,7 @@ export const AppIcon: React.FC<AppIconProps> = ({
     reminders: `${base}icons/reminders.png`,
     stickies: `${base}icons/stickies.png`,
     notes: `${base}icons/notes.png`,
+    tips: `${base}icons/Tips.png`,
     terminal: `${base}icons/terminal.png`,
     activitymonitor: `${base}icons/activity.png`,
     calculator: `${base}icons/calculator.png`,

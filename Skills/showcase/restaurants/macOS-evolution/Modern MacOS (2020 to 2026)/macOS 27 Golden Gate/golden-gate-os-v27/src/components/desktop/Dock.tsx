@@ -53,6 +53,7 @@ const ALL_APPS = [
   { id: 'weather', name: 'Weather' },
   { id: 'reminders', name: 'Reminders' },
   { id: 'stickies', name: 'Stickies' },
+  { id: 'tips', name: 'Tips' },
   { id: 'terminal', name: 'Terminal' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
   { id: 'timemachine', name: 'Time Machine' },

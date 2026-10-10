@@ -2,21 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Iubenda Consent -->
-    <script type="text/javascript" defer>
-    var _iub = _iub || [];
-    _iub.csConfiguration = {"siteId":4577174,"cookiePolicyId":11075217,"lang":"en","storage":{"useSiteId":true}};
-    </script>
-    <script type="text/javascript" defer src="https://cs.iubenda.com/autoblocking/4577174.js"></script>
-    <script type="text/javascript" defer src="//cdn.iubenda.com/cs/gpp/stub.js"></script>
-    <script type="text/javascript" defer src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8"></script>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HGXH5LPXS"></script>
+    <!--
+      Google tag (gtag.js)
+
+      Consent Mode v2 defaults are set BEFORE config and BEFORE the gtag.js
+      tag itself loads. Ordering matters: Consent Mode only takes effect if
+      the default state is declared first, otherwise GA4 sets its own
+      permissive defaults and the denied state is ignored.
+
+      analytics_storage is denied by default, so no analytics cookies are
+      written until a visitor grants consent. GA4 still sends cookieless
+      pings, which is what allows modelling to recover signal volume.
+    -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+      });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HGXH5LPXS"></script>
+    <script>
       gtag('js', new Date());
-      gtag('config', 'G-5HGXH5LPXS');
+      gtag('config', 'G-5HGXH5LPXS', {
+        // With no banner, this site stays on modelled data rather than
+        // claiming a consent state it never actually collected.
+        allow_google_signals: false
+      });
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- build: v27.4-credentialless -->

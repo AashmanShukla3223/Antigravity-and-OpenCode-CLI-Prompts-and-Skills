@@ -65,6 +65,7 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   chess: namedLazy(() => import('../apps/Chess'), 'Chess'),
   geometrydash: namedLazy(() => import('../apps/GeometryDash'), 'GeometryDash'),
   screensharing: namedLazy(() => import('../apps/ScreenSharing'), 'ScreenSharing'),
+  tips: namedLazy(() => import('../apps/Tips'), 'Tips'),
   launchpad: namedLazy(() => import('../apps/Apps'), 'Apps'),
   githubnavigator: namedLazy(() => import('../apps/GitHubNavigator'), 'GitHubNavigator'),
 };
@@ -174,6 +175,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     photobooth: 'Photo Booth',
     chess: 'Chess',
     minecraft: 'Minecraft',
+    tips: 'Tips',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
