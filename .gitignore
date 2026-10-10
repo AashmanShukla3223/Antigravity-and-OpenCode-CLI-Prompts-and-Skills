@@ -169,3 +169,7 @@ vite.config.ts.timestamp-*
 # legally-obtained audio into public/music/ and update src/data/tracks.ts.
 # ---------------------------------------------------------------------------
 music/
+
+# graphify knowledge-graph output: regenerable cache, not source.
+# Regenerate locally with `graphify` (see .agents/rules/graphify.md).
+graphify-out/
