@@ -157,3 +157,15 @@ out
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ---------------------------------------------------------------------------
+# Copyrighted music: kept locally for the Music app demo, never committed.
+# These are commercial recordings (Kala Chashma, Believer, APT, ...). They
+# were removed from this repository's history on 2026-10-10 to remove the
+# copyright exposure and to cut the clone from ~250MB to ~37MB.
+#
+# The Music app degrades gracefully without them: it ships with empty
+# tracklists rather than failing. To restore the demo locally, drop your own
+# legally-obtained audio into public/music/ and update src/data/tracks.ts.
+# ---------------------------------------------------------------------------
+music/
