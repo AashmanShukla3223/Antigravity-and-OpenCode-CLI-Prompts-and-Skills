@@ -173,3 +173,13 @@ music/
 # graphify knowledge-graph output: regenerable cache, not source.
 # Regenerate locally with `graphify` (see .agents/rules/graphify.md).
 graphify-out/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Playwright GIF capture scratch
+.github/demo-frames/
