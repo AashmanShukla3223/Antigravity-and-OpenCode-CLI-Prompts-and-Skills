@@ -76,6 +76,7 @@ const subApps: Record<string, AppItem[]> = {
     { id: 'reminders', name: 'Reminders' },
     { id: 'stickies', name: 'Stickies' },
     { id: 'tips', name: 'Tips' },
+  { id: 'india360', name: 'India 360' },
     { id: 'timemachine', name: 'Time Machine' },
     { id: 'diskutility', name: 'Disk Utility' },
     { id: 'iphonemirroring', name: 'iPhone Mirroring' },

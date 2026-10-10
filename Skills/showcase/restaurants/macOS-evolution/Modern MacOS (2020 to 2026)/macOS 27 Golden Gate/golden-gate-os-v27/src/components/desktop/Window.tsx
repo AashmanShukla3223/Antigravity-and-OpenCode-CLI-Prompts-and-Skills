@@ -2,7 +2,8 @@ import React, { useState, useRef, useCallback, useEffect, lazy, Suspense } from 
 import { motion, useDragControls } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useSystem } from '../../contexts/SystemContext';
-import { useTelemetry } from '../../hooks/useTelemetry';
+import type { TileSide } from '../../contexts/SystemContext';
+
 import { ErrorBoundary } from '../common/ErrorBoundary';
 
 function namedLazy(
@@ -66,6 +67,7 @@ const AppMap: Record<string, React.LazyExoticComponent<React.ComponentType<any>>
   geometrydash: namedLazy(() => import('../apps/GeometryDash'), 'GeometryDash'),
   screensharing: namedLazy(() => import('../apps/ScreenSharing'), 'ScreenSharing'),
   tips: namedLazy(() => import('../apps/Tips'), 'Tips'),
+  india360: namedLazy(() => import('../apps/India360'), 'India360'),
   launchpad: namedLazy(() => import('../apps/Apps'), 'Apps'),
   githubnavigator: namedLazy(() => import('../apps/GitHubNavigator'), 'GitHubNavigator'),
 };
@@ -95,7 +97,7 @@ const AppContent: React.FC<{ appId: string }> = ({ appId }) => {
   );
 };
 
-type WindowState = 'normal' | 'maximized' | 'fullscreen';
+type WindowState = 'normal' | 'maximized' | 'fullscreen' | 'tiled-left' | 'tiled-right';
 
 interface WindowProps {
   windowId: string;
@@ -103,9 +105,20 @@ interface WindowProps {
 }
 
 export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
-  const { activeWindowId, setActiveWindow, closeWindow, quitApp, openWindows, minimizeWindow, powerMode, systemState } =
-    useSystem();
-  const telemetry = useTelemetry();
+  const {
+    activeWindowId,
+    setActiveWindow,
+    closeWindow,
+    quitApp,
+    openWindows,
+    minimizeWindow,
+    powerMode,
+    systemState,
+    tilePair,
+    requestTile,
+    untileWindow,
+    setTileHover,
+  } = useSystem();
   const controls = useDragControls();
   const windowRef = useRef<HTMLDivElement>(null);
 
@@ -114,14 +127,67 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   const sameAppWindows = openWindows.filter((w) => w.appId === appId);
   const instanceIndex = sameAppWindows.findIndex((w) => w.id === windowId);
   const offset = Math.min(instanceIndex, 10) * 28;
-  const [position] = useState({ top: 80 + offset, left: 80 + offset });
+  const [position, setPosition] = useState({ top: 80 + offset, left: 80 + offset });
   const resizing = useRef<'right' | 'bottom' | 'corner' | null>(null);
   const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
+
+  /** Geometry captured on tile entry, so dragging out restores the real size. */
+  const preTile = useRef<{ width: number; height: number; top: number; left: number } | null>(
+    null,
+  );
+  const pendingTile = useRef<TileSide | null>(null);
+
+  /** Which half this window holds, if any. */
+  const tileSide: TileSide | null =
+    tilePair?.left === windowId ? 'left' : tilePair?.right === windowId ? 'right' : null;
+
+  const applyTile = useCallback(
+    (side: TileSide) => {
+      // Only capture geometry on the first tile, so toggling left -> right
+      // and back does not overwrite the original size with the tiled one.
+      setWindowState((prev) => {
+        if (prev !== 'normal' && prev !== 'tiled-left' && prev !== 'tiled-right') {
+          return prev;
+        }
+        return side === 'left' ? 'tiled-left' : 'tiled-right';
+      });
+      preTile.current = preTile.current ?? {
+        width: size.width,
+        height: size.height,
+        top: position.top,
+        left: position.left,
+      };
+    },
+    [size.width, size.height, position.top, position.left],
+  );
+
+  /** Leaving the tile returns the window to the size it had before. */
+  const releaseTile = useCallback(() => {
+    const saved = preTile.current;
+    if (saved) {
+      setSize({ width: saved.width, height: saved.height });
+      setPosition({ top: saved.top, left: saved.left });
+      preTile.current = null;
+    }
+    setWindowState((prev) =>
+      prev === 'tiled-left' || prev === 'tiled-right' ? 'normal' : prev,
+    );
+  }, []);
+
+  // Adopt a tile requested from outside (e.g. dropping onto the opposite edge).
+  useEffect(() => {
+    if (tileSide) applyTile(tileSide);
+  }, [tileSide, applyTile]);
 
   const isActive = activeWindowId === windowId;
   const isMaximized = windowState === 'maximized';
   const isFullscreen = windowState === 'fullscreen';
+  const isTiled = windowState === 'tiled-left' || windowState === 'tiled-right';
   const zIndex = isActive ? 50 : openWindows.findIndex((w) => w.id === windowId) + 10;
+
+  /** How close to a screen edge a window must be dropped to take that half. */
+  const EDGE_ZONE = 24;
+  const MIN_VISIBLE = 80;
 
   const appNames: Record<string, string> = {
     finder: 'Finder',
@@ -176,11 +242,14 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     chess: 'Chess',
     minecraft: 'Minecraft',
     tips: 'Tips',
+    india360: 'India 360',
   };
 
   const displayName = appNames[appId] || appId.charAt(0).toUpperCase() + appId.slice(1);
 
-  const dragElastic = Math.max(0.1, 0.5 - telemetry.cpuPressure * 0.4);
+  // Dragging commits to `position` state and uses dragSnapToOrigin, so the
+  // element itself never carries a transform. Elasticity is therefore fixed
+  // at zero: overshoot would fight the committed position.
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -210,12 +279,20 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
   }, []);
 
   const handleGreenDot = useCallback(() => {
+    // Leaving a tile by the green button should free both halves, otherwise
+    // the partner window stays stranded against a screen edge.
+    if (isTiled) {
+      untileWindow(windowId);
+      preTile.current = null;
+      setWindowState('normal');
+      return;
+    }
     setWindowState((prev) => {
       if (prev === 'normal') return 'maximized';
       if (prev === 'maximized') return 'fullscreen';
       return 'normal';
     });
-  }, []);
+  }, [isTiled, untileWindow, windowId]);
 
   const handleClose = useCallback(() => {
     setWindowState('normal');
@@ -230,9 +307,77 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
     minimizeWindow(windowId);
   }, [windowId, minimizeWindow]);
 
-  const handleDragEnd = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate([15, 30, 15]);
+  const handleDragEnd = (_e: unknown, info: { point: { x: number; y: number } }) => {
+    if (navigator.vibrate) navigator.vibrate([15, 30, 15]);
+    setTileHover(null);
+    pendingTile.current = null;
+
+    const vw = window.innerWidth;
+    const half = size.width / 2;
+
+    // Where the window's left edge ended up, from the grab point.
+    const left = info.point.x - half;
+    const side: TileSide | null =
+      info.point.x <= EDGE_ZONE
+        ? 'left'
+        : info.point.x >= vw - EDGE_ZONE
+          ? 'right'
+          : null;
+
+    if (side) {
+      // Capture the current geometry only if the window was not already tiled.
+      preTile.current = preTile.current ?? {
+        width: size.width,
+        height: size.height,
+        top: position.top,
+        left: position.left,
+      };
+      setWindowState(side === 'left' ? 'tiled-left' : 'tiled-right');
+      requestTile(windowId, side);
+      return;
+    }
+
+    // Not near an edge: commit the drop as the new resting position. The
+    // window may have been tiled before the drag, in which case leaving it
+    // snapped means restoring the size it had before tiling.
+    if (isTiled) {
+      releaseTile();
+      setPosition({
+        top: Math.max(30, Math.min(info.point.y - 24, window.innerHeight - 60)),
+        left: Math.max(
+          -(size.width - MIN_VISIBLE),
+          Math.min(left, vw - MIN_VISIBLE),
+        ),
+      });
+    } else {
+      setPosition({
+        top: Math.max(30, Math.min(info.point.y - 24, window.innerHeight - 60)),
+        left: Math.max(
+          -(size.width - MIN_VISIBLE),
+          Math.min(left, vw - MIN_VISIBLE),
+        ),
+      });
+    }
+  };
+
+  /** Live preview while the pointer is inside an edge zone. */
+  const handleDrag = (_e: unknown, info: { point: { x: number } }) => {
+    const vw = window.innerWidth;
+    const side: TileSide | null =
+      info.point.x <= EDGE_ZONE
+        ? 'left'
+        : info.point.x >= vw - EDGE_ZONE
+          ? 'right'
+          : null;
+    if (side) {
+      if (pendingTile.current !== side) {
+        pendingTile.current = side;
+        setTileHover({ side, windowId });
+        if (navigator.vibrate) navigator.vibrate(8);
+      }
+    } else if (pendingTile.current) {
+      pendingTile.current = null;
+      setTileHover(null);
     }
   };
 
@@ -241,10 +386,16 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       if (e.key === 'Escape' && isFullscreen && isActive) {
         setWindowState((prev) => (prev === 'fullscreen' ? 'maximized' : prev));
       }
+      // Escape leaves a tile, matching macOS.
+      if (e.key === 'Escape' && isTiled && isActive) {
+        untileWindow(windowId);
+        preTile.current = null;
+        setWindowState('normal');
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [isFullscreen, isActive]);
+  }, [isFullscreen, isActive, isTiled, untileWindow, windowId]);
 
   const genieVariants: Variants = {
     initial: {
@@ -260,11 +411,23 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       scaleY: 1,
       scale: 1,
       y: 0,
-      width: isFullscreen ? '100vw' : isMaximized ? '100vw' : size.width,
-      height: isFullscreen ? '100vh' : isMaximized ? 'calc(100vh - 30px)' : size.height,
-      top: isFullscreen ? 0 : isMaximized ? '30px' : position.top,
-      left: isFullscreen ? 0 : isMaximized ? 0 : position.left,
-      borderRadius: isFullscreen ? 0 : isMaximized ? 0 : '1rem',
+      width: isFullscreen || isMaximized ? '100vw' : isTiled ? '50vw' : size.width,
+      height: isFullscreen
+        ? '100vh'
+        : isMaximized || isTiled
+          ? 'calc(100vh - 30px)'
+          : size.height,
+      top: isFullscreen ? 0 : isMaximized || isTiled ? '30px' : position.top,
+      left: isFullscreen
+        ? 0
+        : isMaximized
+          ? 0
+          : isTiled
+            ? windowState === 'tiled-left'
+              ? 0
+              : '50vw'
+            : position.left,
+      borderRadius: isFullscreen || isMaximized || isTiled ? 0 : '1rem',
       filter: 'blur(0px) saturate(100%) brightness(1)',
       transition: {
         type: 'spring',
@@ -304,6 +467,18 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
         <path d="M0 0h2v2H0zM4 0h2v2H4zM0 4h2v2H0zM4 4h2v2H4z" fill="currentColor" />
       </svg>
     ),
+    'tiled-left': (
+      <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
+        <rect x="0.5" y="0.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" strokeWidth="0.8" />
+        <rect x="0.5" y="0.5" width="2.5" height="5" fill="currentColor" />
+      </svg>
+    ),
+    'tiled-right': (
+      <svg width="6" height="6" viewBox="0 0 6 6" className="absolute text-white/80">
+        <rect x="0.5" y="0.5" width="5" height="5" rx="1" fill="none" stroke="currentColor" strokeWidth="0.8" />
+        <rect x="3" y="0.5" width="2.5" height="5" fill="currentColor" />
+      </svg>
+    ),
   };
 
   return (
@@ -313,7 +488,10 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
       dragControls={controls}
       dragListener={false}
       dragMomentum={false}
-      dragElastic={dragElastic}
+      dragElastic={0}
+      dragSnapToOrigin
+      onDragStart={() => setActiveWindow(windowId)}
+      onDrag={handleDrag}
       onDragEnd={handleDragEnd}
       onPointerDown={() => setActiveWindow(windowId)}
       variants={genieVariants}
@@ -342,7 +520,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
         <div
           className={`h-12 w-full flex items-center justify-between px-4 border-b border-white/10 select-none cursor-default relative z-10 transition-colors ${isActive ? 'bg-white/10' : 'bg-white/5'} ${isEndurance ? 'bg-amber-900/60' : ''}`}
           onPointerDown={(e) => {
-            if (!isMaximized) {
+            if (!isMaximized && !isTiled) {
               setActiveWindow(windowId);
               controls.start(e);
               if (navigator.vibrate) {
@@ -377,7 +555,7 @@ export const Window: React.FC<WindowProps> = ({ windowId, appId }) => {
                   ? 'Maximize'
                   : windowState === 'maximized'
                     ? 'Enter Fullscreen'
-                    : 'Exit Fullscreen'
+                    : 'Remove from Split View'
               }
             >
               {greenDotIcon[windowState]}

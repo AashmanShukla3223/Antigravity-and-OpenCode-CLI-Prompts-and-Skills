@@ -36,6 +36,7 @@ import { NotificationBanner } from './NotificationBanner';
 import { IncomingCallOverlay } from './IncomingCallOverlay';
 import { WidgetPicker } from './WidgetPicker';
 import { StageManager } from './StageManager';
+import { TilePreview } from './TilePreview';
 import { MissionControl } from './MissionControl';
 const ScreenSaver = lazy(() => import('./ScreenSaver').then((m) => ({ default: m.default })));
 const Apps = lazy(() => import('../apps/Apps').then((m) => ({ default: m.Apps })));
@@ -829,6 +830,8 @@ export const Desktop: React.FC = () => {
         className={`absolute inset-0 z-10 pt-8 pb-20 pointer-events-none ${systemState.stageManagerEnabled ? 'pl-24' : ''}`}
       >
         <StageManager />
+
+        <TilePreview />
 
         <AnimatePresence>
           {openWindows

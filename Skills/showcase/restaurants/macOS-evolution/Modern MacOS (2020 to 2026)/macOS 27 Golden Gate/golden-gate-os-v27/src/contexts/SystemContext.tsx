@@ -93,6 +93,26 @@ export interface WindowInstance {
   appId: string;
 }
 
+/** Which half of the screen a window is snapped into. */
+export type TileSide = 'left' | 'right';
+
+/**
+ * Two windows tiled across the screen. Stored centrally rather than in
+ * Window state so both halves stay in agreement; if one is closed or
+ * untiled, the other is released too.
+ */
+export interface TilePair {
+  left?: string;
+  right?: string;
+}
+
+/** The translucent preview shown while a window hovers a screen edge. */
+export interface TileHover {
+  side: TileSide;
+  /** The window that will take the half, for labelling the preview. */
+  windowId: string;
+}
+
 export interface ActiveError {
   id: string;
   x: number;
@@ -306,6 +326,13 @@ interface SystemContextProps {
   minimizeWindow: (windowId: string) => void;
   unminimizeWindow: (windowId: string) => void;
   toggleMaximizeWindow: (windowId: string) => void;
+  /** Edge-tiling pairs. Left/right halves are shared, so two windows can pair. */
+  tilePair: TilePair | null;
+  setTilePair: (pair: TilePair | null) => void;
+  requestTile: (windowId: string, side: TileSide) => void;
+  untileWindow: (windowId: string) => void;
+  tileHover: TileHover | null;
+  setTileHover: (hover: TileHover | null) => void;
   showAboutWindow: boolean;
   setShowAboutWindow: (show: boolean) => void;
   showSpotlight: boolean;
@@ -934,14 +961,53 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     [openWindows, activeWindowId, systemState, updateSystemState, trackAppOpen],
   );
 
-  const closeWindow = useCallback((windowId: string) => {
-    const closingApp = openWindows.find((w) => w.id === windowId)?.appId;
-    if (closingApp) trackAppClose(closingApp);
-    setOpenWindows((prev) => prev.filter((w) => w.id !== windowId));
-    setMinimizedWindows((prev) => prev.filter((id) => id !== windowId));
-    setMaximizedWindows((prev) => prev.filter((id) => id !== windowId));
-    setActiveWindow((prev) => (prev === windowId ? null : prev));
-  }, [openWindows, trackAppClose]);
+  // -------------------------------------------------------------------------
+  // Edge tiling. A window dropped on the left or right screen edge takes that
+  // half; dropping a second window on the opposite edge completes the pair.
+  // Both halves live here so neither window can strand the other.
+  // -------------------------------------------------------------------------
+  const [tilePair, setTilePair] = useState<TilePair | null>(null);
+  const [tileHover, setTileHover] = useState<TileHover | null>(null);
+
+  /** Release a window from whichever half it holds, leaving its partner put. */
+  const releaseTile = useCallback((windowId: string) => {
+    setTilePair((prev) => {
+      if (!prev) return prev;
+      if (prev.left !== windowId && prev.right !== windowId) return prev;
+      const next: TilePair = { ...prev };
+      if (next.left === windowId) delete next.left;
+      if (next.right === windowId) delete next.right;
+      return next.left || next.right ? next : null;
+    });
+  }, []);
+
+  const requestTile = useCallback((windowId: string, side: TileSide) => {
+    setTileHover(null);
+    setTilePair((prev) => {
+      const next: TilePair = { ...(prev ?? {}) };
+      // A window may only occupy one half. If it was already the other half,
+      // release that half rather than leaving a stale reference behind.
+      if (next.left === windowId) delete next.left;
+      if (next.right === windowId) delete next.right;
+      next[side] = windowId;
+      return next.left || next.right ? next : null;
+    });
+  }, []);
+
+  const untileWindow = releaseTile;
+
+  const closeWindow = useCallback(
+    (windowId: string) => {
+      const closingApp = openWindows.find((w) => w.id === windowId)?.appId;
+      if (closingApp) trackAppClose(closingApp);
+      releaseTile(windowId);
+      setOpenWindows((prev) => prev.filter((w) => w.id !== windowId));
+      setMinimizedWindows((prev) => prev.filter((id) => id !== windowId));
+      setMaximizedWindows((prev) => prev.filter((id) => id !== windowId));
+      setActiveWindow((prev) => (prev === windowId ? null : prev));
+    },
+    [openWindows, trackAppClose, releaseTile],
+  );
 
   const closeCurrentWindow = useCallback(() => {
     if (activeWindowId) closeWindow(activeWindowId);
@@ -952,6 +1018,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const targets = openWindows.filter((w) => w.appId === appId);
       if (targets.length > 0) trackAppClose(appId);
       targets.forEach((w) => {
+        releaseTile(w.id);
         setOpenWindows((prev) => prev.filter((pw) => pw.id !== w.id));
         setMinimizedWindows((prev) => prev.filter((id) => id !== w.id));
         setMaximizedWindows((prev) => prev.filter((id) => id !== w.id));
@@ -960,7 +1027,7 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveWindow(null);
       }
     },
-    [openWindows, activeWindowId, trackAppClose],
+    [openWindows, activeWindowId, trackAppClose, releaseTile],
   );
 
   const quitApp = useCallback(
@@ -1220,6 +1287,12 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         quitApp,
         minimizeWindow,
         unminimizeWindow,
+        tilePair,
+        setTilePair,
+        requestTile,
+        untileWindow,
+        tileHover,
+        setTileHover,
         toggleMaximizeWindow,
         showAboutWindow,
         setShowAboutWindow,

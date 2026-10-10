@@ -81,6 +81,7 @@ const APP_NAMES: Record<string, string> = {
   reminders: 'Reminders',
   stickies: 'Stickies',
   tips: 'Tips',
+  india360: 'India 360',
   books: 'Books',
   wallet: 'Wallet',
   code: 'VS Code',

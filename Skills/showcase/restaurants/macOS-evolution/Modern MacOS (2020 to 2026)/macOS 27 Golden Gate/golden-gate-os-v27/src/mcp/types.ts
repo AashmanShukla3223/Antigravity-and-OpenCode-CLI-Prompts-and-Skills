@@ -122,7 +122,7 @@ export const AVAILABLE_APP_IDS = [
   'phone', 'calendar', 'contacts', 'notes', 'reminders', 'music', 'tv',
   'keynote', 'numbers', 'pages', 'appstore', 'books', 'wallet', 'games',
   'iphonemirroring', 'siriai', 'settings', 'terminal', 'activitymonitor',
-  'calculator', 'weather', 'clock', 'stickies', 'tips', 'freeform', 'photobooth',
+  'calculator', 'weather', 'clock', 'stickies', 'tips', 'india360', 'freeform', 'photobooth',
   'quicktime', 'preview', 'voice-memos', 'dictation', 'fontbook', 'color-picker',
   'diskutility', 'timemachine', 'sounds', 'codeviewer', 'github',
   'xcode', 'finalcutpro', 'logicpro', 'motion', 'pixelmatorpro',

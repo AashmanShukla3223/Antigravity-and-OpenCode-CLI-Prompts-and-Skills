@@ -54,6 +54,7 @@ const ALL_APPS = [
   { id: 'reminders', name: 'Reminders' },
   { id: 'stickies', name: 'Stickies' },
   { id: 'tips', name: 'Tips' },
+  { id: 'india360', name: 'India 360' },
   { id: 'terminal', name: 'Terminal' },
   { id: 'activitymonitor', name: 'Activity Monitor' },
   { id: 'timemachine', name: 'Time Machine' },

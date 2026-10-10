@@ -1,0 +1,532 @@
+{
+ "generatedAt": "2026-10-10T14:48:53.168Z",
+ "source": "google-analytics-mcp",
+ "property": {
+  "id": "542523883",
+  "name": "macos-golden-gate"
+ },
+ "window": {
+  "days": 28,
+  "timezone": "Asia/Kolkata",
+  "label": "2026-09-13 – 2026-10-10"
+ },
+ "totals": {
+  "sessions": 218,
+  "users": 125,
+  "views": 344,
+  "engaged": 149,
+  "avgDuration": 309,
+  "bounceRate": 0.3165
+ },
+ "highlights": {
+  "peak": {
+   "date": "20261003",
+   "sessions": 31
+  },
+  "longestRead": {
+   "date": "20260919",
+   "seconds": 810
+  },
+  "silentDays": 6
+ },
+ "daily": [
+  {
+   "date": "20260913",
+   "sessions": 4,
+   "users": 2,
+   "views": 3,
+   "engaged": 1,
+   "avgDuration": 7,
+   "bounceRate": 0.75
+  },
+  {
+   "date": "20260914",
+   "sessions": 4,
+   "users": 3,
+   "views": 4,
+   "engaged": 3,
+   "avgDuration": 410,
+   "bounceRate": 0.25
+  },
+  {
+   "date": "20260915",
+   "sessions": 4,
+   "users": 4,
+   "views": 4,
+   "engaged": 3,
+   "avgDuration": 97,
+   "bounceRate": 0.25
+  },
+  {
+   "date": "20260916",
+   "sessions": 2,
+   "users": 1,
+   "views": 2,
+   "engaged": 1,
+   "avgDuration": 14,
+   "bounceRate": 0.5
+  },
+  {
+   "date": "20260917",
+   "sessions": 3,
+   "users": 3,
+   "views": 3,
+   "engaged": 3,
+   "avgDuration": 258,
+   "bounceRate": 0
+  },
+  {
+   "date": "20260918",
+   "sessions": 4,
+   "users": 4,
+   "views": 10,
+   "engaged": 2,
+   "avgDuration": 234,
+   "bounceRate": 0.5
+  },
+  {
+   "date": "20260919",
+   "sessions": 4,
+   "users": 3,
+   "views": 6,
+   "engaged": 2,
+   "avgDuration": 810,
+   "bounceRate": 0.5
+  },
+  {
+   "date": "20260920",
+   "sessions": 15,
+   "users": 11,
+   "views": 25,
+   "engaged": 11,
+   "avgDuration": 331,
+   "bounceRate": 0.26666666666666666
+  },
+  {
+   "date": "20260921",
+   "sessions": 9,
+   "users": 6,
+   "views": 12,
+   "engaged": 7,
+   "avgDuration": 287,
+   "bounceRate": 0.2222222222222222
+  },
+  {
+   "date": "20260922",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  },
+  {
+   "date": "20260923",
+   "sessions": 6,
+   "users": 5,
+   "views": 6,
+   "engaged": 4,
+   "avgDuration": 531,
+   "bounceRate": 0.3333333333333333
+  },
+  {
+   "date": "20260924",
+   "sessions": 7,
+   "users": 6,
+   "views": 14,
+   "engaged": 6,
+   "avgDuration": 391,
+   "bounceRate": 0.14285714285714285
+  },
+  {
+   "date": "20260925",
+   "sessions": 5,
+   "users": 5,
+   "views": 5,
+   "engaged": 3,
+   "avgDuration": 261,
+   "bounceRate": 0.4
+  },
+  {
+   "date": "20260926",
+   "sessions": 7,
+   "users": 5,
+   "views": 29,
+   "engaged": 7,
+   "avgDuration": 780,
+   "bounceRate": 0
+  },
+  {
+   "date": "20260927",
+   "sessions": 28,
+   "users": 16,
+   "views": 49,
+   "engaged": 20,
+   "avgDuration": 295,
+   "bounceRate": 0.2857142857142857
+  },
+  {
+   "date": "20260928",
+   "sessions": 13,
+   "users": 8,
+   "views": 15,
+   "engaged": 11,
+   "avgDuration": 334,
+   "bounceRate": 0.15384615384615385
+  },
+  {
+   "date": "20260929",
+   "sessions": 16,
+   "users": 14,
+   "views": 18,
+   "engaged": 8,
+   "avgDuration": 53,
+   "bounceRate": 0.5
+  },
+  {
+   "date": "20260930",
+   "sessions": 9,
+   "users": 5,
+   "views": 19,
+   "engaged": 6,
+   "avgDuration": 289,
+   "bounceRate": 0.3333333333333333
+  },
+  {
+   "date": "20261001",
+   "sessions": 12,
+   "users": 12,
+   "views": 22,
+   "engaged": 5,
+   "avgDuration": 173,
+   "bounceRate": 0.5833333333333334
+  },
+  {
+   "date": "20261002",
+   "sessions": 25,
+   "users": 22,
+   "views": 34,
+   "engaged": 16,
+   "avgDuration": 188,
+   "bounceRate": 0.36
+  },
+  {
+   "date": "20261003",
+   "sessions": 31,
+   "users": 17,
+   "views": 52,
+   "engaged": 26,
+   "avgDuration": 502,
+   "bounceRate": 0.16129032258064516
+  },
+  {
+   "date": "20261004",
+   "sessions": 9,
+   "users": 5,
+   "views": 11,
+   "engaged": 4,
+   "avgDuration": 189,
+   "bounceRate": 0.5555555555555556
+  },
+  {
+   "date": "20261005",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  },
+  {
+   "date": "20261006",
+   "sessions": 1,
+   "users": 0,
+   "views": 1,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 1
+  },
+  {
+   "date": "20261007",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  },
+  {
+   "date": "20261008",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  },
+  {
+   "date": "20261009",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  },
+  {
+   "date": "20261010",
+   "sessions": 0,
+   "users": 0,
+   "views": 0,
+   "engaged": 0,
+   "avgDuration": 0,
+   "bounceRate": 0
+  }
+ ],
+ "devices": [
+  {
+   "label": "desktop",
+   "sessions": 187,
+   "users": 0
+  },
+  {
+   "label": "mobile",
+   "sessions": 19,
+   "users": 0
+  },
+  {
+   "label": "tablet",
+   "sessions": 10,
+   "users": 0
+  },
+  {
+   "label": "smart tv",
+   "sessions": 7,
+   "users": 0
+  }
+ ],
+ "sources": [
+  {
+   "source": "bing",
+   "medium": "organic",
+   "sessions": 106
+  },
+  {
+   "source": "(direct)",
+   "medium": "(none)",
+   "sessions": 57
+  },
+  {
+   "source": "google",
+   "medium": "organic",
+   "sessions": 13
+  },
+  {
+   "source": "duckduckgo",
+   "medium": "organic",
+   "sessions": 11
+  },
+  {
+   "source": "yahoo",
+   "medium": "organic",
+   "sessions": 8
+  },
+  {
+   "source": "ntp.msn.com",
+   "medium": "referral",
+   "sessions": 6
+  },
+  {
+   "source": "copilot.com",
+   "medium": "(not set)",
+   "sessions": 5
+  },
+  {
+   "source": "(not set)",
+   "medium": "(not set)",
+   "sessions": 4
+  },
+  {
+   "source": "vercel.com",
+   "medium": "referral",
+   "sessions": 4
+  },
+  {
+   "source": "privacywall.org",
+   "medium": "referral",
+   "sessions": 1
+  },
+  {
+   "source": "search.brave.com",
+   "medium": "referral",
+   "sessions": 1
+  },
+  {
+   "source": "us.search.yahoo.com",
+   "medium": "referral",
+   "sessions": 1
+  },
+  {
+   "source": "zalo",
+   "medium": "zalo",
+   "sessions": 1
+  }
+ ],
+ "quality": {
+  "humanShare": 0.95,
+  "mixedShare": 0.05,
+  "suspectShare": 0,
+  "channels": [
+   {
+    "source": "bing",
+    "sessions": 106,
+    "users": 0,
+    "avgDuration": 417,
+    "bounceRate": 0.255,
+    "pagesPerSession": 1.62,
+    "returnRate": 0.424,
+    "score": 7,
+    "verdict": "human"
+   },
+   {
+    "source": "(direct)",
+    "sessions": 57,
+    "users": 0,
+    "avgDuration": 231,
+    "bounceRate": 0.421,
+    "pagesPerSession": 1.6,
+    "returnRate": 0.482,
+    "score": 6,
+    "verdict": "human"
+   },
+   {
+    "source": "google",
+    "sessions": 13,
+    "users": 0,
+    "avgDuration": 310,
+    "bounceRate": 0.154,
+    "pagesPerSession": 2.23,
+    "returnRate": 0.615,
+    "score": 7,
+    "verdict": "human"
+   },
+   {
+    "source": "duckduckgo",
+    "sessions": 11,
+    "users": 0,
+    "avgDuration": 152,
+    "bounceRate": 0.273,
+    "pagesPerSession": 1.91,
+    "returnRate": 0.273,
+    "score": 6,
+    "verdict": "human"
+   },
+   {
+    "source": "yahoo",
+    "sessions": 8,
+    "users": 0,
+    "avgDuration": 236,
+    "bounceRate": 0.25,
+    "pagesPerSession": 1,
+    "returnRate": 0.125,
+    "score": 5,
+    "verdict": "human"
+   },
+   {
+    "source": "ntp.msn.com",
+    "sessions": 6,
+    "users": 0,
+    "avgDuration": 95,
+    "bounceRate": 0.167,
+    "pagesPerSession": 1.17,
+    "returnRate": 1,
+    "score": 5,
+    "verdict": "human"
+   },
+   {
+    "source": "copilot.com",
+    "sessions": 5,
+    "users": 0,
+    "avgDuration": 76,
+    "bounceRate": 0.6,
+    "pagesPerSession": 1,
+    "returnRate": 0.4,
+    "score": 2,
+    "verdict": "mixed"
+   },
+   {
+    "source": "(not set)",
+    "sessions": 4,
+    "users": 0,
+    "avgDuration": 4,
+    "bounceRate": 1,
+    "pagesPerSession": 0.25,
+    "returnRate": 1,
+    "score": 2,
+    "verdict": "mixed"
+   }
+  ],
+  "note": "Judged on engagement time and return rate. Single-page sessions are NOT a bot signal for a single-screen app."
+ },
+ "github": {
+  "handle": "AashmanShukla3223",
+  "name": "Aashman Shukla",
+  "followers": 16,
+  "repos": [
+   {
+    "name": "Antigravity-and-OpenCode-CLI-Prompts-and-Skills",
+    "stars": 4,
+    "language": "TypeScript",
+    "description": "The definitive, free web simulator for macOS 27 Golden Gate. Built natively in React 19, Vite, Tailwind v4, and Framer Motion. Explores Liquid Glass 2.0 aesthetics, a 25-node live application dock array, and standalone Siri AI app routing.",
+    "updatedAt": "2026-10-10T12:39:26Z"
+   },
+   {
+    "name": "Parallax-Launcher",
+    "stars": 0,
+    "language": "Kotlin",
+    "description": null,
+    "updatedAt": "2026-10-05T15:56:57Z"
+   },
+   {
+    "name": "AashmanShukla3223",
+    "stars": 1,
+    "language": "TypeScript",
+    "description": "AI-assisted full-stack dev · Building period-authentic web simulators with production-grade architecture · Kanpur, India",
+    "updatedAt": "2026-09-19T04:23:20Z"
+   },
+   {
+    "name": "Samsung-LCD-TV-Simulator",
+    "stars": 2,
+    "language": "HTML",
+    "description": "This repository is designed to show you the parts of a Samsung TV, the html file and the RAG AI Channel Picker. It is designed to give a real TV Look on an fake TV.",
+    "updatedAt": "2026-06-22T05:43:44Z"
+   }
+  ]
+ },
+ "tasks": [
+  {
+   "id": "I360-001",
+   "severity": "high",
+   "area": "responsive-design",
+   "title": "Mobile share is 8.7% — audit below 390px"
+  },
+  {
+   "id": "I360-002",
+   "severity": "medium",
+   "area": "performance",
+   "title": "Bounce rate at 31.7% — check first paint"
+  },
+  {
+   "id": "I360-003",
+   "severity": "low",
+   "area": "analytics-integrity",
+   "title": "6 days recorded zero sessions — verify the tag still fires"
+  },
+  {
+   "id": "I360-004",
+   "severity": "medium",
+   "area": "data-quality",
+   "title": "2 day(s) averaged under 30s — likely non-human"
+  }
+ ]
+}

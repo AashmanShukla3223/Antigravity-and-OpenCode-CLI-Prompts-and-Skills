@@ -40,7 +40,7 @@ const ALL_APPS_LIST = [
   'diskutility', 'timemachine', 'photobooth', 'siriai', 'github', 'aboutme',
   'vmware', 'samsunglcdtv', 'iphonemirroring', 'crazyerrors', 'soundtest',
   'freeform', 'motion', 'xcode', 'pixelmatorpro', 'finalcutpro', 'logicpro',
-  'geometrydash', 'screensharing', 'migrationassistant', 'tips',
+  'geometrydash', 'screensharing', 'migrationassistant', 'tips', 'india360',
 ];
 
 const APP_NAMES: Record<string, string> = {
@@ -49,7 +49,7 @@ const APP_NAMES: Record<string, string> = {
   calendar: 'Calendar', contacts: 'Contacts', notes: 'Notes', music: 'Music',
   tv: 'Apple TV+', appstore: 'App Store', settings: 'System Settings',
   terminal: 'Terminal', calculator: 'Calculator', weather: 'Weather',
-  clock: 'Clock', reminders: 'Reminders', stickies: 'Stickies', tips: 'Tips',
+  clock: 'Clock', reminders: 'Reminders', stickies: 'Stickies', tips: 'Tips', india360: 'India 360',
   books: 'Apple Books', wallet: 'Wallet', code: 'VS Code',
   itunes: 'iTunes Store', keynote: 'Keynote', numbers: 'Numbers',
   pages: 'Pages', chess: 'Chess', activitymonitor: 'Activity Monitor',
