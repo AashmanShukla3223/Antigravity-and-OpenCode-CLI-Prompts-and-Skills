@@ -1,6 +1,7 @@
 import type { MCPToolDefinition, MCPToolContext, BootState } from './types';
 import { AVAILABLE_APP_IDS } from './types';
 import { songs } from '../utils/MusicData';
+import india360Snapshot from '../data/india360-snapshot.json';
 
 function skipIfNotDesktop(ctx: MCPToolContext) {
   if (ctx.bootState !== 'desktop') {
@@ -691,6 +692,111 @@ export function buildTools(ctx: MCPToolContext): MCPToolDefinition[] {
             cover: s.cover,
           }));
         return { results, total: results.length, query };
+      },
+    },
+
+    // ─── India 360 (read-only analytics snapshot) ─────────────────
+    //
+    // Everything here reads a build-time JSON snapshot — there is no live
+    // connection and no mutation path, so all of it is readOnly.
+    {
+      name: 'india360_get_traffic_summary',
+      description:
+        'Get the headline traffic numbers for this site from the India 360 snapshot: total sessions, users, views, engagement rate, average duration, and bounce rate, plus the reporting window and when the snapshot was generated.',
+      inputSchema: { type: 'object', properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: () => ({
+        generatedAt: india360Snapshot.generatedAt,
+        source: india360Snapshot.source,
+        window: india360Snapshot.window,
+        totals: india360Snapshot.totals,
+        highlights: india360Snapshot.highlights,
+        note: 'Static snapshot — regenerates when scripts/fetch-india360.mjs runs.',
+      }),
+    },
+    {
+      name: 'india360_get_traffic_timeseries',
+      description:
+        'Get per-day traffic for this site from the India 360 snapshot. Use this to find trends, peak days, or days with no traffic. Optionally filter to days above a session threshold.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          minSessions: {
+            type: 'number',
+            description: 'Only return days with at least this many sessions. Omit for all days.',
+          },
+          limit: {
+            type: 'number',
+            description: 'Return only the N most recent days. Omit for the full history.',
+          },
+        },
+      },
+      annotations: { readOnlyHint: true },
+      execute: ({ minSessions, limit }) => {
+        let days = india360Snapshot.daily as Array<Record<string, unknown>>;
+        if (typeof minSessions === 'number') {
+          days = days.filter((d) => Number(d.sessions) >= minSessions);
+        }
+        if (typeof limit === 'number') {
+          days = days.slice(-limit);
+        }
+        return { total: days.length, daily: days };
+      },
+    },
+    {
+      name: 'india360_get_audience_devices',
+      description:
+        'Get how this site\'s traffic splits across device categories (desktop, mobile, tablet, smart tv), and how it splits across acquisition sources with session counts. Use this to judge whether the site is mobile-ready or over-optimised for desktop.',
+      inputSchema: { type: 'object', properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: () => ({
+        devices: india360Snapshot.devices,
+        sources: india360Snapshot.sources,
+      }),
+    },
+    {
+      name: 'india360_get_traffic_quality',
+      description:
+        'Get the traffic-quality assessment for this site: the human/mixed/suspect split, and a per-channel breakdown with average duration, bounce rate, pages per session, return rate and a verdict. Use this to distinguish real visitors from bots before acting on traffic numbers.',
+      inputSchema: { type: 'object', properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: () => india360Snapshot.quality,
+    },
+    {
+      name: 'india360_get_github_stats',
+      description:
+        'Get this project\'s GitHub stats from the India 360 snapshot: owner handle, follower count, and per-repo stars, language and description.',
+      inputSchema: { type: 'object', properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: () => india360Snapshot.github,
+    },
+    {
+      name: 'india360_get_tasks',
+      description:
+        'Get the open action items for this project from the India 360 snapshot. Each has an id, severity, area and title. Filter by severity or area to focus on the important ones.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          severity: {
+            type: 'string',
+            enum: ['high', 'medium', 'low'],
+            description: 'Only return tasks at this severity.',
+          },
+          area: {
+            type: 'string',
+            description: 'Only return tasks in this area, e.g. performance or analytics-integrity.',
+          },
+        },
+      },
+      annotations: { readOnlyHint: true },
+      execute: ({ severity, area }) => {
+        let tasks = india360Snapshot.tasks as Array<Record<string, unknown>>;
+        if (severity) tasks = tasks.filter((t) => t.severity === severity);
+        if (area) {
+          const q = String(area).toLowerCase();
+          tasks = tasks.filter((t) => String(t.area).toLowerCase().includes(q));
+        }
+        return { total: tasks.length, tasks };
       },
     },
   ];

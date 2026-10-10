@@ -1,3 +1,10 @@
+export interface MCPToolAnnotations {
+  /** Tool only reads state; it cannot change anything. */
+  readOnlyHint?: boolean;
+  /** Tool is a dev/inspection aid rather than an end-user interaction. */
+  debugging?: boolean;
+}
+
 export interface MCPToolDefinition {
   name: string;
   description: string;
@@ -6,7 +13,15 @@ export interface MCPToolDefinition {
     properties: Record<string, unknown>;
     required?: string[];
   };
-  execute: (params: Record<string, unknown>) => unknown | Promise<unknown>;
+  /**
+   * Optional safety metadata passed through to WebMCP. Lets the browser and
+   * the agent know a tool is safe to call without a confirmation prompt.
+   */
+  annotations?: MCPToolAnnotations;
+  execute: (
+    params: Record<string, unknown>,
+    ctx?: { signal?: AbortSignal },
+  ) => unknown | Promise<unknown>;
 }
 
 export interface MCPToolRequest {

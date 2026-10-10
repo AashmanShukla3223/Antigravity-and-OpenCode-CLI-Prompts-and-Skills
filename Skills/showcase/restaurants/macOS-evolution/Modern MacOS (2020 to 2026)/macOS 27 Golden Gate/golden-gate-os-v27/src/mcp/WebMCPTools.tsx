@@ -7,14 +7,24 @@ import type { MCPToolContext } from './types';
 export const WebMCPTools = () => {
   const sys = useSystem();
   const fs = useFileSystem();
-  const registered = useRef(false);
+
+  // Register exactly once. An earlier version re-ran this effect on every
+  // system-state change, which aborted and re-registered all 42 tools each
+  // time (~750 registerTool calls during a single boot). Agents holding a
+  // tool reference would see it invalidated mid-session.
+  // The live context is kept in a ref instead, so handlers always read the
+  // current state without needing to re-register.
+  const ctxRef = useRef<{ sys: ReturnType<typeof useSystem>; fs: ReturnType<typeof useFileSystem> }>({
+    sys,
+    fs,
+  });
+  ctxRef.current = { sys, fs };
 
   useEffect(() => {
     const mc = (document as any).modelContext;
     if (!mc?.registerTool) return;
-    if (registered.current) return;
-    registered.current = true;
 
+    const { sys, fs } = ctxRef.current;
     const ctx: MCPToolContext = {
       bootState: sys.bootState,
       setBootState: sys.setBootState,
@@ -78,9 +88,13 @@ export const WebMCPTools = () => {
             name: tool.name,
             description: tool.description,
             inputSchema: tool.inputSchema,
-            execute: async (params: Record<string, unknown>) => {
+            ...(tool.annotations ? { annotations: tool.annotations } : {}),
+            execute: async (
+              params: Record<string, unknown>,
+              opts?: { signal?: AbortSignal },
+            ) => {
               try {
-                return await tool.execute(params);
+                return await tool.execute(params, opts);
               } catch (e: any) {
                 return { error: e?.message || String(e) };
               }
@@ -96,24 +110,9 @@ export const WebMCPTools = () => {
 
     return () => {
       for (const ctrl of controllers) ctrl.abort();
-      registered.current = false;
     };
-  }, [
-    sys.bootState, sys.setBootState, sys.resetSystem,
-    sys.switchUser, sys.verifyPassword, sys.showAlert, sys.showConfirm, sys.showPrompt,
-    sys.launchApp, sys.closeApp, sys.openWindows, sys.openApps,
-    sys.closeWindow, sys.minimizeWindow, sys.unminimizeWindow,
-    sys.toggleMaximizeWindow, sys.setActiveWindow, sys.activeApp,
-    sys.updateSystemState, sys.setPowerMode, sys.setWifi, sys.setBluetooth,
-    sys.addNotification, sys.playSong, sys.pauseSong, sys.nextSong,
-    sys.prevSong, sys.setVolume, sys.initiateShutdown, sys.initiateRestart,
-    sys.triggerSystemError,
-    sys.systemState, sys.battery, sys.hardware, sys.uptime,
-    sys.wifi, sys.bluetooth, sys.powerMode,
-    fs.nodes, fs.createNode, fs.updateNode, fs.deleteNode,
-    fs.getDirectoryContents, fs.getPath, fs.findNode, fs.getNodeContent,
-    fs.emptyTrash, fs.restoreSystemNodes,
-  ]);
+    // Registration is one-shot; live state is read via ctxRef.
+  }, []);
 
   return null;
 };
