@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useSystem } from '../contexts/SystemContext';
 import { useFileSystem } from '../contexts/FileSystemContext';
 import { buildTools } from './tools';
+import { installConsoleApi, uninstallConsoleApi } from './consoleApi';
+import { installBridgeClient } from './bridgeClient';
 import type { MCPToolContext } from './types';
 
 export const WebMCPTools = () => {
@@ -21,9 +23,6 @@ export const WebMCPTools = () => {
   ctxRef.current = { sys, fs };
 
   useEffect(() => {
-    const mc = (document as any).modelContext;
-    if (!mc?.registerTool) return;
-
     const { sys, fs } = ctxRef.current;
     const ctx: MCPToolContext = {
       bootState: sys.bootState,
@@ -80,6 +79,17 @@ export const WebMCPTools = () => {
     const tools = buildTools(ctx);
     const controllers: AbortController[] = [];
 
+    // The console API is installed unconditionally, so the tools are in
+    // DevTools whether or not an MCP host happens to be attached. This is the
+    // path that needs no `npm run mcp-server`.
+    installConsoleApi(ctx);
+    installBridgeClient();
+
+    const mc = (document as any).modelContext;
+    if (!mc?.registerTool) {
+      return () => uninstallConsoleApi();
+    }
+
     for (const tool of tools) {
       try {
         const ctrl = new AbortController();
@@ -110,6 +120,7 @@ export const WebMCPTools = () => {
 
     return () => {
       for (const ctrl of controllers) ctrl.abort();
+      uninstallConsoleApi();
     };
     // Registration is one-shot; live state is read via ctxRef.
   }, []);
