@@ -38,7 +38,10 @@ export const BootSequence: React.FC = () => {
     const playChime = () => {
       const audio = new Audio('/sounds/startup chime.mp3');
       audio.volume = 0.5;
-      audio.preload = 'metadata';
+      // 'auto' so the browser actually buffers the clip. With 'metadata' the
+      // readyState never reached 3, the play attempt was never made, and the
+      // click/keydown fallback below was never even registered.
+      audio.preload = 'auto';
 
       const attemptPlay = () => {
         if (!mounted) return;
@@ -49,6 +52,7 @@ export const BootSequence: React.FC = () => {
             document.removeEventListener('keydown', attemptPlay, true);
           })
           .catch(() => {
+            // Autoplay was blocked: wait for any gesture and try again.
             document.addEventListener('click', attemptPlay, true);
             document.addEventListener('keydown', attemptPlay, true);
           });
@@ -56,16 +60,18 @@ export const BootSequence: React.FC = () => {
 
       if (audio.readyState >= 3) {
         attemptPlay();
-      } else {
-        audio.addEventListener('canplaythrough', attemptPlay, { once: true });
-        audio.addEventListener(
-          'error',
-          () => {
-            attemptPlay();
-          },
-          { once: true },
-        );
+        return;
       }
+
+      // 'canplay' fires as soon as enough is buffered to start, unlike
+      // 'canplaythrough' which needs the entire file.
+      audio.addEventListener('canplay', attemptPlay, { once: true });
+      audio.addEventListener('canplaythrough', attemptPlay, { once: true });
+      audio.addEventListener('error', attemptPlay, { once: true });
+      // Last resort: if none of the load events arrive, still try, so a
+      // blocked or slow fetch degrades to the gesture fallback rather than
+      // to silence.
+      setTimeout(attemptPlay, 1200);
     };
 
     const chimeTimeout = setTimeout(playChime, 500);
