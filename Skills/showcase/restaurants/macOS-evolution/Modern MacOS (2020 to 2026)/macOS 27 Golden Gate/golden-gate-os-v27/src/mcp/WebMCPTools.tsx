@@ -4,7 +4,7 @@ import { useFileSystem } from '../contexts/FileSystemContext';
 import { buildTools } from './tools';
 import { installConsoleApi, uninstallConsoleApi } from './consoleApi';
 import { installBridgeClient } from './bridgeClient';
-import { ensureWebMCPHost } from './webmcpHost';
+import { ensureWebMCPHost, hostTargets } from './webmcpHost';
 import type { MCPToolContext } from './types';
 
 export const WebMCPTools = () => {
@@ -86,46 +86,52 @@ export const WebMCPTools = () => {
     installConsoleApi(ctx);
     installBridgeClient();
 
-    // Give the WebMCP DevTools panel a host to register into when nothing
-    // else has supplied one. A real host, if present, is left untouched.
-    const installedShim = ensureWebMCPHost();
-    if (installedShim && tools.length) {
+    // Give the WebMCP panel a host to register into when nothing else has
+    // supplied one. Installs into document.modelContext and
+    // navigator.modelContext as needed; real hosts are left untouched.
+    const installed = ensureWebMCPHost();
+    const hosts = hostTargets();
+
+    if (!hosts.length) {
+      console.warn('[Golden Gate] No WebMCP host available; tools stay on window.goldenGate.');
+      return () => uninstallConsoleApi();
+    }
+
+    if (installed.length && tools.length) {
       console.info(
-        `[Golden Gate] In-page WebMCP host installed; ${tools.length} tools registered. ` +
+        `[Golden Gate] In-page WebMCP host installed on ` +
+          `${installed.length} target(s); registering ${tools.length} tools. ` +
           `No mcp-server needed.`,
       );
     }
 
-    const mc = (document as any).modelContext;
-    if (!mc?.registerTool) {
-      return () => uninstallConsoleApi();
-    }
-
-    for (const tool of tools) {
-      try {
-        const ctrl = new AbortController();
-        mc.registerTool(
-          {
-            name: tool.name,
-            description: tool.description,
-            inputSchema: tool.inputSchema,
-            ...(tool.annotations ? { annotations: tool.annotations } : {}),
-            execute: async (
-              params: Record<string, unknown>,
-              opts?: { signal?: AbortSignal },
-            ) => {
-              try {
-                return await tool.execute(params, opts);
-              } catch (e: any) {
-                return { error: e?.message || String(e) };
-              }
+    for (const mc of hosts) {
+      for (const tool of tools) {
+        try {
+          const ctrl = new AbortController();
+          void mc.registerTool(
+            {
+              name: tool.name,
+              description: tool.description,
+              inputSchema: tool.inputSchema,
+              ...(tool.annotations ? { annotations: tool.annotations } : {}),
+              execute: async (
+                params: Record<string, unknown>,
+                opts?: { signal?: AbortSignal },
+              ) => {
+                try {
+                  return await tool.execute(params, opts);
+                } catch (e: any) {
+                  return { error: e?.message || String(e) };
+                }
+              },
             },
-          },
-          { signal: ctrl.signal },
-        );
-        controllers.push(ctrl);
-      } catch {
-        // browser doesn't support this tool registration
+            { signal: ctrl.signal },
+          );
+          controllers.push(ctrl);
+        } catch {
+          // Duplicate name on this host, or it rejects the signature.
+        }
       }
     }
 
