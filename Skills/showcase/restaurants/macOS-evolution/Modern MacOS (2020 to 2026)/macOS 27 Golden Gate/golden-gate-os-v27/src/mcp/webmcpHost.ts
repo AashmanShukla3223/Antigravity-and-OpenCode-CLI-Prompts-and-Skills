@@ -1,28 +1,70 @@
 /**
  * WebMCP host shim.
  *
- * The WebMCP panel in DevTools reads tools from `document.modelContext`. That
- * object is supplied by a host — normally the standalone mcp-server, via its
- * bridge page, or a browser extension. With neither running there is no host,
- * so the panel reports "No tools have been registered" even though the app has
- * 42 perfectly good tools.
+ * Chrome's WebMCP API lives on `document.modelContext` and follows a specific
+ * shape that is NOT the MCP JSON-RPC shape:
  *
- * This installs a minimal in-page host when one is absent, so the tools are
- * registered and discoverable without any second process. If a real host is
- * already present it is left completely alone.
+ *   await document.modelContext.registerTool(tool, { signal, exposedTo })
+ *   await document.modelContext.getTools({ fromOrigins })
+ *   await document.modelContext.executeTool(tool, args, { signal })
+ *   document.modelContext.addEventListener('toolchange', fn)
+ *
+ * An earlier version of this shim used MCP-style names (listTools/callTool),
+ * which no WebMCP consumer looks for. This version matches the spec.
+ *
+ * IMPORTANT: a shim living in page JS cannot make tools visible to a
+ * browser-side DevTools panel, which reads the browser's own registry rather
+ * than the page's object. For the panel, enable chrome://flags and use the
+ * native API. See README "WebMCP".
  */
 
 export type WebMCPToolDefinition = {
   name: string;
+  title?: string;
   description?: string;
   inputSchema?: unknown;
   annotations?: unknown;
-  execute?: (params: Record<string, unknown>, opts?: { signal?: AbortSignal }) => unknown;
+  execute?: (
+    params: Record<string, unknown>,
+    opts?: { signal?: AbortSignal },
+  ) => unknown;
+};
+
+/** What getTools() returns: the definition plus browser-added metadata. */
+export type WebMCPDiscoveredTool = WebMCPToolDefinition & {
+  origin?: string;
+  window?: unknown;
 };
 
 type Registration = {
   tool: WebMCPToolDefinition;
   controller: AbortController;
+  exposedTo?: string[];
+};
+
+export type ModelContextHost = {
+  registerTool: (
+    def: WebMCPToolDefinition,
+    opts?: { signal?: AbortSignal; exposedTo?: string[] },
+  ) => Promise<void> | void;
+  unregisterTool?: (name: string) => Promise<void> | void;
+  /** Spec name. */
+  getTools?: (opts?: { fromOrigins?: string[] }) => Promise<WebMCPDiscoveredTool[]>;
+  /** Spec name. */
+  executeTool?: (
+    tool: WebMCPToolDefinition | string,
+    args?: Record<string, unknown>,
+    opts?: { signal?: AbortSignal },
+  ) => Promise<unknown>;
+  addEventListener?: (type: string, fn: () => void) => void;
+  removeEventListener?: (type: string, fn: () => void) => void;
+  dispatchEvent?: (ev: Event) => boolean;
+  /** MCP-style aliases, kept so non-WebMCP callers still work. */
+  listTools?: () => Promise<WebMCPDiscoveredTool[]>;
+  callTool?: (
+    name: string,
+    args?: Record<string, unknown>,
+  ) => Promise<unknown>;
 };
 
 declare global {
@@ -34,143 +76,144 @@ declare global {
   }
 }
 
-export type ModelContextHost = {
-  registerTool: (
-    def: WebMCPToolDefinition,
-    opts?: { signal?: AbortSignal },
-  ) => Promise<void> | void;
-  unregisterTool?: (name: string) => Promise<void> | void;
-  listTools?: () => Promise<WebMCPToolDefinition[]> | WebMCPToolDefinition[];
-  callTool?: (
-    name: string,
-    args?: Record<string, unknown>,
-  ) => Promise<unknown>;
-};
-
-/**
- * Both spellings are in the wild. Chrome's native implementation and the
- * current W3C draft use navigator.modelContext; the WebMCP DevTools panel
- * documents document.modelContext. Registering into both is cheap and means
- * the panel finds the tools whichever it looks at.
- *
- * navigator.modelContext is [SecureContext] and gated by the `tools`
- * Permissions Policy, so it can legitimately be absent over plain HTTP.
- */
 export function hostTargets(): ModelContextHost[] {
   if (typeof window === 'undefined') return [];
-  return [window.navigator?.modelContext, (window.document as any)?.modelContext]
+  return [
+    (window.document as any)?.modelContext,
+    (window.navigator as any)?.modelContext,
+  ]
     .filter((h): h is ModelContextHost => !!h?.registerTool)
     .filter((h, i, all) => all.indexOf(h) === i);
 }
 
-/**
- * Announce a change. The panel polls some hosts and listens for events on
- * others; firing both a namespaced and a generic event covers either, and is
- * harmless if nobody is listening.
- */
-function announce(event: string, detail?: unknown): void {
-  if (typeof document === 'undefined') return;
-  try {
-    document.dispatchEvent(
-      new CustomEvent(event, { detail, bubbles: false }),
-    );
-    document.dispatchEvent(new CustomEvent('webmcp', { detail, bubbles: false }));
-  } catch {
-    /* CustomEvent unavailable: the panel will fall back to polling */
-  }
-}
-
-/**
- * Returns the hosts this module had to install into (empty when a real host
- * already existed for every target), so callers can report accurately.
- */
 export function ensureWebMCPHost(): ModelContextHost[] {
   if (typeof window === 'undefined') return [];
-
-  const existing = hostTargets();
   const installed: ModelContextHost[] = [];
 
   const makeShim = (): ModelContextHost => {
     const registry = new Map<string, Registration>();
+    const listeners = new Set<() => void>();
 
-    return {
+    const fire = () => {
+      // Spec event name is `toolchange` on the modelContext object itself.
+      try {
+        const ev = new Event('toolchange');
+        (host as any).dispatchEvent?.(ev);
+      } catch {
+        /* Event may be unavailable; listeners are called below regardless */
+      }
+      for (const fn of listeners) {
+        try {
+          fn();
+        } catch {
+          /* a bad listener must not break registration */
+        }
+      }
+    };
+
+    const resolve = (tool: WebMCPToolDefinition | string) => {
+      const name = typeof tool === 'string' ? tool : tool?.name;
+      const entry = registry.get(name);
+      if (!entry) throw new DOMException(`Unknown tool: ${name}`, 'NotFoundError');
+      return entry;
+    };
+
+    const host: ModelContextHost = {
       async registerTool(def, opts) {
-        // The real API throws InvalidStateError on a duplicate name; match
-        // that so a double-registration surfaces instead of silently
-        // shadowing the first one.
+        if (!def?.name) throw new TypeError('registerTool requires a name');
         if (registry.has(def.name)) {
           throw new DOMException(
             `A tool named "${def.name}" is already registered.`,
             'InvalidStateError',
           );
         }
-
         const controller = new AbortController();
 
-        // Respect an AbortSignal from the caller: WebMCPTools registers all 42
-        // tools and aborts them together on unmount.
         if (opts?.signal) {
           if (opts.signal.aborted) return;
           opts.signal.addEventListener('abort', () => {
             registry.delete(def.name);
-            announce('webmcp:toolchange', { name: def.name, removed: true });
+            fire();
           });
         }
 
-        registry.set(def.name, { tool: def, controller });
-        announce('webmcp:toolchange', { name: def.name, removed: false });
+        registry.set(def.name, { tool: def, controller, exposedTo: opts?.exposedTo });
+        fire();
       },
 
       async unregisterTool(name) {
         registry.delete(name);
-        announce('webmcp:toolchange', { name, removed: true });
+        fire();
       },
 
-      async listTools() {
-        return [...registry.values()].map((r) => r.tool);
+      async getTools(opts) {
+        const from = opts?.fromOrigins;
+        return [...registry.values()]
+          .filter((r) => !from || !r.exposedTo?.length || r.exposedTo.some((o) => from.includes(o)))
+          .map((r) => ({
+            ...r.tool,
+            // Read through window, not the bare global: `location` is not
+            // reliably a global in every context (workers, some test DOMs).
+            origin: typeof window !== 'undefined' ? window.location?.origin : undefined,
+            window: typeof window !== 'undefined' ? window : undefined,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name)); // spec: alphabetical
       },
 
-      async callTool(name, args = {}) {
-        const entry = registry.get(name);
-        if (!entry) throw new Error(`Unknown tool: ${name}`);
-        const result = await entry.tool.execute?.(args, {
-          signal: entry.controller.signal,
+      async executeTool(tool, args = {}, opts) {
+        const entry = resolve(tool);
+        // The real API returns the handler's value directly, not an MCP
+        // content wrapper, so tools can return plain strings or objects.
+        return entry.tool.execute?.(args ?? {}, {
+          signal: opts?.signal ?? entry.controller.signal,
         });
-        // MCP tool results are wrapped so a value is never mistaken for an error.
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result ?? null, null, 2) }],
-          isError: false,
-        };
+      },
+
+      addEventListener(type, fn) {
+        if (type === 'toolchange') listeners.add(fn);
+      },
+      removeEventListener(type, fn) {
+        if (type === 'toolchange') listeners.delete(fn);
+      },
+      dispatchEvent: () => true,
+
+      // MCP-style aliases
+      listTools: () => host.getTools!(),
+      callTool: async (name, args) => {
+        const entry = registry.get(name);
+        if (!entry) return { error: `Unknown tool: ${name}` };
+        try {
+          return await entry.tool.execute?.(args ?? {}, {
+            signal: entry.controller.signal,
+          });
+        } catch (e) {
+          return { error: (e as Error)?.message ?? String(e) };
+        }
       },
     };
+
+    return host;
   };
 
-  // document.modelContext
   const doc = window.document as any;
   if (!doc.modelContext?.registerTool) {
     doc.modelContext = makeShim();
     installed.push(doc.modelContext);
   }
 
-  // navigator.modelContext — may be absent outside a secure context.
   const nav = window.navigator as any;
   if (!nav.modelContext?.registerTool) {
     nav.modelContext = makeShim();
     installed.push(nav.modelContext);
   }
 
-  if (installed.length) {
-    announce('webmcp:hostready');
-    shimmed = true;
-  }
-
-  void existing;
+  if (installed.length) shimmed = true;
   return installed;
 }
 
-/** True when the page is using this shim rather than a real host. */
 let shimmed = false;
 
+/** True when the page is using this shim rather than a native host. */
 export function isShimmed(): boolean {
   return shimmed;
 }
