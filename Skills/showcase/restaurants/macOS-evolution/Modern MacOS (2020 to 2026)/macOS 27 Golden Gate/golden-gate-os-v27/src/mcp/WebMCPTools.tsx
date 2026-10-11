@@ -4,6 +4,7 @@ import { useFileSystem } from '../contexts/FileSystemContext';
 import { buildTools } from './tools';
 import { installConsoleApi, uninstallConsoleApi } from './consoleApi';
 import { installBridgeClient } from './bridgeClient';
+import { ensureWebMCPHost } from './webmcpHost';
 import type { MCPToolContext } from './types';
 
 export const WebMCPTools = () => {
@@ -84,6 +85,16 @@ export const WebMCPTools = () => {
     // path that needs no `npm run mcp-server`.
     installConsoleApi(ctx);
     installBridgeClient();
+
+    // Give the WebMCP DevTools panel a host to register into when nothing
+    // else has supplied one. A real host, if present, is left untouched.
+    const installedShim = ensureWebMCPHost();
+    if (installedShim && tools.length) {
+      console.info(
+        `[Golden Gate] In-page WebMCP host installed; ${tools.length} tools registered. ` +
+          `No mcp-server needed.`,
+      );
+    }
 
     const mc = (document as any).modelContext;
     if (!mc?.registerTool) {
